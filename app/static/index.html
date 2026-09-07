@@ -383,6 +383,11 @@
 </div>
 <div class="context-panel hidden" id="regulatory-programme">
 <div><span class="context-icon">▤</span><div><strong>Jurisdiction-specific model plan</strong><small>The exposure scenario stays selected when EU/US changes. EnviroChem replaces the regulatory programme, model requirements and workflow provenance; it does not fabricate an official result.</small></div></div>
+<div class="mini-fields hidden" id="fifra-triggers">
+<label><span>Application method</span><select id="fifra-application-method"><option value="">Select…</option><option value="aerial">Aerial</option><option value="ground_broadcast">Ground broadcast spray</option><option value="airblast_orchard">Airblast (orchard)</option><option value="soil_incorporated">Soil incorporated</option><option value="seed_treatment">Seed treatment</option><option value="chemigation">Chemigation</option><option value="granular">Granular</option></select><small>Drives whether spray-drift deposition (AgDRIFT) applies.</small></label>
+<label><span>Use site</span><select id="fifra-use-site"><option value="field_crop">Field crop</option><option value="orchard">Orchard</option><option value="turf">Turf</option><option value="rice_flooded">Rice / flooded</option><option value="residential_outdoor">Residential outdoor</option><option value="enclosed_greenhouse">Enclosed greenhouse</option></select><small>Enclosed greenhouse use has no outdoor terrestrial exposure pathway.</small></label>
+<label><span>Bee-attractive crop/use?</span><input id="fifra-bee-attractive" type="checkbox"/><small>Drives whether a pollinator risk assessment (BeeREX) applies.</small></label>
+</div>
 <div id="regulatory-plan"><p>Select a workflow-routed scenario above to see the applicable EU or US models.</p></div>
 <div class="mini-heading"><span>Required inputs</span></div>
 <ul id="regulatory-requirements"></ul>

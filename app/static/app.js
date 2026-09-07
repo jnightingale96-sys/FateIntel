@@ -569,6 +569,9 @@ function resetForJurisdictionSwitch() {
   if ($('regulatory-requirements')) $('regulatory-requirements').innerHTML = '';
   if ($('regulatory-warnings')) $('regulatory-warnings').innerHTML = '';
   if ($('regulatory-workflows')) $('regulatory-workflows').innerHTML = '';
+  if ($('fifra-application-method')) $('fifra-application-method').value = '';
+  if ($('fifra-use-site')) $('fifra-use-site').value = 'field_crop';
+  if ($('fifra-bee-attractive')) $('fifra-bee-attractive').checked = false;
   // Exposure scenarios are jurisdiction-neutral. Keep the scientist's selected
   // scenario and replace only its regulatory plan and result state.
   updateReleaseContext();
@@ -901,12 +904,23 @@ function routesThroughRegulatoryProgramme() {
 }
 
 function currentPlanContext() {
-  return {
+  const context = {
     jurisdiction: state.modelSystem,
     contaminant_group: regulatoryProductClass(),
     scenario: regulatoryScenario(),
     tier: currentTier(),
   };
+  // FIFRA companion-model routing triggers: which of AgDRIFT/TerrPlant/T-REX/
+  // BeeREX actually apply depends on application method, use site and
+  // bee-attractiveness, not just "this is a pesticide" -- see
+  // build_assessment_plan's US pesticide branch. Only meaningful for
+  // US + agricultural_spray; the trigger controls are hidden otherwise.
+  if (context.jurisdiction === 'US' && context.scenario === 'agricultural_spray') {
+    context.application_method = $('fifra-application-method')?.value || null;
+    context.use_site_category = $('fifra-use-site')?.value || null;
+    context.bee_attractive = Boolean($('fifra-bee-attractive')?.checked);
+  }
+  return context;
 }
 
 function programmeLabel(context = currentPlanContext()) {
@@ -947,6 +961,7 @@ async function loadRegulatoryProgrammePanel() {
     return;
   }
   const context = currentPlanContext();
+  $('fifra-triggers')?.classList.toggle('hidden', !(context.jurisdiction === 'US' && context.scenario === 'agricultural_spray'));
   planBox.innerHTML = `<p>Loading ${escapeHtml(programmeLabel(context))}…</p>`;
   try {
     const plan = await api('/api/assessment-plan', {
@@ -980,8 +995,8 @@ function renderRegulatoryProgrammePanel(plan, applicable, workflows, context = c
       ? 'native EnviroChem screen · available in the industrial workbench below'
       : 'native EnviroChem screen · calculation not run by this planning panel';
     const status = latest ? latest.status.replaceAll('_',' ') : (prepareable ? 'not yet prepared' : nativeAvailable);
-    const button = prepareable ? `<button class="text-button" data-prepare-workflow="${escapeHtml(model.key)}" type="button">Prepare workflow</button>` : '';
-    return `<article class="model-tile selected" data-model="${escapeHtml(model.key)}"><span><strong>${escapeHtml(model.name || model.key)}</strong><small>${escapeHtml(status)}</small></span>${button}</article>`;
+    const button = prepareable ? `<button class="text-button" data-open-workflow-form="${escapeHtml(model.key)}" type="button">Enter inputs &amp; prepare</button>` : '';
+    return `<article class="model-tile selected" data-model="${escapeHtml(model.key)}"><span><strong>${escapeHtml(model.name || model.key)}</strong><small>${escapeHtml(status)}</small></span>${button}<div class="external-model-form hidden" id="external-model-form-${escapeHtml(model.key)}"></div></article>`;
   };
   planBox.innerHTML = applicable.length
     ? `<p><strong>${escapeHtml(programme.name)} · Tier ${plan.tier}.</strong> ${escapeHtml(context.scenario.replaceAll('_',' '))} remains the selected exposure scenario; the models below are specific to ${escapeHtml(context.jurisdiction)}.${programme.scope ? ` ${escapeHtml(programme.scope)}.` : ''}</p><div class="model-grid">${external.map(m => modelCard(m, true)).join('')}${native.map(m => modelCard(m, false)).join('')}</div>`
@@ -994,7 +1009,65 @@ function renderRegulatoryProgrammePanel(plan, applicable, workflows, context = c
     : '';
 }
 
-async function prepareRegulatoryWorkflow(modelKey) {
+function fieldLabel(key) {
+  return key.replaceAll('_', ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+
+// Generic, data-driven form: works for any model with a MODEL_PROFILES
+// input_template (PWC/PRZM/AGDRIFT/TERRPLANT/TREX/BEEREX/SPIN/MACRO/GREATER/
+// CHEMSTEER/CEM/EFAST) without a bespoke form per model. Each top-level key
+// is a section; every sub-key except "status" becomes a labeled input. The
+// literal "contaminant_group": "pesticide" entry some templates carry is a
+// plain string, not a section, and is skipped here -- it's merged back in by
+// prepareRegulatoryWorkflow() from currentPlanContext() instead.
+function renderModelInputForm(modelKey, template) {
+  const sections = Object.entries(template).filter(([, fields]) => typeof fields === 'object' && fields !== null).map(([sectionKey, fields]) => {
+    const inputs = Object.keys(fields).filter(k => k !== 'status').map(fieldKey =>
+      `<label><span>${escapeHtml(fieldLabel(fieldKey))}</span><input data-field="${escapeHtml(sectionKey)}.${escapeHtml(fieldKey)}" type="text"></label>`
+    ).join('');
+    return `<fieldset><legend>${escapeHtml(fieldLabel(sectionKey))}</legend>${inputs}</fieldset>`;
+  }).join('');
+  return `<form class="external-model-form-body" data-model-key="${escapeHtml(modelKey)}">
+    ${sections}
+    <div class="external-model-form-actions">
+      <button class="text-button" data-cancel-workflow-form="${escapeHtml(modelKey)}" type="button">Cancel</button>
+      <button class="primary-button" data-submit-workflow="${escapeHtml(modelKey)}" type="button">Prepare workflow</button>
+    </div>
+  </form>`;
+}
+
+async function openWorkflowForm(modelKey) {
+  const container = $(`external-model-form-${modelKey}`);
+  if (!container) return;
+  const opening = container.classList.contains('hidden');
+  $$('.external-model-form').forEach(node => node.classList.add('hidden'));
+  if (!opening) return;
+  container.innerHTML = '<p>Loading input fields…</p>';
+  container.classList.remove('hidden');
+  try {
+    const profile = await api(`/api/external-model-integrations/${modelKey}`);
+    container.innerHTML = renderModelInputForm(modelKey, profile.input_template);
+  } catch (error) {
+    container.innerHTML = `<p>Could not load ${escapeHtml(modelKey)}'s input fields: ${escapeHtml(error.message)}</p>`;
+  }
+}
+
+// Builds {section: {status:"resolved", ...fields}} from whatever the user
+// actually filled in; a section with no filled fields is simply omitted, so
+// the backend's unresolved()/missing_inputs check reports it as missing --
+// exactly as if the user had left it at "status":"required".
+function collectWorkflowFormInputData(form) {
+  const bySection = {};
+  $$('[data-field]', form).forEach(input => {
+    const [section, field] = input.dataset.field.split('.');
+    const value = input.value.trim();
+    if (!value) return;
+    (bySection[section] ||= {status: 'resolved'})[field] = value;
+  });
+  return bySection;
+}
+
+async function prepareRegulatoryWorkflow(modelKey, formInputData = {}) {
   if (!state.chemical || !state.project) return;
   if (!projectMatchesModelSystem()) {
     toast(projectJurisdictionMessage(), 7600);
@@ -1002,30 +1075,47 @@ async function prepareRegulatoryWorkflow(modelKey) {
   }
   const context = currentPlanContext();
   try {
-    await api('/api/model-workflows', {
+    const workflow = await api('/api/model-workflows', {
       method: 'POST', headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
         project_id: state.project.id, chemical_id: state.chemical.id, model_key: modelKey,
         jurisdiction: context.jurisdiction, tier: context.tier,
         scenario_name: `Guided ${context.jurisdiction} [${context.scenario}] ${modelKey} workflow for ${state.chemical.preferred_name}`,
         input_data: {
+          // Preserved verbatim: main.py's pesticide-only gate reads
+          // input_data.contaminant_group directly, and workflowMatchesPlanContext()
+          // reads input_data.regulatory_scenario -- both must keep working.
           regulatory_scenario: context.scenario,
           contaminant_group: context.contaminant_group,
           assessment_tier: context.tier,
           source: 'guided_assessment_plan',
+          ...formInputData,
         },
       }),
     });
-    toast(`${modelKey} workflow prepared. Import and review its official output from the Expert workspace when available.`, 6000);
+    const missing = workflow.manifest?.missing_inputs || [];
+    toast(missing.length
+      ? `${modelKey} workflow saved as "${workflow.status.replaceAll('_',' ')}" -- still missing: ${missing.join(', ').replaceAll('_',' ')}.`
+      : `${modelKey} workflow prepared with all required inputs. Import and review its official output from the Expert workspace when available.`, 7000);
     await loadRegulatoryProgrammePanel();
   } catch (error) { toast(`Could not prepare the ${modelKey} workflow: ${error.message}`, 6500); }
 }
 
 function setupRegulatoryProgramme() {
   document.addEventListener('click', (event) => {
-    const button = event.target.closest('[data-prepare-workflow]');
-    if (button) prepareRegulatoryWorkflow(button.dataset.prepareWorkflow);
+    const opener = event.target.closest('[data-open-workflow-form]');
+    if (opener) { openWorkflowForm(opener.dataset.openWorkflowForm); return; }
+    const canceller = event.target.closest('[data-cancel-workflow-form]');
+    if (canceller) { $(`external-model-form-${canceller.dataset.cancelWorkflowForm}`)?.classList.add('hidden'); return; }
+    const submitter = event.target.closest('[data-submit-workflow]');
+    if (submitter) {
+      const modelKey = submitter.dataset.submitWorkflow;
+      const form = submitter.closest('form');
+      prepareRegulatoryWorkflow(modelKey, collectWorkflowFormInputData(form));
+    }
   });
+  ['fifra-application-method', 'fifra-use-site'].forEach(id => $(id)?.addEventListener('change', loadRegulatoryProgrammePanel));
+  $('fifra-bee-attractive')?.addEventListener('change', loadRegulatoryProgrammePanel);
 }
 
 function setupScenarioCards() {

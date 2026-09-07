@@ -258,6 +258,50 @@ MODELS: list[dict[str, Any]] = [
         "outputs": ["surface_water_concentration", "sediment_concentration", "groundwater_concentration", "drinking_water_endpoints", "batch_results"],
     },
     {
+        "key": "AGDRIFT",
+        "name": "AgDRIFT / AGDISP",
+        "domain": "US pesticide spray-drift deposition off the treated site",
+        "regions": ["US"],
+        "groups": ["pesticide"],
+        "implementation": "managed_adapter",
+        "status": "adapter_planned",
+        "tiers": [2, 3, 4],
+        "outputs": ["off_site_deposition_fraction", "downwind_deposition_curve"],
+    },
+    {
+        "key": "TERRPLANT",
+        "name": "TerrPlant",
+        "domain": "US screening-level terrestrial plant exposure from runoff and drift",
+        "regions": ["US"],
+        "groups": ["pesticide"],
+        "implementation": "managed_adapter",
+        "status": "adapter_planned",
+        "tiers": [2, 3, 4],
+        "outputs": ["terrestrial_plant_risk_quotient"],
+    },
+    {
+        "key": "TREX",
+        "name": "T-REX",
+        "domain": "US avian and mammalian dietary exposure from pesticide residues",
+        "regions": ["US"],
+        "groups": ["pesticide"],
+        "implementation": "managed_adapter",
+        "status": "adapter_planned",
+        "tiers": [2, 3, 4],
+        "outputs": ["avian_dietary_concentration", "avian_risk_quotient", "mammalian_risk_quotient"],
+    },
+    {
+        "key": "BEEREX",
+        "name": "BeeREX",
+        "domain": "US screening-level bee exposure and risk quotient",
+        "regions": ["US"],
+        "groups": ["pesticide"],
+        "implementation": "managed_adapter",
+        "status": "adapter_planned",
+        "tiers": [2, 3, 4],
+        "outputs": ["contact_risk_quotient", "oral_risk_quotient"],
+    },
+    {
         "key": "ENVIROCHEM_US_INDUSTRIAL_EXPOSURE_SCREEN",
         "name": "EnviroChem US industrial exposure foundation",
         "domain": "industrial source terms, release routing and worker inhalation/dermal screening",
@@ -601,8 +645,28 @@ def build_assessment_plan(data: dict[str, Any]) -> dict[str, Any]:
             "surface_water_discharge", "wastewater_irrigation",
         }:
             selected.append("PWC")
+            required.append("groundwater/waterbody configuration (mandatory, not optional)")
             if tier >= 3 and scenario == "agricultural_spray":
                 selected.append("PRZM")
+            if scenario == "agricultural_spray":
+                application_method = data.get("application_method")
+                use_site_category = data.get("use_site_category")
+                bee_attractive = bool(data.get("bee_attractive"))
+                # TerrPlant/T-REX are near-universal for outdoor terrestrial pesticide
+                # use in real FIFRA reviews -- baseline-selected unless the use site
+                # has no terrestrial exposure pathway at all. AgDRIFT only applies to
+                # application methods capable of off-site drift; BeeREX only when the
+                # use site/crop is bee-attractive. See registry.MODELS for the source
+                # of truth on each model's region/group/tier eligibility.
+                if use_site_category != "enclosed_greenhouse":
+                    selected += ["TERRPLANT", "TREX"]
+                    required += ["seedling emergence / vegetative vigour endpoints", "avian and mammalian dietary toxicity endpoints"]
+                if application_method in {"aerial", "ground_broadcast", "airblast_orchard"}:
+                    selected.append("AGDRIFT")
+                    required += ["application method, boom height and droplet size", "buffer distance and adjacent waterbody geometry"]
+                if bee_attractive:
+                    selected.append("BEEREX")
+                    required += ["contact and oral bee toxicity endpoints", "crop bee-attractiveness basis"]
 
     if jurisdiction == "US" and group == "industrial_organic" and scenario in {"industrial_effluent", "laboratory_use"} and tier == 1:
         selected.append("ENVIROCHEM_US_INDUSTRIAL_EXPOSURE_SCREEN")

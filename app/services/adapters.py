@@ -302,6 +302,50 @@ ADAPTER_CONTRACTS: dict[str, dict[str, Any]] = {
         "accepted_output_formats": ["txt", "csv", "zip"],
         "redistribution_note": "EnviroChem manages the current EPA PWC3 workflow and preserves the exact software/scenario version. Legacy PWC, PRZM and EXAMS records remain reproducible but are not presented as current PWC3 runs.",
     },
+    "AGDRIFT": {
+        "execution_mode": "managed_adapter",
+        "required_inputs": ["contaminant_group", "application_parameters", "meteorological_conditions", "buffer_and_geometry"],
+        "expected_outputs": ["off_site_deposition_fraction", "downwind_deposition_curve", "model_version", "raw_output_archive"],
+        "workflow_steps": [
+            "select the applicable AgDRIFT/AGDISP tier and application scenario", "enter application, meteorological and buffer/geometry inputs",
+            "execute the configured installation", "capture the deposition curve and off-site fraction", "review and lock output",
+        ],
+        "accepted_output_formats": ["txt", "csv", "pdf"],
+        "redistribution_note": "EnviroChem does not reproduce or modify AgDRIFT/AGDISP; execution occurs in an authorised external installation.",
+    },
+    "TERRPLANT": {
+        "execution_mode": "managed_adapter",
+        "required_inputs": ["contaminant_group", "application_parameters", "runoff_and_drift_inputs", "toxicity_endpoints"],
+        "expected_outputs": ["terrestrial_plant_risk_quotient", "model_version", "raw_output_archive"],
+        "workflow_steps": [
+            "enter application rate/method and distance to habitat", "enter seedling emergence and vegetative vigour endpoints",
+            "execute the configured installation", "capture the terrestrial plant risk quotient", "review and lock output",
+        ],
+        "accepted_output_formats": ["txt", "csv"],
+        "redistribution_note": "EnviroChem does not reproduce or modify TerrPlant; execution occurs in an authorised external installation.",
+    },
+    "TREX": {
+        "execution_mode": "managed_adapter",
+        "required_inputs": ["contaminant_group", "application_parameters", "dietary_inputs", "toxicity_endpoints"],
+        "expected_outputs": ["avian_dietary_concentration", "avian_risk_quotient", "mammalian_risk_quotient", "model_version", "raw_output_archive"],
+        "workflow_steps": [
+            "enter application rate and number of applications", "enter dietary food-item category and body-weight inputs",
+            "enter avian and mammalian toxicity endpoints", "execute the configured installation", "capture dietary concentration and risk quotients", "review and lock output",
+        ],
+        "accepted_output_formats": ["txt", "csv"],
+        "redistribution_note": "EnviroChem does not reproduce or modify T-REX; execution occurs in an authorised external installation.",
+    },
+    "BEEREX": {
+        "execution_mode": "managed_adapter",
+        "required_inputs": ["contaminant_group", "application_parameters", "exposure_route_inputs", "toxicity_endpoints"],
+        "expected_outputs": ["contact_risk_quotient", "oral_risk_quotient", "model_version", "raw_output_archive"],
+        "workflow_steps": [
+            "enter application rate/method and crop bee-attractiveness basis", "enter contact and oral bee toxicity endpoints",
+            "execute the configured installation", "capture contact and oral risk quotients", "review and lock output",
+        ],
+        "accepted_output_formats": ["txt", "csv"],
+        "redistribution_note": "EnviroChem does not reproduce or modify BeeREX; execution occurs in an authorised external installation.",
+    },
     "ENVIROCHEM_US_INDUSTRIAL_EXPOSURE_SCREEN": {
         "execution_mode": "native_research_screen",
         "required_inputs": [

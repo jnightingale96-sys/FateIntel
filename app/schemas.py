@@ -689,6 +689,19 @@ class AssessmentPlanCreate(BaseModel):
     contaminant_group: str
     scenario: str
     tier: int = Field(default=1, ge=0, le=4)
+    # FIFRA routing triggers (agricultural_spray only): which companion ecological
+    # models actually apply depends on how/where the pesticide is applied, not
+    # just that it's a pesticide -- see build_assessment_plan. Typed as enums,
+    # not free strings, so an invalid value is a 422 rather than a silent no-op.
+    application_method: Optional[Literal[
+        "aerial", "ground_broadcast", "airblast_orchard",
+        "soil_incorporated", "seed_treatment", "chemigation", "granular",
+    ]] = None
+    use_site_category: Optional[Literal[
+        "field_crop", "orchard", "turf", "rice_flooded",
+        "residential_outdoor", "enclosed_greenhouse",
+    ]] = None
+    bee_attractive: bool = False
 
 
 class USExposureSourceCitation(BaseModel):

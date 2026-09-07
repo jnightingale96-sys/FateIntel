@@ -19,16 +19,18 @@ def _chemical(client: TestClient) -> dict:
 
 
 def _complete_pwc_inputs() -> dict:
+    # Field names match app/services/external_models.py MODEL_PROFILES["PWC"]["input_template"]
+    # (enriched with real per-section fields; previously bare {"status": "required"} placeholders).
     return {
         "contaminant_group": "pesticide",
-        "application_pattern": {"rate_kg_ha": 1, "applications": 1},
-        "pwc3_us_scenario": {"scenario": "QA fixture", "version": "test"},
-        "soil_and_crop_inputs": {"crop": "QA crop", "soil": "QA soil"},
-        "weather_series": {"file": "QA weather", "version": "test"},
-        "soil_dt50": {"value": 30, "unit": "days"},
+        "application_pattern": {"application_rate_kg_ha": 1, "number_of_applications": 1, "application_interval_days": 14, "application_method": "ground_broadcast"},
+        "pwc3_us_scenario": {"scenario_id": "QA fixture", "crop": "QA crop"},
+        "soil_and_crop_inputs": {"crop": "QA crop", "canopy_interception_fraction": 0.2},
+        "weather_series": {"weather_station_id": "QA weather", "simulation_years": 30},
+        "soil_dt50": {"value_days": 30, "source": "QA fixture"},
         "koc_or_kd": {"value": 100, "unit": "L/kgOC"},
-        "aquatic_fate_inputs": {"water_dt50_days": 20, "sediment_dt50_days": 40},
-        "groundwater_and_waterbody_configuration": {"groundwater": True, "surface_water": True},
+        "aquatic_fate_inputs": {"water_column_dt50_days": 20, "benthic_dt50_days": 40, "hydrolysis_dt50_days": 60},
+        "groundwater_and_waterbody_configuration": {"waterbody_type": "index_pond", "depth_m": 2.0},
     }
 
 

@@ -1891,7 +1891,7 @@ def create_model_workflow(payload: ModelWorkflowCreate, db: Session = Depends(ge
         raise HTTPException(422, f"{model['name']} is not registered for {payload.jurisdiction}")
     if payload.tier not in model["tiers"]:
         raise HTTPException(422, f"{model['name']} is not registered for Tier {payload.tier}")
-    if payload.model_key in {"PWC", "TOXSWA"} and payload.input_data.get("contaminant_group") != "pesticide":
+    if payload.model_key in {"PWC", "TOXSWA", "AGDRIFT", "TERRPLANT", "TREX", "BEEREX"} and payload.input_data.get("contaminant_group") != "pesticide":
         raise HTTPException(422, f"{model['name']} official workflow requires contaminant_group=pesticide")
     manifest = prepare_workflow_manifest(payload.model_dump(), model)
     row = ModelWorkflow(

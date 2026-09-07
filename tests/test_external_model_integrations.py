@@ -18,7 +18,7 @@ def model(key: str):
 
 
 def test_profiles_distinguish_spin_dependency_from_simulators():
-    assert set(MODEL_PROFILES) == {"SPIN", "MACRO", "GREATER", "PWC", "CHEMSTEER", "CEM", "EFAST"}
+    assert set(MODEL_PROFILES) == {"SPIN", "MACRO", "GREATER", "PWC", "PRZM", "AGDRIFT", "TERRPLANT", "TREX", "BEEREX", "CHEMSTEER", "CEM", "EFAST"}
     assert MODEL_PROFILES["SPIN"]["is_simulation_model"] is False
     assert MODEL_PROFILES["MACRO"]["is_simulation_model"] is True
     assert MODEL_PROFILES["GREATER"]["is_simulation_model"] is True
@@ -93,7 +93,7 @@ def test_external_model_profiles_are_available_over_api():
     with TestClient(app) as client:
         catalog = client.get("/api/external-model-integrations")
         assert catalog.status_code == 200
-        assert {row["key"] for row in catalog.json()} == {"SPIN", "MACRO", "GREATER", "PWC", "CHEMSTEER", "CEM", "EFAST"}
+        assert {row["key"] for row in catalog.json()} == {"SPIN", "MACRO", "GREATER", "PWC", "PRZM", "AGDRIFT", "TERRPLANT", "TREX", "BEEREX", "CHEMSTEER", "CEM", "EFAST"}
         macro = client.get("/api/external-model-integrations/macro")
         assert macro.status_code == 200
         assert macro.json()["key"] == "MACRO"

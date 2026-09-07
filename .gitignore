@@ -3,3 +3,5 @@ __pycache__/
 .pytest_cache/
 *.pyc
 data/*.sqlite
+data/external_runs/
+data/model_workflows/

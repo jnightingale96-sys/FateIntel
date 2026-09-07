@@ -112,19 +112,131 @@ MODEL_PROFILES: dict[str, dict[str, Any]] = {
         "host_workflows": ["FIFRA pesticide surface-water assessment", "FIFRA simple-groundwater assessment"],
         "input_template": {
             "contaminant_group": "pesticide",
-            "application_pattern": {"status": "required"},
-            "pwc3_us_scenario": {"status": "required"},
-            "soil_and_crop_inputs": {"status": "required"},
-            "weather_series": {"status": "required"},
-            "soil_dt50": {"status": "required"},
-            "koc_or_kd": {"status": "required"},
-            "aquatic_fate_inputs": {"status": "required"},
-            "groundwater_and_waterbody_configuration": {"status": "required"},
+            "application_pattern": {"status": "required", "application_rate_kg_ha": None, "number_of_applications": None, "application_interval_days": None, "application_method": None},
+            "pwc3_us_scenario": {"status": "required", "scenario_id": None, "crop": None},
+            "soil_and_crop_inputs": {"status": "required", "crop": None, "canopy_interception_fraction": None},
+            "weather_series": {"status": "required", "weather_station_id": None, "simulation_years": None},
+            "soil_dt50": {"status": "required", "value_days": None, "source": None},
+            "koc_or_kd": {"status": "required", "value": None, "unit": None, "basis": None},
+            "aquatic_fate_inputs": {"status": "required", "water_column_dt50_days": None, "benthic_dt50_days": None, "hydrolysis_dt50_days": None},
+            "groundwater_and_waterbody_configuration": {"status": "required", "waterbody_type": None, "depth_m": None},
         },
         "known_constraints": [
             "PWC is a pesticide model; do not route an industrial chemical to it solely because a soil release exists.",
             "Scenario and meteorological file versions are part of the result provenance.",
             "EnviroChem does not redistribute PWC or represent a prepared manifest as a completed PWC run.",
+        ],
+    },
+    "PRZM": {
+        "name": "US EPA Pesticide Root Zone Model (PRZM)",
+        "official_version": "PRZM (verify installed build via PWC3 or standalone package)",
+        "role": "FIFRA pesticide runoff, erosion and leaching loading from the treated field",
+        "is_simulation_model": True,
+        "official_page": "https://www.epa.gov/pesticide-science-and-assessing-pesticide-risks/models-pesticide-risk-assessment",
+        "path_environment_variable": "ENVIROCHEM_PRZM_PATH",
+        "default_path": None,
+        "prerequisites": ["authorised local PRZM installation", "reviewed pesticide-use scenario and formulation basis"],
+        "host_workflows": ["FIFRA runoff/erosion/leaching loading assessment", "PWC/EXAMS receiving-water follow-on", "FOCUS EU groundwater/surface-water configurations"],
+        "input_template": {
+            "contaminant_group": "pesticide",
+            "application_pattern": {"status": "required", "application_rate_kg_ha": None, "number_of_applications": None, "application_interval_days": None, "application_method": None},
+            "soil_and_crop_scenario": {"status": "required", "przm_scenario_id": None, "crop": None},
+            "weather_series": {"status": "required", "weather_station_id": None, "simulation_years": None},
+            "soil_dt50": {"status": "required", "value_days": None, "source": None},
+            "koc_or_kd": {"status": "required", "value": None, "unit": None, "basis": None},
+            "runoff_and_erosion_parameters": {"status": "required", "curve_number": None, "usle_k": None, "usle_ls": None, "usle_c": None},
+            "root_zone_parameters": {"status": "required", "root_depth_cm": None, "field_capacity": None, "wilting_point": None},
+        },
+        "known_constraints": [
+            "EnviroChem does not reproduce or modify PRZM; execution occurs in an authorised external installation.",
+            "PRZM outputs (runoff, erosion, leaching loads) are typically a loading input to a receiving-water model (PWC/EXAMS), not a standalone concentration.",
+            "Curve number, USLE factors and root-zone parameters must match the selected soil/crop scenario, not generic defaults.",
+            "PRZM is used both as a US FIFRA loading model and within EU FOCUS groundwater/surface-water configurations; jurisdiction and scenario database must remain part of provenance.",
+        ],
+    },
+    "AGDRIFT": {
+        "name": "AgDRIFT / AGDISP",
+        "official_version": "AgDRIFT (verify installed build)",
+        "role": "Spray-drift deposition and off-site exposure from agricultural pesticide applications",
+        "is_simulation_model": True,
+        "official_page": "https://www.epa.gov/pesticide-science-and-assessing-pesticide-risks/models-pesticide-risk-assessment",
+        "path_environment_variable": "ENVIROCHEM_AGDRIFT_PATH",
+        "default_path": None,
+        "prerequisites": ["authorised local AgDRIFT/AGDISP installation", "reviewed application method and equipment basis"],
+        "host_workflows": ["FIFRA spray-drift deposition assessment"],
+        "input_template": {
+            "contaminant_group": "pesticide",
+            "application_parameters": {"status": "required", "application_method": None, "boom_height_m": None, "droplet_size_category": None, "application_rate_kg_ha": None},
+            "meteorological_conditions": {"status": "required", "wind_speed_m_s": None, "temperature_c": None},
+            "buffer_and_geometry": {"status": "required", "buffer_distance_m": None, "waterbody_width_m": None},
+        },
+        "known_constraints": [
+            "EnviroChem does not reproduce or modify AgDRIFT/AGDISP; execution occurs in an authorised external installation.",
+            "Only application methods capable of off-site drift (aerial, ground broadcast, airblast) require this model; soil-incorporated, seed-treatment and chemigation methods do not.",
+            "Droplet size category and release height materially change the deposition curve and must match the labelled/registered application equipment.",
+        ],
+    },
+    "TERRPLANT": {
+        "name": "TerrPlant",
+        "official_version": "TerrPlant (verify installed build)",
+        "role": "Screening-level terrestrial plant exposure from runoff and drift of pesticide applications",
+        "is_simulation_model": True,
+        "official_page": "https://www.epa.gov/pesticide-science-and-assessing-pesticide-risks/models-pesticide-risk-assessment",
+        "path_environment_variable": "ENVIROCHEM_TERRPLANT_PATH",
+        "default_path": None,
+        "prerequisites": ["authorised local TerrPlant installation", "reviewed seedling emergence / vegetative vigour toxicity endpoints"],
+        "host_workflows": ["FIFRA terrestrial plant risk assessment"],
+        "input_template": {
+            "contaminant_group": "pesticide",
+            "application_parameters": {"status": "required", "application_rate_lb_ac": None, "application_method": None},
+            "runoff_and_drift_inputs": {"status": "required", "distance_to_habitat_m": None, "soil_type": None},
+            "toxicity_endpoints": {"status": "required", "seedling_emergence_ec25": None, "vegetative_vigor_ec25": None},
+        },
+        "known_constraints": [
+            "EnviroChem does not reproduce or modify TerrPlant; execution occurs in an authorised external installation.",
+            "TerrPlant is a screening-level tool; a risk quotient above the level of concern indicates a need for refined assessment, not automatic non-registration.",
+        ],
+    },
+    "TREX": {
+        "name": "T-REX",
+        "official_version": "T-REX (verify installed build)",
+        "role": "Avian and mammalian dietary exposure and risk quotient from pesticide residues on food items",
+        "is_simulation_model": True,
+        "official_page": "https://www.epa.gov/pesticide-science-and-assessing-pesticide-risks/models-pesticide-risk-assessment",
+        "path_environment_variable": "ENVIROCHEM_TREX_PATH",
+        "default_path": None,
+        "prerequisites": ["authorised local T-REX installation", "reviewed avian and mammalian toxicity endpoints"],
+        "host_workflows": ["FIFRA avian and mammalian dietary risk assessment"],
+        "input_template": {
+            "contaminant_group": "pesticide",
+            "application_parameters": {"status": "required", "application_rate_lb_ac": None, "number_of_applications": None},
+            "dietary_inputs": {"status": "required", "food_item_category": None, "body_weight_g": None},
+            "toxicity_endpoints": {"status": "required", "avian_lc50_or_ld50": None, "mammalian_ld50": None},
+        },
+        "known_constraints": [
+            "EnviroChem does not reproduce or modify T-REX; execution occurs in an authorised external installation.",
+            "Food-item category (e.g. short grass, tall grass, seeds, insects) drives the residue estimate and must match the labelled use site.",
+        ],
+    },
+    "BEEREX": {
+        "name": "BeeREX",
+        "official_version": "BeeREX (verify installed build)",
+        "role": "Screening-level bee exposure and contact/oral risk quotient from pesticide applications",
+        "is_simulation_model": True,
+        "official_page": "https://www.epa.gov/pesticide-science-and-assessing-pesticide-risks/models-pesticide-risk-assessment",
+        "path_environment_variable": "ENVIROCHEM_BEEREX_PATH",
+        "default_path": None,
+        "prerequisites": ["authorised local BeeREX installation", "reviewed contact and oral bee toxicity endpoints"],
+        "host_workflows": ["FIFRA pollinator risk assessment"],
+        "input_template": {
+            "contaminant_group": "pesticide",
+            "application_parameters": {"status": "required", "application_rate_lb_ac": None, "application_method": None},
+            "exposure_route_inputs": {"status": "required", "contact_or_dietary": None, "crop_bee_attractiveness": None},
+            "toxicity_endpoints": {"status": "required", "contact_ld50_bee": None, "oral_ld50_bee": None},
+        },
+        "known_constraints": [
+            "EnviroChem does not reproduce or modify BeeREX; execution occurs in an authorised external installation.",
+            "Only relevant when the use site/crop is bee-attractive or the application method creates bee contact potential; not every pesticide use triggers a pollinator assessment.",
         ],
     },
     "CHEMSTEER": {
@@ -273,6 +385,34 @@ def validate_external_model_inputs(model_key: str, input_data: dict[str, Any]) -
         network = input_data.get("georeferenced_river_network") or {}
         if network and not network.get("crs") and network.get("status") != "required":
             missing.append("georeferenced_river_network.crs")
+    elif model_key == "PWC":
+        require_nested("application_pattern", ["application_rate_kg_ha", "number_of_applications", "application_method"])
+        require_nested("pwc3_us_scenario", ["scenario_id", "crop"])
+        require_nested("soil_dt50", ["value_days", "source"])
+        require_nested("koc_or_kd", ["value", "unit"])
+        require_nested("groundwater_and_waterbody_configuration", ["waterbody_type"])
+    elif model_key == "PRZM":
+        require_nested("application_pattern", ["application_rate_kg_ha", "number_of_applications", "application_method"])
+        require_nested("soil_and_crop_scenario", ["przm_scenario_id", "crop"])
+        require_nested("soil_dt50", ["value_days", "source"])
+        require_nested("koc_or_kd", ["value", "unit"])
+        require_nested("runoff_and_erosion_parameters", ["curve_number", "usle_k"])
+    elif model_key == "AGDRIFT":
+        require_nested("application_parameters", ["application_method", "boom_height_m", "droplet_size_category", "application_rate_kg_ha"])
+        require_nested("meteorological_conditions", ["wind_speed_m_s"])
+        require_nested("buffer_and_geometry", ["buffer_distance_m", "waterbody_width_m"])
+    elif model_key == "TERRPLANT":
+        require_nested("application_parameters", ["application_rate_lb_ac", "application_method"])
+        require_nested("runoff_and_drift_inputs", ["distance_to_habitat_m"])
+        require_nested("toxicity_endpoints", ["seedling_emergence_ec25", "vegetative_vigor_ec25"])
+    elif model_key == "TREX":
+        require_nested("application_parameters", ["application_rate_lb_ac", "number_of_applications"])
+        require_nested("dietary_inputs", ["food_item_category"])
+        require_nested("toxicity_endpoints", ["avian_lc50_or_ld50", "mammalian_ld50"])
+    elif model_key == "BEEREX":
+        require_nested("application_parameters", ["application_rate_lb_ac", "application_method"])
+        require_nested("exposure_route_inputs", ["contact_or_dietary", "crop_bee_attractiveness"])
+        require_nested("toxicity_endpoints", ["contact_ld50_bee", "oral_ld50_bee"])
 
     return {
         "official_name": profile["name"],
@@ -295,6 +435,11 @@ def validate_external_model_output(model_key: str, structured_outputs: dict[str,
         "MACRO": ["scenario", "model_version", "groundwater_or_drainage_endpoint", "run_log_reference"],
         "GREATER": ["basin_id", "river_reach_concentrations", "catchment_pec_distribution", "database_version"],
         "PWC": ["model_version", "scenario_file_version", "surface_water_concentration", "sediment_concentration", "groundwater_concentration", "raw_output_archive"],
+        "PRZM": ["model_version", "runoff_load", "erosion_load", "leaching_flux", "raw_output_archive"],
+        "AGDRIFT": ["model_version", "off_site_deposition_fraction", "downwind_deposition_curve", "raw_output_archive"],
+        "TERRPLANT": ["model_version", "terrestrial_plant_risk_quotient", "raw_output_archive"],
+        "TREX": ["model_version", "avian_dietary_concentration", "avian_risk_quotient", "mammalian_risk_quotient", "raw_output_archive"],
+        "BEEREX": ["model_version", "contact_risk_quotient", "oral_risk_quotient", "raw_output_archive"],
         "CHEMSTEER": ["model_version", "environmental_releases", "worker_inhalation_exposure", "worker_dermal_exposure", "raw_output_archive"],
         "CEM": ["model_version", "product_or_article_category", "consumer_inhalation_exposure", "consumer_dermal_exposure", "consumer_ingestion_exposure", "raw_output_archive"],
         "EFAST": ["model_version", "legacy_use_justification", "release_or_use_scenario", "general_population_exposure", "raw_output_archive"],
