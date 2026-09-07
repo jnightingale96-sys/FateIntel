@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>EnviroChem Studio v2.23 — Identity Foundation</title>
+<meta content="#062f31" name="theme-color"/>
+<meta content="yes" name="apple-mobile-web-app-capable"/>
+<link href="/static/manifest.webmanifest" rel="manifest"/>
+<link href="/static/icon.svg" rel="icon" type="image/svg+xml"/>
+<link href="/static/styles.css?v=guided-v2.23-alpha3.1-us-run-state-hotfix" rel="stylesheet"/>
+</head>
+<body>
+<div class="app-shell">
+<aside class="sidebar">
+<a class="brand" href="/">
+<span class="brand-mark"><span></span></span>
+<span><strong>EnviroChem</strong><small>Environmental Fate Intelligence</small></span>
+</a>
+<nav aria-label="Primary navigation" class="primary-nav">
+
+
+
+
+
+
+
+
+
+<button class="nav-item" data-scroll="welcome"><span class="nav-icon">⌂</span><span>Overview</span></button><button class="nav-item active" data-scroll="assessment-flow"><span class="nav-icon">▣</span><span>Assessments</span></button><button class="nav-item" data-scroll="evidence-data-hub"><span class="nav-icon">▤</span><span>Evidence data</span></button><button class="nav-item" data-scroll="regulatory-pathway"><span class="nav-icon">◎</span><span>Frameworks</span></button><a class="nav-item" href="/static/expert.html#evidence"><span class="nav-icon">✓</span><span>Evidence review</span></a><a class="nav-item" href="/static/expert.html#models"><span class="nav-icon">⌘</span><span>Models</span></a><button class="nav-item" data-scroll="results"><span class="nav-icon">▥</span><span>Reports</span></button><button class="nav-item hidden" data-water-sediment-nav="1" data-scroll="toxswa-surface-water"><span class="nav-icon">≈</span><span id="toxswa-nav-label">Water–sediment</span></button><button class="nav-item" data-eu-only="1" data-scroll="pearl-groundwater"><span class="nav-icon">⇣</span><span>FOCUS PEARL</span></button><button class="nav-item" data-scroll="envirodesign"><span class="nav-icon">✦</span><span>EnviroDesign</span></button><a class="nav-item" href="/static/expert.html"><span class="nav-icon">⚙</span><span>Expert workspace</span></a></nav>
+<div aria-hidden="true" class="sidebar-art">
+<div class="moon"></div>
+<div class="hill hill-a"></div><div class="hill hill-b"></div>
+<div class="trees">▲ ▲ ▲</div>
+<div class="river-line"></div>
+</div>
+<button class="copilot-launch" id="copilot-launch">
+<span class="sparkle">✦</span>
+<span><strong>Assessment Explainer</strong><small>Rule-based answers from stored outputs</small></span>
+<span>›</span>
+</button>
+<div class="profile">
+<span class="avatar">JN</span>
+<span><strong>Scientific workspace</strong><small>Local beta build</small></span>
+<span class="online-dot"></span>
+</div>
+</aside>
+<div class="workspace">
+<header class="topbar">
+<div>
+<div class="eyebrow">GUIDED ASSESSMENT</div>
+<h1>Environmental fate intelligence</h1>
+</div>
+<div class="top-actions">
+<span class="save-state ready" id="save-state" role="status"><span>•</span> Ready</span>
+<div class="project-switcher">
+<button aria-expanded="false" aria-haspopup="menu" class="project-pill" id="project-pill">No assessment selected <span>⌄</span></button>
+<div class="project-menu hidden" id="project-menu" role="menu"></div>
+</div>
+<a class="icon-button" href="/docs" target="_blank" title="API documentation">API</a>
+<span class="avatar mini">JN</span>
+</div>
+</header>
+<main>
+<section class="welcome-strip" id="welcome">
+<div>
+<span class="release-badge">NEW · v2.23 ALPHA 3.1 · US RUN-STATE HOTFIX</span>
+<h2>Start with exposure. Refine only where the evidence takes you.</h2>
+<p>Identify the chemical, define use and release, run the Tier 1–2 exposure screen, then move into jurisdiction-specific models and molecular design only when they add value.</p>
+</div>
+<div class="welcome-actions">
+<button class="ghost-button" id="load-demo">Load Carbamazepine example</button>
+<a class="primary-button link-button" href="/static/expert.html">Open scientific workspace</a>
+</div>
+</section><section aria-label="Regulatory modelling system" class="model-system-switch" id="model-system-switch">
+<div class="model-system-copy">
+<span class="section-kicker">REGULATORY MODELLING SYSTEM</span>
+<strong>Choose the model family before the assessment.</strong>
+<small>Exposure screening is shared where scientifically appropriate; advanced regulatory models remain jurisdiction-specific.</small>
+</div>
+<div aria-label="EU or US models" class="model-system-tabs" role="tablist">
+<button aria-selected="true" class="active" data-model-system="EU" role="tab" type="button"><span>EU</span><strong>EU models</strong><small>REACH / FOCUS routing</small></button>
+<button aria-selected="false" data-model-system="US" role="tab" type="button"><span>US</span><strong>US models</strong><small>TSCA / FIFRA routing</small></button>
+</div>
+<div class="model-system-status" id="model-system-status"><strong>EU modelling selected.</strong> Tier 1–2 screening can proceed; FOCUS PEARL is available as a later refinement.</div>
+</section>
+
+
+<section class="evidence-hub" id="evidence-data-hub">
+<div class="evidence-hub-heading">
+<div>
+<span class="section-kicker">EVIDENCE DATA HUB · FATE + ECOTOX</span>
+<h2>Find the study values before choosing the modelling value.</h2>
+<p>Search lawful open sources, stage candidate endpoints with provenance, and keep licensed databases behind explicit rights gates. Retrieved values enter the review queue—not the model.</p>
+</div>
+<div class="evidence-hub-actions"><a class="ghost-button link-button" href="/api/evidence-sources" target="_blank">Source registry</a><a class="ghost-button link-button" href="/static/expert.html#evidence">Review evidence</a></div>
+</div>
+<div class="evidence-source-rail" aria-label="Evidence source status">
+<article class="source-tile live"><span>LIVE</span><strong>PubChem</strong><small>Identity + attributed annotations</small></article>
+<article class="source-tile live"><span>LIVE</span><strong>Europe PMC</strong><small>Abstract + OA full-text mining</small></article>
+<article class="source-tile api"><span>API KEY</span><strong>EPA CompTox</strong><small>Open fate + hazard API</small></article>
+<article class="source-tile download"><span>IMPORT</span><strong>OpenFoodTox 3.0</strong><small>EU structured fate + ecotox</small></article>
+<article class="source-tile licensed"><span>LICENCE</span><strong>AERU VSDB / PPDB</strong><small>Commercial connector gate</small></article>
+<article class="source-tile restricted"><span>LoA</span><strong>PREMIER</strong><small>Permission-gated pharma data</small></article>
+</div>
+<div class="evidence-hub-grid">
+<section class="evidence-search-panel">
+<div class="mini-heading"><span>Search evidence</span><small>machine retrieval creates candidates only</small></div>
+<div class="evidence-search-grid">
+<label><span>Chemical</span><input id="evidence-chemical" placeholder="Enter a chemical name"/></label>
+<label><span>CAS</span><input id="evidence-cas" placeholder="Optional CAS number"/></label>
+<label><span>Endpoint</span><select id="evidence-endpoint"><option value="">All fate + ecotox candidates</option><option value="PHYS.LOGKOW">log Kow / log P</option><option value="PHYS.PKA">pKa</option><option value="PHYS.WATER_SOLUBILITY">Water solubility</option><option value="PHYS.VAPOUR_PRESSURE">Vapour pressure</option><option value="FATE.MANURE_DT50">Manure / slurry DT50</option><option value="FATE.SOIL_DT50">Soil DT50</option><option value="FATE.HYDROLYSIS_DT50">Hydrolysis DT50</option><option value="FATE.PHOTOLYSIS_DT50">Photolysis DT50</option><option value="FATE.WATER_SEDIMENT_DT50">Water–sediment DT50</option><option value="FATE.WATER_DT50">Water-phase DT50</option><option value="FATE.BIODEGRADATION">Biodegradation</option><option value="FATE.WWTP_REMOVAL">WWTP removal</option><option value="SORPTION.KOC">Koc</option><option value="SORPTION.KD">Kd</option><option value="BIOACCUMULATION.BCF">BCF</option><option value="ECOTOX.AQUATIC.LC50">Aquatic LC50</option><option value="ECOTOX.AQUATIC.EC50">Aquatic EC50</option><option value="ECOTOX.AQUATIC.NOEC">Aquatic NOEC</option></select></label>
+</div>
+<div class="evidence-source-select">
+<label><input id="evidence-use-pubchem" type="checkbox" checked/><span><strong>PubChem</strong><small>Secondary annotations with attribution</small></span></label>
+<label><input id="evidence-use-epmc" type="checkbox" checked/><span><strong>Europe PMC</strong><small>Literature + open-access full text</small></span></label>
+<label class="oa-toggle"><input id="evidence-fulltext" type="checkbox" checked/><span><strong>Mine OA full text</strong><small>Slower; article licence remains attached</small></span></label>
+</div>
+<div class="evidence-search-actions"><button class="primary-button" id="search-evidence" type="button">Search fate + ecotox evidence</button><span id="evidence-search-status">Ready · no values selected automatically</span></div>
+<div class="evidence-legal-note"><span>i</span><p><strong>Rights-aware by design.</strong> AERU and PREMIER are deliberately not scraped. Once commercial rights / a formal letter of access are available, their licensed exports can enter the same evidence-review pipeline.</p></div>
+</section>
+<section class="evidence-results-panel">
+<div class="mini-heading"><span>Candidate evidence</span><small id="evidence-result-count">No search run</small></div>
+<div class="evidence-result-summary" id="evidence-result-summary"><strong>Nothing is a modelling input yet.</strong><span>Search results will show source, endpoint, matrix, original units and the extraction context.</span></div>
+<div class="evidence-candidate-list" id="evidence-candidates"><div class="empty-evidence">Search PubChem and Europe PMC to build the review queue.</div></div>
+</section>
+</div>
+<div class="evidence-source-register-row">
+<article><strong>Veterinary</strong><span>AERU VSDB is the high-value licensed source for manure/soil/water fate; open literature fills gaps.</span></article>
+<article><strong>Human pharmaceuticals</strong><span>PREMIER is permission-gated; FASS, Japan NIHS, Janusinfo, PubChem, Europe PMC, OpenFoodTox and UBA provide complementary human-pharma evidence.</span></article>
+<article><strong>Pesticides / chemicals</strong><span>PPDB licence, OpenFoodTox, CompTox, ECOTOX, eChemPortal/ECHA and NORMAN can all feed the same provenance model.</span></article>
+</div>
+</section>
+
+
+<div class="core-assessment-flow layout-grid" id="assessment-flow">
+<section class="flow-column">
+<div aria-hidden="true" class="flow-line"></div>
+<article class="flow-card open" data-step="1" id="step-identity">
+<button aria-expanded="true" class="flow-card-head" type="button">
+<span class="step-number">1</span>
+<span class="step-title"><strong>Identify chemical</strong><small>Start with any identifier</small></span>
+<span class="step-summary" id="identity-summary">No chemical selected</span>
+<span class="step-status">1</span>
+<span class="chevron">⌄</span>
+</button>
+<div class="flow-card-body">
+<div class="identity-layout">
+<div class="identity-entry">
+<div class="segmented" id="identity-modes">
+<button class="active" data-mode="cas">CAS</button>
+<button data-mode="smiles">SMILES</button>
+<button data-mode="barcode">Barcode</button>
+<button data-mode="iupac">IUPAC</button>
+<button data-mode="product">Product</button>
+</div>
+<label class="search-field">
+<span id="identity-input-label">CAS or chemical name</span>
+<span class="input-row"><input autocomplete="off" id="identity-input" placeholder="298-46-4 or chemical name"/><button id="resolve-identity" type="button">Resolve</button></span>
+</label>
+<div class="helper-row"><span class="source-chip">No pilot identity is loaded automatically</span><button class="text-button" id="identity-evidence" type="button">View identity method</button></div>
+<section class="identity-candidate hidden" id="identity-candidate" aria-live="polite">
+<div><span class="drawer-kicker">CONFIRM RESOLVED IDENTITY</span><strong id="identity-candidate-name">—</strong><small id="identity-candidate-detail">—</small></div>
+<div class="identity-candidate-actions"><button class="ghost-button" id="cancel-identity" type="button">Cancel</button><button class="primary-button" id="confirm-identity" type="button">Confirm this substance</button></div>
+<p id="identity-candidate-warning">Confirm the parent or salt form before creating the assessment record.</p>
+</section>
+</div>
+<div class="chemical-preview">
+<div class="structure-wrap"><img alt="Chemical structure appears after identity confirmation" id="identity-structure" src="/static/chemical-placeholder.svg"/></div>
+<div class="chemical-copy">
+<span class="confidence-chip" id="identity-confidence">Awaiting confirmation</span>
+<h3 id="identity-name">No chemical selected</h3>
+<dl>
+<div><dt>CAS</dt><dd id="identity-cas">—</dd></div>
+<div><dt>Formula</dt><dd id="identity-formula">—</dd></div>
+<div><dt>MW</dt><dd id="identity-mw">—</dd></div>
+</dl>
+<div class="chemical-badges"><span id="identity-ionisation-badge">Not assessed</span><span id="identity-form-badge">Confirm parent or salt form</span></div>
+</div>
+</div>
+</div>
+<section class="chemical-profile-panel" id="chemical-profile-panel">
+<div class="mini-heading"><span>Reviewed calculation profile</span><small id="profile-status">Confirm a chemical before entering properties</small></div>
+<div class="profile-trust-note"><span>i</span><p>Retrieved values remain candidates. Copying a candidate only fills this form; calculations use it only after you review the source, confirm the profile, and save it for the selected chemical and project.</p></div>
+<div class="chemical-profile-grid">
+<label><span>Ionisation class</span><select id="profile-ionisation"><option selected value="">Select after evidence review</option><option value="neutral">Neutral</option><option value="acid">Acid</option><option value="base">Base</option></select></label>
+<label><span>log Kow / log P</span><input id="profile-logkow" step="any" type="number"/></label>
+<label><span id="profile-pka-label">pKa (if applicable)</span><input id="profile-pka" step="any" type="number"/></label>
+<label><span>Water solubility</span><div class="joined"><input id="profile-solubility" min="0" step="any" type="number"/><span class="unit-box">mg/L</span></div></label>
+<label><span>Vapour pressure</span><div class="joined"><input id="profile-vapour" min="0" step="any" type="number"/><span class="unit-box">Pa</span></div></label>
+<label><span>Soil DT50</span><div class="joined"><input id="profile-soil-dt50" min="0" step="any" type="number"/><span class="unit-box">days</span></div></label>
+<label><span>WWTP biodegraded fraction</span><input id="profile-wwtp-bio" max="1" min="0" step="any" type="number"/></label>
+<label><span>Primary-sludge fraction</span><input id="profile-wwtp-primary" max="1" min="0" step="any" type="number"/></label>
+<label><span>Secondary-sludge fraction</span><input id="profile-wwtp-secondary" max="1" min="0" step="any" type="number"/></label>
+<label><span>Air fraction</span><input id="profile-wwtp-air" max="1" min="0" step="any" type="number"/></label>
+<label class="wide"><span>Evidence / selection basis</span><textarea id="profile-source" rows="2" placeholder="Record the reviewed evidence and selection rationale"></textarea></label>
+</div>
+<div class="profile-review-row"><label><input id="profile-reviewed" type="checkbox"/> I have reviewed the chemical identity, units, evidence basis and WWTP compartment fractions.</label><button class="primary-button" id="save-profile" type="button">Save reviewed profile</button></div>
+<div class="profile-readiness" id="profile-readiness"><strong>Identity required.</strong><small>Resolve and confirm the intended parent substance before entering calculation values.</small></div>
+</section>
+</div>
+</article>
+<article class="flow-card open complete" data-step="2" id="step-use">
+<button aria-expanded="true" class="flow-card-head" type="button">
+<span class="step-number">2</span>
+<span class="step-title"><strong>Describe use</strong><small>How and where is it used?</small></span>
+<span class="step-summary" id="use-summary">Human pharmaceutical · 10 kg/year</span>
+<span class="step-status">✓</span>
+<span class="chevron">⌄</span>
+</button>
+<div class="flow-card-body">
+<div class="scenario-grid use-grid" id="use-cards">
+<button class="scenario-card active" data-use="pharmaceutical" type="button"><span class="scenario-illustration pill-scene"><i></i><i></i></span><strong>Human pharmaceutical</strong><small>Patient use and manufacturing</small></button>
+<button class="scenario-card" data-use="veterinary" type="button"><span class="scenario-illustration vet-scene">♞</span><strong>Veterinary medicine</strong><small>All species and husbandry systems</small></button>
+<button class="scenario-card" data-use="industrial" type="button"><span class="scenario-illustration factory-scene"><i></i><i></i><i></i></span><strong>Industrial</strong><small>Manufacture or processing</small></button>
+<button class="scenario-card" data-use="laboratory" type="button"><span class="scenario-illustration flask-scene"><i></i></span><strong>Laboratory</strong><small>Research and analytical use</small></button>
+<button class="scenario-card" data-use="agriculture" type="button"><span class="scenario-illustration crop-scene"><i></i><i></i><i></i></span><strong>Agriculture</strong><small>Field or protected use</small></button>
+<button class="scenario-card" data-use="consumer" type="button"><span class="scenario-illustration bottle-scene"><i></i></span><strong>Consumer product</strong><small>Home and retail use</small></button>
+<button class="scenario-card" data-use="waste" type="button"><span class="scenario-illustration waste-scene"><i></i></span><strong>Waste / disposal</strong><small>End-of-life release</small></button>
+</div>
+<div class="smart-form four-cols">
+<label><span>Amount used</span><div class="joined"><input id="amount-value" min="0" step="any" type="number" value="10"/><select id="amount-unit"><option>kg/year</option><option>tonnes/year</option><option>kg/day</option><option>g/day</option><option>mg/day</option></select></div></label>
+<label><span>Frequency</span><select id="frequency"><option value="continuous">Continuous</option><option value="daily">Daily</option><option value="batch">Batch</option><option value="occasional">Occasional</option></select></label>
+<label><span>Active regulatory region</span><select disabled id="regions">
+<option selected="" value="EU_UK_CH">EU + UK + Switzerland</option>
+<option value="US">United States</option>
+</select><small>Controlled by the EU/US tabs above; global comparison remains in the framework navigator.</small></label>
+<label><span>Assessment tier</span><select id="tier-select"><option value="1">Tier 1 · Worst case</option><option selected="" value="2">Tier 2 · Standard</option><option value="3">Tier 3 · Refined</option><option value="4">Tier 4 · Monitoring-informed</option></select></label>
+</div>
+<section class="veterinary-workflow hidden" id="veterinary-workflow">
+<div class="vet-workflow-head"><div><span class="regulatory-kicker">VICH GL6 + GL38</span><h3>Veterinary environmental risk assessment</h3><p>Select any managed, companion, aquaculture, laboratory, zoo or minor species. Official numeric defaults are used only where they are explicitly registered; otherwise the interface requires reviewed custom values.</p></div><span class="vet-badge">65 animal profiles</span></div>
+<div class="vet-form-grid">
+<label class="wide"><span>Animal or production profile</span><select id="vet-animal-profile"><option>Loading animal profiles…</option></select><small id="vet-profile-source">Profile source</small></label>
+<label><span>Husbandry branch</span><input id="vet-branch" readonly="" value="intensive"/></label>
+<label><span>Dose</span><div class="joined"><input id="vet-dose" min="0" step="any" type="number" value="1"/><select id="vet-dose-unit"><option value="mg_per_kg_bw_day">mg/kg bw/day</option><option value="mg_per_animal_day">mg/animal/day</option><option value="g_per_animal_day">g/animal/day</option></select></div></label>
+<label><span>Treatment duration</span><div class="joined"><input id="vet-duration" min="0.01" step="any" type="number" value="5"/><span class="unit-box">days</span></div></label>
+<label><span>Fraction treated</span><input id="vet-fraction-treated" max="1" min="0" step="0.01" type="number" value="0.5"/></label>
+<label><span>Excreted parent fraction</span><input id="vet-excreted-fraction" max="1" min="0" step="0.01" type="number" value="0.3"/></label>
+<label><span>Body weight</span><div class="joined"><input id="vet-body-weight" min="0" step="any" type="number" value="65"/><span class="unit-box">kg</span></div></label>
+<label><span>Animal turnover</span><div class="joined"><input id="vet-turnover" min="0" step="any" type="number" value="3"/><span class="unit-box">/year</span></div></label>
+<label><span>N produced/place/year</span><div class="joined"><input id="vet-nitrogen" min="0" step="any" type="number" value="7.5"/><span class="unit-box">kg N</span></div></label>
+<label><span>Manure storage</span><div class="joined"><input id="vet-storage" min="0" step="any" type="number" value="91"/><span class="unit-box">days</span></div></label>
+<label><span>BIOWIN 4 screen</span><input id="vet-biowin" step="any" type="number" value="3.3"/><small>Optional benchmark-derived manure DT50 only</small></label>
+<label><span>Reviewed soil DT50</span><div class="joined"><input id="vet-soil-dt50" min="0" placeholder="Required for degradation" step="any" type="number"/><span class="unit-box">days</span></div><small>Separate from manure storage</small></label>
+<label><span>Soil accumulation period</span><div class="joined"><input id="vet-soil-years" max="100" min="1" step="1" type="number" value="10"/><span class="unit-box">years</span></div></label>
+<label><span>Pasture stocking density</span><div class="joined"><input id="vet-stocking" min="0" step="any" type="number" value="2"/><span class="unit-box">animals/ha</span></div></label>
+<label><span>Dung output</span><div class="joined"><input id="vet-dung-output" min="0" step="any" type="number" value="20"/><span class="unit-box">kg/day</span></div></label>
+<label><span>Aquaculture biomass</span><div class="joined"><input id="vet-biomass" min="0" step="any" type="number" value="1000"/><span class="unit-box">kg</span></div></label>
+<label><span>Facility water volume</span><div class="joined"><input id="vet-water-volume" min="0" step="any" type="number" value="1000000"/><span class="unit-box">L</span></div></label>
+</div>
+<div class="vet-switches">
+<label><input id="vet-parasiticide" type="checkbox"/> Ecto/endoparasiticide</label>
+<label><input id="vet-small-number" type="checkbox"/> Individual or small number treated</label>
+<label><input id="vet-extensive-metabolism" type="checkbox"/> Extensive metabolism demonstrated</label>
+<label><input id="vet-custom-concern" type="checkbox"/> Specific environmental concern</label>
+</div>
+<div class="phase-i-strip"><button class="ghost-button" id="run-vet-phase-i" type="button">Check VICH Phase I</button><div id="vet-phase-i-result"><strong>Phase I not checked</strong><small>The decision tree will identify stop, tailored assessment or Phase II.</small></div></div>
+</section>
+<div class="ai-inline"><span>✦</span><p id="use-ai-copy"><strong>Grounded suggestion:</strong> A human-pharmaceutical wastewater pathway is appropriate for Carbamazepine. You remain in control of every assumption.</p><button class="text-button" data-drawer="use-suggestion" type="button">Why?</button></div>
+</div>
+</article>
+<article class="flow-card open complete" data-step="3" id="regulatory-pathway">
+<button aria-expanded="true" class="flow-card-head" type="button">
+<span class="step-number">3</span>
+<span class="step-title"><strong>Confirm regulatory pathway</strong><small>Global, sector and jurisdiction rules</small></span>
+<span class="step-summary" id="regulatory-summary">International baseline · EU + US</span>
+<span class="step-status">✓</span>
+<span class="chevron">⌄</span>
+</button>
+<div class="flow-card-body">
+<div class="regulatory-hero">
+<div>
+<span class="regulatory-kicker">139 OFFICIAL-SOURCE FRAMEWORK ENTRIES</span>
+<h3>EnviroChem routes the same chemical through the correct regulatory story.</h3>
+<p>The pathway starts with product class and use, then combines international standards, jurisdiction-specific rules, specialist environmental guidance and change-watch warnings.</p>
+</div>
+<div class="verification-stack">
+<span><strong id="tier-a-count">—</strong><small>Tier A sources</small></span>
+<span><strong id="tier-bc-count">—</strong><small>Local verification</small></span>
+<span><strong id="watch-count">—</strong><small>Change-watch flags</small></span>
+</div>
+</div>
+<div class="regulatory-columns">
+<section>
+<div class="mini-heading"><span>International baseline</span><button class="text-button" data-drawer="global-baseline" type="button">Why these?</button></div>
+<div class="framework-chip-grid" id="global-framework-chips">
+<span class="framework-chip loading">Loading OECD, GHS and GLP sources…</span>
+</div>
+</section>
+<section>
+<div class="mini-heading"><span>Selected jurisdiction pathways</span><button class="text-button" data-drawer="framework-selection" type="button">Selection logic</button></div>
+<div class="framework-chip-grid" id="regional-framework-chips">
+<span class="framework-chip loading">Building regional pathway…</span>
+</div>
+</section>
+</div>
+<div class="change-watch-box hidden" id="change-watch-box">
+<span>!</span>
+<div><strong>Current-rule check required</strong><small id="change-watch-text">One or more selected frameworks have active change-watch items.</small></div>
+<button class="text-button" data-drawer="change-watch" type="button">Review</button>
+</div>
+<div class="regulatory-actions">
+<button class="ghost-button" id="refresh-regulatory-pathway" type="button">Refresh pathway</button>
+<button class="primary-button" id="open-framework-navigator" type="button">Explore global framework register</button>
+</div>
+</div>
+</article>
+<article class="flow-card open complete" data-step="4" id="step-release">
+<button aria-expanded="true" class="flow-card-head" type="button">
+<span class="step-number">4</span>
+<span class="step-title"><strong>Select emission scenario</strong><small>How does it enter the environment?</small></span>
+<span class="step-summary" id="release-summary">Municipal wastewater</span>
+<span class="step-status">✓</span>
+<span class="chevron">⌄</span>
+</button>
+<div class="flow-card-body">
+<div class="scenario-grid release-grid" id="release-cards">
+<button class="scenario-card active" data-release="wastewater" type="button"><span class="scenario-image wastewater-image"><i></i><i></i><i></i></span><strong>Wastewater</strong><small>Sewer → treatment → effluent</small><em class="scenario-availability ready">Live</em></button>
+<button aria-disabled="false" class="scenario-card" data-release="surface_water" type="button"><span class="scenario-image river-image"><i></i><i></i></span><strong>Direct to water</strong><small>River, lake or estuary → jurisdiction plan</small><em class="scenario-availability ready">EU workflow</em></button>
+<button aria-disabled="false" class="scenario-card" data-release="soil" type="button"><span class="scenario-image soil-image"><i></i><i></i></span><strong>Direct to soil</strong><small>Application or deposition → jurisdiction plan</small><em class="scenario-availability ready">EU workflow</em></button>
+<button class="scenario-card" data-release="biosolids" type="button"><span class="scenario-image biosolid-image"><i></i></span><strong>Biosolids</strong><small>Sludge applied to land</small><em class="scenario-availability ready">Live</em></button>
+<button class="scenario-card" data-release="irrigation" type="button"><span class="scenario-image irrigation-image"><i></i><i></i><i></i></span><strong>Wastewater irrigation</strong><small>Effluent → soil → crops</small><em class="scenario-availability ready">Live</em></button>
+<button aria-disabled="false" class="scenario-card" data-release="manufacturing" type="button"><span class="scenario-image manufacturing-image"><i></i><i></i><i></i></span><strong>Manufacturing / processing</strong><small>Industrial release → EU REACH exposure plan</small><em class="scenario-availability ready">EU workflow</em></button>
+<button aria-disabled="false" class="scenario-card" data-release="household_use" type="button"><span class="scenario-image bottle-scene"><i></i></span><strong>Household / consumer use</strong><small>Consumer lifecycle release → EU REACH exposure plan</small><em class="scenario-availability ready">EU workflow</em></button>
+<button aria-disabled="false" class="scenario-card" data-release="product_disposal" type="button"><span class="scenario-image waste-scene"><i></i></span><strong>Product disposal</strong><small>Waste stage → EU lifecycle release and fate plan</small><em class="scenario-availability ready">EU workflow</em></button>
+<button aria-disabled="false" class="scenario-card" data-release="agricultural_spray" type="button"><span class="scenario-image crop-scene"><i></i><i></i><i></i></span><strong>Agricultural spray</strong><small>Plant-protection use → FOCUS groundwater and surface water</small><em class="scenario-availability ready">EU workflow</em></button>
+</div>
+<div class="context-panel" id="wastewater-context">
+<div><span class="context-icon">≈</span><div><strong>Municipal wastewater context</strong><small>Calculate the daily mass reaching the sewer first, then divide by the matched WWTP flow. Excretion is applied before treatment.</small></div></div>
+<div class="mini-fields">
+<label><span>Population served</span><input id="population" min="1" type="number" value="100000"/><small>Used for catchment-use calculations.</small></label>
+<label><span>Wastewater (L/person/day)</span><input id="water-per-person" min="1" type="number" value="200"/><small>200 L/inhabitant/day is the EMA default.</small></label>
+<label><span>Unchanged parent fraction</span><input id="parent-fraction" max="1" min="0" step="0.01" type="number" value="0.51"/><small>Applied before the WWTP except in EMA Phase I total-residue screening.</small></label>
+<label><span>River dilution</span><input id="dilution" min="1" type="number" value="10"/><small>Used after treatment / in EMA Phase I PECSW.</small></label>
+</div>
+<section class="pharma-influent-panel" id="pharma-influent-panel">
+<div class="pharma-influent-head"><div><span class="regulatory-kicker">HUMAN PHARMACEUTICAL · USE → INFLUENT</span><h3>Build the WWTP influent concentration</h3><p>Choose whether you know the actual catchment use, need the EMA regulatory screen, or want an OECD regional therapeutic-class prioritisation screen. These are kept as separate evidence modes.</p></div><span class="influent-badge">ClocalINF</span></div>
+<div class="pharma-mode-grid">
+<label class="wide"><span>Use basis</span><select id="pharma-emission-mode"><option value="entered_use" selected>Actual / catchment active amount</option><option value="ema_phase_i">EMA Phase I regulatory screen</option><option value="ema_phase_ii">EMA Phase II local influent refinement</option><option value="oecd_class_screen">OECD regional therapeutic-class screen</option></select><small id="pharma-mode-note">The amount entered above is the total active substance used in this catchment. Daily and annual units are accepted.</small></label>
+<label class="site-flow-field"><span>Measured WWTP flow (optional)</span><div class="joined"><input id="wwtp-flow-override" min="0" step="any" type="number" placeholder="derive from population"/><span class="unit-box">m³/day</span></div><small>Overrides population × L/person/day only for actual-use mode.</small></label>
+<label class="ema-field hidden"><span>Maximum daily dose</span><div class="joined"><input id="pharma-dose-mg" min="0.000001" step="any" type="number" value="2000"/><span class="unit-box">mg/patient/day</span></div><small>Confirm against the current SmPC for the assessed product/indication.</small></label>
+<label class="ema-field hidden"><span>Reference STP capacity</span><div class="joined"><input id="pharma-stp-capacity" min="1" step="1" type="number" value="10000"/><span class="unit-box">inhabitants</span></div><small>EMA reference local STP = 10,000 inhabitants.</small></label>
+<label class="ema-field hidden"><span>Market penetration (FPEN)</span><select id="pharma-fpen-mode"><option value="default" selected>Default · 1% daily</option><option value="user">User-entered FPEN</option><option value="prevalence_treatment">Prevalence × treatment regimen</option></select><small>Phase I permits refinement of FPEN using prevalence and/or treatment regimen.</small></label>
+<label class="ema-fpen-user hidden"><span>User FPEN</span><input id="pharma-fpen" max="1" min="0" step="0.0001" type="number" value="0.01"/><small>Fraction of the population receiving the active substance.</small></label>
+<label class="ema-fpen-refined hidden"><span>Highest regional prevalence</span><input id="pharma-prevalence" max="1" min="0" step="0.0001" type="number" value="0.01"/></label>
+<label class="ema-fpen-refined hidden"><span>Treatment duration</span><div class="joined"><input id="pharma-treatment-days" min="0.01" max="366" step="any" type="number" value="365"/><span class="unit-box">days</span></div></label>
+<label class="ema-fpen-refined hidden"><span>Treatments per year</span><input id="pharma-treatments-year" min="0.001" step="any" type="number" value="1"/></label>
+<label class="oecd-field hidden"><span>OECD class</span><select id="pharma-oecd-class"><option value="antihypertensives">Antihypertensives · C02+C03+C07+C08+C09</option><option value="lipid_modifying">Lipid-modifying agents · C10</option><option value="antidiabetics">Antidiabetics · A10</option><option value="antidepressants">Antidepressants · N06A</option></select><small>Figure 9.6 contains these four selected classes only.</small></label>
+<label class="oecd-field hidden"><span>Region / country</span><select id="pharma-oecd-country"><option value="OECD32">OECD32 average</option><option value="United Kingdom">United Kingdom</option><option value="Australia">Australia</option><option value="highest_available">Highest available country</option></select></label>
+<label class="oecd-field hidden"><span>Class consumption</span><div class="joined"><input id="pharma-oecd-ddd" readonly type="text" value="—"/><span class="unit-box">DDD/1,000/day</span></div><small>This is not compound-specific measured use.</small></label>
+<label class="oecd-field hidden"><span>Active-specific maximum daily dose</span><div class="joined"><input id="pharma-oecd-dose-mg" min="0.000001" step="any" type="number" value="2000"/><span class="unit-box">mg/day</span></div><small>The class DDD rate is assigned to the selected active only as a conservative prioritisation screen.</small></label>
+</div>
+<div class="influent-preview" id="influent-preview"><span class="preview-flow"><b id="preview-use-mass">10 kg/year</b><i>→</i><b id="preview-sewer-mass">5.1 kg/day parent</b><i>÷</i><b id="preview-wwtp-flow">20,000 m³/day</b><i>→</i><strong id="preview-influent">255 µg/L</strong></span><small id="preview-influent-note">Preview only. The saved assessment reruns the same unit-normalised calculation and records provenance.</small></div>
+<div class="pharma-science-note"><span>i</span><p><strong>OECD Figure 9.6 values are therapeutic-class rates, not compound-specific consumption.</strong> Use this only as an explicitly conservative class screen after confirming that the selected substance belongs to the chosen class. Actual catchment use remains preferable.</p></div>
+</section>
+</div>
+<div class="context-panel hidden" id="biosolids-context">
+<div><span class="context-icon">♧</span><div><strong>Biosolids land-application context</strong><small>Uses the actual WWTP chemical mass transferred to sludge, then applies storage, land area and repeated soil degradation.</small></div></div>
+<div class="mini-fields">
+<label><span>Land area (ha)</span><input id="biosolids-area" min="0.1" step="0.1" type="number" value="100"/></label>
+<label><span>Soil mixing depth (m)</span><input id="biosolids-depth" min="0.01" step="0.01" type="number" value="0.2"/></label>
+<label><span>Storage (days)</span><input id="biosolids-storage" min="0" type="number" value="30"/></label>
+<label><span>Assessment years</span><input id="biosolids-years" max="100" min="1" type="number" value="10"/></label>
+</div>
+</div>
+<div class="context-panel hidden" id="irrigation-context">
+<div><span class="context-icon">≈</span><div><strong>Wastewater-irrigation soil exposure</strong><small>The WWTP effluent becomes the irrigation concentration. Soil accumulation is then shown over the selected assessment period before any groundwater refinement.</small></div></div>
+<div class="mini-fields">
+<label><span>Irrigation rate (L/m²/day)</span><input id="irrigation-rate" min="0.01" step="0.01" type="number" value="0.5"/></label>
+<label><span>Irrigated area (m²)</span><input id="irrigation-area" min="1" step="1" type="number" value="3680000"/></label>
+<label><span>Soil mixing depth (m)</span><input id="irrigation-depth" min="0.01" step="0.01" type="number" value="0.4"/></label>
+<label><span>Assessment years</span><input id="irrigation-years" max="100" min="1" step="1" type="number" value="10"/></label>
+</div>
+</div><div class="context-panel hidden" id="plant-context">
+<div><span class="context-icon">Ψ</span><div><strong>Plant-uptake screening context</strong><small>Neutral chemicals use the Briggs TSCF relationship. Ionisable chemicals require a reviewed uptake parameter or measured crop evidence; no third-party mechanistic model is embedded.</small></div></div>
+<div class="mini-fields">
+<label><span>Crop</span><select id="plant-crop"><option>Maize</option><option>Wheat</option><option>Lettuce</option><option>Root crop</option><option>Custom</option></select></label>
+<label><span>Transpiration (L/plant/day)</span><input id="plant-transpiration" min="0.01" step="0.01" type="number" value="1.5"/></label>
+<label><span>Harvest interval (days)</span><input id="plant-harvest" min="1" type="number" value="90"/></label>
+<label><span>Soil water content (L/L)</span><input id="plant-water" max="1" min="0.01" step="0.01" type="number" value="0.25"/></label>
+</div>
+</div>
+<div class="context-panel hidden" id="regulatory-programme">
+<div><span class="context-icon">▤</span><div><strong>Jurisdiction-specific model plan</strong><small>The exposure scenario stays selected when EU/US changes. EnviroChem replaces the regulatory programme, model requirements and workflow provenance; it does not fabricate an official result.</small></div></div>
+<div id="regulatory-plan"><p>Select a workflow-routed scenario above to see the applicable EU or US models.</p></div>
+<div class="mini-heading"><span>Required inputs</span></div>
+<ul id="regulatory-requirements"></ul>
+<div class="mini-heading"><span>Warnings</span></div>
+<ul id="regulatory-warnings"></ul>
+<div id="regulatory-workflows"></div>
+</div>
+</div>
+</article>
+<article class="flow-card open complete" data-step="5" id="step-compartments">
+<button aria-expanded="true" class="flow-card-head" type="button">
+<span class="step-number">5</span>
+<span class="step-title"><strong>Predicted environmental compartments</strong><small>Auto-selected from use, release and fate</small></span>
+<span class="step-summary">7 connected compartments</span>
+<span class="step-status">✓</span>
+<span class="chevron">⌄</span>
+</button>
+<div class="flow-card-body">
+<div class="fate-canvas" id="fate-canvas">
+<svg aria-hidden="true" class="flow-arrows" preserveaspectratio="none" viewbox="0 0 1000 330">
+<path d="M95 168 C145 168,145 168,190 168"></path><path d="M305 168 C350 168,350 82,405 82"></path><path d="M305 168 C360 168,360 250,410 250"></path><path d="M535 82 C585 82,585 82,635 82"></path><path d="M535 82 C590 82,590 250,640 250"></path><path d="M760 250 C810 250,810 250,855 250"></path><path d="M760 82 C810 82,810 82,855 82"></path>
+</svg>
+<button class="compartment-node source-node active" data-compartment="source"><span class="node-icon capsule-icon">◐</span><strong>Use</strong><small>10 kg/year</small></button>
+<button class="compartment-node ww-node active" data-compartment="wwtp"><span class="node-icon plant-icon">▥</span><strong>WWTP</strong><small>Activity SimpleTreat</small></button>
+<button class="compartment-node river-node active" data-compartment="river"><span class="node-icon water-icon">≋</span><strong>River</strong><small>Surface-water PEC</small></button>
+<button class="compartment-node sediment-node active" data-compartment="sediment"><span class="node-icon sediment-icon">▰</span><strong>Sediment</strong><small>Partitioning</small></button>
+<button class="compartment-node soil-node active" data-compartment="soil"><span class="node-icon soil-icon">♧</span><strong>Soil</strong><small>Accumulation</small></button>
+<button class="compartment-node groundwater-node active" data-compartment="groundwater"><span class="node-icon drop-icon">◉</span><strong>Groundwater</strong><small>EU / US workflows</small></button>
+<button class="compartment-node crop-node active" data-compartment="crop"><span class="node-icon crop-icon">Ψ</span><strong>Crop uptake</strong><small>Native screening + PEARL flux</small></button>
+<button class="compartment-node air-node active muted" data-compartment="air"><span class="node-icon air-icon">☁</span><strong>Air</strong><small>Minimal transfer</small></button>
+</div>
+<div class="canvas-legend"><span><i class="live"></i> Included in this assessment</span><span><i class="planned"></i> Workflow prepared / further input required</span><button class="text-button" data-drawer="compartment-logic" type="button">How were these selected?</button></div>
+</div>
+</article>
+<article class="flow-card open complete" data-step="6" id="step-models">
+<button aria-expanded="true" class="flow-card-head" type="button">
+<span class="step-number">6</span>
+<span class="step-title"><strong>Tier 1–2 screening models</strong><small>Only calculations used before advanced refinement</small></span>
+<span class="step-summary" id="model-summary">3 native · 7 adapters</span>
+<span class="step-status">✓</span>
+<span class="chevron">⌄</span>
+</button>
+<div class="flow-card-body">
+<div class="model-grid" id="model-grid"><button class="model-tile selected" data-model="SIMPLETREAT"><span><strong>SimpleTreat</strong><small>Municipal wastewater screen</small></span><em class="native">Native</em></button><button class="model-tile selected" data-model="ACTIVITY_SIMPLETREAT"><span><strong>Activity SimpleTreat</strong><small>Ionisable WWTP fate</small></span><em class="native">Verified preset</em></button><button class="model-tile" data-model="SOIL_ACCUMULATION"><span><strong>Wastewater irrigation</strong><small>Repeated soil accumulation</small></span><em class="ready">Native</em></button><button class="model-tile" data-model="BIOSOLIDS"><span><strong>Biosolids to soil</strong><small>Repeated land application</small></span><em class="ready">Native</em></button><button class="model-tile" data-model="PLANT_UPTAKE"><span><strong>Plant uptake</strong><small>Optional post-soil screen</small></span><em class="ready">Research screen</em></button><button class="model-tile" data-model="US_INDUSTRIAL_SCREEN" data-us-only-model="1"><span><strong>US industrial foundation</strong><small>Release + worker screen</small></span><em class="native">Alpha 2</em></button><button class="model-tile" data-model="CHEMSTEER" data-us-only-model="1"><span><strong>ChemSTEER</strong><small>EPA external refinement</small></span><em class="adapter us">Managed adapter</em></button><button class="model-tile" data-model="PWC" data-us-only-model="1"><span><strong>PWC</strong><small>FIFRA pesticide surface water/groundwater</small></span><em class="adapter us">Managed adapter</em></button><button class="model-tile" data-model="CEM" data-us-only-model="1"><span><strong>CEM</strong><small>TSCA consumer exposure model</small></span><em class="adapter us">Managed adapter</em></button><button class="model-tile" data-model="EFAST" data-us-only-model="1"><span><strong>E-FAST</strong><small>Consumer/disposal general population screen</small></span><em class="adapter us">Managed adapter</em></button></div>
+<div class="model-note"><span>i</span><p><strong>Advanced models follow the exposure pathway.</strong> FOCUS PEARL opens after a soil PEC. The current PWC3, SimpleBox, GREAT-ER, ePiE and EPI Suite contracts are managed separately; no external concentration is shown until a real output is imported and reviewed.</p><button class="text-button" data-drawer="model-applicability" type="button">View model boundaries</button></div>
+</div>
+</article>
+<article class="flow-card open complete" data-step="7" id="step-tier">
+<button aria-expanded="true" class="flow-card-head" type="button">
+<span class="step-number">7</span>
+<span class="step-title"><strong>Tiered assessment</strong><small>Worst case to monitoring-informed realism</small></span>
+<span class="step-summary" id="tier-summary">Tier 2 · Standard</span>
+<span class="step-status">✓</span>
+<span class="chevron">⌄</span>
+</button>
+<div class="flow-card-body">
+<div class="tier-track" id="tier-track">
+<button data-tier="1"><span>1</span><strong>Worst case</strong><small>Conservative defaults</small></button>
+<i></i>
+<button class="active" data-tier="2"><span>2</span><strong>Standard</strong><small>Regulatory scenarios</small></button>
+<i></i>
+<button data-tier="3"><span>3</span><strong>Refined</strong><small>Use-specific inputs</small></button>
+<i></i>
+<button data-tier="4"><span>4</span><strong>Monitoring-informed</strong><small>Measured local evidence</small></button>
+</div>
+<div class="run-row">
+<div><strong>Ready to run</strong><small id="run-description">Carbamazepine · wastewater and irrigation · EU + US · Tier 2</small></div>
+<button class="run-button" id="run-assessment"><span>✦</span> Run complete fate assessment</button>
+</div>
+</div>
+</article>
+<section aria-live="polite" class="run-progress hidden" id="run-progress">
+<div class="run-progress-top"><div><span class="spinner"></span><strong id="progress-title">Preparing assessment…</strong></div><span id="progress-percent">0%</span></div>
+<div class="progress-bar"><i id="progress-bar"></i></div>
+<div class="progress-stages" id="progress-stages"><span data-stage="identity">Identity</span><span data-stage="sorption">Sorption</span><span data-stage="emission">Emission</span><span data-stage="wwtp">WWTP</span><span data-stage="biosolids">Soil pathway</span><span data-stage="irrigation">Soil loading</span><span data-stage="plant">Crop</span><span data-stage="summary">Summary</span></div>
+</section>
+<section aria-live="assertive" class="run-error hidden" id="run-error" role="alert">
+<span class="run-error-icon">!</span>
+<div><strong id="run-error-title">Assessment stopped</strong><p id="run-error-message"></p><small id="run-error-detail"></small></div>
+<button class="ghost-button" id="retry-assessment" type="button">Try again</button>
+</section>
+<section class="results-section hidden" id="results">
+<div class="results-heading"><div><span class="complete-badge">ASSESSMENT COMPLETE</span><h2 id="results-title">Here is what happens to Carbamazepine.</h2><p id="results-subtitle">Calculated from the stored scenario and linked model runs.</p></div><div class="results-actions"><button class="ghost-button" id="refine-assessment">Refine scenario</button><button class="ghost-button" id="continue-toxswa" type="button">Refine surface water in TOXSWA</button><button class="ghost-button hidden" id="continue-pearl" type="button">Continue to FOCUS PEARL</button><button class="ghost-button" id="continue-envirodesign" type="button">Inspect molecular design</button><a class="primary-button link-button" href="/static/expert.html">Inspect evidence</a></div></div>
+<div class="jurisdiction-banner" id="results-jurisdiction-banner"></div>
+<div class="metric-grid">
+<article class="metric-card water influent" id="metric-card-influent"><span class="metric-icon">⇣</span><div><small>WWTP influent / ClocalINF</small><strong id="metric-influent">—</strong><span id="metric-influent-mass">Untreated wastewater</span></div></article>
+<article class="metric-card water" id="metric-card-effluent"><span class="metric-icon">≋</span><div><small>WWTP effluent</small><strong id="metric-effluent">—</strong><span>Predicted concentration</span></div></article>
+<article class="metric-card river" id="metric-card-surface"><span class="metric-icon">≈</span><div><small>Surface-water PEC</small><strong id="metric-surface">—</strong><span id="metric-dilution">After dilution</span></div></article>
+<article class="metric-card soil" id="metric-card-soil"><span class="metric-icon">♧</span><div><small>Irrigated-soil PEC</small><strong id="metric-soil">—</strong><span>Selected wastewater-irrigation scenario</span></div></article>
+<article class="metric-card soil" id="metric-card-biosolids"><span class="metric-icon">▰</span><div><small>Biosolids-soil PEC</small><strong id="metric-biosolids">—</strong><span>Selected land-application scenario</span></div></article>
+<article class="metric-card groundwater" id="metric-card-groundwater"><span class="metric-icon">◉</span><div><small>Groundwater refinement</small><strong id="metric-groundwater">—</strong><span>Run FOCUS PEARL after soil exposure</span></div></article>
+<article class="metric-card crop" id="metric-card-crop"><span class="metric-icon">Ψ</span><div><small>Crop screen</small><strong id="metric-crop">—</strong><span>Only shown for irrigation</span></div></article>
+<article class="metric-card confidence" id="metric-card-confidence"><span class="metric-icon">◇</span><div><small>Assessment confidence</small><strong id="metric-confidence">Moderate</strong><span id="confidence-basis">Mixed measured and assumed inputs</span></div><div class="confidence-ring"><span>72%</span></div></article>
+</div>
+<div class="results-grid">
+<article class="result-panel pathway-panel">
+<div class="panel-title"><div><small>MASS BALANCE</small><h3>Where does it go?</h3></div><button class="icon-button" data-drawer="mass-balance">Why?</button></div>
+<div class="donut-layout">
+<div class="donut" id="mass-donut"><span><strong id="donut-primary">—</strong><small>Effluent</small></span></div>
+<div class="legend-list" id="mass-legend"></div>
+</div>
+</article>
+<article class="result-panel comparison-panel"><div class="panel-title"><div><small>WHAT COMES NEXT?</small><h3>Advanced refinement</h3></div><span class="next-stage-region" id="next-stage-region">EU models</span></div><div class="next-stage-list">
+<article><span>01</span><div><strong>TOXSWA surface water</strong><small>Refine water and sediment exposure using an adapted process screen or the official FOCUS workflow.</small></div></article>
+<article><span>02</span><div><strong id="next-stage-model">FOCUS PEARL</strong><small id="next-stage-model-copy">Use the selected soil PEC as the starting exposure for groundwater refinement where the pathway reaches soil.</small></div></article>
+<article><span>03</span><div><strong>EnviroDesign</strong><small>Inspect persistence-associated regions and compare safer-design candidates after the exposure story is clear.</small></div></article>
+</div><p class="comparison-insight" id="comparison-insight">Complete the Tier 1–2 screen first.</p></article>
+<article class="result-panel timeline-panel">
+<div class="panel-title"><div><small id="soil-timeline-kicker">SELECTED SOIL PATHWAY</small><h3 id="soil-timeline-title">Soil concentration over time</h3></div><button class="icon-button" data-drawer="soil-timeline">i</button></div>
+<svg aria-label="Soil concentration over time chart" id="soil-chart" role="img" viewbox="0 0 640 230"><g class="grid-lines"></g><path class="chart-area" d=""></path><path class="chart-line" d=""></path><g class="chart-points"></g><text x="20" y="215">0</text><text x="570" y="215">Years</text></svg>
+</article>
+</div>
+</section>
+</section>
+<aside class="assistant-panel" id="assistant-panel">
+<div class="assistant-head"><div><span class="assistant-spark">i</span><div><small>RULE-BASED EXPLAINER</small><h3>Assessment summary</h3></div></div><span class="beta">LOCAL</span></div>
+<div class="assistant-guard"><span>✓</span><p>Uses stored evidence, selected assumptions and model outputs only.</p></div>
+<section class="assistant-section">
+<h4 id="assessment-story-title">What happens to Carbamazepine?</h4>
+<p id="ai-summary">Carbamazepine is expected to enter wastewater in the current pilot. Run the selected emission pathway first; EnviroChem will only show compartments and refinements that were actually selected and calculated.</p>
+</section>
+<section class="assistant-section">
+<h4>Dominant fate pathways</h4>
+<ul class="check-list" id="ai-pathways">
+<li>Wastewater influent → treated effluent</li>
+<li>Receiving river and sediment</li>
+<li>Additional soil pathways appear only when Biosolids or Wastewater irrigation is selected</li>
+<li>Groundwater refinement appears only after a soil PEC is available</li>
+</ul>
+</section>
+<button class="assistant-action" data-drawer="eu-us"><span>▧</span> Explain EU–US differences <span>›</span></button>
+<section class="assistant-section jurisdiction-copy">
+<h4>Current assessment logic</h4>
+<p><strong>EU:</strong> FOCUS PEARL is available as an advanced groundwater refinement after a relevant soil PEC is calculated.</p>
+<p><strong>US:</strong> the current EPA PWC3 contract is available in the model control plane. Execution still requires a configured official installation and reviewed output; standalone PRZM and EXAMS remain legacy/specialist workflows.</p>
+</section>
+<div class="data-gaps" id="data-gaps"><span>!</span><div><strong>Data gaps detected</strong><small>Measured DT50, dynamic WWTP inputs, PNEC and crop uptake evidence remain review items.</small></div></div>
+<div class="mini-heading"><span>Model-run provenance</span></div>
+<ul class="check-list" id="results-provenance"></ul>
+<form class="copilot-box" id="copilot-form">
+<input id="copilot-input" placeholder="Ask about risk, sorption, dilution or frameworks…"/>
+<button type="submit">↑</button>
+</form>
+<div class="copilot-answer hidden" id="copilot-answer"></div>
+</aside>
+</div><section class="advanced-refinement-intro" id="advanced-refinement">
+<span class="section-kicker">ADVANCED REFINEMENT · AFTER TIER 1 / TIER 2</span>
+<h2>Refine the exposure result first. Inspect molecular design second.</h2>
+<p>Surface-water and sediment refinement now uses the TOXSWA workbench; groundwater refinement remains in PEARL. EnviroDesign then explains structural features and supports safer-design hypotheses. None of these interrupt the initial exposure assessment.</p>
+<div aria-label="Advanced refinement order" class="advanced-route">
+<article><span>01</span><div><strong>Tier 1–2 exposure</strong><small>Complete the selected emission pathway</small></div></article>
+<i>→</i>
+<article><span>02</span><div><strong>Surface water / sediment</strong><small>TOXSWA process screen or official FOCUS workflow</small></div></article>
+<i>→</i>
+<article><span>03</span><div><strong>Groundwater</strong><small>FOCUS PEARL where the pathway reaches soil</small></div></article>
+<i>→</i>
+<article><span>04</span><div><strong>Molecular insight</strong><small>Persistence regions and safer-design hypotheses</small></div></article>
+</div>
+</section><section class="toxswa-shell hidden" id="toxswa-surface-water">
+<div class="toxswa-heading">
+<div>
+<span class="toxswa-badge">EU SURFACE WATER + SEDIMENT · TIER 2+ PROCESS WORKBENCH</span>
+<h2>Refine a relevant European surface-water pathway with an explicit native process screen.</h2>
+<p>The native screen handles user-defined loading, water transport, transformation, sorption, volatilisation and diffusive water–sediment exchange. It is not TOXSWA. For pesticides at Tier 3+, official FOCUS remains a separate SWASH → MACRO/PRZM → FOCUS_TOXSWA workflow.</p>
+</div>
+<div class="toxswa-heading-actions"><a class="ghost-button link-button" href="/api/toxswa/manifest" target="_blank">Model scope</a><a class="ghost-button link-button hidden" data-focus-official="1" href="/api/focus/installation-status" target="_blank">FOCUS installation</a></div>
+</div>
+<div class="toxswa-mode-strip">
+<article class="active"><span>01</span><div><strong>Adapted process screen</strong><small>All groups · explicit loading and geometry</small></div><em>Native α</em></article>
+<i>→</i>
+<article class="hidden" data-focus-official="1"><span>02</span><div><strong>Official FOCUS workflow</strong><small>Pesticide · Tier 3+ · SWASH + MACRO/PRZM + TOXSWA</small></div><em>External</em></article>
+<i>→</i>
+<article><span>03</span><div><strong>PEC + TWA + mass balance</strong><small>Water and sediment endpoints</small></div><em>Audited</em></article>
+</div>
+<div class="toxswa-workbench">
+<section class="toxswa-controls">
+<div class="mini-heading"><span>Assessment routing</span><small>application rate is only one possible loading basis</small></div>
+<div class="toxswa-input-grid">
+<label><span>Chemical group</span><select id="toxswa-group"><option value="human_pharmaceutical" selected>Human pharmaceutical</option><option value="veterinary_pharmaceutical">Veterinary pharmaceutical</option><option value="pesticide">Pesticide / PPP</option><option value="biocide">Biocide</option><option value="industrial_organic">Industrial organic</option><option value="personal_care_cosmetic">Personal care / cosmetic</option><option value="detergent_cleaner">Detergent / cleaner</option><option value="pfas_persistent_mobile">PFAS / persistent mobile</option><option value="hydrocarbon_solvent">Hydrocarbon / solvent</option><option value="metal_inorganic">Metal / inorganic</option><option value="polymer_microplastic">Polymer / microplastic</option><option value="nanomaterial">Nanomaterial</option><option value="uvcb_complex_substance">UVCB</option><option value="mixture_formulation">Mixture / formulation</option><option value="emerging_contaminant">Emerging contaminant</option></select></label>
+<label><span>Loading route</span><select id="toxswa-loading-mode"><option value="continuous_point_discharge" selected>Continuous point discharge</option><option value="spray_drift">Spray drift</option><option value="lateral_drainage">Lateral drainage</option><option value="lateral_runoff">Lateral runoff</option><option value="continuous_distributed">Continuous distributed release</option><option value="pulse_mass">Pulse / spill</option></select></label>
+<label><span>Simulation period</span><div class="input-unit"><input id="toxswa-duration" type="number" min="1" step="1" value="120"><em>days</em></div></label>
+<label><span>Water transformation</span><select id="toxswa-transform-mode"><option value="lumped" selected>Lumped transformation</option><option value="separate_dissolved_only">Dissolved phase only</option></select></label>
+</div>
+<div class="toxswa-route-note" id="toxswa-route-note"><strong>Human pharmaceutical</strong><span>WWTP effluent concentration × discharge flow is the default surface-water loading.</span></div>
+<div class="mini-heading toxswa-subheading"><span>Loading</span><small id="toxswa-loading-caption">continuous point source</small></div>
+<div class="toxswa-input-grid toxswa-load-fields" data-load-mode="continuous_point_discharge">
+<label><span>Discharge concentration</span><div class="input-unit"><input id="toxswa-discharge-conc" type="number" min="0" step="any" value="0.640775"><em>µg/L</em></div></label>
+<label><span>Discharge flow</span><div class="input-unit"><input id="toxswa-discharge-flow" type="number" min="0" step="any" value="20000"><em>m³/day</em></div></label>
+</div>
+<div class="toxswa-input-grid toxswa-load-fields hidden" data-load-mode="spray_drift">
+<label><span>Application rate</span><div class="input-unit"><input id="toxswa-app-rate" type="number" min="0" step="any" value="1"><em>kg/ha/app</em></div></label>
+<label><span>Spray drift</span><div class="input-unit"><input id="toxswa-drift" type="number" min="0" max="100" step="0.01" value="1"><em>%</em></div></label>
+<label><span>Applications</span><input id="toxswa-app-count" type="number" min="1" max="100" step="1" value="1"></label>
+<label><span>Interval</span><div class="input-unit"><input id="toxswa-app-interval" type="number" min="0" step="1" value="7"><em>days</em></div></label>
+</div>
+<div class="toxswa-input-grid toxswa-load-fields hidden" data-load-mode="lateral_drainage lateral_runoff">
+<label><span>Lateral concentration</span><div class="input-unit"><input id="toxswa-lateral-conc" type="number" min="0" step="any" value="1"><em>µg/L</em></div></label>
+<label><span>Lateral water flux</span><div class="input-unit"><input id="toxswa-lateral-flow" type="number" min="0" step="any" value="10"><em>m³/day</em></div></label>
+</div>
+<div class="toxswa-input-grid toxswa-load-fields hidden" data-load-mode="continuous_distributed">
+<label><span>Mass loading</span><div class="input-unit"><input id="toxswa-continuous-mass" type="number" min="0" step="any" value="100"><em>mg/day</em></div></label>
+</div>
+<div class="toxswa-input-grid toxswa-load-fields hidden" data-load-mode="pulse_mass">
+<label><span>Pulse mass</span><div class="input-unit"><input id="toxswa-pulse-mass" type="number" min="0" step="any" value="1000"><em>mg</em></div></label>
+<label><span>Pulse day</span><div class="input-unit"><input id="toxswa-pulse-day" type="number" min="0" step="any" value="1"><em>day</em></div></label>
+</div>
+<div class="mini-heading toxswa-subheading"><span>Waterbody</span><small>user-defined screening geometry · not a hidden FOCUS scenario</small></div>
+<div class="toxswa-input-grid">
+<label><span>Type</span><select id="toxswa-waterbody"><option value="ditch">Ditch</option><option value="stream" selected>Stream</option><option value="pond">Pond</option><option value="custom">Custom</option></select></label>
+<label><span>Length</span><div class="input-unit"><input id="toxswa-length" type="number" min="1" step="1" value="1000"><em>m</em></div></label>
+<label><span>Width</span><div class="input-unit"><input id="toxswa-width" type="number" min="0.01" step="0.1" value="20"><em>m</em></div></label>
+<label><span>Water depth</span><div class="input-unit"><input id="toxswa-depth" type="number" min="0.01" step="0.01" value="0.3"><em>m</em></div></label>
+<label><span>Receiving flow</span><div class="input-unit"><input id="toxswa-flow" type="number" min="0" step="any" value="200000"><em>m³/day</em></div></label>
+<label><span>Water segments</span><input id="toxswa-segments" type="number" min="2" max="200" step="1" value="20"></label>
+</div>
+<div class="mini-heading toxswa-subheading"><span>Substance + sediment fate</span><small>reviewed values preferred</small></div>
+<div class="toxswa-input-grid">
+<label><span>Koc</span><div class="input-unit"><input id="toxswa-koc" type="number" min="0" step="any" value="281.7"><em>L/kgOC</em></div></label>
+<label><span>Water DegT50</span><div class="input-unit"><input id="toxswa-water-dt50" type="number" min="0.01" step="any" value="40"><em>days</em></div></label>
+<label><span>Sediment DegT50</span><div class="input-unit"><input id="toxswa-sed-dt50" type="number" min="0.01" step="any" value="80"><em>days</em></div></label>
+<label><span>Sediment fOC</span><input id="toxswa-sed-foc" type="number" min="0" max="1" step="0.001" value="0.0522"></label>
+<label><span>Sediment depth</span><div class="input-unit"><input id="toxswa-sed-depth" type="number" min="0.001" step="0.01" value="0.05"><em>m</em></div></label>
+<label><span>Sediment bulk density</span><div class="input-unit"><input id="toxswa-sed-density" type="number" min="1" step="10" value="800"><em>kg/m³</em></div></label>
+<label><span>Suspended solids</span><div class="input-unit"><input id="toxswa-ss" type="number" min="0" step="1" value="15"><em>mg/L</em></div></label>
+<label><span>Aqueous diffusion</span><div class="input-unit"><input id="toxswa-diffusion" type="number" min="0" step="any" value="0.000043"><em>m²/day</em></div></label>
+</div>
+<div class="toxswa-run-row"><button class="primary-button" id="run-toxswa" type="button"><span>≈</span> Run water–sediment screen</button><span class="toxswa-status" id="toxswa-status">Ready · adapted process screen</span></div>
+</section>
+<section class="toxswa-visual-card">
+<div class="mini-heading"><span>Water–sediment process view</span><span class="toxswa-legend"><i></i> dissolved / advected <i></i> sediment exchange</span></div>
+<svg class="toxswa-process-svg" viewBox="0 0 900 350" role="img" aria-label="TOXSWA water and sediment process schematic">
+<defs><marker id="tx-arrow" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6" fill="none" stroke="currentColor" stroke-width="1.2"/></marker></defs>
+<rect x="55" y="75" width="790" height="125" class="tx-water"/><rect x="55" y="200" width="790" height="95" class="tx-sediment"/>
+<path d="M90 137 H780" class="tx-arrow water"/><path d="M250 160 V245" class="tx-arrow exchange"/><path d="M455 245 V160" class="tx-arrow exchange reverse"/><path d="M660 160 V245" class="tx-arrow exchange"/><path d="M190 120 C190 80 190 60 190 34" class="tx-arrow volatile"/>
+<text x="74" y="103">WATER LAYER</text><text x="74" y="228">ACTIVE SEDIMENT</text><text x="708" y="125">advection / dispersion</text><text x="202" y="54">volatilisation</text><text x="318" y="184">diffusive exchange</text>
+<g class="tx-particles" id="toxswa-particles"><circle cx="110" cy="145" r="5"/><circle cx="145" cy="128" r="4"/><circle cx="183" cy="151" r="5"/><circle cx="235" cy="132" r="4"/></g>
+</svg>
+<div class="toxswa-metrics">
+<article><small>Peak PECsw dissolved</small><strong id="toxswa-pecsw">—</strong><em>µg/L</em></article>
+<article><small>3-day TWAECsw</small><strong id="toxswa-twa3">—</strong><em>µg/L</em></article>
+<article><small>Peak PECsed</small><strong id="toxswa-pecsed">—</strong><em>µg/kg</em></article>
+<article><small>Outflow</small><strong id="toxswa-outflow">—</strong><em>% input</em></article>
+<article><small>Transformed</small><strong id="toxswa-transformed">—</strong><em>% input</em></article>
+<article><small>Mass-balance error</small><strong id="toxswa-balance">—</strong><em>%</em></article>
+</div>
+<div class="toxswa-chart-wrap"><div class="mini-heading"><span>Downstream concentration</span><small>water and sediment each scaled to its own peak · endpoints remain absolute</small></div><svg id="toxswa-chart" viewBox="0 0 760 220" role="img"><g class="grid-lines"></g><path class="tx-chart-water" d=""></path><path class="tx-chart-sed" d=""></path></svg></div>
+</section>
+</div>
+<div class="toxswa-detail-grid">
+<section class="toxswa-detail-card"><div class="mini-heading"><span>TWA endpoints</span><small>1, 2, 3, 4, 7, 14, 21, 28, 42, 50, 100 d</small></div><div id="toxswa-twa-table"><p>No run yet.</p></div></section>
+<section class="toxswa-detail-card hidden" data-focus-official="1"><div class="mini-heading"><span>Official-input readiness</span><small>pesticide Tier 3+ only</small></div><div id="toxswa-readiness"><p>No run yet.</p></div></section>
+<section class="toxswa-detail-card"><div class="mini-heading"><span>Scientific warnings</span><small>applicability + numerical boundary</small></div><div id="toxswa-warnings"><p>No run yet.</p></div></section>
+</div>
+<section class="toxswa-official-import hidden" data-focus-official="1">
+<div><span class="section-kicker">OFFICIAL OUTPUT IMPORT</span><h3>Run FOCUS_TOXSWA locally, then bring the result back into the same audit trail.</h3><p>The importer reads the official summary/report, preserves its SHA-256 hash, model/kernel version and parsed PEC/TWA endpoints. EnviroChem does not fabricate an official result when only a scenario has been prepared.</p></div>
+<div class="toxswa-import-controls"><input id="toxswa-summary-file" type="file" accept=".sum,.txt,.out"><button class="ghost-button" id="prepare-toxswa-workflow" type="button">Prepare official workflow</button><button class="ghost-button" id="import-toxswa-summary" type="button">Parse official summary</button><span id="toxswa-import-status">No official file imported.</span></div>
+<div id="toxswa-official-result" class="toxswa-official-result hidden"></div>
+</section>
+</section><section class="eu-advanced-panel pearl-shell" id="pearl-groundwater">
+<div class="pearl-heading">
+<div>
+<span class="pearl-badge">EU ADVANCED REFINEMENT · FOCUS PEARL PATHWAY</span>
+<h2>Take the calculated PECsoil into the groundwater assessment.</h2>
+<p>This module now sits after the initial exposure calculation. It can start from the selected scenario PECsoil or from a pesticide application rate, then resolve downward transport to the 1 m FOCUS assessment plane.</p>
+</div>
+<div class="pearl-heading-actions">
+<a class="ghost-button link-button" href="/api/pearl/manifest" target="_blank">Model scope</a>
+<a class="ghost-button link-button" href="/api/pearl/focus-scenarios" target="_blank">Scenario register</a>
+<a class="ghost-button link-button" href="/api/focus/installation-status" target="_blank">Official FOCUS status</a>
+</div>
+</div>
+<div aria-label="Tiered groundwater assessment sequence" class="pearl-tier-strip">
+<article class="tier-stage active"><span>1</span><div><small>Use pattern</small><strong id="tier-application-value">1.00 kg/ha</strong><em>GAP and interception</em></div></article>
+<i>→</i>
+<article class="tier-stage"><span>2</span><div><small>Soil exposure</small><strong id="tier-pecsoil-value">Calculate PECsoil</strong><em>initial and repeated</em></div></article>
+<i>→</i>
+<article class="tier-stage"><span>3</span><div><small>Leaching scenario</small><strong id="tier-scenario-value">Okehampton</strong><em>soil, crop and hydrology</em></div></article>
+<i>→</i>
+<article class="tier-stage groundwater"><span>4</span><div><small>Groundwater</small><strong id="tier-pecgw-value">PECgw pending</strong><em>1 m target and threshold</em></div></article>
+</div>
+<div class="pearl-workbench">
+<section class="pearl-controls">
+<div class="mini-heading"><span>Tier 1 · application and PECsoil</span><small>Start from kg/ha</small></div>
+<div class="pearl-input-grid">
+<label><span>Assessment entry</span><select id="pearl-input-mode"><option selected="" value="application_rate">Application rate → PECsoil</option><option value="pecsoil">Existing PECsoil / measured soil</option></select></label>
+<label><span>Application rate</span><div class="input-unit"><input id="pearl-app-rate" min="0" step="any" type="number" value="1"/><em>kg/ha/app</em></div></label>
+<label><span>Number of applications</span><div class="input-unit"><input id="pearl-app-count" max="50" min="1" step="1" type="number" value="1"/><em>per use year</em></div></label>
+<label><span>Application interval</span><div class="input-unit"><input id="pearl-app-interval" min="0" step="1" type="number" value="0"/><em>days</em></div></label>
+<label><span>Crop interception</span><div class="input-unit"><input id="pearl-interception" max="100" min="0" step="1" type="number" value="0"/><em>%</em></div></label>
+<label><span>Application frequency</span><select id="pearl-frequency"><option value="1">Every year</option><option value="2">Every other year</option><option value="3">Every third year</option></select></label>
+<label><span>First application day</span><div class="input-unit"><input id="pearl-app-day" max="364" min="0" step="1" type="number" value="90"/><em>day of year</em></div></label>
+<label><span>Application method</span><select id="pearl-app-method"><option value="surface">Soil surface</option><option value="incorporated">Incorporated</option><option value="injected">Injected</option></select></label>
+<label><span>Incorporation depth</span><div class="input-unit"><input id="pearl-incorporation-depth" min="0" step="0.01" type="number" value="0"/><em>m</em></div></label>
+<label><span>PECsoil mixing depth</span><div class="input-unit"><input id="pearl-pecsoil-depth" min="0.01" step="0.01" type="number" value="0.05"/><em>m</em></div></label>
+</div>
+<div class="pearl-subpanel hidden" id="pearl-existing-pecsoil">
+<div class="mini-heading"><span>Existing PECsoil entry</span><small>for wastewater, manure or measured soil</small></div>
+<div class="pearl-input-grid">
+<label><span>Initial soil concentration</span><div class="input-unit"><input id="pearl-initial-conc" min="0" step="any" type="number" value="0.0337908"/><em>µg/kg dw</em></div></label>
+<label><span>Initial mixing depth</span><div class="input-unit"><input id="pearl-mixing-depth" min="0.01" step="0.05" type="number" value="0.4"/><em>m</em></div></label>
+</div>
+</div>
+<div class="mini-heading pearl-section-heading"><span>Tier 2 · FOCUS scenario and crop</span><small>official choices, native profile where available</small></div>
+<div class="pearl-input-grid">
+<label><span>Profile source</span><select id="pearl-profile-mode"><option selected="" value="focus_scenario">FOCUS scenario profile</option><option value="user_defined">User-defined profile</option></select></label>
+<label><span>FOCUS scenario</span><select id="pearl-focus-scenario"><option selected="" value="okehampton">Okehampton (N)</option></select></label>
+<label><span>FOCUS crop</span><select id="pearl-focus-crop"><option selected="" value="winter cereals">Winter cereals</option></select></label>
+<label><span>Assessment horizon</span><select id="pearl-horizon-mode"><option selected="" value="quick_screen">Quick native screen</option><option value="focus_standard">FOCUS-style 6 + 20 cycles</option></select></label>
+<label><span>Groundwater target depth</span><div class="input-unit"><input id="pearl-target-depth" min="0.1" step="0.1" type="number" value="1"/><em>m</em></div></label>
+<label><span>Groundwater threshold</span><div class="input-unit"><input id="pearl-gw-threshold" min="0.000001" step="any" type="number" value="0.1"/><em>µg/L</em></div></label>
+</div>
+<div class="scenario-summary" id="pearl-scenario-summary">Okehampton · loam · 1038 mm/year · 3.8% topsoil OM · free drainage · groundwater context around 20 m.</div>
+<div class="pearl-subpanel hidden" id="pearl-user-profile">
+<div class="pearl-input-grid">
+<label><span>Profile depth</span><div class="input-unit"><input id="pearl-profile-depth" min="0.2" step="0.1" type="number" value="1.2"/><em>m</em></div></label>
+<label><span>Model layers</span><div class="input-unit"><input id="pearl-layers" max="200" min="2" step="1" type="number" value="12"/><em>layers</em></div></label>
+<label><span>Bulk density</span><div class="input-unit"><input id="pearl-bulk-density" min="100" step="10" type="number" value="1350"/><em>kg/m³</em></div></label>
+<label><span>Water content</span><div class="input-unit"><input id="pearl-theta" max="0.9" min="0.01" step="0.01" type="number" value="0.25"/><em>m³/m³</em></div></label>
+</div>
+</div>
+<div class="mini-heading pearl-section-heading"><span>Tier 3 · substance fate inputs</span><small>reviewed values preferred</small></div>
+<div class="pearl-input-grid">
+<label><span>Koc</span><div class="input-unit"><input id="pearl-koc" min="0.00001" step="any" type="number" value="281.7"/><em>L/kgOC</em></div></label>
+<label><span>Kd override</span><div class="input-unit"><input id="pearl-kd" min="0.00001" placeholder="optional" step="any" type="number"/><em>L/kg</em></div></label>
+<label><span>Organic carbon fraction</span><div class="input-unit"><input id="pearl-foc" max="1" min="0.0001" placeholder="scenario" step="0.0001" type="number"/><em>fOC</em></div></label>
+<label><span>Freundlich exponent</span><div class="input-unit"><input id="pearl-freundlich" min="0.1" step="0.05" type="number" value="1"/><em>N</em></div></label>
+<label><span>Soil DegT50</span><div class="input-unit"><input id="pearl-dt50" min="0.01" step="any" type="number" value="40"/><em>days</em></div></label>
+<label><span>Percolation override</span><div class="input-unit"><input id="pearl-percolation" min="0" placeholder="scenario proxy" step="0.1" type="number"/><em>mm/day</em></div></label>
+<label><span>Simulation period</span><div class="input-unit"><input id="pearl-duration" min="1" step="1" type="number" value="1095"/><em>days</em></div></label>
+<label><span>Dispersivity</span><div class="input-unit"><input id="pearl-dispersivity" min="0" step="0.005" type="number" value="0.05"/><em>m</em></div></label>
+<label><span>Molecular weight</span><div class="input-unit"><input id="pearl-mw" min="0" step="any" type="number" value="236.27"/><em>g/mol</em></div></label>
+<label><span>Water solubility</span><div class="input-unit"><input id="pearl-solubility" min="0" placeholder="required for official" step="any" type="number"/><em>mg/L</em></div></label>
+<label><span>Vapour pressure</span><div class="input-unit"><input id="pearl-vapour" min="0" placeholder="required for official" step="any" type="number"/><em>Pa</em></div></label>
+<label><span>Temperature override</span><div class="input-unit"><input id="pearl-temperature" placeholder="scenario mean" step="0.5" type="number"/><em>°C</em></div></label>
+</div>
+<label class="swap-upload"><span>Optional official SWAP user-defined output CSV</span><input accept=".csv,.txt" id="pearl-swap-file" type="file"/><small>Expected variables: WC[n], Q[n], RWU[n], T[n] and BOT. The selected FOCUS scenario alone does not recreate official daily SWAP hydrology.</small></label>
+<div class="pearl-run-row">
+<button class="primary-button" id="run-pearl" type="button"><span>⇣</span> Calculate PECsoil and run leaching</button>
+<span class="pearl-status" id="pearl-status">Ready · Okehampton quick screen</span>
+</div>
+<div class="pearl-conversions" id="pearl-conversions"><small>Application-to-PECsoil and model conversions will appear after the run.</small></div>
+</section>
+<section class="pearl-visual-card">
+<div class="mini-heading"><span>Soil–groundwater process view</span><span class="pearl-legend"><i class="soil-mass"></i> sorbed / total <i class="water-mass"></i> dissolved / mobile <i class="gw-mass"></i> groundwater endpoint</span></div>
+<div class="pearl-result-ribbon">
+<article><small>Effective soil dose</small><strong id="pearl-effective-dose">—</strong><em>kg/ha/app</em></article>
+<article><small>PECsoil initial</small><strong id="pearl-pecsoil-initial">—</strong><em>µg/kg</em></article>
+<article><small>PECsoil max</small><strong id="pearl-pecsoil-max">—</strong><em>µg/kg</em></article>
+<article class="gw"><small>PECgw endpoint</small><strong id="pearl-gw-endpoint">—</strong><em>µg/L</em></article>
+</div>
+<div class="pearl-canvas-wrap">
+<svg aria-label="PEARL soil and groundwater process schematic" class="pearl-process-svg" id="pearl-canvas" role="img" viewBox="0 0 900 430">
+<defs>
+<marker id="pearl-arrow" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6" fill="none" stroke="currentColor" stroke-width="1.2"/></marker>
+</defs>
+<rect class="pr-surface" height="60" width="790" x="55" y="45"></rect>
+<rect class="pr-soil" height="225" width="790" x="55" y="105"></rect>
+<rect class="pr-groundwater" height="55" width="790" x="55" y="330"></rect>
+<text class="pr-compartment-label" x="70" y="66">SURFACE INPUT</text>
+<path class="pr-arrow input" d="M150 58 V112"></path>
+<text class="pr-process-label" id="pearl-surface-label" x="170" y="82">1.00 kg/ha application</text>
+<text class="pr-process-label" x="562" y="82">GAP · interception · application timing</text>
+<g id="pearl-layer-lines"></g>
+<g id="pearl-target-line"><line class="pr-target" x1="55" x2="845" y1="255" y2="255"></line><text class="pr-target-label" x="70" y="247">FOCUS PECgw assessment plane · 1.0 m</text></g>
+<path class="pr-arrow exchange" d="M98 176 H210"></path><text class="pr-process-label" x="98" y="165">sorption ↔ dissolved phase</text>
+<path class="pr-arrow loss" d="M700 205 H810"></path><text class="pr-process-label" x="700" y="194">transformation</text>
+<path class="pr-arrow uptake" d="M624 178 V132"></path><text class="pr-process-label" x="642" y="151">root uptake</text>
+<g id="pearl-flow-arrows"></g>
+<g id="pearl-particles"></g>
+<g id="pearl-profile-line"></g>
+<g class="pearl-depth-axis"><line x1="860" x2="860" y1="105" y2="330"></line><text x="868" y="113">0 m</text><text id="pearl-depth-label" x="868" y="328">1.5 m</text></g>
+<text class="pr-compartment-label" id="pearl-profile-title" x="70" y="128">Okehampton soil profile</text>
+<text class="pr-compartment-label" x="70" y="350">GROUNDWATER COMPARTMENT · PECgw ENDPOINT</text>
+<text class="pr-groundwater-context" id="pearl-groundwater-context" x="70" y="370">Scenario groundwater context: approximately 20 m; regulatory flux evaluated at 1 m.</text>
+</svg>
+<div class="pearl-time-control">
+<button aria-label="Play simulation" id="pearl-play" type="button">▶</button>
+<input disabled="" id="pearl-time-slider" max="0" min="0" step="1" type="range" value="0"/>
+<strong id="pearl-time-label">Day 0</strong>
+</div>
+</div>
+<div class="pearl-metrics">
+<article><small>PECgw comparison value</small><strong id="pearl-gw-average">—</strong><em>µg/L</em></article>
+<article><small>Target-depth mass leached</small><strong id="pearl-leached">—</strong><em>% input</em></article>
+<article><small>Mass degraded</small><strong id="pearl-degraded">—</strong><em>% input</em></article>
+<article><small>Deepest detected</small><strong id="pearl-depth">—</strong><em>m</em></article>
+<article><small>PECgw / threshold</small><strong id="pearl-risk">—</strong><em>RQ</em></article>
+<article><small>Mass-balance error</small><strong id="pearl-balance">—</strong><em>mg/m²</em></article>
+</div>
+</section>
+</div>
+<div class="pearl-detail-grid">
+<section class="pearl-detail-card"><div class="mini-heading"><span>Layer profile at selected time</span><small>horizon, total, dissolved and sorbed</small></div><div class="pearl-table-wrap" id="pearl-layer-table"><p>No simulation run.</p></div></section>
+<section class="pearl-detail-card"><div class="mini-heading"><span>Official-input readiness</span><small>native screen vs submission workflow</small></div><div class="pearl-readiness" id="pearl-readiness"><p>No simulation run.</p></div></section>
+<section class="pearl-detail-card"><div class="mini-heading"><span>Scientific warnings</span><small>scenario and model boundaries</small></div><div class="pearl-warning-list" id="pearl-warnings"><p>No simulation run.</p></div></section>
+</div>
+</section><section class="us-models-placeholder us-exposure-shell hidden" id="us-models-placeholder">
+<div class="us-exposure-heading">
+<div>
+<span class="section-kicker">US EXPOSURE FOUNDATIONS · ALPHA 2</span>
+<h2>Map the industrial source term before choosing the EPA refinement.</h2>
+<p>Build an auditable daily mass balance, route captured material to waste management, and screen worker inhalation and dermal exposure. This native calculation is transparent and deliberately separate from ChemSTEER, CEM and E-FAST.</p>
+</div>
+<button class="ghost-button" data-drawer="us-exposure-method" type="button">Scientific boundaries</button>
+</div>
+<div class="us-foundation-status" id="us-foundation-status">
+<span><strong>Loading source register…</strong><small>Published and draft EPA scenarios are kept separate.</small></span>
+</div>
+<div class="us-exposure-workbench">
+<section class="us-input-card">
+<div class="mini-heading"><span>1 · Industrial source term</span><small>one chemical-throughput basis</small></div>
+<div class="us-field-grid">
+<label class="wide"><span>EPA scenario basis</span><select id="us-exposure-scenario"><option value="">Loading published ESDs…</option></select></label>
+<label class="us-reference-toggle wide"><input id="us-include-draft" type="checkbox"/><span>Show 48 draft/reference-only scenarios</span><small>Draft records never become defaults and remain labelled in every result.</small></label>
+<label><span>Chemical throughput</span><input id="us-throughput" min="0" placeholder="e.g. 100" step="any" type="number"/><em>kg/day</em></label>
+<label><span>Operating days</span><input id="us-operating-days" max="365" min="0" placeholder="e.g. 250" step="any" type="number"/><em>days/year</em></label>
+<label class="wide"><span>Release event</span><input id="us-event-name" placeholder="e.g. transfer and container residue" type="text"/></label>
+<label><span>Event loss</span><input id="us-loss-percent" max="100" min="0" placeholder="%" step="any" type="number"/><em>% throughput</em></label>
+<label><span>Control efficiency</span><input id="us-control-percent" max="100" min="0" placeholder="%" step="any" type="number"/><em>% event mass</em></label>
+<label><span>To air</span><input id="us-air-percent" max="100" min="0" placeholder="%" step="any" type="number"/><em>% post-control loss</em></label>
+<label><span>To water</span><input id="us-water-percent" max="100" min="0" placeholder="%" step="any" type="number"/><em>% post-control loss</em></label>
+<label><span>To soil</span><input id="us-soil-percent" max="100" min="0" placeholder="%" step="any" type="number"/><em>% post-control loss</em></label>
+<label><span>Captured material</span><select id="us-control-destination"><option value="offsite_treatment">Off-site treatment</option><option value="landfill">Landfill</option><option value="incineration">Incineration</option></select><em>managed transfer, not destruction</em></label>
+<label class="wide"><span>Parameter/source reference</span><input id="us-source-reference" placeholder="document, table, monitoring dataset or explicit assumption" type="text"/></label>
+</div>
+</section>
+<section class="us-input-card">
+<div class="mini-heading"><span>2 · Worker task</span><small>optional, but absence remains a visible gap</small></div>
+<label class="us-worker-toggle"><input id="us-worker-enabled" type="checkbox"/><span>Include one occupational task</span></label>
+<div class="us-worker-fields muted-fields" id="us-worker-fields">
+<div class="us-field-grid">
+<label class="wide"><span>Task name</span><input id="us-task-name" placeholder="e.g. vessel charging" type="text"/></label>
+<label><span>Inhalation basis</span><select id="us-worker-mode"><option value="measured_air">Measured/supplied air concentration</option><option value="well_mixed_screen">Well-mixed room screen</option></select></label>
+<label><span>Task duration</span><input id="us-task-hours" min="0" placeholder="hours" step="any" type="number"/></label>
+<label><span>Exposure days</span><input id="us-worker-days" max="365" min="0" placeholder="days/year" step="any" type="number"/></label>
+<label><span>Body weight</span><input id="us-body-weight" min="0" placeholder="kg" step="any" type="number"/></label>
+<label><span>Inhalation rate</span><input id="us-inhalation-rate" min="0" placeholder="m³/hour" step="any" type="number"/></label>
+<label><span>Respirator APF</span><input id="us-respirator-apf" min="1" placeholder="1 = none" step="any" type="number"/></label>
+<label class="us-measured-field"><span>Air concentration</span><input id="us-air-concentration" min="0" placeholder="mg/m³" step="any" type="number"/></label>
+<label class="us-modelled-field hidden"><span>Chemical handled</span><input id="us-handled-kg" min="0" placeholder="kg/shift" step="any" type="number"/></label>
+<label class="us-modelled-field hidden"><span>Airborne fraction</span><input id="us-airborne-percent" max="100" min="0" placeholder="%" step="any" type="number"/></label>
+<label class="us-modelled-field hidden"><span>Room volume</span><input id="us-room-volume" min="0" placeholder="m³" step="any" type="number"/></label>
+<label class="us-modelled-field hidden"><span>Air changes</span><input id="us-ach" min="0" placeholder="per hour" step="any" type="number"/></label>
+<label><span>Dermal contact</span><input id="us-dermal-contact" min="0" placeholder="mg/shift" step="any" type="number"/></label>
+<label><span>Glove protection factor</span><input id="us-glove-factor" min="1" placeholder="1 = none" step="any" type="number"/></label>
+<label><span>Dermal absorption</span><input id="us-dermal-absorption" max="100" min="0" placeholder="%" step="any" type="number"/></label>
+</div>
+</div>
+<label class="us-notes-field"><span>Uncertainty and applicability notes</span><textarea id="us-uncertainty" placeholder="State parameter gaps, variability, overlap checks and why this screen is suitable." rows="3"></textarea></label>
+<label class="us-worker-toggle review"><input id="us-scientist-review" type="checkbox"/><span>I have reviewed the entered scenario and parameter basis</span></label>
+<button class="primary-button us-run-button" id="run-us-exposure" type="button">Run transparent US screen</button>
+</section>
+<section class="us-input-card us-groundwater-card">
+<div class="mini-heading"><span>3 · Soil → groundwater screening</span><small>activate whenever an industrial release is routed to soil</small></div>
+<label class="us-worker-toggle"><input id="us-groundwater-enabled" type="checkbox"/><span>Screen groundwater leaching from the calculated soil release</span></label>
+<div class="us-worker-fields muted-fields" id="us-groundwater-fields">
+<div class="us-field-grid">
+<label><span>Release area</span><input id="us-gw-area" min="0" step="any" type="number" value="1"/><em>ha</em></label>
+<label><span>Source-zone depth</span><input id="us-gw-source-depth" min="0.01" step="any" type="number" value="0.2"/><em>m</em></label>
+<label><span>Assessment depth</span><input id="us-gw-depth" min="0.01" step="any" type="number" value="1"/><em>m below surface</em></label>
+<label><span>Soil bulk density</span><input id="us-gw-density" min="1" step="any" type="number" value="1500"/><em>kg/m³</em></label>
+<label><span>Water content</span><input id="us-gw-water" min="0.001" max="0.8" step="any" type="number" value="0.25"/><em>m³/m³</em></label>
+<label><span>Annual recharge</span><input id="us-gw-recharge" min="0.01" step="any" type="number" value="250"/><em>mm/year</em></label>
+<label><span>Koc</span><input id="us-gw-koc" min="0" step="any" type="number"/><em>L/kgOC</em></label>
+<label><span>Soil organic carbon</span><input id="us-gw-foc" min="0.000001" max="1" step="any" type="number" value="0.02"/><em>fraction</em></label>
+<label><span>Soil DT50</span><input id="us-gw-dt50" min="0.01" step="any" type="number"/><em>days</em></label>
+<label><span>Additional attenuation</span><input id="us-gw-attenuation" min="0" max="1" step="any" type="number" value="1"/><em>fraction · 1 = none</em></label>
+<label class="wide"><span>Parameter/source reference</span><input id="us-gw-source" type="text" placeholder="soil profile, recharge dataset and property evidence"/></label>
+</div>
+<p class="field-note">Transparent equilibrium/retarded-flow screen only. It does not represent preferential flow, layered transient weather, PWC or PRZM.</p>
+</div>
+</section>
+</div>
+<section class="us-results-card" id="us-exposure-results">
+<div class="mini-heading"><span>3 · Results and completeness</span><small id="us-result-summary">No US exposure screen has been run.</small></div>
+<div class="us-result-metrics" id="us-result-metrics">
+<article><small>Air release</small><strong>—</strong><em>kg/day</em></article>
+<article><small>Water release</small><strong>—</strong><em>kg/day</em></article>
+<article><small>Managed waste</small><strong>—</strong><em>kg/day</em></article>
+<article><small>Worker dose</small><strong>—</strong><em>mg/kg-shift</em></article>
+<article><small>Groundwater screen</small><strong>—</strong><em>µg/L</em></article>
+</div>
+<div class="us-results-detail">
+<div><h3>Conventional assessment gaps</h3><div id="us-completeness"><p>Run the screen to expose what is still missing.</p></div></div>
+<div><h3>Scientific warnings</h3><div id="us-warnings"><p>Native screen ≠ EPA model output.</p></div></div>
+</div>
+</section>
+<div class="us-roadmap-grid" id="us-roadmap-grid">
+<article data-model-key="CHEMSTEER"><strong>ChemSTEER 3.2</strong><small>Industrial release + worker exposure</small><em class="workflow-status">not yet prepared</em></article>
+<article data-model-key="CEM"><strong>CEM 3.2</strong><small>Consumer products/articles</small><em class="workflow-status">not yet prepared</em></article>
+<article data-model-key="EFAST"><strong>E-FAST 2014</strong><small>Legacy air/water/landfill and population screen</small><em class="workflow-status">not yet prepared</em></article>
+<article data-model-key="PWC"><strong>PWC3</strong><small>Current US pesticide-water contract</small><em class="workflow-status">not yet prepared</em></article>
+</div>
+</section><section class="envirodesign-shell" id="envirodesign">
+<div class="envirodesign-heading">
+<div>
+<span class="design-badge">ENVIRODESIGN · research screen</span>
+<h2>Which structural regions may resist transformation—and which may be easier to change?</h2>
+<p>Read the molecule in plain language first, then inspect the fitted BIOWIN 3/4 contributions. Structural regions are hypotheses for persistence or transformation susceptibility; they are not experimental proof.</p>
+</div>
+<button class="ghost-button" data-drawer="envirodesign-method" type="button">Scientific boundaries</button>
+</div>
+<div class="envirodesign-grid">
+<section class="design-control-card">
+<label class="design-smiles-field"><span>Parent SMILES</span><textarea id="envirodesign-smiles" rows="3">NC(=O)N1c2ccccc2C=Cc2ccccc21</textarea></label>
+<div class="design-actions">
+<button class="primary-button" id="run-envirodesign" type="button"><span>✦</span> Analyse structure</button>
+<span class="model-source-pill">BIOWIN 3/4 reconstructed terms · transparent screen</span>
+</div>
+<div class="design-status" id="envirodesign-status"><strong>Ready to analyse</strong><small>Browser RDKit/WebAssembly parses the molecule; native Python RDKit is optional and is not required for startup.</small></div>
+<div class="design-score-grid">
+<span><small>BIOWIN 3</small><strong id="design-b3">—</strong><em>ultimate screen · higher = faster</em></span>
+<span><small>BIOWIN 4</small><strong id="design-b4">—</strong><em>primary screen · higher = faster</em></span>
+<span><small>Formula</small><strong id="design-formula">—</strong><em id="design-mw">molecular identity</em></span>
+<span><small>RDKit logP</small><strong id="design-logp">—</strong><em>descriptor only</em></span>
+</div>
+</section>
+<section class="design-structure-card">
+<div class="mini-heading"><span>RDKit structure</span><span class="design-legend">Original RDKit depiction · no model colouring</span></div>
+<div class="design-structure-placeholder" id="envirodesign-structure">Run the analysis to generate an atom-level SVG.</div>
+</section>
+</div><div class="design-reading-guide">
+<strong>How to read this screen</strong>
+<span><b>1</b> Find recognisable structural regions.</span>
+<span><b>2</b> See which regions actually contribute to BIOWIN 3/4.</span>
+<span><b>3</b> Use the result to form experiments or compare candidate analogues.</span>
+</div>
+<div class="design-insight-grid">
+<section class="design-panel">
+<div class="mini-heading"><span>BIOWIN fitted contributions</span><small>Exact model terms used in the score · model labels retained verbatim</small></div>
+<div class="design-list" id="envirodesign-attribution"><p>No analysis yet.</p></div>
+</section>
+<section class="design-panel">
+<div class="mini-heading"><span>Structural regions</span><small>Persistence-associated and transformation-sensitive motifs</small></div>
+<div class="feature-chip-wrap" id="envirodesign-features"><span class="feature-chip muted">No analysis yet</span></div>
+</section>
+<section class="design-panel design-hypotheses-panel">
+<div class="mini-heading"><span>R&amp;D design questions</span><small>Testable hypotheses, not redesign instructions</small></div>
+<div class="design-list" id="envirodesign-hypotheses"><p>No hypotheses generated yet.</p></div>
+</section>
+</div>
+<div class="design-lab-grid">
+<section class="design-lab-card">
+<span class="drawer-kicker">SAFER-DESIGN COMPARISON</span>
+<h3>Compare candidate structures against the parent</h3>
+<p>Use candidates that preserve the required function or pharmacophore. EnviroChem compares environmental direction and trade-offs; it does not declare a chemically or biologically valid winner.</p>
+<textarea id="candidate-smiles" rows="4">Hydrogenated analogue|NC(=O)N1c2ccccc2CCc2ccccc21</textarea>
+<label><span>Protected SMARTS, comma separated</span><input id="protected-smarts" value="C(=O)N"/></label>
+<button class="ghost-button" id="compare-envirodesign" type="button">Compare candidates</button>
+<div class="design-result-box" id="candidate-results"><small>No candidate comparison run.</small></div>
+</section>
+<section class="design-lab-card">
+<span class="drawer-kicker">TRANSFORMATION PATHWAYS · BIOTRANSFORMER</span>
+<h3>Predict, review and analyse environmental transformation products</h3>
+<p>BioTransformer ENVMICRO proposes soil/water microbial reaction pathways. Every returned structure remains a prediction until supported by literature or analytical evidence.</p>
+<div class="pathway-provider-strip">
+<div><strong>BioTransformer 3.1 · ENVMICRO</strong><small>Remote provider · one parent per request · development/academic evaluation</small></div>
+<label><span>Generations</span><select id="pathway-generations"><option selected value="1">1 · primary TPs</option><option value="2">2 · include secondary TPs</option><option value="3">3 · exploratory</option></select></label>
+<button class="primary-button" id="predict-transformation-pathway" type="button">Predict pathway</button>
+</div>
+<div class="pathway-provider-status" id="pathway-provider-status"><span>READY</span><p>The provider supplies structures and reaction hypotheses—not formation fractions, rate constants or DT50 values.</p></div>
+<p class="pathway-edit-label"><strong>Scientist review list</strong> · one product per line: <code>Name|SMILES|observed/predicted|matrix|source</code>. Edit, remove or relabel products before motif analysis.</p>
+<textarea id="pathway-products" placeholder="Product A|SMILES|observed|activated sludge|Study DOI" rows="6"></textarea>
+<button class="ghost-button" id="analyse-pathway-retention" type="button">Analyse motif retention</button>
+<div class="design-result-box" id="pathway-results"><small>No pathway generated. BioTransformer is the interim licensed-gate provider; the internal pathway record remains provider-neutral.</small></div>
+</section>
+</div>
+</section>
+</main>
+</div>
+</div>
+<div class="drawer-backdrop hidden" id="drawer-backdrop"></div>
+<aside aria-hidden="true" class="detail-drawer" id="detail-drawer">
+<button class="drawer-close" id="drawer-close">×</button>
+<div id="drawer-content"></div>
+</aside>
+<div class="toast hidden" id="toast"></div>
+<script src="/static/app.js?v=guided-v2.23-alpha3.1-us-run-state-hotfix"></script>
+</body>
+</html>

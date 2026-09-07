@@ -1,0 +1,3569 @@
+[
+  {
+    "id": "INT-001",
+    "jurisdiction": "United Nations",
+    "authority": "UNECE",
+    "chemical_domain": "Classification and labelling",
+    "framework": "Globally Harmonized System of Classification and Labelling of Chemicals (GHS), Rev.11",
+    "version_effective_date": "2025 (Rev.11)",
+    "verification_tier": "A",
+    "official_url": "https://unece.org/transport/dangerous-goods/ghs-rev11-2025",
+    "region_group": "INT",
+    "product_classes": [
+      "classification_labelling"
+    ],
+    "envirochem_modules": [
+      "classification_labelling",
+      "regulatory_navigator",
+      "sds",
+      "source_provenance"
+    ],
+    "implementation_note": "Use as the global hazard-communication baseline only. Store the GHS revision and the nationally adopted edition separately; do not assume Rev.11 is legally implemented everywhere.",
+    "source_review_status": "implementation_note_curated_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "INT-002",
+    "jurisdiction": "OECD",
+    "authority": "OECD Environment, Health and Safety Programme",
+    "chemical_domain": "Industrial chemicals; pesticides; biocides; nanomaterials",
+    "framework": "OECD Guidelines for the Testing of Chemicals",
+    "version_effective_date": "New and updated TGs published 2 July 2026",
+    "verification_tier": "A",
+    "official_url": "https://www.oecd.org/en/topics/sub-issues/testing-of-chemicals/test-guidelines.html",
+    "region_group": "INT",
+    "product_classes": [
+      "industrial_chemicals",
+      "pesticides",
+      "biocides",
+      "nanomaterials"
+    ],
+    "envirochem_modules": [
+      "applicability_warnings",
+      "application_scenario",
+      "ecotox",
+      "environmental_exposure",
+      "groundwater",
+      "identity_resolution",
+      "model_orchestration",
+      "nano_ruleset",
+      "particle_properties",
+      "property_evidence",
+      "regulatory_navigator",
+      "risk_report",
+      "sediment",
+      "simpletreat",
+      "source_provenance",
+      "surface_water",
+      "use_scenario"
+    ],
+    "implementation_note": "OECD Test Guidelines are the primary cross-border method registry for environmental fate, ecotoxicity and health studies. Store TG number, revision date, deviations, GLP status and receiving-authority acceptance. The registry must be updateable because new and revised TGs are issued regularly.",
+    "source_review_status": "official_source_reviewed",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "INT-003",
+    "jurisdiction": "OECD",
+    "authority": "OECD Environment, Health and Safety Programme",
+    "chemical_domain": "Cross-cutting assessment",
+    "framework": "OECD Series on Testing and Assessment / Guidance Documents",
+    "version_effective_date": "Portal current at snapshot",
+    "verification_tier": "A",
+    "official_url": "https://www.oecd.org/en/topics/sub-issues/testing-of-chemicals/publications-on-testing-and-assessment-of-chemicals.html",
+    "region_group": "INT",
+    "product_classes": [
+      "cross_cutting"
+    ],
+    "envirochem_modules": [
+      "regulatory_navigator",
+      "source_provenance"
+    ],
+    "implementation_note": "Use OECD Series on Testing and Assessment guidance for endpoint interpretation, integrated approaches, reporting and method applicability. Link guidance documents to specific evidence-selection rules rather than treating them as generic references.",
+    "source_review_status": "implementation_note_curated_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "INT-004",
+    "jurisdiction": "OECD",
+    "authority": "OECD Council",
+    "chemical_domain": "GLP and test acceptance",
+    "framework": "Mutual Acceptance of Data (MAD) and OECD Principles of GLP",
+    "version_effective_date": "Ongoing",
+    "verification_tier": "A",
+    "official_url": "https://www.oecd.org/en/topics/sub-issues/good-laboratory-practice-and-compliance-monitoring.html",
+    "region_group": "INT",
+    "product_classes": [
+      "cross_cutting"
+    ],
+    "envirochem_modules": [
+      "evidence_engine",
+      "glp_status",
+      "regulatory_navigator",
+      "source_provenance",
+      "study_reliability"
+    ],
+    "implementation_note": "MAD and GLP determine cross-border acceptability of test data. Evidence records need fields for GLP status, facility/compliance programme, study type, test guideline and whether MAD applies.",
+    "source_review_status": "implementation_note_curated_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "INT-005",
+    "jurisdiction": "OECD",
+    "authority": "OECD",
+    "chemical_domain": "Chemical information",
+    "framework": "eChemPortal",
+    "version_effective_date": "Living database",
+    "verification_tier": "A",
+    "official_url": "https://www.echemportal.org/echemportal/",
+    "region_group": "INT",
+    "product_classes": [
+      "cross_cutting"
+    ],
+    "envirochem_modules": [
+      "regulatory_navigator",
+      "source_provenance"
+    ],
+    "implementation_note": "Use eChemPortal as a federated discovery route, not as the final source. Preserve the originating database and study-level citation.",
+    "source_review_status": "implementation_note_curated_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "INT-006",
+    "jurisdiction": "OECD",
+    "authority": "OECD / ECHA",
+    "chemical_domain": "Alternative methods",
+    "framework": "OECD QSAR Toolbox",
+    "version_effective_date": "Living software",
+    "verification_tier": "A",
+    "official_url": "https://qsartoolbox.org/",
+    "region_group": "INT",
+    "product_classes": [
+      "cross_cutting"
+    ],
+    "envirochem_modules": [
+      "applicability_domain",
+      "predicted_data",
+      "read_across",
+      "regulatory_navigator",
+      "source_provenance"
+    ],
+    "implementation_note": "Use the OECD QSAR Toolbox for read-across/category support and data-gap filling. Predicted/read-across outputs must be labelled, retain the applicability rationale and never silently replace measured evidence.",
+    "source_review_status": "implementation_note_curated_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "INT-007",
+    "jurisdiction": "WHO",
+    "authority": "WHO International Programme on Chemical Safety",
+    "chemical_domain": "Human health",
+    "framework": "WHO Human Health Risk Assessment Toolkit: Chemical Hazards, 2nd edition",
+    "version_effective_date": "2021",
+    "verification_tier": "A",
+    "official_url": "https://www.who.int/publications/i/item/9789240035720",
+    "region_group": "INT",
+    "product_classes": [
+      "cross_cutting"
+    ],
+    "envirochem_modules": [
+      "regulatory_navigator",
+      "source_provenance"
+    ],
+    "implementation_note": "The WHO toolkit confirms a context-led workflow: define the assessment context, gather authoritative hazard/exposure information, combine it with locally relevant information, and document uncertainty. This maps well to guided and expert modes.",
+    "source_review_status": "official_source_reviewed",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "INT-008",
+    "jurisdiction": "WHO / FAO",
+    "authority": "IPCS / JECFA / JMPR",
+    "chemical_domain": "Food chemicals",
+    "framework": "EHC 240: Principles and Methods for the Risk Assessment of Chemicals in Food",
+    "version_effective_date": "2009",
+    "verification_tier": "A",
+    "official_url": "https://www.who.int/publications/i/item/9789241572408",
+    "region_group": "INT",
+    "product_classes": [
+      "food_feed"
+    ],
+    "envirochem_modules": [
+      "regulatory_navigator",
+      "source_provenance"
+    ],
+    "implementation_note": "Register this official pathway for food chemicals. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier A.",
+    "source_review_status": "official_source_registered_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "INT-009",
+    "jurisdiction": "WHO",
+    "authority": "IPCS Harmonization Project",
+    "chemical_domain": "Human health",
+    "framework": "IPCS Harmonization Project guidance and terminology",
+    "version_effective_date": "Living collection",
+    "verification_tier": "A",
+    "official_url": "https://www.who.int/teams/environment-climate-change-and-health/chemical-safety-and-health/health-impacts/chemical-risk-assessment",
+    "region_group": "INT",
+    "product_classes": [
+      "cross_cutting"
+    ],
+    "envirochem_modules": [
+      "regulatory_navigator",
+      "source_provenance"
+    ],
+    "implementation_note": "Register this official pathway for human health. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier A.",
+    "source_review_status": "official_source_registered_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "INT-010",
+    "jurisdiction": "WHO",
+    "authority": "International Agency for Research on Cancer (IARC)",
+    "chemical_domain": "Carcinogenicity",
+    "framework": "IARC Monographs and Preamble",
+    "version_effective_date": "Preamble amended 2019; monographs ongoing",
+    "verification_tier": "A",
+    "official_url": "https://monographs.iarc.who.int/iarc-monographs-preamble-preamble-to-the-iarc-monographs/",
+    "region_group": "INT",
+    "product_classes": [
+      "cross_cutting"
+    ],
+    "envirochem_modules": [
+      "regulatory_navigator",
+      "source_provenance"
+    ],
+    "implementation_note": "Register this official pathway for carcinogenicity. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier A.",
+    "source_review_status": "official_source_registered_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "INT-011",
+    "jurisdiction": "FAO",
+    "authority": "FAO",
+    "chemical_domain": "Pesticides",
+    "framework": "FAO Pesticide Registration Toolkit",
+    "version_effective_date": "Living toolkit",
+    "verification_tier": "A",
+    "official_url": "https://www.fao.org/pesticide-registration-toolkit/en/",
+    "region_group": "INT",
+    "product_classes": [
+      "pesticides"
+    ],
+    "envirochem_modules": [
+      "application_scenario",
+      "ecotox",
+      "groundwater",
+      "model_orchestration",
+      "regulatory_navigator",
+      "sediment",
+      "source_provenance",
+      "surface_water"
+    ],
+    "implementation_note": "The FAO toolkit supports product-class-first routing for pesticides, data requirement selection, dossier review, risk mitigation and decision support. EnviroChem should provide a registration pathway rather than one universal pesticide assessment.",
+    "source_review_status": "official_source_reviewed",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "INT-012",
+    "jurisdiction": "FAO / WHO",
+    "authority": "Joint FAO/WHO Meeting on Pesticide Residues (JMPR)",
+    "chemical_domain": "Pesticide residues in food",
+    "framework": "JMPR guidance, reports and evaluations",
+    "version_effective_date": "2025 JMPR outputs available in 2026",
+    "verification_tier": "A",
+    "official_url": "https://www.fao.org/agriculture/crops/thematic-sitemap/theme/pests/jmpr/en/",
+    "region_group": "INT",
+    "product_classes": [
+      "pesticides",
+      "food_feed"
+    ],
+    "envirochem_modules": [
+      "application_scenario",
+      "ecotox",
+      "groundwater",
+      "model_orchestration",
+      "regulatory_navigator",
+      "sediment",
+      "source_provenance",
+      "surface_water"
+    ],
+    "implementation_note": "Register this official pathway for pesticide residues in food. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier A.",
+    "source_review_status": "official_source_registered_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "INT-013",
+    "jurisdiction": "FAO / WHO",
+    "authority": "Joint FAO/WHO Expert Committee on Food Additives (JECFA)",
+    "chemical_domain": "Food additives, contaminants and veterinary drug residues",
+    "framework": "JECFA methods, reports and database",
+    "version_effective_date": "102nd meeting held June 2026",
+    "verification_tier": "A",
+    "official_url": "https://www.who.int/groups/joint-fao-who-expert-committee-on-food-additives-(jecfa)",
+    "region_group": "INT",
+    "product_classes": [
+      "veterinary_pharmaceuticals",
+      "food_feed"
+    ],
+    "envirochem_modules": [
+      "regulatory_navigator",
+      "source_provenance"
+    ],
+    "implementation_note": "Register this official pathway for food additives, contaminants and veterinary drug residues. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier A.",
+    "source_review_status": "official_source_registered_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "INT-014",
+    "jurisdiction": "FAO / WHO",
+    "authority": "Codex Alimentarius Commission",
+    "chemical_domain": "Food and feed",
+    "framework": "Codex Procedural Manual and risk-analysis principles",
+    "version_effective_date": "31st edition current at snapshot",
+    "verification_tier": "A",
+    "official_url": "https://www.fao.org/fao-who-codexalimentarius/publications/en/",
+    "region_group": "INT",
+    "product_classes": [
+      "food_feed"
+    ],
+    "envirochem_modules": [
+      "regulatory_navigator",
+      "source_provenance"
+    ],
+    "implementation_note": "Register this official pathway for food and feed. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier A.",
+    "source_review_status": "official_source_registered_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "INT-015",
+    "jurisdiction": "WHO",
+    "authority": "WHO",
+    "chemical_domain": "Drinking water",
+    "framework": "Guidelines for Drinking-water Quality",
+    "version_effective_date": "4th edition incorporating addenda",
+    "verification_tier": "A",
+    "official_url": "https://www.who.int/publications/i/item/9789241549950",
+    "region_group": "INT",
+    "product_classes": [
+      "cross_cutting"
+    ],
+    "envirochem_modules": [
+      "regulatory_navigator",
+      "source_provenance"
+    ],
+    "implementation_note": "Register this official pathway for drinking water. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier A.",
+    "source_review_status": "official_source_registered_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "INT-016",
+    "jurisdiction": "WHO",
+    "authority": "WHO",
+    "chemical_domain": "Air pollutants",
+    "framework": "WHO Global Air Quality Guidelines",
+    "version_effective_date": "2021",
+    "verification_tier": "A",
+    "official_url": "https://www.who.int/publications/i/item/9789240034228",
+    "region_group": "INT",
+    "product_classes": [
+      "cross_cutting"
+    ],
+    "envirochem_modules": [
+      "regulatory_navigator",
+      "source_provenance"
+    ],
+    "implementation_note": "Register this official pathway for air pollutants. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier A.",
+    "source_review_status": "official_source_registered_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "INT-017",
+    "jurisdiction": "IOMC",
+    "authority": "Inter-Organization Programme for the Sound Management of Chemicals",
+    "chemical_domain": "National chemicals management",
+    "framework": "IOMC Toolbox for Decision Making in Chemicals Management",
+    "version_effective_date": "Living toolkit",
+    "verification_tier": "A",
+    "official_url": "https://iomctoolbox.org/",
+    "region_group": "INT",
+    "product_classes": [
+      "cross_cutting"
+    ],
+    "envirochem_modules": [
+      "regulatory_navigator",
+      "source_provenance"
+    ],
+    "implementation_note": "Register this official pathway for national chemicals management. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier A.",
+    "source_review_status": "official_source_registered_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "INT-018",
+    "jurisdiction": "UNEP / GFC partners",
+    "authority": "Global Framework on Chemicals",
+    "chemical_domain": "Lifecycle chemicals management",
+    "framework": "Global Framework on Chemicals - For a Planet Free of Harm from Chemicals and Waste",
+    "version_effective_date": "Adopted 2023",
+    "verification_tier": "A",
+    "official_url": "https://www.chemicalsframework.org/",
+    "region_group": "INT",
+    "product_classes": [
+      "cross_cutting"
+    ],
+    "envirochem_modules": [
+      "regulatory_navigator",
+      "source_provenance"
+    ],
+    "implementation_note": "Register this official pathway for lifecycle chemicals management. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier A.",
+    "source_review_status": "official_source_registered_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "INT-019",
+    "jurisdiction": "UN treaty",
+    "authority": "Stockholm Convention",
+    "chemical_domain": "Persistent organic pollutants",
+    "framework": "Convention guidance and POPs review/evaluation documents",
+    "version_effective_date": "Living annexes and guidance",
+    "verification_tier": "A",
+    "official_url": "https://www.pops.int/",
+    "region_group": "INT",
+    "product_classes": [
+      "pops"
+    ],
+    "envirochem_modules": [
+      "bioaccumulation",
+      "mobility",
+      "pbt_pmt_screen",
+      "persistence",
+      "regulatory_navigator",
+      "source_provenance"
+    ],
+    "implementation_note": "Register this official pathway for persistent organic pollutants. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier A.",
+    "source_review_status": "official_source_registered_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "INT-020",
+    "jurisdiction": "UN treaty",
+    "authority": "Rotterdam Convention",
+    "chemical_domain": "Hazardous chemicals and pesticides in trade",
+    "framework": "Decision guidance documents and prior informed consent procedure",
+    "version_effective_date": "Living annexes and guidance",
+    "verification_tier": "A",
+    "official_url": "https://www.pic.int/",
+    "region_group": "INT",
+    "product_classes": [
+      "pesticides"
+    ],
+    "envirochem_modules": [
+      "application_scenario",
+      "ecotox",
+      "groundwater",
+      "model_orchestration",
+      "regulatory_navigator",
+      "sediment",
+      "source_provenance",
+      "surface_water"
+    ],
+    "implementation_note": "Register this official pathway for hazardous chemicals and pesticides in trade. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier A.",
+    "source_review_status": "official_source_registered_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "INT-021",
+    "jurisdiction": "UN treaty",
+    "authority": "Basel Convention",
+    "chemical_domain": "Hazardous waste",
+    "framework": "Technical guidelines under the Basel Convention",
+    "version_effective_date": "Living technical-guideline collection",
+    "verification_tier": "A",
+    "official_url": "https://www.basel.int/Implementation/TechnicalMatters/DevelopmentofTechnicalGuidelines/Overview/tabid/2374/Default.aspx",
+    "region_group": "INT",
+    "product_classes": [
+      "waste"
+    ],
+    "envirochem_modules": [
+      "regulatory_navigator",
+      "source_provenance"
+    ],
+    "implementation_note": "Register this official pathway for hazardous waste. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier A.",
+    "source_review_status": "official_source_registered_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "INT-022",
+    "jurisdiction": "UN treaty",
+    "authority": "Minamata Convention",
+    "chemical_domain": "Mercury",
+    "framework": "Minamata Convention guidance documents",
+    "version_effective_date": "Living guidance collection",
+    "verification_tier": "A",
+    "official_url": "https://minamataconvention.org/en/resources/guidance-documents",
+    "region_group": "INT",
+    "product_classes": [
+      "metals"
+    ],
+    "envirochem_modules": [
+      "applicability_domain",
+      "predicted_data",
+      "read_across",
+      "regulatory_navigator",
+      "source_provenance"
+    ],
+    "implementation_note": "Register this official pathway for mercury. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier A.",
+    "source_review_status": "official_source_registered_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "INT-023",
+    "jurisdiction": "VICH",
+    "authority": "International Cooperation on Harmonisation of Technical Requirements for Registration of Veterinary Medicinal Products",
+    "chemical_domain": "Veterinary pharmaceuticals",
+    "framework": "VICH GL6: Environmental Impact Assessment Phase I",
+    "version_effective_date": "June 2000",
+    "verification_tier": "A",
+    "official_url": "https://vichsec.org/en/guidelines/pharmaceuticals/pharma-safety/environmental-safety/gl6.html",
+    "region_group": "INT",
+    "product_classes": [
+      "veterinary_pharmaceuticals"
+    ],
+    "envirochem_modules": [
+      "metabolism_excretion",
+      "pnec",
+      "regulatory_navigator",
+      "simpletreat",
+      "soil",
+      "source_provenance",
+      "spc_emissions",
+      "surface_water"
+    ],
+    "implementation_note": "VICH GL6 supplies the Phase I veterinary medicine environmental screen. Implement a dedicated veterinary pharmaceutical ruleset and Phase I trigger logic.",
+    "source_review_status": "implementation_note_curated_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "INT-024",
+    "jurisdiction": "VICH",
+    "authority": "VICH",
+    "chemical_domain": "Veterinary pharmaceuticals",
+    "framework": "VICH GL38: Environmental Impact Assessment Phase II",
+    "version_effective_date": "October 2004",
+    "verification_tier": "A",
+    "official_url": "https://vichsec.org/en/guidelines/pharmaceuticals/pharma-safety/environmental-safety/gl38.html",
+    "region_group": "INT",
+    "product_classes": [
+      "veterinary_pharmaceuticals"
+    ],
+    "envirochem_modules": [
+      "metabolism_excretion",
+      "pnec",
+      "regulatory_navigator",
+      "simpletreat",
+      "soil",
+      "source_provenance",
+      "spc_emissions",
+      "surface_water"
+    ],
+    "implementation_note": "VICH GL38 supplies Phase II veterinary environmental assessment. Parent, metabolites, manure/soil pathways and species-specific use scenarios need explicit records.",
+    "source_review_status": "implementation_note_curated_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "INT-025",
+    "jurisdiction": "ICH",
+    "authority": "International Council for Harmonisation",
+    "chemical_domain": "Pharmaceutical quality",
+    "framework": "ICH Q9(R1) Quality Risk Management",
+    "version_effective_date": "R1 adopted 2023",
+    "verification_tier": "A",
+    "official_url": "https://www.ich.org/page/quality-guidelines",
+    "region_group": "INT",
+    "product_classes": [
+      "human_pharmaceuticals",
+      "veterinary_pharmaceuticals"
+    ],
+    "envirochem_modules": [
+      "metabolism_excretion",
+      "pnec",
+      "regulatory_navigator",
+      "simpletreat",
+      "soil",
+      "source_provenance",
+      "spc_emissions",
+      "surface_water"
+    ],
+    "implementation_note": "Register this official pathway for pharmaceutical quality. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier A.",
+    "source_review_status": "official_source_registered_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "INT-026",
+    "jurisdiction": "ICH",
+    "authority": "ICH",
+    "chemical_domain": "Pharmaceutical impurities",
+    "framework": "ICH Q3C: Residual Solvents",
+    "version_effective_date": "Current revision on ICH portal",
+    "verification_tier": "A",
+    "official_url": "https://www.ich.org/page/quality-guidelines",
+    "region_group": "INT",
+    "product_classes": [
+      "cross_cutting"
+    ],
+    "envirochem_modules": [
+      "metabolism_excretion",
+      "pnec",
+      "regulatory_navigator",
+      "simpletreat",
+      "soil",
+      "source_provenance",
+      "spc_emissions",
+      "surface_water"
+    ],
+    "implementation_note": "Register this official pathway for pharmaceutical impurities. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier A.",
+    "source_review_status": "official_source_registered_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "INT-027",
+    "jurisdiction": "ICH",
+    "authority": "ICH",
+    "chemical_domain": "Pharmaceutical impurities",
+    "framework": "ICH Q3D: Elemental Impurities",
+    "version_effective_date": "Current revision on ICH portal",
+    "verification_tier": "A",
+    "official_url": "https://www.ich.org/page/quality-guidelines",
+    "region_group": "INT",
+    "product_classes": [
+      "cross_cutting"
+    ],
+    "envirochem_modules": [
+      "metabolism_excretion",
+      "pnec",
+      "regulatory_navigator",
+      "simpletreat",
+      "soil",
+      "source_provenance",
+      "spc_emissions",
+      "surface_water"
+    ],
+    "implementation_note": "Register this official pathway for pharmaceutical impurities. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier A.",
+    "source_review_status": "official_source_registered_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "INT-028",
+    "jurisdiction": "ISO",
+    "authority": "International Organization for Standardization",
+    "chemical_domain": "Enterprise risk management",
+    "framework": "ISO 31000 Risk management - Guidelines",
+    "version_effective_date": "ISO 31000:2018",
+    "verification_tier": "A",
+    "official_url": "https://www.iso.org/iso-31000-risk-management.html",
+    "region_group": "INT",
+    "product_classes": [
+      "cross_cutting"
+    ],
+    "envirochem_modules": [
+      "regulatory_navigator",
+      "source_provenance"
+    ],
+    "implementation_note": "Register this official pathway for enterprise risk management. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier A.",
+    "source_review_status": "official_source_registered_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "INT-029",
+    "jurisdiction": "ISO",
+    "authority": "ISO",
+    "chemical_domain": "Medical devices",
+    "framework": "ISO 14971:2019 Medical devices - Application of risk management to medical devices",
+    "version_effective_date": "2019",
+    "verification_tier": "A",
+    "official_url": "https://www.iso.org/standard/72704.html",
+    "region_group": "INT",
+    "product_classes": [
+      "medical_devices"
+    ],
+    "envirochem_modules": [
+      "regulatory_navigator",
+      "source_provenance"
+    ],
+    "implementation_note": "Register this official pathway for medical devices. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier A.",
+    "source_review_status": "official_source_registered_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "INT-030",
+    "jurisdiction": "ISO",
+    "authority": "ISO",
+    "chemical_domain": "Medical devices toxicology",
+    "framework": "ISO 10993-17:2023 Biological evaluation of medical devices - Toxicological risk assessment of medical device constituents",
+    "version_effective_date": "2023",
+    "verification_tier": "A",
+    "official_url": "https://www.iso.org/standard/75323.html",
+    "region_group": "INT",
+    "product_classes": [
+      "medical_devices"
+    ],
+    "envirochem_modules": [
+      "regulatory_navigator",
+      "source_provenance"
+    ],
+    "implementation_note": "Register this official pathway for medical devices toxicology. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier A.",
+    "source_review_status": "official_source_registered_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "INT-031",
+    "jurisdiction": "ILO / WHO",
+    "authority": "International Labour Organization",
+    "chemical_domain": "Occupational chemicals",
+    "framework": "International Chemical Safety Cards (ICSCs)",
+    "version_effective_date": "Living collection",
+    "verification_tier": "A",
+    "official_url": "https://chemicalsafety.ilo.org/dyn/icsc/showcard.home",
+    "region_group": "INT",
+    "product_classes": [
+      "workplace"
+    ],
+    "envirochem_modules": [
+      "coshh",
+      "regulatory_navigator",
+      "sds",
+      "source_provenance",
+      "task_risk_assessment"
+    ],
+    "implementation_note": "Register this official pathway for occupational chemicals. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier A.",
+    "source_review_status": "official_source_registered_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "INT-032",
+    "jurisdiction": "UNEP",
+    "authority": "UN Environment Programme",
+    "chemical_domain": "Chemicals and waste",
+    "framework": "UNEP Chemicals and Pollution Action portal",
+    "version_effective_date": "Living portal",
+    "verification_tier": "A",
+    "official_url": "https://www.unep.org/explore-topics/chemicals-waste",
+    "region_group": "INT",
+    "product_classes": [
+      "cross_cutting"
+    ],
+    "envirochem_modules": [
+      "regulatory_navigator",
+      "source_provenance"
+    ],
+    "implementation_note": "Register this official pathway for chemicals and waste. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier A.",
+    "source_review_status": "official_source_registered_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "EUR-001",
+    "jurisdiction": "European Union / EEA",
+    "authority": "European Chemicals Agency (ECHA)",
+    "chemical_domain": "Industrial chemicals",
+    "framework": "REACH Guidance Documents",
+    "version_effective_date": "Living collection",
+    "verification_tier": "A",
+    "official_url": "https://echa.europa.eu/guidance-documents/guidance-on-reach",
+    "region_group": "EUR",
+    "product_classes": [
+      "industrial_chemicals"
+    ],
+    "envirochem_modules": [
+      "environmental_exposure",
+      "identity_resolution",
+      "property_evidence",
+      "regulatory_navigator",
+      "risk_report",
+      "source_provenance"
+    ],
+    "implementation_note": "EU REACH is a living modular framework. Build versioned guidance packs and never label a run simply 'REACH' without the chapter/version and tonnage/use context.",
+    "source_review_status": "implementation_note_curated_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "EUR-002",
+    "jurisdiction": "European Union / EEA",
+    "authority": "ECHA",
+    "chemical_domain": "Industrial chemicals",
+    "framework": "Guidance on Information Requirements and Chemical Safety Assessment (IR&CSA)",
+    "version_effective_date": "Modular chapters; check each chapter version",
+    "verification_tier": "A",
+    "official_url": "https://echa.europa.eu/guidance-documents/guidance-on-information-requirements-and-chemical-safety-assessment",
+    "region_group": "EUR",
+    "product_classes": [
+      "industrial_chemicals"
+    ],
+    "envirochem_modules": [
+      "environmental_exposure",
+      "identity_resolution",
+      "property_evidence",
+      "regulatory_navigator",
+      "risk_report",
+      "source_provenance"
+    ],
+    "implementation_note": "IR&CSA is the core source for EU chemical safety assessment. Map each chapter to data requirements, exposure scenarios, PEC/PNEC, risk characterisation and uncertainty.",
+    "source_review_status": "implementation_note_curated_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "EUR-003",
+    "jurisdiction": "European Union / EEA",
+    "authority": "ECHA",
+    "chemical_domain": "Classification and labelling",
+    "framework": "Guidance on the Application of the CLP Criteria",
+    "version_effective_date": "Living guidance; verify part/version",
+    "verification_tier": "A",
+    "official_url": "https://echa.europa.eu/guidance-documents/guidance-on-clp",
+    "region_group": "EUR",
+    "product_classes": [
+      "classification_labelling"
+    ],
+    "envirochem_modules": [
+      "classification_labelling",
+      "regulatory_navigator",
+      "sds",
+      "source_provenance"
+    ],
+    "implementation_note": "CLP guidance controls classification interpretation. Keep hazard classification and environmental exposure calculations separate but linked.",
+    "source_review_status": "implementation_note_curated_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "EUR-004",
+    "jurisdiction": "European Union / EEA",
+    "authority": "ECHA",
+    "chemical_domain": "Biocides",
+    "framework": "Guidance on the Biocidal Products Regulation",
+    "version_effective_date": "Living guidance collection",
+    "verification_tier": "A",
+    "official_url": "https://echa.europa.eu/guidance-documents/guidance-on-biocides-legislation",
+    "region_group": "EUR",
+    "product_classes": [
+      "biocides"
+    ],
+    "envirochem_modules": [
+      "ecotox",
+      "environmental_exposure",
+      "regulatory_navigator",
+      "simpletreat",
+      "source_provenance",
+      "use_scenario"
+    ],
+    "implementation_note": "Biocides require product-type/use-specific environmental assessment. Add BPR product type, use pattern and release scenario fields.",
+    "source_review_status": "implementation_note_curated_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "EUR-005",
+    "jurisdiction": "European Union",
+    "authority": "EFSA / European Commission",
+    "chemical_domain": "Plant protection products",
+    "framework": "Environmental risk assessment of pesticides",
+    "version_effective_date": "Living guidance collection",
+    "verification_tier": "A",
+    "official_url": "https://www.efsa.europa.eu/en/topics/environmental-risk-assessment-pesticides",
+    "region_group": "EUR",
+    "product_classes": [
+      "pesticides"
+    ],
+    "envirochem_modules": [
+      "application_scenario",
+      "ecotox",
+      "groundwater",
+      "model_orchestration",
+      "regulatory_navigator",
+      "sediment",
+      "source_provenance",
+      "surface_water"
+    ],
+    "implementation_note": "Plant protection assessments require EFSA/Commission guidance plus FOCUS exposure models. The pesticide workflow must be crop, application, scenario and tier specific.",
+    "source_review_status": "implementation_note_curated_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "EUR-006",
+    "jurisdiction": "European Union",
+    "authority": "European Commission JRC / FOCUS",
+    "chemical_domain": "Pesticide environmental exposure",
+    "framework": "FOCUS fate models and guidance",
+    "version_effective_date": "Portal refreshed in 2026; individual documents have own versions",
+    "verification_tier": "A",
+    "official_url": "https://esdac.jrc.ec.europa.eu/projects/focus-dg-sante",
+    "region_group": "EUR",
+    "product_classes": [
+      "pesticides",
+      "environmental_exposure"
+    ],
+    "envirochem_modules": [
+      "application_scenario",
+      "ecotox",
+      "groundwater",
+      "model_orchestration",
+      "regulatory_navigator",
+      "scenario_registry",
+      "sediment",
+      "source_provenance",
+      "surface_water",
+      "tier_comparison"
+    ],
+    "implementation_note": "FOCUS is a model-and-scenario system, not just a list of executables. Preserve scenario versions, weather/crop data, model versions and step/tier.",
+    "source_review_status": "implementation_note_curated_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "EUR-007",
+    "jurisdiction": "European Union",
+    "authority": "FOCUS / JRC",
+    "chemical_domain": "Pesticide groundwater",
+    "framework": "FOCUS Groundwater guidance and models (PEARL, PELMO, MACRO)",
+    "version_effective_date": "Generic Tier 1 guidance v2.4 referenced on portal",
+    "verification_tier": "A",
+    "official_url": "https://esdac.jrc.ec.europa.eu/projects/ground-water",
+    "region_group": "EUR",
+    "product_classes": [
+      "pesticides"
+    ],
+    "envirochem_modules": [
+      "application_scenario",
+      "ecotox",
+      "groundwater",
+      "model_orchestration",
+      "regulatory_navigator",
+      "scenario_registry",
+      "sediment",
+      "source_provenance",
+      "surface_water",
+      "tier_comparison"
+    ],
+    "implementation_note": "Groundwater workflow should orchestrate PEARL, PELMO and MACRO with standard FOCUS scenarios and allow refined/site-specific comparison only when permitted.",
+    "source_review_status": "implementation_note_curated_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "EUR-008",
+    "jurisdiction": "European Union",
+    "authority": "FOCUS / JRC",
+    "chemical_domain": "Pesticide surface water",
+    "framework": "FOCUS Surface Water guidance and models (PRZM, MACRO, TOXSWA, SWASH)",
+    "version_effective_date": "Individual model/guidance versions vary",
+    "verification_tier": "A",
+    "official_url": "https://esdac.jrc.ec.europa.eu/projects/surface-water",
+    "region_group": "EUR",
+    "product_classes": [
+      "pesticides"
+    ],
+    "envirochem_modules": [
+      "application_scenario",
+      "ecotox",
+      "groundwater",
+      "model_orchestration",
+      "regulatory_navigator",
+      "scenario_registry",
+      "sediment",
+      "source_provenance",
+      "surface_water",
+      "tier_comparison"
+    ],
+    "implementation_note": "Surface-water workflow should orchestrate PRZM/MACRO loading and TOXSWA fate, preserving SWASH/FOCUS scenario assumptions and time-weighted outputs.",
+    "source_review_status": "implementation_note_curated_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "EUR-009",
+    "jurisdiction": "European Union",
+    "authority": "EFSA",
+    "chemical_domain": "Pesticides; food safety",
+    "framework": "Pesticide risk-assessment guidance and tools",
+    "version_effective_date": "Living guidance collection",
+    "verification_tier": "A",
+    "official_url": "https://www.efsa.europa.eu/en/applications/pesticides/tools",
+    "region_group": "EUR",
+    "product_classes": [
+      "pesticides",
+      "food_feed"
+    ],
+    "envirochem_modules": [
+      "application_scenario",
+      "ecotox",
+      "groundwater",
+      "model_orchestration",
+      "regulatory_navigator",
+      "sediment",
+      "source_provenance",
+      "surface_water"
+    ],
+    "implementation_note": "Register this official pathway for pesticides; food safety. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier A.",
+    "source_review_status": "official_source_registered_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "EUR-010",
+    "jurisdiction": "European Union",
+    "authority": "EFSA",
+    "chemical_domain": "Chemical mixtures",
+    "framework": "Guidance on harmonised methodologies for human health, animal health and ecological risk assessment of combined exposure to multiple chemicals",
+    "version_effective_date": "2019; supporting guidance/tools updated subsequently",
+    "verification_tier": "A",
+    "official_url": "https://www.efsa.europa.eu/en/topics/topic/chemical-mixtures",
+    "region_group": "EUR",
+    "product_classes": [
+      "ecological_risk"
+    ],
+    "envirochem_modules": [
+      "mixture_assessment",
+      "regulatory_navigator",
+      "source_provenance"
+    ],
+    "implementation_note": "Register this official pathway for chemical mixtures. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier A.",
+    "source_review_status": "official_source_registered_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "EUR-011",
+    "jurisdiction": "European Union",
+    "authority": "EFSA",
+    "chemical_domain": "Food and feed chemicals",
+    "framework": "EFSA chemicals-in-food methodology and OpenFoodTox",
+    "version_effective_date": "OpenFoodTox 2025 dataset noted by EFSA",
+    "verification_tier": "A",
+    "official_url": "https://www.efsa.europa.eu/en/topics/topic/chemicals-food",
+    "region_group": "EUR",
+    "product_classes": [
+      "food_feed"
+    ],
+    "envirochem_modules": [
+      "regulatory_navigator",
+      "source_provenance"
+    ],
+    "implementation_note": "Register this official pathway for food and feed chemicals. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier A.",
+    "source_review_status": "official_source_registered_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "EUR-012",
+    "jurisdiction": "European Union",
+    "authority": "EFSA",
+    "chemical_domain": "Food-contact materials",
+    "framework": "Food Contact Materials guidance and application procedures",
+    "version_effective_date": "Application guidance republished 2021; portal current",
+    "verification_tier": "A",
+    "official_url": "https://www.efsa.europa.eu/en/topics/topic/food-contact-materials",
+    "region_group": "EUR",
+    "product_classes": [
+      "food_feed"
+    ],
+    "envirochem_modules": [
+      "regulatory_navigator",
+      "source_provenance"
+    ],
+    "implementation_note": "Register this official pathway for food-contact materials. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier A.",
+    "source_review_status": "official_source_registered_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "EUR-013",
+    "jurisdiction": "European Union",
+    "authority": "European Medicines Agency (EMA)",
+    "chemical_domain": "Human pharmaceuticals",
+    "framework": "Guideline on the environmental risk assessment of medicinal products for human use",
+    "version_effective_date": "Effective 1 September 2024",
+    "verification_tier": "A",
+    "official_url": "https://www.ema.europa.eu/en/environmental-risk-assessment-medicinal-products-human-use-scientific-guideline",
+    "region_group": "EUR",
+    "product_classes": [
+      "human_pharmaceuticals"
+    ],
+    "envirochem_modules": [
+      "metabolism_excretion",
+      "pnec",
+      "regulatory_navigator",
+      "simpletreat",
+      "soil",
+      "source_provenance",
+      "spc_emissions",
+      "surface_water"
+    ],
+    "implementation_note": "EMA's current human-medicinal-product ERA guideline is effective from 1 September 2024 and uses Phase I/Phase II, PEC, PBT and risk concepts. Implement as a dedicated versioned pharmaceutical ruleset, not a generic REACH scenario.",
+    "source_review_status": "official_source_reviewed",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "EUR-014",
+    "jurisdiction": "European Union",
+    "authority": "EMA",
+    "chemical_domain": "Veterinary pharmaceuticals",
+    "framework": "Environmental risk assessment for veterinary medicines",
+    "version_effective_date": "Living guidance collection",
+    "verification_tier": "A",
+    "official_url": "https://www.ema.europa.eu/en/veterinary-regulatory-overview/marketing-authorisation-veterinary-medicines/environmental-risk-assessment-veterinary-medicines",
+    "region_group": "EUR",
+    "product_classes": [
+      "veterinary_pharmaceuticals"
+    ],
+    "envirochem_modules": [
+      "metabolism_excretion",
+      "pnec",
+      "regulatory_navigator",
+      "simpletreat",
+      "soil",
+      "source_provenance",
+      "spc_emissions",
+      "surface_water"
+    ],
+    "implementation_note": "Register this official pathway for veterinary pharmaceuticals. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier A.",
+    "source_review_status": "official_source_registered_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "EUR-015",
+    "jurisdiction": "European Union",
+    "authority": "Scientific Committee on Consumer Safety (SCCS)",
+    "chemical_domain": "Cosmetics",
+    "framework": "SCCS Notes of Guidance for testing cosmetic ingredients and safety evaluation, 12th revision",
+    "version_effective_date": "12th revision May 2023; corrigendum December 2023",
+    "verification_tier": "A",
+    "official_url": "https://health.ec.europa.eu/publications/sccs-notes-guidance-testing-cosmetic-ingredients-and-their-safety-evaluation-12th-revision_en",
+    "region_group": "EUR",
+    "product_classes": [
+      "cosmetics"
+    ],
+    "envirochem_modules": [
+      "regulatory_navigator",
+      "source_provenance"
+    ],
+    "implementation_note": "Register this official pathway for cosmetics. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier A.",
+    "source_review_status": "official_source_registered_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "EUR-016",
+    "jurisdiction": "European Union",
+    "authority": "EU-OSHA / national labour authorities",
+    "chemical_domain": "Occupational chemicals",
+    "framework": "Dangerous substances risk-assessment tools and OSH framework",
+    "version_effective_date": "E-tool updated in 2026",
+    "verification_tier": "A",
+    "official_url": "https://osha.europa.eu/en/themes/dangerous-substances",
+    "region_group": "EUR",
+    "product_classes": [
+      "workplace"
+    ],
+    "envirochem_modules": [
+      "coshh",
+      "regulatory_navigator",
+      "sds",
+      "source_provenance",
+      "task_risk_assessment"
+    ],
+    "implementation_note": "Register this official pathway for occupational chemicals. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier A.",
+    "source_review_status": "official_source_registered_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "EUR-017",
+    "jurisdiction": "United Kingdom (Great Britain)",
+    "authority": "Health and Safety Executive (HSE)",
+    "chemical_domain": "Industrial chemicals",
+    "framework": "UK REACH guidance and evaluation approach",
+    "version_effective_date": "Portal updated 2025-2026",
+    "verification_tier": "A",
+    "official_url": "https://www.hse.gov.uk/reach/",
+    "region_group": "EUR",
+    "product_classes": [
+      "industrial_chemicals"
+    ],
+    "envirochem_modules": [
+      "environmental_exposure",
+      "identity_resolution",
+      "property_evidence",
+      "regulatory_navigator",
+      "risk_report",
+      "source_provenance"
+    ],
+    "implementation_note": "UK REACH is autonomous for Great Britain. Store UK-specific legal status, registration context and current HSE guidance; do not silently reuse EU submission assumptions.",
+    "source_review_status": "official_source_reviewed",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "EUR-018",
+    "jurisdiction": "United Kingdom",
+    "authority": "HSE / Environment Agency",
+    "chemical_domain": "Biocides",
+    "framework": "GB Biocidal Products Regulation guidance",
+    "version_effective_date": "Living guidance collection",
+    "verification_tier": "A",
+    "official_url": "https://www.hse.gov.uk/biocides/applications/index.htm",
+    "region_group": "EUR",
+    "product_classes": [
+      "biocides"
+    ],
+    "envirochem_modules": [
+      "ecotox",
+      "environmental_exposure",
+      "regulatory_navigator",
+      "simpletreat",
+      "source_provenance",
+      "use_scenario"
+    ],
+    "implementation_note": "Register this official pathway for biocides. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier A.",
+    "source_review_status": "official_source_registered_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "EUR-019",
+    "jurisdiction": "United Kingdom",
+    "authority": "HSE Chemicals Regulation Division",
+    "chemical_domain": "Pesticides",
+    "framework": "Pesticide registration and risk-assessment guidance",
+    "version_effective_date": "Living guidance portal",
+    "verification_tier": "A",
+    "official_url": "https://www.hse.gov.uk/pesticides/",
+    "region_group": "EUR",
+    "product_classes": [
+      "pesticides"
+    ],
+    "envirochem_modules": [
+      "application_scenario",
+      "ecotox",
+      "groundwater",
+      "model_orchestration",
+      "regulatory_navigator",
+      "sediment",
+      "source_provenance",
+      "surface_water"
+    ],
+    "implementation_note": "Register this official pathway for pesticides. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier A.",
+    "source_review_status": "official_source_registered_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "EUR-020",
+    "jurisdiction": "United Kingdom",
+    "authority": "HSE",
+    "chemical_domain": "Occupational chemicals",
+    "framework": "COSHH risk assessment guidance",
+    "version_effective_date": "Living guidance portal",
+    "verification_tier": "A",
+    "official_url": "https://www.hse.gov.uk/coshh/basics/assessment.htm",
+    "region_group": "EUR",
+    "product_classes": [
+      "workplace"
+    ],
+    "envirochem_modules": [
+      "coshh",
+      "regulatory_navigator",
+      "sds",
+      "source_provenance",
+      "task_risk_assessment"
+    ],
+    "implementation_note": "COSHH is task-specific. SDS information is an input, not the assessment. The lab module must ask about actual operation, exposure routes, people, quantities, duration, controls and review triggers before drafting.",
+    "source_review_status": "official_source_reviewed",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "EUR-021",
+    "jurisdiction": "Switzerland",
+    "authority": "Federal chemicals authorities (FOEN/FOPH/SECO)",
+    "chemical_domain": "Industrial chemicals; biocides",
+    "framework": "Chemicals Ordinance (ChemO) guidance and notification authority portal",
+    "version_effective_date": "Living portal",
+    "verification_tier": "A",
+    "official_url": "https://www.anmeldestelle.admin.ch/en/chemicals-ordinance-chemo",
+    "region_group": "EUR",
+    "product_classes": [
+      "industrial_chemicals",
+      "biocides"
+    ],
+    "envirochem_modules": [
+      "ecotox",
+      "environmental_exposure",
+      "identity_resolution",
+      "property_evidence",
+      "regulatory_navigator",
+      "risk_report",
+      "simpletreat",
+      "source_provenance",
+      "use_scenario"
+    ],
+    "implementation_note": "Swiss ChemO is substantially harmonised with REACH/CLP but autonomous, with separate notification and restriction mechanisms. Link ChemO, ORRChem and the relevant EU provisions/version.",
+    "source_review_status": "official_source_reviewed",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "EUR-022",
+    "jurisdiction": "Türkiye",
+    "authority": "Ministry of Environment, Urbanisation and Climate Change",
+    "chemical_domain": "Industrial chemicals",
+    "framework": "KKDIK (Türkiye REACH) legislation and implementation guidance",
+    "version_effective_date": "Verify current deadlines and ministry notices",
+    "verification_tier": "B",
+    "official_url": "https://kimyasallar.csb.gov.tr/",
+    "region_group": "EUR",
+    "product_classes": [
+      "industrial_chemicals"
+    ],
+    "envirochem_modules": [
+      "environmental_exposure",
+      "identity_resolution",
+      "property_evidence",
+      "regulatory_navigator",
+      "risk_report",
+      "source_provenance"
+    ],
+    "implementation_note": "Register this official pathway for industrial chemicals. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier B.",
+    "source_review_status": "official_framework_registered_local_detail_required",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "EUR-023",
+    "jurisdiction": "Eurasian Economic Union",
+    "authority": "Eurasian Economic Commission / member-state authorities",
+    "chemical_domain": "Industrial chemicals",
+    "framework": "EAEU Technical Regulation 041/2017 on safety of chemical products",
+    "version_effective_date": "Verify in each EAEU member state",
+    "verification_tier": "B",
+    "official_url": "https://eec.eaeunion.org/en/comission/department/deptexreg/tr/",
+    "region_group": "EUR",
+    "product_classes": [
+      "industrial_chemicals"
+    ],
+    "envirochem_modules": [
+      "environmental_exposure",
+      "identity_resolution",
+      "property_evidence",
+      "regulatory_navigator",
+      "risk_report",
+      "source_provenance"
+    ],
+    "implementation_note": "Register this official pathway for industrial chemicals. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier B.",
+    "source_review_status": "official_framework_registered_local_detail_required",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "EUR-024",
+    "jurisdiction": "Ukraine",
+    "authority": "Ministry of Environmental Protection and Natural Resources",
+    "chemical_domain": "Industrial chemicals",
+    "framework": "Ukraine chemicals safety technical regulation / REACH-aligned reforms",
+    "version_effective_date": "Verify enactment and transition dates",
+    "verification_tier": "B",
+    "official_url": "https://mepr.gov.ua/en/",
+    "region_group": "EUR",
+    "product_classes": [
+      "industrial_chemicals"
+    ],
+    "envirochem_modules": [
+      "environmental_exposure",
+      "identity_resolution",
+      "property_evidence",
+      "regulatory_navigator",
+      "risk_report",
+      "source_provenance"
+    ],
+    "implementation_note": "Register this official pathway for industrial chemicals. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier B.",
+    "source_review_status": "official_framework_registered_local_detail_required",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "NAM-001",
+    "jurisdiction": "United States",
+    "authority": "US Environmental Protection Agency (EPA)",
+    "chemical_domain": "Cross-cutting chemical risk",
+    "framework": "EPA Risk Assessment Guidance portal",
+    "version_effective_date": "Updated 8 January 2026",
+    "verification_tier": "A",
+    "official_url": "https://www.epa.gov/risk/risk-assessment-guidance",
+    "region_group": "NAM",
+    "product_classes": [
+      "cross_cutting"
+    ],
+    "envirochem_modules": [
+      "regulatory_navigator",
+      "source_provenance"
+    ],
+    "implementation_note": "EPA risk-assessment guidance is programme-specific. The US pathway must identify the governing programme before selecting methods or models.",
+    "source_review_status": "implementation_note_curated_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "NAM-002",
+    "jurisdiction": "United States",
+    "authority": "US EPA Office of Pollution Prevention and Toxics",
+    "chemical_domain": "Industrial chemicals",
+    "framework": "TSCA Risk Evaluations for Existing Chemicals",
+    "version_effective_date": "Living programme",
+    "verification_tier": "A",
+    "official_url": "https://www.epa.gov/assessing-and-managing-chemicals-under-tsca/risk-evaluations-existing-chemicals-under-tsca",
+    "region_group": "NAM",
+    "product_classes": [
+      "industrial_chemicals"
+    ],
+    "envirochem_modules": [
+      "environmental_exposure",
+      "identity_resolution",
+      "property_evidence",
+      "regulatory_navigator",
+      "risk_report",
+      "source_provenance"
+    ],
+    "implementation_note": "TSCA existing-chemical risk evaluations require condition-of-use, exposure, hazard and risk-characterisation records. Add condition-of-use and potentially exposed population fields.",
+    "source_review_status": "implementation_note_curated_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "NAM-003",
+    "jurisdiction": "United States",
+    "authority": "US EPA",
+    "chemical_domain": "Pesticides",
+    "framework": "Guidance for Human Health Risk Assessments for Pesticides",
+    "version_effective_date": "Updated content through 2026",
+    "verification_tier": "A",
+    "official_url": "https://www.epa.gov/pesticide-science-and-assessing-pesticide-risks/guidance-human-health-risk-assessments-pesticides",
+    "region_group": "NAM",
+    "product_classes": [
+      "pesticides"
+    ],
+    "envirochem_modules": [
+      "application_scenario",
+      "ecotox",
+      "groundwater",
+      "model_orchestration",
+      "regulatory_navigator",
+      "sediment",
+      "source_provenance",
+      "surface_water"
+    ],
+    "implementation_note": "Register this official pathway for pesticides. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier A.",
+    "source_review_status": "official_source_registered_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "NAM-004",
+    "jurisdiction": "United States",
+    "authority": "US EPA",
+    "chemical_domain": "Pesticides",
+    "framework": "Technical Overview of Ecological Risk Assessment for the Pesticide Program",
+    "version_effective_date": "Living guidance",
+    "verification_tier": "A",
+    "official_url": "https://www.epa.gov/pesticide-science-and-assessing-pesticide-risks/technical-overview-ecological-risk-assessment",
+    "region_group": "NAM",
+    "product_classes": [
+      "pesticides",
+      "ecological_risk"
+    ],
+    "envirochem_modules": [
+      "application_scenario",
+      "ecotox",
+      "groundwater",
+      "model_orchestration",
+      "regulatory_navigator",
+      "sediment",
+      "source_provenance",
+      "surface_water"
+    ],
+    "implementation_note": "EPA pesticide ecological assessment is tiered. Preserve screening assumptions, refinement triggers, taxa/endpoints and mitigation decisions.",
+    "source_review_status": "implementation_note_curated_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "NAM-005",
+    "jurisdiction": "United States",
+    "authority": "US EPA",
+    "chemical_domain": "Pesticide environmental exposure",
+    "framework": "Models and databases used in pesticide risk assessment",
+    "version_effective_date": "Updated 2025-2026",
+    "verification_tier": "A",
+    "official_url": "https://www.epa.gov/pesticide-science-and-assessing-pesticide-risks/models-and-databases-used-pesticide-risk-assessment",
+    "region_group": "NAM",
+    "product_classes": [
+      "pesticides",
+      "environmental_exposure"
+    ],
+    "envirochem_modules": [
+      "application_scenario",
+      "ecotox",
+      "groundwater",
+      "model_orchestration",
+      "regulatory_navigator",
+      "scenario_registry",
+      "sediment",
+      "source_provenance",
+      "surface_water",
+      "tier_comparison"
+    ],
+    "implementation_note": "EPA model selection spans aquatic, terrestrial, atmospheric and health models. PWC is current for water exposure; legacy PRZM/EXAMS may be retained for reproducibility with clear status labels.",
+    "source_review_status": "official_source_reviewed",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "NAM-006",
+    "jurisdiction": "United States",
+    "authority": "US EPA",
+    "chemical_domain": "Test methods",
+    "framework": "OCSPP Harmonized Test Guidelines",
+    "version_effective_date": "Verify individual guideline revisions",
+    "verification_tier": "A",
+    "official_url": "https://www.epa.gov/test-guidelines-pesticides-and-toxic-substances",
+    "region_group": "NAM",
+    "product_classes": [
+      "cross_cutting"
+    ],
+    "envirochem_modules": [
+      "regulatory_navigator",
+      "source_provenance"
+    ],
+    "implementation_note": "OCSPP harmonised guidelines should be stored by guideline number and revision, with OECD equivalence/crosswalk where applicable.",
+    "source_review_status": "implementation_note_curated_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "NAM-007",
+    "jurisdiction": "United States",
+    "authority": "US EPA Superfund",
+    "chemical_domain": "Contaminated land",
+    "framework": "Risk Assessment Guidance for Superfund (RAGS)",
+    "version_effective_date": "Living portal",
+    "verification_tier": "A",
+    "official_url": "https://www.epa.gov/risk/risk-assessment-guidance-superfund-rags",
+    "region_group": "NAM",
+    "product_classes": [
+      "contaminated_sites"
+    ],
+    "envirochem_modules": [
+      "regulatory_navigator",
+      "source_provenance"
+    ],
+    "implementation_note": "Register this official pathway for contaminated land. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier A.",
+    "source_review_status": "official_source_registered_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "NAM-008",
+    "jurisdiction": "United States",
+    "authority": "US Food and Drug Administration (FDA)",
+    "chemical_domain": "Food chemicals",
+    "framework": "Food Ingredients and Packaging guidance / premarket submissions",
+    "version_effective_date": "Living guidance collection",
+    "verification_tier": "A",
+    "official_url": "https://www.fda.gov/food/food-ingredients-packaging",
+    "region_group": "NAM",
+    "product_classes": [
+      "food_feed"
+    ],
+    "envirochem_modules": [
+      "regulatory_navigator",
+      "source_provenance"
+    ],
+    "implementation_note": "Register this official pathway for food chemicals. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier A.",
+    "source_review_status": "official_source_registered_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "NAM-009",
+    "jurisdiction": "United States",
+    "authority": "FDA",
+    "chemical_domain": "Human and veterinary products",
+    "framework": "Environmental assessment under NEPA",
+    "version_effective_date": "21 CFR Part 25; product-centre guidance varies",
+    "verification_tier": "A",
+    "official_url": "https://www.fda.gov/regulatory-information/search-fda-guidance-documents/environmental-assessment-human-drug-and-biologics-applications",
+    "region_group": "NAM",
+    "product_classes": [
+      "human_pharmaceuticals",
+      "veterinary_pharmaceuticals"
+    ],
+    "envirochem_modules": [
+      "regulatory_navigator",
+      "source_provenance"
+    ],
+    "implementation_note": "FDA environmental assessment is governed by NEPA and 21 CFR Part 25, with categorical exclusions for some actions. Build a separate US pharmaceutical pathway and categorical-exclusion decision record.",
+    "source_review_status": "official_source_reviewed",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "NAM-010",
+    "jurisdiction": "United States",
+    "authority": "Occupational Safety and Health Administration / NIOSH",
+    "chemical_domain": "Occupational chemicals",
+    "framework": "Chemical hazards, permissible exposure limits and NIOSH risk resources",
+    "version_effective_date": "Living collections",
+    "verification_tier": "A",
+    "official_url": "https://www.osha.gov/chemical-hazards",
+    "region_group": "NAM",
+    "product_classes": [
+      "workplace"
+    ],
+    "envirochem_modules": [
+      "coshh",
+      "regulatory_navigator",
+      "sds",
+      "source_provenance",
+      "task_risk_assessment"
+    ],
+    "implementation_note": "Register this official pathway for occupational chemicals. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier A.",
+    "source_review_status": "official_source_registered_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "NAM-011",
+    "jurisdiction": "United States",
+    "authority": "Agency for Toxic Substances and Disease Registry (ATSDR)",
+    "chemical_domain": "Human health / contaminated sites",
+    "framework": "Toxicological Profiles and Minimal Risk Levels",
+    "version_effective_date": "Living collection",
+    "verification_tier": "A",
+    "official_url": "https://www.atsdr.cdc.gov/toxprofiledocs/index.html",
+    "region_group": "NAM",
+    "product_classes": [
+      "contaminated_sites"
+    ],
+    "envirochem_modules": [
+      "regulatory_navigator",
+      "source_provenance"
+    ],
+    "implementation_note": "Register this official pathway for human health / contaminated sites. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier A.",
+    "source_review_status": "official_source_registered_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "NAM-012",
+    "jurisdiction": "Canada",
+    "authority": "Environment and Climate Change Canada / Health Canada",
+    "chemical_domain": "Industrial chemicals",
+    "framework": "Risk assessment of chemical substances under CEPA",
+    "version_effective_date": "Overview updated June 2026",
+    "verification_tier": "A",
+    "official_url": "https://www.canada.ca/en/health-canada/services/chemical-substances/canada-approach-chemicals/risk-assessment.html",
+    "region_group": "NAM",
+    "product_classes": [
+      "industrial_chemicals"
+    ],
+    "envirochem_modules": [
+      "environmental_exposure",
+      "identity_resolution",
+      "property_evidence",
+      "regulatory_navigator",
+      "risk_report",
+      "source_provenance"
+    ],
+    "implementation_note": "Canadian CEPA/CMP assessment combines environment and human health. The platform should support ecological-risk outputs while linking to broader CEPA evidence requirements.",
+    "source_review_status": "implementation_note_curated_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "NAM-013",
+    "jurisdiction": "Canada",
+    "authority": "Environment and Climate Change Canada / Health Canada",
+    "chemical_domain": "New industrial chemicals",
+    "framework": "Guidance document for the New Substances Notification Regulations (Chemicals and Polymers)",
+    "version_effective_date": "Living guidance",
+    "verification_tier": "A",
+    "official_url": "https://www.canada.ca/en/environment-climate-change/services/managing-pollution/evaluating-new-substances/chemicals-polymers/guidance.html",
+    "region_group": "NAM",
+    "product_classes": [
+      "industrial_chemicals"
+    ],
+    "envirochem_modules": [
+      "environmental_exposure",
+      "identity_resolution",
+      "property_evidence",
+      "regulatory_navigator",
+      "risk_report",
+      "source_provenance"
+    ],
+    "implementation_note": "New Substances Notification requires volume/category-specific information for chemicals and polymers. Add notification category, volume threshold and polymer-specific logic.",
+    "source_review_status": "implementation_note_curated_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "NAM-014",
+    "jurisdiction": "Canada",
+    "authority": "Health Canada Pest Management Regulatory Agency (PMRA)",
+    "chemical_domain": "Pesticides",
+    "framework": "Framework for risk assessment and risk management of pest control products",
+    "version_effective_date": "2023 portal edition",
+    "verification_tier": "A",
+    "official_url": "https://www.canada.ca/en/health-canada/services/consumer-product-safety/reports-publications/pesticides-pest-management/policies-guidelines/risk-management-pest-control-products.html",
+    "region_group": "NAM",
+    "product_classes": [
+      "pesticides"
+    ],
+    "envirochem_modules": [
+      "application_scenario",
+      "ecotox",
+      "groundwater",
+      "model_orchestration",
+      "regulatory_navigator",
+      "sediment",
+      "source_provenance",
+      "surface_water"
+    ],
+    "implementation_note": "PMRA uses a risk-assessment and risk-management framework for pest control products. Include decision and mitigation records, not just exposure estimates.",
+    "source_review_status": "implementation_note_curated_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "NAM-015",
+    "jurisdiction": "Canada",
+    "authority": "PMRA",
+    "chemical_domain": "Pesticides",
+    "framework": "Health Canada approach to environmental risk assessment for pest control products",
+    "version_effective_date": "2023",
+    "verification_tier": "A",
+    "official_url": "https://www.canada.ca/en/health-canada/services/consumer-product-safety/reports-publications/pesticides-pest-management/policies-guidelines/approach-environmental-risk-assessment.html",
+    "region_group": "NAM",
+    "product_classes": [
+      "pesticides"
+    ],
+    "envirochem_modules": [
+      "application_scenario",
+      "ecotox",
+      "groundwater",
+      "model_orchestration",
+      "regulatory_navigator",
+      "sediment",
+      "source_provenance",
+      "surface_water"
+    ],
+    "implementation_note": "PMRA environmental risk assessment should be a Canadian ruleset with Canadian exposure scenarios/defaults and not merely a US EPA copy.",
+    "source_review_status": "implementation_note_curated_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "NAM-016",
+    "jurisdiction": "Canada",
+    "authority": "PMRA",
+    "chemical_domain": "Pesticides",
+    "framework": "PMRA policies and guidelines portal",
+    "version_effective_date": "Includes SPN2026-01",
+    "verification_tier": "A",
+    "official_url": "https://www.canada.ca/en/health-canada/services/consumer-product-safety/reports-publications/pesticides-pest-management/policies-guidelines.html",
+    "region_group": "NAM",
+    "product_classes": [
+      "pesticides"
+    ],
+    "envirochem_modules": [
+      "application_scenario",
+      "ecotox",
+      "groundwater",
+      "model_orchestration",
+      "regulatory_navigator",
+      "sediment",
+      "source_provenance",
+      "surface_water"
+    ],
+    "implementation_note": "PMRA policy/guidance is a living collection. Source version and document type must be recorded; harmonisation documents do not eliminate Canadian requirements.",
+    "source_review_status": "official_source_reviewed",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "NAM-017",
+    "jurisdiction": "Canada",
+    "authority": "Canadian Centre for Occupational Health and Safety / federal and provincial regulators",
+    "chemical_domain": "Occupational chemicals",
+    "framework": "WHMIS and workplace chemical risk resources",
+    "version_effective_date": "WHMIS requirements depend on federal/provincial law",
+    "verification_tier": "B",
+    "official_url": "https://www.canada.ca/en/health-canada/services/environmental-workplace-health/occupational-health-safety/workplace-hazardous-materials-information-system.html",
+    "region_group": "NAM",
+    "product_classes": [
+      "workplace"
+    ],
+    "envirochem_modules": [
+      "coshh",
+      "regulatory_navigator",
+      "sds",
+      "source_provenance",
+      "task_risk_assessment"
+    ],
+    "implementation_note": "Register this official pathway for occupational chemicals. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier B.",
+    "source_review_status": "official_framework_registered_local_detail_required",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "OCE-001",
+    "jurisdiction": "Australia",
+    "authority": "Australian Industrial Chemicals Introduction Scheme (AICIS)",
+    "chemical_domain": "Industrial chemicals",
+    "framework": "Guide to categorising chemical importation and manufacture",
+    "version_effective_date": "Updated 22 May 2026",
+    "verification_tier": "A",
+    "official_url": "https://www.industrialchemicals.gov.au/help-and-guides/guide-categorising-your-chemical-importation-and-manufacture",
+    "region_group": "OCE",
+    "product_classes": [
+      "industrial_chemicals"
+    ],
+    "envirochem_modules": [
+      "environmental_exposure",
+      "identity_resolution",
+      "property_evidence",
+      "regulatory_navigator",
+      "risk_report",
+      "source_provenance"
+    ],
+    "implementation_note": "AICIS categorisation is exposure-and-hazard based and determines introduction category and information obligations. Add import/manufacture volume, introduction circumstances and category decision.",
+    "source_review_status": "implementation_note_curated_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "OCE-002",
+    "jurisdiction": "Australia",
+    "authority": "AICIS",
+    "chemical_domain": "Industrial chemicals",
+    "framework": "Industrial Chemicals Categorisation Guidelines",
+    "version_effective_date": "September 2025 edition; September 2026 changes not yet effective at snapshot",
+    "verification_tier": "A",
+    "official_url": "https://www.industrialchemicals.gov.au/help-and-guides/industrial-chemicals-categorisation-guidelines",
+    "region_group": "OCE",
+    "product_classes": [
+      "industrial_chemicals"
+    ],
+    "envirochem_modules": [
+      "environmental_exposure",
+      "identity_resolution",
+      "property_evidence",
+      "regulatory_navigator",
+      "risk_report",
+      "source_provenance"
+    ],
+    "implementation_note": "The AICIS categorisation guideline is version-sensitive, with a September 2026 change watch. Build an effective-date gate and warn against using future rules early.",
+    "source_review_status": "implementation_note_curated_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "OCE-003",
+    "jurisdiction": "Australia",
+    "authority": "Australian Pesticides and Veterinary Medicines Authority (APVMA)",
+    "chemical_domain": "Agricultural and veterinary chemicals",
+    "framework": "Risk assessment manuals portal",
+    "version_effective_date": "Manual components have individual dates",
+    "verification_tier": "A",
+    "official_url": "https://www.apvma.gov.au/registrations-and-permits/data-guidelines/risk-assessment-manuals",
+    "region_group": "OCE",
+    "product_classes": [
+      "veterinary_pharmaceuticals"
+    ],
+    "envirochem_modules": [
+      "application_scenario",
+      "ecotox",
+      "groundwater",
+      "model_orchestration",
+      "regulatory_navigator",
+      "sediment",
+      "source_provenance",
+      "surface_water"
+    ],
+    "implementation_note": "APVMA separates data requirements and risk manuals. Route agricultural and veterinary products by use and product type.",
+    "source_review_status": "implementation_note_curated_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "OCE-004",
+    "jurisdiction": "Australia",
+    "authority": "APVMA",
+    "chemical_domain": "Agricultural and veterinary chemicals",
+    "framework": "Risk Assessment Manual - Environment",
+    "version_effective_date": "Portal current; appendices individually updated",
+    "verification_tier": "A",
+    "official_url": "https://www.apvma.gov.au/registrations-and-permits/data-guidelines/risk-assessment-manuals/environment",
+    "region_group": "OCE",
+    "product_classes": [
+      "veterinary_pharmaceuticals"
+    ],
+    "envirochem_modules": [
+      "application_scenario",
+      "ecotox",
+      "groundwater",
+      "model_orchestration",
+      "regulatory_navigator",
+      "sediment",
+      "source_provenance",
+      "surface_water"
+    ],
+    "implementation_note": "The APVMA environment manual is the core Australian environmental assessment pack. Include Australian scenarios, protection goals, exposure, effects and risk/refinement logic.",
+    "source_review_status": "official_source_reviewed",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "OCE-005",
+    "jurisdiction": "Australia",
+    "authority": "Safe Work Australia",
+    "chemical_domain": "Occupational chemicals",
+    "framework": "Model WHS laws and hazardous chemicals guidance",
+    "version_effective_date": "State/territory adoption varies",
+    "verification_tier": "A",
+    "official_url": "https://www.safeworkaustralia.gov.au/safety-topic/hazards/chemicals",
+    "region_group": "OCE",
+    "product_classes": [
+      "workplace"
+    ],
+    "envirochem_modules": [
+      "coshh",
+      "regulatory_navigator",
+      "sds",
+      "source_provenance",
+      "task_risk_assessment"
+    ],
+    "implementation_note": "Register this official pathway for occupational chemicals. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier A.",
+    "source_review_status": "official_source_registered_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "OCE-006",
+    "jurisdiction": "Australia",
+    "authority": "National Environment Protection Council",
+    "chemical_domain": "Contaminated land",
+    "framework": "National Environment Protection (Assessment of Site Contamination) Measure",
+    "version_effective_date": "1999, amended 2013; check jurisdictional implementation",
+    "verification_tier": "A",
+    "official_url": "https://www.nepc.gov.au/nepms/assessment-site-contamination",
+    "region_group": "OCE",
+    "product_classes": [
+      "contaminated_sites"
+    ],
+    "envirochem_modules": [
+      "regulatory_navigator",
+      "source_provenance"
+    ],
+    "implementation_note": "Register this official pathway for contaminated land. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier A.",
+    "source_review_status": "official_source_registered_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "OCE-007",
+    "jurisdiction": "New Zealand",
+    "authority": "Environmental Protection Authority (EPA NZ)",
+    "chemical_domain": "Hazardous substances",
+    "framework": "Risk Assessment Methodology for Hazardous Substances",
+    "version_effective_date": "Updated December 2022",
+    "verification_tier": "A",
+    "official_url": "https://www.epa.govt.nz/assets/Uploads/Documents/Hazardous-Substances/Guidance/Risk-Assessment-Methodology-for-Hazardous-Substances.pdf",
+    "region_group": "OCE",
+    "product_classes": [
+      "cross_cutting"
+    ],
+    "envirochem_modules": [
+      "regulatory_navigator",
+      "source_provenance"
+    ],
+    "implementation_note": "New Zealand hazardous-substance methodology is a national decision framework. Preserve risk context, uncertainty and controls rather than only numerical outputs.",
+    "source_review_status": "implementation_note_curated_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "OCE-008",
+    "jurisdiction": "New Zealand",
+    "authority": "EPA NZ",
+    "chemical_domain": "Hazardous substances",
+    "framework": "Hazardous substances approvals and guidance",
+    "version_effective_date": "Living guidance",
+    "verification_tier": "A",
+    "official_url": "https://www.epa.govt.nz/industry-areas/hazardous-substances/",
+    "region_group": "OCE",
+    "product_classes": [
+      "cross_cutting"
+    ],
+    "envirochem_modules": [
+      "regulatory_navigator",
+      "source_provenance"
+    ],
+    "implementation_note": "EPA NZ approvals are substance/use-specific. Add approval status and controls to the regulatory record.",
+    "source_review_status": "implementation_note_curated_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "OCE-009",
+    "jurisdiction": "New Zealand",
+    "authority": "Ministry for Primary Industries (MPI)",
+    "chemical_domain": "Agricultural compounds and veterinary medicines",
+    "framework": "ACVM risk assessment and registration guidance",
+    "version_effective_date": "Living guidance collection",
+    "verification_tier": "A",
+    "official_url": "https://www.mpi.govt.nz/agriculture/agricultural-compounds-vet-medicines/",
+    "region_group": "OCE",
+    "product_classes": [
+      "veterinary_pharmaceuticals"
+    ],
+    "envirochem_modules": [
+      "application_scenario",
+      "ecotox",
+      "groundwater",
+      "model_orchestration",
+      "regulatory_navigator",
+      "sediment",
+      "source_provenance",
+      "surface_water"
+    ],
+    "implementation_note": "Register this official pathway for agricultural compounds and veterinary medicines. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier A.",
+    "source_review_status": "official_source_registered_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "ASI-001",
+    "jurisdiction": "Japan",
+    "authority": "METI / MHLW / Ministry of the Environment; NITE",
+    "chemical_domain": "Industrial chemicals",
+    "framework": "Chemical Substances Control Law (CSCL) assessment system",
+    "version_effective_date": "Verify annual notices and thresholds",
+    "verification_tier": "A",
+    "official_url": "https://www.nite.go.jp/en/chem/aboutcmc.html",
+    "region_group": "ASI",
+    "product_classes": [
+      "industrial_chemicals"
+    ],
+    "envirochem_modules": [
+      "environmental_exposure",
+      "identity_resolution",
+      "property_evidence",
+      "regulatory_navigator",
+      "risk_report",
+      "source_provenance"
+    ],
+    "implementation_note": "Japan CSCL requires national classification and evaluation logic. Route by new/existing chemical status and use current notices/thresholds.",
+    "source_review_status": "implementation_note_curated_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "ASI-002",
+    "jurisdiction": "Japan",
+    "authority": "NITE",
+    "chemical_domain": "Chemical information",
+    "framework": "NITE-CHRIP chemical risk information platform",
+    "version_effective_date": "Living portal",
+    "verification_tier": "A",
+    "official_url": "https://www.nite.go.jp/en/chem/chrip/chrip_search/systemTop",
+    "region_group": "ASI",
+    "product_classes": [
+      "cross_cutting"
+    ],
+    "envirochem_modules": [
+      "regulatory_navigator",
+      "source_provenance"
+    ],
+    "implementation_note": "NITE-CHRIP is a discovery and regulatory-information source. Preserve the originating Japanese assessment or legal source.",
+    "source_review_status": "implementation_note_curated_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "ASI-003",
+    "jurisdiction": "Japan",
+    "authority": "Food Safety Commission of Japan",
+    "chemical_domain": "Food chemicals and pesticides",
+    "framework": "Risk assessment guidelines and evaluation documents",
+    "version_effective_date": "Living collection",
+    "verification_tier": "B",
+    "official_url": "https://www.fsc.go.jp/english/",
+    "region_group": "ASI",
+    "product_classes": [
+      "pesticides",
+      "food_feed"
+    ],
+    "envirochem_modules": [
+      "application_scenario",
+      "ecotox",
+      "groundwater",
+      "model_orchestration",
+      "regulatory_navigator",
+      "sediment",
+      "source_provenance",
+      "surface_water"
+    ],
+    "implementation_note": "Register this official pathway for food chemicals and pesticides. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier B.",
+    "source_review_status": "official_framework_registered_local_detail_required",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "ASI-004",
+    "jurisdiction": "China",
+    "authority": "Ministry of Ecology and Environment (MEE)",
+    "chemical_domain": "New chemical substances",
+    "framework": "Measures for the Environmental Management Registration of New Chemical Substances (MEE Order No.12) and supporting guidance",
+    "version_effective_date": "Order No.12 effective 2021; verify 2026 revision status before filing",
+    "verification_tier": "B",
+    "official_url": "https://www.mee.gov.cn/ywgz/fgbz/bz/bzwb/gthw/qtxgbz/",
+    "region_group": "ASI",
+    "product_classes": [
+      "cross_cutting"
+    ],
+    "envirochem_modules": [
+      "environmental_exposure",
+      "identity_resolution",
+      "property_evidence",
+      "regulatory_navigator",
+      "risk_report",
+      "source_provenance"
+    ],
+    "implementation_note": "China MEE Order No.12 governs new chemical registration; a 2026 revision is on change watch. Do not automate a filing decision without current Chinese legal verification.",
+    "source_review_status": "implementation_note_curated_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "ASI-005",
+    "jurisdiction": "China",
+    "authority": "National Health Commission / SAMR",
+    "chemical_domain": "Food chemicals",
+    "framework": "National food-safety standards and new food ingredient/additive assessment",
+    "version_effective_date": "Standards updated individually",
+    "verification_tier": "B",
+    "official_url": "https://www.nhc.gov.cn/wjw/zcjd/list.shtml",
+    "region_group": "ASI",
+    "product_classes": [
+      "food_feed"
+    ],
+    "envirochem_modules": [
+      "regulatory_navigator",
+      "source_provenance"
+    ],
+    "implementation_note": "Register this official pathway for food chemicals. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier B.",
+    "source_review_status": "official_framework_registered_local_detail_required",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "ASI-006",
+    "jurisdiction": "South Korea",
+    "authority": "Ministry of Environment / Korea Environment Corporation",
+    "chemical_domain": "Industrial chemicals",
+    "framework": "K-REACH registration and risk assessment system",
+    "version_effective_date": "Amendments and thresholds change; verify Korean official notices",
+    "verification_tier": "B",
+    "official_url": "https://kreach.me.go.kr/repwrt/index.do",
+    "region_group": "ASI",
+    "product_classes": [
+      "industrial_chemicals"
+    ],
+    "envirochem_modules": [
+      "environmental_exposure",
+      "identity_resolution",
+      "property_evidence",
+      "regulatory_navigator",
+      "risk_report",
+      "source_provenance"
+    ],
+    "implementation_note": "K-REACH thresholds and exemptions are change-sensitive and Korean text controls. Mark calculations as regulatory-navigation support until current local requirements are confirmed.",
+    "source_review_status": "implementation_note_curated_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "ASI-007",
+    "jurisdiction": "South Korea",
+    "authority": "National Institute of Environmental Research",
+    "chemical_domain": "Industrial chemicals",
+    "framework": "Published chemical risk-assessment reports under K-REACH",
+    "version_effective_date": "Reports published annually",
+    "verification_tier": "B",
+    "official_url": "https://ecolibrary.me.go.kr/nier/",
+    "region_group": "ASI",
+    "product_classes": [
+      "industrial_chemicals"
+    ],
+    "envirochem_modules": [
+      "environmental_exposure",
+      "identity_resolution",
+      "property_evidence",
+      "regulatory_navigator",
+      "risk_report",
+      "source_provenance"
+    ],
+    "implementation_note": "Register this official pathway for industrial chemicals. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier B.",
+    "source_review_status": "official_framework_registered_local_detail_required",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "ASI-008",
+    "jurisdiction": "Taiwan",
+    "authority": "Ministry of Environment / Chemicals Administration",
+    "chemical_domain": "Industrial chemicals",
+    "framework": "Toxic and Concerned Chemical Substances Control Act and new/existing chemical registration",
+    "version_effective_date": "Living portal",
+    "verification_tier": "B",
+    "official_url": "https://www.cha.gov.tw/mp-1.html",
+    "region_group": "ASI",
+    "product_classes": [
+      "industrial_chemicals"
+    ],
+    "envirochem_modules": [
+      "environmental_exposure",
+      "identity_resolution",
+      "property_evidence",
+      "regulatory_navigator",
+      "risk_report",
+      "source_provenance"
+    ],
+    "implementation_note": "Register this official pathway for industrial chemicals. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier B.",
+    "source_review_status": "official_framework_registered_local_detail_required",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "ASI-009",
+    "jurisdiction": "Taiwan",
+    "authority": "Occupational Safety and Health Administration",
+    "chemical_domain": "Workplace chemicals",
+    "framework": "Priority Management Chemicals / new chemical registration under occupational law",
+    "version_effective_date": "Verify current lists and thresholds",
+    "verification_tier": "B",
+    "official_url": "https://www.osha.gov.tw/48110/48417/48419/",
+    "region_group": "ASI",
+    "product_classes": [
+      "workplace"
+    ],
+    "envirochem_modules": [
+      "coshh",
+      "regulatory_navigator",
+      "sds",
+      "source_provenance",
+      "task_risk_assessment"
+    ],
+    "implementation_note": "Register this official pathway for workplace chemicals. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier B.",
+    "source_review_status": "official_framework_registered_local_detail_required",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "ASI-010",
+    "jurisdiction": "India",
+    "authority": "Central Insecticides Board and Registration Committee (CIBRC)",
+    "chemical_domain": "Pesticides",
+    "framework": "Guidelines for registration of pesticides",
+    "version_effective_date": "Guidelines and checklists updated individually",
+    "verification_tier": "A",
+    "official_url": "https://ppqs.gov.in/divisions/cib-rc/guidelines",
+    "region_group": "ASI",
+    "product_classes": [
+      "pesticides"
+    ],
+    "envirochem_modules": [
+      "application_scenario",
+      "ecotox",
+      "groundwater",
+      "model_orchestration",
+      "regulatory_navigator",
+      "sediment",
+      "source_provenance",
+      "surface_water"
+    ],
+    "implementation_note": "Register this official pathway for pesticides. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier A.",
+    "source_review_status": "official_source_registered_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "ASI-011",
+    "jurisdiction": "India",
+    "authority": "Ministry of Environment, Forest and Climate Change / CPCB",
+    "chemical_domain": "Industrial and hazardous chemicals",
+    "framework": "Manufacture, Storage and Import of Hazardous Chemical Rules and chemical accident guidance",
+    "version_effective_date": "Rules amended periodically",
+    "verification_tier": "B",
+    "official_url": "https://moef.gov.in/",
+    "region_group": "ASI",
+    "product_classes": [
+      "industrial_chemicals"
+    ],
+    "envirochem_modules": [
+      "regulatory_navigator",
+      "source_provenance"
+    ],
+    "implementation_note": "Register this official pathway for industrial and hazardous chemicals. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier B.",
+    "source_review_status": "official_framework_registered_local_detail_required",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "ASI-012",
+    "jurisdiction": "Singapore",
+    "authority": "National Environment Agency (NEA)",
+    "chemical_domain": "Hazardous substances",
+    "framework": "Management of Hazardous Substances under EPMA",
+    "version_effective_date": "Page updated 21 May 2026",
+    "verification_tier": "A",
+    "official_url": "https://www.nea.gov.sg/our-services/pollution-control/chemical-safety/hazardous-substances/management-of-hazardous-substances",
+    "region_group": "ASI",
+    "product_classes": [
+      "cross_cutting"
+    ],
+    "envirochem_modules": [
+      "regulatory_navigator",
+      "source_provenance"
+    ],
+    "implementation_note": "Register this official pathway for hazardous substances. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier A.",
+    "source_review_status": "official_source_registered_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "ASI-013",
+    "jurisdiction": "Singapore",
+    "authority": "Singapore Food Agency / Health Sciences Authority",
+    "chemical_domain": "Food, health products and poisons",
+    "framework": "Sector-specific safety and product-registration guidance",
+    "version_effective_date": "Verify product-specific guidance",
+    "verification_tier": "B",
+    "official_url": "https://www.sfa.gov.sg/food-information/risk-at-a-glance/chemical-hazards",
+    "region_group": "ASI",
+    "product_classes": [
+      "food_feed"
+    ],
+    "envirochem_modules": [
+      "regulatory_navigator",
+      "source_provenance"
+    ],
+    "implementation_note": "Register this official pathway for food, health products and poisons. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier B.",
+    "source_review_status": "official_framework_registered_local_detail_required",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "ASI-014",
+    "jurisdiction": "Malaysia",
+    "authority": "Department of Occupational Safety and Health (DOSH)",
+    "chemical_domain": "Occupational chemicals",
+    "framework": "A Manual of Recommended Practice on Assessment of the Health Risks Arising from the Use of Chemicals Hazardous to Health at the Workplace (SiRAC)",
+    "version_effective_date": "3rd edition 2019",
+    "verification_tier": "A",
+    "official_url": "https://www.dosh.gov.my/index.php/chemical-management-v/chemical-health-risk-assessment-chra",
+    "region_group": "ASI",
+    "product_classes": [
+      "workplace"
+    ],
+    "envirochem_modules": [
+      "coshh",
+      "regulatory_navigator",
+      "sds",
+      "source_provenance",
+      "task_risk_assessment"
+    ],
+    "implementation_note": "Register this official pathway for occupational chemicals. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier A.",
+    "source_review_status": "official_source_registered_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "ASI-015",
+    "jurisdiction": "Malaysia",
+    "authority": "DOSH",
+    "chemical_domain": "Classification and labelling",
+    "framework": "Industry Code of Practice on Chemicals Classification and Hazard Communication (CLASS ICOP)",
+    "version_effective_date": "Verify current amendment/edition",
+    "verification_tier": "A",
+    "official_url": "https://www.dosh.gov.my/index.php/chemical-management-v/classification-record",
+    "region_group": "ASI",
+    "product_classes": [
+      "classification_labelling"
+    ],
+    "envirochem_modules": [
+      "classification_labelling",
+      "regulatory_navigator",
+      "sds",
+      "source_provenance"
+    ],
+    "implementation_note": "Register this official pathway for classification and labelling. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier A.",
+    "source_review_status": "official_source_registered_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "ASI-016",
+    "jurisdiction": "Thailand",
+    "authority": "Department of Industrial Works / Food and Drug Administration / Department of Agriculture",
+    "chemical_domain": "Hazardous substances",
+    "framework": "Hazardous Substance Act implementation and sectoral registration guidance",
+    "version_effective_date": "Verify responsible agency by product/use",
+    "verification_tier": "B",
+    "official_url": "https://www.diw.go.th/webdiw/en/",
+    "region_group": "ASI",
+    "product_classes": [
+      "cross_cutting"
+    ],
+    "envirochem_modules": [
+      "regulatory_navigator",
+      "source_provenance"
+    ],
+    "implementation_note": "Register this official pathway for hazardous substances. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier B.",
+    "source_review_status": "official_framework_registered_local_detail_required",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "ASI-017",
+    "jurisdiction": "Indonesia",
+    "authority": "Ministry of Environment and Forestry / Ministry of Agriculture / BPOM",
+    "chemical_domain": "Chemicals and pesticides",
+    "framework": "Sectoral hazardous chemicals, pesticides and food/drug safety requirements",
+    "version_effective_date": "Country-specific verification required",
+    "verification_tier": "C",
+    "official_url": "https://www.menlhk.go.id/",
+    "region_group": "ASI",
+    "product_classes": [
+      "pesticides",
+      "food_feed"
+    ],
+    "envirochem_modules": [
+      "application_scenario",
+      "ecotox",
+      "groundwater",
+      "model_orchestration",
+      "regulatory_navigator",
+      "sediment",
+      "source_provenance",
+      "surface_water"
+    ],
+    "implementation_note": "Register this official pathway for chemicals and pesticides. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier C.",
+    "source_review_status": "international_or_sector_pathway_local_verification_required",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "ASI-018",
+    "jurisdiction": "Philippines",
+    "authority": "Department of Environment and Natural Resources - Environmental Management Bureau",
+    "chemical_domain": "Industrial chemicals",
+    "framework": "Philippine Inventory of Chemicals and Chemical Substances / Chemical Control Orders",
+    "version_effective_date": "Verify current DENR administrative orders",
+    "verification_tier": "B",
+    "official_url": "https://chemical.emb.gov.ph/",
+    "region_group": "ASI",
+    "product_classes": [
+      "industrial_chemicals"
+    ],
+    "envirochem_modules": [
+      "environmental_exposure",
+      "identity_resolution",
+      "property_evidence",
+      "regulatory_navigator",
+      "risk_report",
+      "source_provenance"
+    ],
+    "implementation_note": "Register this official pathway for industrial chemicals. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier B.",
+    "source_review_status": "official_framework_registered_local_detail_required",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "ASI-019",
+    "jurisdiction": "Vietnam",
+    "authority": "Vietnam Chemicals Agency (Vinachemia), Ministry of Industry and Trade",
+    "chemical_domain": "Industrial chemicals",
+    "framework": "Law on Chemicals and implementing guidance",
+    "version_effective_date": "Verify current decrees and transition dates",
+    "verification_tier": "B",
+    "official_url": "https://vinachemia.gov.vn/en/",
+    "region_group": "ASI",
+    "product_classes": [
+      "industrial_chemicals"
+    ],
+    "envirochem_modules": [
+      "environmental_exposure",
+      "identity_resolution",
+      "property_evidence",
+      "regulatory_navigator",
+      "risk_report",
+      "source_provenance"
+    ],
+    "implementation_note": "Register this official pathway for industrial chemicals. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier B.",
+    "source_review_status": "official_framework_registered_local_detail_required",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "ASI-020",
+    "jurisdiction": "Pakistan",
+    "authority": "Ministry of National Food Security / Department of Plant Protection; environmental authorities",
+    "chemical_domain": "Pesticides and hazardous chemicals",
+    "framework": "Agricultural pesticide registration and sectoral environmental controls",
+    "version_effective_date": "Country-specific verification required",
+    "verification_tier": "C",
+    "official_url": "https://plantprotection.gov.pk/",
+    "region_group": "ASI",
+    "product_classes": [
+      "pesticides"
+    ],
+    "envirochem_modules": [
+      "application_scenario",
+      "ecotox",
+      "groundwater",
+      "model_orchestration",
+      "regulatory_navigator",
+      "sediment",
+      "source_provenance",
+      "surface_water"
+    ],
+    "implementation_note": "Register this official pathway for pesticides and hazardous chemicals. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier C.",
+    "source_review_status": "international_or_sector_pathway_local_verification_required",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "ASI-021",
+    "jurisdiction": "Bangladesh",
+    "authority": "Department of Agricultural Extension / Department of Environment",
+    "chemical_domain": "Pesticides and hazardous chemicals",
+    "framework": "Pesticide registration and environmental-clearance requirements",
+    "version_effective_date": "Country-specific verification required",
+    "verification_tier": "C",
+    "official_url": "https://dae.gov.bd/",
+    "region_group": "ASI",
+    "product_classes": [
+      "pesticides"
+    ],
+    "envirochem_modules": [
+      "application_scenario",
+      "ecotox",
+      "groundwater",
+      "model_orchestration",
+      "regulatory_navigator",
+      "sediment",
+      "source_provenance",
+      "surface_water"
+    ],
+    "implementation_note": "Register this official pathway for pesticides and hazardous chemicals. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier C.",
+    "source_review_status": "international_or_sector_pathway_local_verification_required",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "ASI-022",
+    "jurisdiction": "Sri Lanka",
+    "authority": "Office of the Registrar of Pesticides / Central Environmental Authority",
+    "chemical_domain": "Pesticides and hazardous chemicals",
+    "framework": "Pesticide registration guidance and national environmental controls",
+    "version_effective_date": "Country-specific verification required",
+    "verification_tier": "C",
+    "official_url": "https://rop.gov.lk/",
+    "region_group": "ASI",
+    "product_classes": [
+      "pesticides"
+    ],
+    "envirochem_modules": [
+      "application_scenario",
+      "ecotox",
+      "groundwater",
+      "model_orchestration",
+      "regulatory_navigator",
+      "sediment",
+      "source_provenance",
+      "surface_water"
+    ],
+    "implementation_note": "Register this official pathway for pesticides and hazardous chemicals. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier C.",
+    "source_review_status": "international_or_sector_pathway_local_verification_required",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "LAT-001",
+    "jurisdiction": "Brazil",
+    "authority": "ANVISA / IBAMA / Ministry of Agriculture",
+    "chemical_domain": "Pesticides",
+    "framework": "Tripartite pesticide risk-assessment and registration system",
+    "version_effective_date": "Product and active-ingredient requirements updated individually",
+    "verification_tier": "A",
+    "official_url": "https://www.gov.br/anvisa/en/regulation-of-products/pesticides",
+    "region_group": "LAT",
+    "product_classes": [
+      "pesticides"
+    ],
+    "envirochem_modules": [
+      "application_scenario",
+      "ecotox",
+      "groundwater",
+      "model_orchestration",
+      "regulatory_navigator",
+      "sediment",
+      "source_provenance",
+      "surface_water"
+    ],
+    "implementation_note": "Brazil pesticide assessment is tripartite across ANVISA, IBAMA and agriculture authorities. Split health, environmental and efficacy/registration workstreams and merge them in the dossier view.",
+    "source_review_status": "implementation_note_curated_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "LAT-002",
+    "jurisdiction": "Brazil",
+    "authority": "IBAMA",
+    "chemical_domain": "Pesticides",
+    "framework": "Environmental evaluation and classification of pesticides",
+    "version_effective_date": "Normative instructions and manuals updated individually",
+    "verification_tier": "B",
+    "official_url": "https://www.gov.br/ibama/pt-br/assuntos/quimicos-e-biologicos/agrotoxicos",
+    "region_group": "LAT",
+    "product_classes": [
+      "pesticides",
+      "classification_labelling"
+    ],
+    "envirochem_modules": [
+      "application_scenario",
+      "classification_labelling",
+      "ecotox",
+      "groundwater",
+      "model_orchestration",
+      "regulatory_navigator",
+      "sds",
+      "sediment",
+      "source_provenance",
+      "surface_water"
+    ],
+    "implementation_note": "IBAMA environmental classification requires Brazilian environmental evidence and decision criteria. Add country-specific classification and mitigation outputs.",
+    "source_review_status": "implementation_note_curated_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "LAT-003",
+    "jurisdiction": "Brazil",
+    "authority": "ANVISA",
+    "chemical_domain": "Food and consumer chemicals",
+    "framework": "ANVISA toxicological evaluation and sectoral product guidance",
+    "version_effective_date": "Living regulatory portal",
+    "verification_tier": "B",
+    "official_url": "https://www.gov.br/anvisa/pt-br/assuntos/regulamentacao",
+    "region_group": "LAT",
+    "product_classes": [
+      "food_feed"
+    ],
+    "envirochem_modules": [
+      "regulatory_navigator",
+      "source_provenance"
+    ],
+    "implementation_note": "Register this official pathway for food and consumer chemicals. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier B.",
+    "source_review_status": "official_framework_registered_local_detail_required",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "LAT-004",
+    "jurisdiction": "Mexico",
+    "authority": "COFEPRIS / SEMARNAT / SENASICA",
+    "chemical_domain": "Pesticides and hazardous substances",
+    "framework": "Joint pesticide registration and sectoral chemical controls",
+    "version_effective_date": "Verify NOMs, regulations and agency criteria for each product",
+    "verification_tier": "B",
+    "official_url": "https://www.gob.mx/cofepris/acciones-y-programas/plaguicidas",
+    "region_group": "LAT",
+    "product_classes": [
+      "pesticides"
+    ],
+    "envirochem_modules": [
+      "application_scenario",
+      "ecotox",
+      "groundwater",
+      "model_orchestration",
+      "regulatory_navigator",
+      "sediment",
+      "source_provenance",
+      "surface_water"
+    ],
+    "implementation_note": "Mexico pesticide registration is joint across COFEPRIS, SEMARNAT and SENASICA. Product/use routing must identify the responsible authority and current NOM/criteria.",
+    "source_review_status": "implementation_note_curated_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "LAT-005",
+    "jurisdiction": "Mexico",
+    "authority": "SEMARNAT",
+    "chemical_domain": "Environmental chemicals",
+    "framework": "Environmental risk, hazardous materials and contaminated-site rules",
+    "version_effective_date": "Country-specific verification required",
+    "verification_tier": "B",
+    "official_url": "https://www.gob.mx/semarnat/acciones-y-programas/materiales-y-actividades-riesgosas",
+    "region_group": "LAT",
+    "product_classes": [
+      "contaminated_sites"
+    ],
+    "envirochem_modules": [
+      "regulatory_navigator",
+      "source_provenance"
+    ],
+    "implementation_note": "SEMARNAT covers environmental risk, hazardous materials and contaminated sites. Treat this as a portal-level pathway until the exact product/use instrument is selected.",
+    "source_review_status": "implementation_note_curated_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "LAT-006",
+    "jurisdiction": "Colombia",
+    "authority": "Ministry of Environment and Sustainable Development",
+    "chemical_domain": "Industrial chemicals",
+    "framework": "National chemicals-management and industrial-chemical inventory framework",
+    "version_effective_date": "Verify current decrees and deadlines",
+    "verification_tier": "B",
+    "official_url": "https://quimicos.minambiente.gov.co/",
+    "region_group": "LAT",
+    "product_classes": [
+      "industrial_chemicals"
+    ],
+    "envirochem_modules": [
+      "environmental_exposure",
+      "identity_resolution",
+      "property_evidence",
+      "regulatory_navigator",
+      "risk_report",
+      "source_provenance"
+    ],
+    "implementation_note": "Register this official pathway for industrial chemicals. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier B.",
+    "source_review_status": "official_framework_registered_local_detail_required",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "LAT-007",
+    "jurisdiction": "Chile",
+    "authority": "Ministry of Environment / Ministry of Health",
+    "chemical_domain": "Industrial chemicals",
+    "framework": "Chemical substances notification and inventory system",
+    "version_effective_date": "Verify current inventory cycle and decrees",
+    "verification_tier": "B",
+    "official_url": "https://sqi.mma.gob.cl/",
+    "region_group": "LAT",
+    "product_classes": [
+      "industrial_chemicals"
+    ],
+    "envirochem_modules": [
+      "environmental_exposure",
+      "identity_resolution",
+      "property_evidence",
+      "regulatory_navigator",
+      "risk_report",
+      "source_provenance"
+    ],
+    "implementation_note": "Register this official pathway for industrial chemicals. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier B.",
+    "source_review_status": "official_framework_registered_local_detail_required",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "LAT-008",
+    "jurisdiction": "Argentina",
+    "authority": "SENASA / ANMAT / environmental and labour authorities",
+    "chemical_domain": "Pesticides, food, workplace and hazardous chemicals",
+    "framework": "Sectoral chemical risk-assessment and registration requirements",
+    "version_effective_date": "Country-specific verification required",
+    "verification_tier": "C",
+    "official_url": "https://www.argentina.gob.ar/senasa/programas-sanitarios/productos-veterinarios-fitosanitarios-y-fertilizantes",
+    "region_group": "LAT",
+    "product_classes": [
+      "pesticides",
+      "food_feed"
+    ],
+    "envirochem_modules": [
+      "application_scenario",
+      "coshh",
+      "ecotox",
+      "groundwater",
+      "model_orchestration",
+      "regulatory_navigator",
+      "sds",
+      "sediment",
+      "source_provenance",
+      "surface_water",
+      "task_risk_assessment"
+    ],
+    "implementation_note": "Register this official pathway for pesticides, food, workplace and hazardous chemicals. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier C.",
+    "source_review_status": "international_or_sector_pathway_local_verification_required",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "LAT-009",
+    "jurisdiction": "Peru",
+    "authority": "SENASA / DIGESA / Ministry of Environment",
+    "chemical_domain": "Pesticides and hazardous substances",
+    "framework": "Andean pesticide registration and national sectoral chemical controls",
+    "version_effective_date": "Andean Manual applies to agricultural pesticides",
+    "verification_tier": "B",
+    "official_url": "https://www.gob.pe/senasa",
+    "region_group": "LAT",
+    "product_classes": [
+      "pesticides"
+    ],
+    "envirochem_modules": [
+      "application_scenario",
+      "ecotox",
+      "groundwater",
+      "model_orchestration",
+      "regulatory_navigator",
+      "sediment",
+      "source_provenance",
+      "surface_water"
+    ],
+    "implementation_note": "Register this official pathway for pesticides and hazardous substances. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier B.",
+    "source_review_status": "official_framework_registered_local_detail_required",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "LAT-010",
+    "jurisdiction": "Andean Community",
+    "authority": "CAN member states",
+    "chemical_domain": "Agricultural pesticides",
+    "framework": "Andean Manual for Registration and Control of Chemical Pesticides for Agricultural Use",
+    "version_effective_date": "Verify current manual/resolutions",
+    "verification_tier": "B",
+    "official_url": "https://www.comunidadandina.org/temas/dg1/sanidad-agropecuaria/",
+    "region_group": "LAT",
+    "product_classes": [
+      "pesticides"
+    ],
+    "envirochem_modules": [
+      "application_scenario",
+      "ecotox",
+      "groundwater",
+      "model_orchestration",
+      "regulatory_navigator",
+      "sediment",
+      "source_provenance",
+      "surface_water"
+    ],
+    "implementation_note": "Register this official pathway for agricultural pesticides. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier B.",
+    "source_review_status": "official_framework_registered_local_detail_required",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "LAT-011",
+    "jurisdiction": "Costa Rica",
+    "authority": "Ministry of Agriculture / Ministry of Health / Environment Ministry",
+    "chemical_domain": "Pesticides and hazardous chemicals",
+    "framework": "Pesticide registration and sectoral chemical controls",
+    "version_effective_date": "Country-specific verification required",
+    "verification_tier": "C",
+    "official_url": "https://www.sfe.go.cr/",
+    "region_group": "LAT",
+    "product_classes": [
+      "pesticides"
+    ],
+    "envirochem_modules": [
+      "application_scenario",
+      "ecotox",
+      "groundwater",
+      "model_orchestration",
+      "regulatory_navigator",
+      "sediment",
+      "source_provenance",
+      "surface_water"
+    ],
+    "implementation_note": "Register this official pathway for pesticides and hazardous chemicals. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier C.",
+    "source_review_status": "international_or_sector_pathway_local_verification_required",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "AFR-001",
+    "jurisdiction": "South Africa",
+    "authority": "Department of Forestry, Fisheries and the Environment (DFFE)",
+    "chemical_domain": "Chemicals management",
+    "framework": "Chemicals Management in the Environment sector portal",
+    "version_effective_date": "Living programme",
+    "verification_tier": "A",
+    "official_url": "https://www.dffe.gov.za/chemicals-management-environment-sector",
+    "region_group": "AFR",
+    "product_classes": [
+      "cross_cutting"
+    ],
+    "envirochem_modules": [
+      "regulatory_navigator",
+      "source_provenance"
+    ],
+    "implementation_note": "Register this official pathway for chemicals management. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier A.",
+    "source_review_status": "official_source_registered_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "AFR-002",
+    "jurisdiction": "South Africa",
+    "authority": "Department of Employment and Labour",
+    "chemical_domain": "Occupational chemicals",
+    "framework": "Hazardous Chemical Agents Regulations, 2021",
+    "version_effective_date": "2021",
+    "verification_tier": "A",
+    "official_url": "https://www.gov.za/documents/regulations/hazardous-chemical-agents-regulations-2021-29-mar-2021-0000",
+    "region_group": "AFR",
+    "product_classes": [
+      "workplace"
+    ],
+    "envirochem_modules": [
+      "coshh",
+      "regulatory_navigator",
+      "sds",
+      "source_provenance",
+      "task_risk_assessment"
+    ],
+    "implementation_note": "Register this official pathway for occupational chemicals. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier A.",
+    "source_review_status": "official_source_registered_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "AFR-003",
+    "jurisdiction": "South Africa",
+    "authority": "Department of Agriculture",
+    "chemical_domain": "Pesticides",
+    "framework": "Agricultural remedies registration and risk requirements",
+    "version_effective_date": "Major legislative reform should be checked",
+    "verification_tier": "B",
+    "official_url": "https://www.nda.gov.za/",
+    "region_group": "AFR",
+    "product_classes": [
+      "pesticides"
+    ],
+    "envirochem_modules": [
+      "application_scenario",
+      "ecotox",
+      "groundwater",
+      "model_orchestration",
+      "regulatory_navigator",
+      "sediment",
+      "source_provenance",
+      "surface_water"
+    ],
+    "implementation_note": "Register this official pathway for pesticides. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier B.",
+    "source_review_status": "official_framework_registered_local_detail_required",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "AFR-004",
+    "jurisdiction": "Nigeria",
+    "authority": "National Agency for Food and Drug Administration and Control (NAFDAC) / NESREA",
+    "chemical_domain": "Pesticides, food, consumer and environmental chemicals",
+    "framework": "Sectoral chemical registration and environmental standards",
+    "version_effective_date": "Country-specific verification required",
+    "verification_tier": "C",
+    "official_url": "https://www.nafdac.gov.ng/",
+    "region_group": "AFR",
+    "product_classes": [
+      "pesticides",
+      "food_feed"
+    ],
+    "envirochem_modules": [
+      "application_scenario",
+      "ecotox",
+      "groundwater",
+      "model_orchestration",
+      "regulatory_navigator",
+      "sediment",
+      "source_provenance",
+      "surface_water"
+    ],
+    "implementation_note": "Register this official pathway for pesticides, food, consumer and environmental chemicals. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier C.",
+    "source_review_status": "international_or_sector_pathway_local_verification_required",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "AFR-005",
+    "jurisdiction": "Kenya",
+    "authority": "Pest Control Products Board / NEMA",
+    "chemical_domain": "Pesticides and environmental chemicals",
+    "framework": "Pest control product registration and environmental assessment",
+    "version_effective_date": "Country-specific verification required",
+    "verification_tier": "B",
+    "official_url": "https://www.pcpb.go.ke/",
+    "region_group": "AFR",
+    "product_classes": [
+      "pesticides"
+    ],
+    "envirochem_modules": [
+      "application_scenario",
+      "ecotox",
+      "groundwater",
+      "model_orchestration",
+      "regulatory_navigator",
+      "sediment",
+      "source_provenance",
+      "surface_water"
+    ],
+    "implementation_note": "Register this official pathway for pesticides and environmental chemicals. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier B.",
+    "source_review_status": "official_framework_registered_local_detail_required",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "AFR-006",
+    "jurisdiction": "Ghana",
+    "authority": "Environmental Protection Agency / Pesticides and Fertilizer Regulatory Division",
+    "chemical_domain": "Pesticides and hazardous chemicals",
+    "framework": "Pesticide registration and chemicals-management requirements",
+    "version_effective_date": "Country-specific verification required",
+    "verification_tier": "B",
+    "official_url": "https://www.epa.gov.gh/",
+    "region_group": "AFR",
+    "product_classes": [
+      "pesticides"
+    ],
+    "envirochem_modules": [
+      "application_scenario",
+      "ecotox",
+      "groundwater",
+      "model_orchestration",
+      "regulatory_navigator",
+      "sediment",
+      "source_provenance",
+      "surface_water"
+    ],
+    "implementation_note": "Register this official pathway for pesticides and hazardous chemicals. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier B.",
+    "source_review_status": "official_framework_registered_local_detail_required",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "AFR-007",
+    "jurisdiction": "Morocco",
+    "authority": "ONSSA / Ministry of Energy Transition and Sustainable Development",
+    "chemical_domain": "Pesticides and chemicals",
+    "framework": "Pesticide authorisation and sectoral chemical controls",
+    "version_effective_date": "Country-specific verification required",
+    "verification_tier": "C",
+    "official_url": "https://www.onssa.gov.ma/",
+    "region_group": "AFR",
+    "product_classes": [
+      "pesticides"
+    ],
+    "envirochem_modules": [
+      "application_scenario",
+      "ecotox",
+      "groundwater",
+      "model_orchestration",
+      "regulatory_navigator",
+      "sediment",
+      "source_provenance",
+      "surface_water"
+    ],
+    "implementation_note": "Register this official pathway for pesticides and chemicals. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier C.",
+    "source_review_status": "international_or_sector_pathway_local_verification_required",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "AFR-008",
+    "jurisdiction": "Egypt",
+    "authority": "Agricultural Pesticides Committee / Egyptian Environmental Affairs Agency",
+    "chemical_domain": "Pesticides and environmental chemicals",
+    "framework": "Pesticide registration and environmental controls",
+    "version_effective_date": "Country-specific verification required",
+    "verification_tier": "C",
+    "official_url": "https://www.apc.gov.eg/",
+    "region_group": "AFR",
+    "product_classes": [
+      "pesticides"
+    ],
+    "envirochem_modules": [
+      "application_scenario",
+      "ecotox",
+      "groundwater",
+      "model_orchestration",
+      "regulatory_navigator",
+      "sediment",
+      "source_provenance",
+      "surface_water"
+    ],
+    "implementation_note": "Register this official pathway for pesticides and environmental chemicals. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier C.",
+    "source_review_status": "international_or_sector_pathway_local_verification_required",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "AFR-009",
+    "jurisdiction": "CILSS member states",
+    "authority": "Sahelian Pesticides Committee (CSP)",
+    "chemical_domain": "Pesticides",
+    "framework": "Common pesticide registration system for CILSS member states",
+    "version_effective_date": "Verify membership and current decisions",
+    "verification_tier": "B",
+    "official_url": "https://insah.cilss.int/index.php/csp/",
+    "region_group": "AFR",
+    "product_classes": [
+      "pesticides"
+    ],
+    "envirochem_modules": [
+      "application_scenario",
+      "ecotox",
+      "groundwater",
+      "model_orchestration",
+      "regulatory_navigator",
+      "sediment",
+      "source_provenance",
+      "surface_water"
+    ],
+    "implementation_note": "Register this official pathway for pesticides. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier B.",
+    "source_review_status": "official_framework_registered_local_detail_required",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "AFR-010",
+    "jurisdiction": "Central African Economic and Monetary Community",
+    "authority": "Interstate Committee of Pesticides of Central Africa (CPAC)",
+    "chemical_domain": "Pesticides",
+    "framework": "Regional harmonised pesticide registration",
+    "version_effective_date": "Verify membership and national implementation",
+    "verification_tier": "B",
+    "official_url": "https://www.cpac-cemac.org/",
+    "region_group": "AFR",
+    "product_classes": [
+      "pesticides"
+    ],
+    "envirochem_modules": [
+      "application_scenario",
+      "ecotox",
+      "groundwater",
+      "model_orchestration",
+      "regulatory_navigator",
+      "sediment",
+      "source_provenance",
+      "surface_water"
+    ],
+    "implementation_note": "Register this official pathway for pesticides. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier B.",
+    "source_review_status": "official_framework_registered_local_detail_required",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "MEA-001",
+    "jurisdiction": "Saudi Arabia",
+    "authority": "Saudi Food and Drug Authority / Ministry of Environment, Water and Agriculture",
+    "chemical_domain": "Pesticides, food and health products",
+    "framework": "Sector-specific registration and safety-assessment guidance",
+    "version_effective_date": "Verify SFDA/MEWA product-specific guidance",
+    "verification_tier": "B",
+    "official_url": "https://www.sfda.gov.sa/en",
+    "region_group": "MEA",
+    "product_classes": [
+      "pesticides",
+      "food_feed"
+    ],
+    "envirochem_modules": [
+      "application_scenario",
+      "ecotox",
+      "groundwater",
+      "model_orchestration",
+      "regulatory_navigator",
+      "sediment",
+      "source_provenance",
+      "surface_water"
+    ],
+    "implementation_note": "Register this official pathway for pesticides, food and health products. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier B.",
+    "source_review_status": "official_framework_registered_local_detail_required",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "MEA-002",
+    "jurisdiction": "United Arab Emirates",
+    "authority": "Ministry of Climate Change and Environment / Ministry of Health and Prevention",
+    "chemical_domain": "Pesticides and hazardous chemicals",
+    "framework": "Pesticide registration and hazardous-material controls",
+    "version_effective_date": "Emirate-level requirements may also apply",
+    "verification_tier": "B",
+    "official_url": "https://www.moccae.gov.ae/en/services/registration-of-pesticides",
+    "region_group": "MEA",
+    "product_classes": [
+      "pesticides"
+    ],
+    "envirochem_modules": [
+      "application_scenario",
+      "ecotox",
+      "groundwater",
+      "model_orchestration",
+      "regulatory_navigator",
+      "sediment",
+      "source_provenance",
+      "surface_water"
+    ],
+    "implementation_note": "Register this official pathway for pesticides and hazardous chemicals. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier B.",
+    "source_review_status": "official_framework_registered_local_detail_required",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "MEA-003",
+    "jurisdiction": "Israel",
+    "authority": "Ministry of Environmental Protection / Ministry of Health / Ministry of Agriculture",
+    "chemical_domain": "Industrial chemicals, pesticides, food and workplace",
+    "framework": "Sectoral chemical risk-assessment and registration systems",
+    "version_effective_date": "Country-specific verification required",
+    "verification_tier": "B",
+    "official_url": "https://www.gov.il/en/departments/topics/hazardous_materials/govil-landing-page",
+    "region_group": "MEA",
+    "product_classes": [
+      "industrial_chemicals",
+      "pesticides",
+      "food_feed"
+    ],
+    "envirochem_modules": [
+      "application_scenario",
+      "coshh",
+      "ecotox",
+      "environmental_exposure",
+      "groundwater",
+      "identity_resolution",
+      "model_orchestration",
+      "property_evidence",
+      "regulatory_navigator",
+      "risk_report",
+      "sds",
+      "sediment",
+      "source_provenance",
+      "surface_water",
+      "task_risk_assessment"
+    ],
+    "implementation_note": "Register this official pathway for industrial chemicals, pesticides, food and workplace. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier B.",
+    "source_review_status": "official_framework_registered_local_detail_required",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "MEA-004",
+    "jurisdiction": "Gulf Cooperation Council",
+    "authority": "GCC Standardization Organization and national authorities",
+    "chemical_domain": "Classification, consumer and sector chemicals",
+    "framework": "GCC/GSO standards and national product-registration systems",
+    "version_effective_date": "Verify national implementation",
+    "verification_tier": "C",
+    "official_url": "https://www.gso.org.sa/en/",
+    "region_group": "MEA",
+    "product_classes": [
+      "classification_labelling"
+    ],
+    "envirochem_modules": [
+      "classification_labelling",
+      "regulatory_navigator",
+      "sds",
+      "source_provenance"
+    ],
+    "implementation_note": "Register this official pathway for classification, consumer and sector chemicals. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier C.",
+    "source_review_status": "international_or_sector_pathway_local_verification_required",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "XCT-001",
+    "jurisdiction": "European Union",
+    "authority": "ECHA",
+    "chemical_domain": "Environmental exposure",
+    "framework": "ECHA IR&CSA Chapter R.16 - Environmental exposure assessment",
+    "version_effective_date": "Check ECHA chapter version",
+    "verification_tier": "A",
+    "official_url": "https://echa.europa.eu/guidance-documents/guidance-on-information-requirements-and-chemical-safety-assessment",
+    "region_group": "XCT",
+    "product_classes": [
+      "environmental_exposure"
+    ],
+    "envirochem_modules": [
+      "model_orchestration",
+      "regulatory_navigator",
+      "scenario_registry",
+      "source_provenance",
+      "tier_comparison"
+    ],
+    "implementation_note": "ECHA R.16 is the core EU environmental-exposure source. Map releases, local/regional scales, STP, air, water, sediment, soil and secondary-poisoning calculations to explicit equations and defaults.",
+    "source_review_status": "implementation_note_curated_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "XCT-002",
+    "jurisdiction": "European Union",
+    "authority": "ECHA",
+    "chemical_domain": "PBT/vPvB/PMT/vPvM",
+    "framework": "ECHA IR&CSA Chapter R.11 and EU hazard guidance",
+    "version_effective_date": "Check current chapter and CLP criteria",
+    "verification_tier": "A",
+    "official_url": "https://echa.europa.eu/guidance-documents/guidance-on-information-requirements-and-chemical-safety-assessment",
+    "region_group": "XCT",
+    "product_classes": [
+      "cross_cutting"
+    ],
+    "envirochem_modules": [
+      "bioaccumulation",
+      "mobility",
+      "pbt_pmt_screen",
+      "persistence",
+      "regulatory_navigator",
+      "source_provenance"
+    ],
+    "implementation_note": "PBT/vPvB and PMT/vPvM screening must use current EU criteria and versioned guidance. Keep screening flags distinct from final regulatory conclusions.",
+    "source_review_status": "implementation_note_curated_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "XCT-003",
+    "jurisdiction": "OECD",
+    "authority": "OECD",
+    "chemical_domain": "Endocrine disruption",
+    "framework": "OECD Conceptual Framework and endocrine-disruptor test guidance",
+    "version_effective_date": "Use current TG/GD versions",
+    "verification_tier": "A",
+    "official_url": "https://www.oecd.org/en/topics/sub-issues/testing-of-chemicals/endocrine-disrupter-testing-and-assessment.html",
+    "region_group": "XCT",
+    "product_classes": [
+      "endocrine_disruption"
+    ],
+    "envirochem_modules": [
+      "regulatory_navigator",
+      "source_provenance"
+    ],
+    "implementation_note": "Endocrine-disruption assessment is a testing and weight-of-evidence framework. Trigger specialist review rather than output a simplistic score.",
+    "source_review_status": "implementation_note_curated_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "XCT-004",
+    "jurisdiction": "OECD",
+    "authority": "OECD",
+    "chemical_domain": "Nanomaterials",
+    "framework": "OECD work on safety of manufactured nanomaterials",
+    "version_effective_date": "Use latest nano-specific guidance",
+    "verification_tier": "A",
+    "official_url": "https://www.oecd.org/en/topics/sub-issues/safety-of-manufactured-nanomaterials.html",
+    "region_group": "XCT",
+    "product_classes": [
+      "nanomaterials"
+    ],
+    "envirochem_modules": [
+      "applicability_warnings",
+      "nano_ruleset",
+      "particle_properties",
+      "regulatory_navigator",
+      "source_provenance"
+    ],
+    "implementation_note": "Nanomaterials need nanoform-specific identity, particle-size, surface and transformation data. Standard dissolved-organic models should raise applicability warnings.",
+    "source_review_status": "implementation_note_curated_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "XCT-005",
+    "jurisdiction": "US EPA",
+    "authority": "US EPA",
+    "chemical_domain": "Ecological risk",
+    "framework": "Guidelines for Ecological Risk Assessment",
+    "version_effective_date": "1998 plus programme-specific updates",
+    "verification_tier": "A",
+    "official_url": "https://www.epa.gov/risk/guidelines-ecological-risk-assessment",
+    "region_group": "XCT",
+    "product_classes": [
+      "ecological_risk"
+    ],
+    "envirochem_modules": [
+      "regulatory_navigator",
+      "source_provenance"
+    ],
+    "implementation_note": "EPA ecological risk guidance supports problem formulation, analysis and risk characterisation. Store assessment endpoints, conceptual model and lines of evidence.",
+    "source_review_status": "official_source_reviewed",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "XCT-006",
+    "jurisdiction": "US EPA",
+    "authority": "US EPA",
+    "chemical_domain": "Carcinogenicity",
+    "framework": "Guidelines for Carcinogen Risk Assessment",
+    "version_effective_date": "2005; use current supplements/policies",
+    "verification_tier": "A",
+    "official_url": "https://www.epa.gov/risk/guidelines-carcinogen-risk-assessment",
+    "region_group": "XCT",
+    "product_classes": [
+      "cross_cutting"
+    ],
+    "envirochem_modules": [
+      "regulatory_navigator",
+      "source_provenance"
+    ],
+    "implementation_note": "Register this official pathway for carcinogenicity. Route users by product class and jurisdiction, preserve the source version/effective date, and require local verification where the compendium assigns Tier A.",
+    "source_review_status": "official_source_registered_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "XCT-007",
+    "jurisdiction": "US EPA",
+    "authority": "US EPA",
+    "chemical_domain": "Exposure",
+    "framework": "Exposure Factors Handbook and exposure tools",
+    "version_effective_date": "2011 edition with updates; online chapters updated",
+    "verification_tier": "A",
+    "official_url": "https://www.epa.gov/expobox/about-exposure-factors-handbook",
+    "region_group": "XCT",
+    "product_classes": [
+      "cross_cutting"
+    ],
+    "envirochem_modules": [
+      "regulatory_navigator",
+      "source_provenance"
+    ],
+    "implementation_note": "EPA Exposure Factors Handbook supports scenario inputs and distributions. Store chapter/version and distinguish default from site-specific factors.",
+    "source_review_status": "implementation_note_curated_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "XCT-008",
+    "jurisdiction": "European Union",
+    "authority": "European Commission / ECHA / EFSA",
+    "chemical_domain": "Alternatives to animal testing",
+    "framework": "EU and OECD approaches to new approach methodologies (NAMs)",
+    "version_effective_date": "Verify acceptance by endpoint and sector",
+    "verification_tier": "A",
+    "official_url": "https://echa.europa.eu/support/registration/how-to-avoid-unnecessary-testing-on-animals",
+    "region_group": "XCT",
+    "product_classes": [
+      "cross_cutting"
+    ],
+    "envirochem_modules": [
+      "applicability_domain",
+      "predicted_data",
+      "read_across",
+      "regulatory_navigator",
+      "source_provenance"
+    ],
+    "implementation_note": "NAM acceptance is endpoint- and sector-specific. The platform may organise evidence but must not state regulatory acceptance without the receiving framework.",
+    "source_review_status": "implementation_note_curated_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "XCT-009",
+    "jurisdiction": "Global",
+    "authority": "OECD",
+    "chemical_domain": "Data quality",
+    "framework": "OECD Principles of GLP and compliance monitoring",
+    "version_effective_date": "Revised documents in OECD GLP series",
+    "verification_tier": "A",
+    "official_url": "https://www.oecd.org/en/topics/sub-issues/good-laboratory-practice-and-compliance-monitoring.html",
+    "region_group": "XCT",
+    "product_classes": [
+      "cross_cutting"
+    ],
+    "envirochem_modules": [
+      "evidence_engine",
+      "glp_status",
+      "regulatory_navigator",
+      "source_provenance",
+      "study_reliability"
+    ],
+    "implementation_note": "GLP status is evidence metadata, not a universal quality score. Non-GLP studies may still be scientifically useful; preserve reliability and purpose separately.",
+    "source_review_status": "implementation_note_curated_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  },
+  {
+    "id": "XCT-010",
+    "jurisdiction": "Global",
+    "authority": "OECD",
+    "chemical_domain": "Reliability and weight of evidence",
+    "framework": "OECD guidance on data quality, reporting and integrated approaches",
+    "version_effective_date": "Use relevant GD/IATA case studies",
+    "verification_tier": "A",
+    "official_url": "https://www.oecd.org/en/topics/sub-issues/assessment-of-chemicals.html",
+    "region_group": "XCT",
+    "product_classes": [
+      "cross_cutting"
+    ],
+    "envirochem_modules": [
+      "regulatory_navigator",
+      "source_provenance"
+    ],
+    "implementation_note": "Weight of evidence must be transparent. Store each line of evidence, reliability, relevance, consistency, uncertainty and decision rationale.",
+    "source_review_status": "implementation_note_curated_source_deep_read_pending",
+    "snapshot_date": "2026-07-30",
+    "legal_notice": "Regulatory navigation only; confirm current official text and competent-authority requirements before filing."
+  }
+]

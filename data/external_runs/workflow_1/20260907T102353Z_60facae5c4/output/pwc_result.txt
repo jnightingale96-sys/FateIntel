@@ -1,0 +1,6 @@
+model_version=PWC3 QA
+scenario_file_version=QA-1
+surface_water_concentration=0.12
+sediment_concentration=1.4
+groundwater_concentration=0.03
+raw_output_archive=captured fixture

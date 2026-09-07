@@ -1,0 +1,77 @@
+{
+  "snapshot_date": "2026-08-16",
+  "platform": "Windows local installation",
+  "models": [
+    {
+      "key": "SPIN",
+      "name": "FOCUS SPIN",
+      "version": "4.4",
+      "order": 1,
+      "official_page": "https://esdac.jrc.ec.europa.eu/projects/spin",
+      "download_url": "https://esdac.jrc.ec.europa.eu/public_path//projects_data/focus/sw/models/spin/Latest/FOCUS_SPIN_4.4-and-Readmefile.zip",
+      "default_path": "C:\\Program Files (x86)\\Pesticide Models\\SPIN",
+      "notes": [
+        "Install before PEARL or SWASH.",
+        "Do not uninstall SPIN 3.3 if an existing substance database must be retained."
+      ]
+    },
+    {
+      "key": "PEARL",
+      "name": "FOCUS PEARL",
+      "version": "5.5.5gw / 5.5.1soil",
+      "order": 2,
+      "official_page": "https://esdac.jrc.ec.europa.eu/projects/pearl",
+      "download_url": "https://esdac.jrc.ec.europa.eu/public_path/projects_data/focus/gw/models/pearl/FOCUSPEARL_5.5.5_September2021.zip",
+      "default_path": "C:\\Program Files (x86)\\Pesticide Models\\FOCUSPEARL",
+      "notes": [
+        "Latest released PEARL is preferred for new regulatory submissions.",
+        "SPIN must be installed locally first.",
+        "With SPIN 4.4, edit TSCF in standalone SPIN if the PEARL-hosted field is disabled; do not use 0.5 without a relevant substance-specific basis."
+      ]
+    },
+    {
+      "key": "SWASH",
+      "name": "FOCUS SWASH",
+      "version": "5.3",
+      "order": 3,
+      "official_page": "https://esdac.jrc.ec.europa.eu/projects/swash",
+      "download_url": "https://esdac.jrc.ec.europa.eu/public_path/projects_data/focus/sw/models/swash/Latest/FOCUS_SWASH5.3.zip",
+      "default_path": "C:\\SWASH",
+      "notes": [
+        "SWASH is the Step 3 orchestration shell, not the fate solver.",
+        "It prepares MACRO/PRZM/TOXSWA projects and the drift inputs.",
+        "After opening/editing Applications, save and export the project before running TOXSWA to avoid the documented 100% drift problem."
+      ]
+    },
+    {
+      "key": "MACRO",
+      "name": "FOCUS MACRO",
+      "version": "5.5.4a (MACRO model 5.2)",
+      "order": 4,
+      "official_page": "https://esdac.jrc.ec.europa.eu/projects/macro",
+      "download_url": "https://esdac.jrc.ec.europa.eu/public_path//projects_data/focus/gw/software/FOCUS_MACRO_5_5_4a.zip",
+      "default_path": "C:\\SWASH\\MACRO",
+      "notes": [
+        "The 5.5.4a package adds the .NET Framework 4.7.2 prerequisite for Windows 11; the installed model remains essentially the 5.5.4/MACRO 5.2 implementation.",
+        "MACRO supplies the Chateaudun groundwater scenario and drainage inputs for six FOCUS surface-water scenarios.",
+        "Retain .m2t files and the upstream SWASH project when MACRO drainage is passed to TOXSWA.",
+        "Check the documented lower-case filename requirement if the standalone M2T tool is used."
+      ]
+    },
+    {
+      "key": "TOXSWA",
+      "name": "FOCUS TOXSWA",
+      "version": "5.5.3",
+      "order": 5,
+      "official_page": "https://esdac.jrc.ec.europa.eu/projects/toxswa",
+      "download_url": "https://esdac.jrc.ec.europa.eu/public_path/projects_data/focus/sw/models/toxswa/Latest/FOCUSTOXSWA_553.zip",
+      "default_path": "C:\\SWASH\\TOXSWA",
+      "notes": [
+        "Install SWASH first and keep TOXSWA beneath the same SWASH drive/directory structure.",
+        "TOXSWA receives drift plus MACRO drainage or PRZM runoff/erosion loadings.",
+        "The SPIN 4.4 close-time Runtime error 216 is documented as not affecting runs."
+      ]
+    }
+  ],
+  "scientific_boundary": "FOCUS tools are pesticide exposure models. Use for pharmaceuticals, biosolids or wastewater irrigation is an adapted research/comparative workflow unless a receiving authority explicitly accepts it."
+}

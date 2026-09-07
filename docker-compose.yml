@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: envirochem-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: envirochem
+      POSTGRES_USER: envirochem
+      POSTGRES_PASSWORD: envirochem-local
+    ports:
+      - "5433:5432"
+    volumes:
+      - envirochem_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U envirochem -d envirochem"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  envirochem_pgdata:

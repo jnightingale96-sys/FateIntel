@@ -1,0 +1,51 @@
+[
+  {
+    "Model": "BIOWIN 1",
+    "Endpoint": "Aerobic biodegradation probability, linear",
+    "Fragment basis": "36-fragment family",
+    "Current status": "Exact master coefficient table not independently verified in this workbook",
+    "Implementation note": "Use EPA detailed outputs/original help file before production implementation"
+  },
+  {
+    "Model": "BIOWIN 2",
+    "Endpoint": "Aerobic biodegradation probability, nonlinear",
+    "Fragment basis": "Same general fragment family plus nonlinear mapping",
+    "Current status": "Exact public master table not independently verified",
+    "Implementation note": "Do not infer BIOWIN2 coefficients from BIOWIN1"
+  },
+  {
+    "Model": "BIOWIN 3",
+    "Endpoint": "Ultimate biodegradation timeframe",
+    "Fragment basis": "Complete reconstructed SMARTS + coefficients",
+    "Current status": "Approximate open implementation; reported close reproduction, not EPA source code",
+    "Implementation note": "Suitable for research prototyping with validation"
+  },
+  {
+    "Model": "BIOWIN 4",
+    "Endpoint": "Primary biodegradation timeframe",
+    "Fragment basis": "Complete reconstructed SMARTS + coefficients",
+    "Current status": "Approximate open implementation; reported close reproduction, not EPA source code",
+    "Implementation note": "Suitable for research prototyping with validation"
+  },
+  {
+    "Model": "BIOWIN 5",
+    "Endpoint": "MITI linear ready biodegradation",
+    "Fragment basis": "Different atom/fragment set",
+    "Current status": "Not yet fully reconstructed here",
+    "Implementation note": "Obtain from EPA help/detailed outputs"
+  },
+  {
+    "Model": "BIOWIN 6",
+    "Endpoint": "MITI nonlinear ready biodegradation",
+    "Fragment basis": "Different atom/fragment set + nonlinear mapping",
+    "Current status": "Not yet fully reconstructed here",
+    "Implementation note": "Obtain from EPA help/detailed outputs"
+  },
+  {
+    "Model": "BIOWIN 7",
+    "Endpoint": "Anaerobic biodegradation potential",
+    "Fragment basis": "Fragment contribution model",
+    "Current status": "Not yet fully reconstructed here",
+    "Implementation note": "Obtain from model publication/help files"
+  }
+]

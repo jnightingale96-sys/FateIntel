@@ -1,0 +1,512 @@
+[
+  {
+    "key": "epa_comptox",
+    "name": "US EPA CompTox / CTX APIs",
+    "owner": "US Environmental Protection Agency",
+    "scope": [
+      "all_chemicals"
+    ],
+    "endpoint_families": [
+      "identity",
+      "physchem",
+      "environmental_fate",
+      "ecotoxicity",
+      "exposure"
+    ],
+    "access_mode": "open_live_api",
+    "commercial_status": "commercial_use_allowed",
+    "integration_status": "api_key_ready",
+    "search_enabled": false,
+    "requires_api_key": true,
+    "evidence_tier": "authoritative_aggregator",
+    "homepage": "https://comptox.epa.gov/dashboard/",
+    "docs_url": "https://comptox.epa.gov/ctx-api/docs/",
+    "notes": "EPA CTX data are open for commercial and non-commercial use. An individual API key is required for limited-access APIs. Preserve original source/context because the Dashboard aggregates data from many sources."
+  },
+  {
+    "key": "pubchem",
+    "name": "PubChem PUG REST + PUG View",
+    "owner": "NCBI / NIH",
+    "scope": [
+      "all_chemicals"
+    ],
+    "endpoint_families": [
+      "identity",
+      "physchem",
+      "environmental_fate",
+      "literature_links"
+    ],
+    "access_mode": "open_live_api",
+    "commercial_status": "open_service_source_attribution_required",
+    "integration_status": "live",
+    "search_enabled": true,
+    "requires_api_key": false,
+    "evidence_tier": "secondary_aggregator",
+    "homepage": "https://pubchem.ncbi.nlm.nih.gov/",
+    "docs_url": "https://pubchem.ncbi.nlm.nih.gov/docs/pug-view",
+    "notes": "PUG REST resolves identifiers and computed properties. PUG View supplies third-party annotations and attribution. Keep requests below PubChem's published service limits."
+  },
+  {
+    "key": "europe_pmc",
+    "name": "Europe PMC",
+    "owner": "EMBL-EBI / Europe PMC",
+    "scope": [
+      "all_chemicals",
+      "human_pharmaceuticals",
+      "veterinary_pharmaceuticals"
+    ],
+    "endpoint_families": [
+      "literature",
+      "environmental_fate",
+      "ecotoxicity"
+    ],
+    "access_mode": "open_live_api",
+    "commercial_status": "metadata_open_fulltext_article_licence_applies",
+    "integration_status": "live",
+    "search_enabled": true,
+    "requires_api_key": false,
+    "evidence_tier": "primary_literature_discovery",
+    "homepage": "https://europepmc.org/",
+    "docs_url": "https://europepmc.org/RestfulWebService",
+    "notes": "Search abstracts and metadata for all indexed literature. Numeric candidate extraction from OA full text is supported only for the Open Access subset; article-specific licence terms remain attached to the candidate."
+  },
+  {
+    "key": "efsa_openfoodtox",
+    "name": "EFSA OpenFoodTox 3.0",
+    "owner": "European Food Safety Authority",
+    "scope": [
+      "pesticides",
+      "food_feed_chemicals",
+      "metabolites",
+      "all_chemicals"
+    ],
+    "endpoint_families": [
+      "physchem",
+      "environmental_fate",
+      "ecotoxicity",
+      "human_toxicity",
+      "animal_toxicity"
+    ],
+    "access_mode": "open_download_import",
+    "commercial_status": "open_access_source_terms_apply",
+    "integration_status": "registry_and_import_staging",
+    "search_enabled": false,
+    "requires_api_key": false,
+    "evidence_tier": "regulatory_authority",
+    "homepage": "https://www.efsa.europa.eu/en/data-report/chemical-hazards-database-openfoodtox",
+    "docs_url": "https://www.efsa.europa.eu/en/data-report/chemical-hazards-database-openfoodtox",
+    "notes": "OpenFoodTox 3.0 includes structured environmental fate/behaviour, physicochemical and ecotoxicology study results. EnviroChem stages official Excel/IUCLID exports rather than scraping the site."
+  },
+  {
+    "key": "epa_ecotox",
+    "name": "US EPA ECOTOX Knowledgebase",
+    "owner": "US Environmental Protection Agency",
+    "scope": [
+      "all_chemicals"
+    ],
+    "endpoint_families": [
+      "ecotoxicity"
+    ],
+    "access_mode": "open_download_import",
+    "commercial_status": "public_government_data",
+    "integration_status": "registry_and_download_staging",
+    "search_enabled": false,
+    "requires_api_key": false,
+    "evidence_tier": "curated_primary_literature",
+    "homepage": "https://cfpub.epa.gov/ecotox/",
+    "docs_url": "https://www.epa.gov/comptox-tools/ecotoxicology-ecotox-knowledgebase-resource-hub",
+    "notes": "Curated ecotoxicity records from peer-reviewed literature. Full aquatic and terrestrial data downloads can be staged for local import."
+  },
+  {
+    "key": "ecodrug_plus",
+    "name": "EcoDrug+",
+    "owner": "University of Helsinki / University of Exeter",
+    "scope": [
+      "human_pharmaceuticals",
+      "veterinary_pharmaceuticals",
+      "agrochemicals",
+      "bioactive_chemicals"
+    ],
+    "endpoint_families": [
+      "identity",
+      "mechanism_of_action",
+      "target_conservation",
+      "chemical_similarity"
+    ],
+    "access_mode": "open_live_api",
+    "commercial_status": "source_licence_applies",
+    "integration_status": "registered_api",
+    "search_enabled": false,
+    "requires_api_key": false,
+    "evidence_tier": "research_database",
+    "homepage": "https://ecodrugplus.helsinki.fi/",
+    "docs_url": "https://ecodrugplus.helsinki.fi/WebResources",
+    "notes": "Useful for effects/mechanism and cross-species target conservation rather than environmental degradation kinetics."
+  },
+  {
+    "key": "uba_pharms",
+    "name": "PHARMS-UBA — Pharmaceuticals in the Environment",
+    "owner": "German Environment Agency (UBA)",
+    "scope": [
+      "human_pharmaceuticals",
+      "veterinary_pharmaceuticals"
+    ],
+    "endpoint_families": [
+      "measured_environmental_concentrations",
+      "monitoring"
+    ],
+    "access_mode": "open_download_import",
+    "commercial_status": "public_download_source_terms_apply",
+    "integration_status": "registry_and_import_staging",
+    "search_enabled": false,
+    "requires_api_key": false,
+    "evidence_tier": "government_monitoring_compilation",
+    "homepage": "https://www.umweltbundesamt.de/en/themen/chemikalien/arzneimittel/the-uba-database-pharmaceuticals-in-the-environment",
+    "docs_url": "https://www.umweltbundesamt.de/en/database-pharmaceuticals-in-the-environment-1",
+    "notes": "Monitoring/MEC evidence across many matrices; do not use as a degradation-kinetics database."
+  },
+  {
+    "key": "norman_ecotox",
+    "name": "NORMAN Ecotoxicology Database",
+    "owner": "NORMAN Association",
+    "scope": [
+      "emerging_contaminants",
+      "all_chemicals"
+    ],
+    "endpoint_families": [
+      "ecotoxicity",
+      "pnec",
+      "quality_targets"
+    ],
+    "access_mode": "manual_linkout_csv",
+    "commercial_status": "reuse_terms_to_confirm",
+    "integration_status": "registry_linkout",
+    "search_enabled": false,
+    "requires_api_key": false,
+    "evidence_tier": "expert_curated",
+    "homepage": "https://www.norman-network.com/nds/ecotox/",
+    "docs_url": "https://www.norman-network.com/nds/ecotox/",
+    "notes": "Useful for experimental endpoints and expert-selected Lowest PNECs. Lowest PNECs are prioritisation values and still require regulatory-context review."
+  },
+  {
+    "key": "oecd_echemportal",
+    "name": "OECD eChemPortal",
+    "owner": "OECD / ECHA",
+    "scope": [
+      "all_chemicals"
+    ],
+    "endpoint_families": [
+      "physchem",
+      "environmental_fate",
+      "ecotoxicity",
+      "toxicity",
+      "exposure"
+    ],
+    "access_mode": "discovery_linkout",
+    "commercial_status": "source_specific_rights_apply",
+    "integration_status": "registry_linkout",
+    "search_enabled": false,
+    "requires_api_key": false,
+    "evidence_tier": "authoritative_gateway",
+    "homepage": "https://www.echemportal.org/echemportal/",
+    "docs_url": "https://www.oecd.org/en/data/tools/echemportal-global-portal-to-information-on-chemical-substances.html",
+    "notes": "Use to locate authoritative source datasets. Rights and reliability remain those of each underlying data owner."
+  },
+  {
+    "key": "echa_chem",
+    "name": "ECHA CHEM",
+    "owner": "European Chemicals Agency",
+    "scope": [
+      "industrial_chemicals",
+      "biocides",
+      "all_chemicals"
+    ],
+    "endpoint_families": [
+      "reach_registration",
+      "physchem",
+      "environmental_fate",
+      "ecotoxicity",
+      "regulatory_status"
+    ],
+    "access_mode": "manual_linkout",
+    "commercial_status": "third_party_rights_may_apply",
+    "integration_status": "registry_linkout",
+    "search_enabled": false,
+    "requires_api_key": false,
+    "evidence_tier": "regulatory_database",
+    "homepage": "https://chem.echa.europa.eu/",
+    "docs_url": "https://echa.europa.eu/information-on-chemicals",
+    "notes": "Up-to-date REACH registration data are now in ECHA CHEM. Some information may belong to third parties; bulk commercial reuse is not enabled in EnviroChem without a rights review."
+  },
+  {
+    "key": "aeru_vsdb",
+    "name": "AERU Veterinary Substances Database (VSDB)",
+    "owner": "University of Hertfordshire AERU",
+    "scope": [
+      "veterinary_pharmaceuticals",
+      "dual_human_veterinary_apis"
+    ],
+    "endpoint_families": [
+      "physchem",
+      "manure_degradation",
+      "soil_degradation",
+      "hydrolysis",
+      "photolysis",
+      "water_sediment",
+      "sorption",
+      "ecotoxicity"
+    ],
+    "access_mode": "licensed_file_connector",
+    "commercial_status": "commercial_licence_required",
+    "integration_status": "licence_gate_ready",
+    "search_enabled": false,
+    "requires_api_key": false,
+    "evidence_tier": "curated_database",
+    "homepage": "https://aeru.herts.ac.uk/aeru/vsdb/atoz.htm",
+    "docs_url": "https://aeru.herts.ac.uk/aeru/vsdb/purchase_index.htm",
+    "notes": "Excellent veterinary fate source, including manure DT50 where available. Some human APIs appear where they also have veterinary relevance, but VSDB is not a comprehensive human-pharmaceutical database. Commercial copying/integration requires a licence."
+  },
+  {
+    "key": "aeru_ppdb",
+    "name": "AERU Pesticide Properties Database (PPDB)",
+    "owner": "University of Hertfordshire AERU",
+    "scope": [
+      "pesticides",
+      "biocides",
+      "related_agricultural_substances"
+    ],
+    "endpoint_families": [
+      "physchem",
+      "soil_degradation",
+      "hydrolysis",
+      "photolysis",
+      "water_sediment",
+      "sorption",
+      "ecotoxicity"
+    ],
+    "access_mode": "licensed_file_connector",
+    "commercial_status": "commercial_licence_required",
+    "integration_status": "licence_gate_ready",
+    "search_enabled": false,
+    "requires_api_key": false,
+    "evidence_tier": "curated_database",
+    "homepage": "https://aeru.herts.ac.uk/aeru/ppdb/en/index.htm",
+    "docs_url": "https://aeru.herts.ac.uk/aeru/ppdb/en/purchase_index.htm",
+    "notes": "Strong pesticide fate/ecotox source. EnviroChem does not scrape or redistribute PPDB data; licensed offline exports can be connected once commercial rights are obtained."
+  },
+  {
+    "key": "premier",
+    "name": "PREMIER Digital Assessment System",
+    "owner": "IMI2 PREMIER consortium / Mario Negri Institute",
+    "scope": [
+      "human_pharmaceuticals"
+    ],
+    "endpoint_families": [
+      "ecotoxicity",
+      "environmental_fate",
+      "physchem",
+      "era"
+    ],
+    "access_mode": "permission_gated_export_connector",
+    "commercial_status": "formal_letter_of_access_required",
+    "integration_status": "rights_gate_ready",
+    "search_enabled": false,
+    "requires_api_key": false,
+    "evidence_tier": "industry_regulatory_database",
+    "homepage": "https://premier.marionegri.it/",
+    "docs_url": "https://premier.marionegri.it/",
+    "notes": "High-value human-pharmaceutical source. Commercial use, including marketing-authorisation use, is not enabled unless the controlling data party has granted a formal letter of access. EnviroChem therefore supports permission-gated export/import rather than covert scraping."
+  },
+  {
+    "key": "sci_bot",
+    "name": "Sci-Bot",
+    "owner": "Third-party service",
+    "scope": [
+      "literature"
+    ],
+    "endpoint_families": [
+      "literature"
+    ],
+    "access_mode": "blocked",
+    "commercial_status": "not_approved_for_integration",
+    "integration_status": "blocked",
+    "search_enabled": false,
+    "requires_api_key": false,
+    "evidence_tier": "not_used",
+    "homepage": "https://sci-bot.ru/",
+    "docs_url": "https://sci-bot.ru/",
+    "notes": "The service publicly identifies itself as powered by Sci-Hub. EnviroChem does not use it. Europe PMC/Open Access APIs are the lawful literature-mining route."
+  },
+  {
+    "key": "fass_pharma_environment",
+    "name": "FASS Environmental Information for Pharmaceuticals",
+    "owner": "LIF / Swedish pharmaceutical information system; environmental data supplied by marketing-authorisation holders",
+    "scope": [
+      "human_pharmaceuticals"
+    ],
+    "endpoint_families": [
+      "environmental_risk",
+      "biodegradation",
+      "water_sediment",
+      "hydrolysis",
+      "photolysis",
+      "sorption",
+      "bioaccumulation",
+      "ecotoxicity",
+      "pnec",
+      "excretion"
+    ],
+    "access_mode": "manual_linkout",
+    "commercial_status": "reuse_terms_to_confirm",
+    "integration_status": "registry_linkout",
+    "search_enabled": false,
+    "requires_api_key": false,
+    "evidence_tier": "industry_regulatory_summary",
+    "homepage": "https://www.fass.se/",
+    "docs_url": "https://www.fass.se/",
+    "notes": "High-value human-pharmaceutical environmental summaries. Individual product pages can expose OECD study results including ready/inherent biodegradation, water-sediment DT50, hydrolysis, Koc/logD and ecotoxicity. EnviroChem links out but does not scrape or republish FASS content until reuse terms are confirmed."
+  },
+  {
+    "key": "janusinfo_pharma_environment",
+    "name": "Region Stockholm — Pharmaceuticals and Environment",
+    "owner": "Region Stockholm",
+    "scope": [
+      "human_pharmaceuticals"
+    ],
+    "endpoint_families": [
+      "environmental_hazard",
+      "persistence",
+      "bioaccumulation",
+      "ecotoxicity",
+      "environmental_risk",
+      "wwtp_removal",
+      "monitoring"
+    ],
+    "access_mode": "manual_linkout",
+    "commercial_status": "reuse_terms_to_confirm",
+    "integration_status": "registry_linkout",
+    "search_enabled": false,
+    "requires_api_key": false,
+    "evidence_tier": "public_health_decision_support",
+    "homepage": "https://janusinfo.se/beslutsstod/lakemedelochmiljo/pharmaceuticalsandenvironment.html",
+    "docs_url": "https://janusinfo.se/beslutsstod/lakemedelochmiljo/pharmaceuticalsandenvironment/environment/classification.html",
+    "notes": "Human-pharmaceutical environmental hazard/risk decision support covering persistence, bioaccumulation and toxicity, with contextual information such as WWTP removal/occurrence where available. Registered as a linkout pending a formal reuse/API review."
+  },
+  {
+    "key": "nihs_japan_pharma_era",
+    "name": "Japan NIHS — Human Pharmaceutical ERA Databases",
+    "owner": "National Institute of Health Sciences (Japan)",
+    "scope": [
+      "human_pharmaceuticals"
+    ],
+    "endpoint_families": [
+      "environmental_fate",
+      "ecotoxicity"
+    ],
+    "access_mode": "open_download_import",
+    "commercial_status": "public_data_licence_attribution_source_specific_notice_applies",
+    "integration_status": "registry_and_import_staging",
+    "search_enabled": false,
+    "requires_api_key": false,
+    "evidence_tier": "government_research_database",
+    "homepage": "https://www.nihs.go.jp/dra/era_pharma.html",
+    "docs_url": "https://www.nihs.go.jp/dra/era_pharma.html",
+    "notes": "NIHS publishes a human-pharmaceutical ecotoxicity Excel database and a separate environmental-fate database. The NIHS copyright policy states that, unless specifically noted otherwise, site content can be used under Japan's Public Data License 1.0 with attribution. EnviroChem registers the downloads for a verified local importer rather than silently scraping them."
+  },
+  {
+    "key": "epa_exposure_factors_handbook",
+    "name": "US EPA Exposure Factors Handbook",
+    "owner": "US Environmental Protection Agency",
+    "scope": ["human_exposure", "consumer_exposure", "general_population"],
+    "endpoint_families": ["body_weight", "inhalation_rate", "ingestion_rate", "activity_patterns", "life_stage_factors"],
+    "access_mode": "versioned_manual_selection",
+    "commercial_status": "public_government_reference",
+    "integration_status": "catalogued_parameter_provenance",
+    "search_enabled": false,
+    "requires_api_key": false,
+    "evidence_tier": "authoritative_guidance",
+    "homepage": "https://www.epa.gov/expobox/exposure-factors-handbook-2011-edition",
+    "docs_url": "https://www.epa.gov/expobox/exposure-factors-handbook-2011-edition",
+    "notes": "Values are never inserted silently. Store chapter/table, population or life stage, statistic, edition/update and access date with each selected parameter."
+  },
+  {
+    "key": "epa_chemsteer",
+    "name": "US EPA ChemSTEER",
+    "owner": "US Environmental Protection Agency",
+    "scope": ["industrial_chemicals", "occupational_exposure", "environmental_releases"],
+    "endpoint_families": ["industrial_release", "worker_inhalation", "worker_dermal"],
+    "access_mode": "external_desktop_adapter",
+    "commercial_status": "external_tool_terms_apply_no_derivatives",
+    "integration_status": "managed_adapter_contract",
+    "search_enabled": false,
+    "requires_api_key": false,
+    "evidence_tier": "official_screening_tool",
+    "homepage": "https://www.epa.gov/tsca-screening-tools/chemsteer-chemical-screening-tool-exposures-and-environmental-releases",
+    "docs_url": "https://www.epa.gov/tsca-screening-tools/chemsteer-chemical-screening-tool-exposures-and-environmental-releases",
+    "notes": "EnviroChem prepares and reviews versioned manifests and outputs. The executable is not bundled, modified or represented as EnviroChem intellectual property."
+  },
+  {
+    "key": "epa_cem",
+    "name": "US EPA Consumer Exposure Model",
+    "owner": "US Environmental Protection Agency",
+    "scope": ["consumer_products", "articles", "human_exposure"],
+    "endpoint_families": ["consumer_inhalation", "consumer_ingestion", "consumer_dermal"],
+    "access_mode": "external_desktop_adapter",
+    "commercial_status": "external_tool_terms_apply_no_derivatives",
+    "integration_status": "managed_adapter_contract",
+    "search_enabled": false,
+    "requires_api_key": false,
+    "evidence_tier": "official_screening_tool",
+    "homepage": "https://www.epa.gov/tsca-screening-tools/consumer-exposure-model-cem",
+    "docs_url": "https://www.epa.gov/tsca-screening-tools/consumer-exposure-model-cem",
+    "notes": "EnviroChem stores category, route, population, life-stage and model choices with reviewed imported output; it does not bundle or modify CEM."
+  },
+  {
+    "key": "epa_efast",
+    "name": "US EPA E-FAST 2014",
+    "owner": "US Environmental Protection Agency",
+    "scope": ["legacy_tsca", "environmental_fate", "consumer_exposure", "general_population"],
+    "endpoint_families": ["air", "surface_water", "landfill", "consumer", "general_population"],
+    "access_mode": "external_legacy_adapter",
+    "commercial_status": "external_tool_terms_apply_no_derivatives",
+    "integration_status": "managed_legacy_adapter_contract",
+    "search_enabled": false,
+    "requires_api_key": false,
+    "evidence_tier": "legacy_official_screening_tool",
+    "homepage": "https://www.epa.gov/tsca-screening-tools/e-fast-exposure-and-fate-assessment-screening-tool-version-2014",
+    "docs_url": "https://www.epa.gov/tsca-screening-tools/e-fast-exposure-and-fate-assessment-screening-tool-version-2014",
+    "notes": "Every result remains labelled 2014/legacy with executable and scenario provenance. EnviroChem does not modify or redistribute E-FAST."
+  },
+  {
+    "key": "envipath_eawag_bbd",
+    "name": "enviPath / EAWAG-BBD and PPS",
+    "owner": "Eawag and contributing organisations",
+    "scope": ["organic_chemicals", "microbial_biotransformation"],
+    "endpoint_families": ["observed_pathways", "transformation_products", "biotransformation_rules"],
+    "access_mode": "collaboration_or_permission_gated",
+    "commercial_status": "hosted_data_rights_to_confirm",
+    "integration_status": "provider_neutral_contract_only",
+    "search_enabled": false,
+    "requires_api_key": false,
+    "evidence_tier": "curated_research_database",
+    "homepage": "https://envipath.org/",
+    "docs_url": "https://envipath.org/",
+    "notes": "The open-source client licence does not automatically grant commercial redistribution rights to hosted records or PPS content. Keep this as a collaboration/permission-gated provider."
+  },
+  {
+    "key": "kegg_xenobiotics",
+    "name": "KEGG Xenobiotics Biodegradation and Metabolism",
+    "owner": "Kanehisa Laboratories / KEGG",
+    "scope": ["xenobiotic_pathways", "biotransformation"],
+    "endpoint_families": ["pathway_context", "enzymes", "metabolites"],
+    "access_mode": "licensed_linkout",
+    "commercial_status": "commercial_licence_required",
+    "integration_status": "linkout_only",
+    "search_enabled": false,
+    "requires_api_key": false,
+    "evidence_tier": "curated_pathway_database",
+    "homepage": "https://www.genome.jp/kegg/pathway.html#xenobiotics",
+    "docs_url": "https://www.kegg.jp/kegg/legal.html",
+    "notes": "Do not ingest or redistribute KEGG pathway data in the paid product without an appropriate commercial licence. API availability does not remove that requirement."
+  }
+]

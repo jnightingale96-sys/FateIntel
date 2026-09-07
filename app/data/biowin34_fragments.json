@@ -1,0 +1,351 @@
+{
+  "model_name": "Open approximate BIOWIN 3/4 reconstruction",
+  "model_version": "envirodesign-biowin34-0.1.0",
+  "source_workbook": "BIOWIN_enviPath_fragment_inventory.xlsx",
+  "source_status": "Approximate open reconstruction; not EPA source code or regulatory-equivalent output",
+  "terms": {
+    "MW": {
+      "biowin3": -0.00220987,
+      "biowin4": -0.001442756
+    },
+    "intercept": {
+      "biowin3": 3.19917051,
+      "biowin4": 3.847737
+    }
+  },
+  "fragments": [
+    {
+      "id": 1,
+      "description": "Nitroso [-N-N=O]",
+      "smarts": "[Nv3;H1&$(N-[#6!$(C=O)]),H0&$(N(-[#6!$(C=O)])-[#6!$(C=O)])]-[NH0v3]=O",
+      "biowin3_coefficient": -0.38513,
+      "biowin4_coefficient": 0.01848,
+      "source_status": "Open approximate reconstruction"
+    },
+    {
+      "id": 2,
+      "description": "Linear C4 terminal chain [CCC-CH3]",
+      "smarts": "[C!$(C=O);D2,D1]~[CD2]~[CD2]-[CH3]",
+      "biowin3_coefficient": 0.29834,
+      "biowin4_coefficient": 0.26907,
+      "source_status": "Open approximate reconstruction"
+    },
+    {
+      "id": 3,
+      "description": "Aliphatic alcohol [-OH]",
+      "smarts": "[OH$(O-[C!$(C=[!#6])])!$(O-[CH0X4])]",
+      "biowin3_coefficient": 0.15997,
+      "biowin4_coefficient": 0.12945,
+      "source_status": "Open approximate reconstruction"
+    },
+    {
+      "id": 4,
+      "description": "Aromatic alcohol [-OH]",
+      "smarts": "[OH$(O-c)]",
+      "biowin3_coefficient": 0.05638,
+      "biowin4_coefficient": 0.03969,
+      "source_status": "Open approximate reconstruction"
+    },
+    {
+      "id": 5,
+      "description": "Aliphatic acid [-C(=O)-OH]",
+      "smarts": "[OH]-[C$(C-C)]=O",
+      "biowin3_coefficient": 0.364605,
+      "biowin4_coefficient": 0.38557,
+      "source_status": "Open approximate reconstruction"
+    },
+    {
+      "id": 6,
+      "description": "Aromatic acid [-C(=O)-OH]",
+      "smarts": "[OH]-[C$(C-c)]=O",
+      "biowin3_coefficient": 0.08787,
+      "biowin4_coefficient": 0.00775,
+      "source_status": "Open approximate reconstruction"
+    },
+    {
+      "id": 7,
+      "description": "Aldehyde [-CHO]",
+      "smarts": "O=[C!$(C-O);H1,H2]",
+      "biowin3_coefficient": 0.02232,
+      "biowin4_coefficient": 0.19664,
+      "source_status": "Open approximate reconstruction"
+    },
+    {
+      "id": 8,
+      "description": "Ester [-C(=O)-O-C]",
+      "smarts": "O=[C!$(C(O)[O,N,S])]-[O$([#8]-,:[#6!$(C=O)])]",
+      "biowin3_coefficient": 0.14021,
+      "biowin4_coefficient": 0.22896,
+      "source_status": "Open approximate reconstruction"
+    },
+    {
+      "id": 9,
+      "description": "Amide [-C(=O)-N or -C(=S)-N] pattern 1",
+      "smarts": "[Nv3;H2,H1&$(N-[P,#6;!$(C=O)]),H0&$(N(-[#6!$(C=O)])-[#6!$(C=O)]),H0&$(N=[#6])]-[C!$(C(-N)-[O,N,S])!$(C(=N)-[O,N,S])]=[S,O]",
+      "biowin3_coefficient": -0.05421,
+      "biowin4_coefficient": 0.20543,
+      "source_status": "Open approximate reconstruction"
+    },
+    {
+      "id": 10,
+      "description": "Amide [-C(=O)-N or -C(=S)-N] pattern 2",
+      "smarts": "[Nv3;H1,H0&$(N-[P,#6;!$(C=O)])]=[C!$(C(=N)(-[H1;S,O])-[O,N,S])]-[H1;S,O]",
+      "biowin3_coefficient": -0.05421,
+      "biowin4_coefficient": 0.20543,
+      "source_status": "Open approximate reconstruction"
+    },
+    {
+      "id": 11,
+      "description": "Triazine ring (symmetric)",
+      "smarts": "c1ncncn1",
+      "biowin3_coefficient": -0.24586,
+      "biowin4_coefficient": -0.05752,
+      "source_status": "Open approximate reconstruction"
+    },
+    {
+      "id": 12,
+      "description": "Aliphatic chloride [-Cl]",
+      "smarts": "[Cl$(Cl-C)]",
+      "biowin3_coefficient": -0.17318,
+      "biowin4_coefficient": -0.10061,
+      "source_status": "Open approximate reconstruction"
+    },
+    {
+      "id": 13,
+      "description": "Aromatic chloride [-Cl]",
+      "smarts": "[Cl$(Cl-c)]",
+      "biowin3_coefficient": -0.2066,
+      "biowin4_coefficient": -0.16534,
+      "source_status": "Open approximate reconstruction"
+    },
+    {
+      "id": 14,
+      "description": "Aliphatic bromide [-Br]",
+      "smarts": "[Br$(Br-C)]",
+      "biowin3_coefficient": 0.02895,
+      "biowin4_coefficient": 0.03538,
+      "source_status": "Open approximate reconstruction"
+    },
+    {
+      "id": 15,
+      "description": "Aromatic bromide [-Br]",
+      "smarts": "[Br$(Br-c)]",
+      "biowin3_coefficient": -0.136,
+      "biowin4_coefficient": -0.15351,
+      "source_status": "Open approximate reconstruction"
+    },
+    {
+      "id": 16,
+      "description": "Aromatic iodide [-I]",
+      "smarts": "[I$(I-c)]",
+      "biowin3_coefficient": -0.04494,
+      "biowin4_coefficient": -0.12707,
+      "source_status": "Open approximate reconstruction"
+    },
+    {
+      "id": 17,
+      "description": "Aromatic fluoride [-F]",
+      "smarts": "[F$(F-c)]",
+      "biowin3_coefficient": -0.40694,
+      "biowin4_coefficient": 0.01346,
+      "source_status": "Open approximate reconstruction"
+    },
+    {
+      "id": 18,
+      "description": "Carbon with 4 single bonds & no hydrogens",
+      "smarts": "[CH0X4!$(C(-F)(-F)(-F)-[!#1!#9])]",
+      "biowin3_coefficient": -0.21212,
+      "biowin4_coefficient": -0.15344,
+      "source_status": "Open approximate reconstruction"
+    },
+    {
+      "id": 19,
+      "description": "Aromatic nitro [-NO2]",
+      "smarts": "[N$(N-c)](=O)=O",
+      "biowin3_coefficient": -0.16959,
+      "biowin4_coefficient": -0.10838,
+      "source_status": "Open approximate reconstruction"
+    },
+    {
+      "id": 20,
+      "description": "Aliphatic amine [-NH2 or -NH-]",
+      "smarts": "[Nv3;H2&$(N-C),H1&$(N(-C)-C)]",
+      "biowin3_coefficient": 0.02444,
+      "biowin4_coefficient": 0.04328,
+      "source_status": "Open approximate reconstruction"
+    },
+    {
+      "id": 21,
+      "description": "Aromatic amine pattern 1",
+      "smarts": "[Nv3$(N-c)!$(N-C=[O,S,N]);H2,H1]",
+      "biowin3_coefficient": -0.13495,
+      "biowin4_coefficient": -0.10838,
+      "source_status": "Open approximate reconstruction"
+    },
+    {
+      "id": 22,
+      "description": "Aromatic amine pattern 2",
+      "smarts": "[Nv3$(N=c)!$(N-C=[O,S,N]);H1,H0]",
+      "biowin3_coefficient": -0.13495,
+      "biowin4_coefficient": -0.10838,
+      "source_status": "Open approximate reconstruction"
+    },
+    {
+      "id": 23,
+      "description": "Cyanide / nitrile [-C#N]",
+      "smarts": "[C$(C-[#6])]#[Nv3]",
+      "biowin3_coefficient": -0.08238,
+      "biowin4_coefficient": -0.0652,
+      "source_status": "Open approximate reconstruction"
+    },
+    {
+      "id": 24,
+      "description": "Sulfonic acid/salt, aromatic attachment",
+      "smarts": "[S$(S-c)](=O)(=O)[OH]",
+      "biowin3_coefficient": 0.14221,
+      "biowin4_coefficient": 0.02162,
+      "source_status": "Open approximate reconstruction"
+    },
+    {
+      "id": 25,
+      "description": "Sulfonic acid/salt, aliphatic attachment",
+      "smarts": "[S$(S-C)](=O)(=O)[OH]",
+      "biowin3_coefficient": 0.19259,
+      "biowin4_coefficient": 0.17714,
+      "source_status": "Open approximate reconstruction"
+    },
+    {
+      "id": 26,
+      "description": "Pyridine ring",
+      "smarts": "n1[cR1][cR1][cR1][cR1][cR1]1",
+      "biowin3_coefficient": -0.21417,
+      "biowin4_coefficient": -0.01874,
+      "source_status": "Open approximate reconstruction"
+    },
+    {
+      "id": 27,
+      "description": "Aromatic ether [-O-aromatic carbon]",
+      "smarts": "[O$(O(-c)-[#6!$(C=O)])]",
+      "biowin3_coefficient": -0.05812,
+      "biowin4_coefficient": 0.07712,
+      "source_status": "Open approximate reconstruction"
+    },
+    {
+      "id": 28,
+      "description": "Aliphatic ether [C-O-C]",
+      "smarts": "[O$(O(-C)-C)!$(O-C=O)]",
+      "biowin3_coefficient": -0.00867,
+      "biowin4_coefficient": -0.00974,
+      "source_status": "Open approximate reconstruction"
+    },
+    {
+      "id": 29,
+      "description": "Ketone [-C-C(=O)-C-]",
+      "smarts": "[C$(C(-[#6!$([#6]=O)])-[#6!$([#6]=O)])]=O",
+      "biowin3_coefficient": -0.02248,
+      "biowin4_coefficient": -0.02222,
+      "source_status": "Open approximate reconstruction"
+    },
+    {
+      "id": 30,
+      "description": "Tertiary amine",
+      "smarts": "[Nv3$(N(-[#6])(-[#6])-[#6])!$(N-C=[O,S,N])]",
+      "biowin3_coefficient": -0.2548,
+      "biowin4_coefficient": -0.288,
+      "source_status": "Open approximate reconstruction"
+    },
+    {
+      "id": 31,
+      "description": "Phosphate ester",
+      "smarts": "[O,S]=P(-[O,S;$(*-[#6])])(-[O,S;$(*-[#6])])-[O,S;$(*-[#6])]",
+      "biowin3_coefficient": 0.15373,
+      "biowin4_coefficient": 0.46535,
+      "source_status": "Open approximate reconstruction"
+    },
+    {
+      "id": 32,
+      "description": "Alkyl substituent on aromatic ring",
+      "smarts": "[C!H0$(C-c)!$(C=,#*)!$(C(F)(F)F)!$(C-[O,S]-[C,P]=[O,S])!$(C-C#N)!$(C-[OH])]",
+      "biowin3_coefficient": -0.07485,
+      "biowin4_coefficient": -0.06853,
+      "source_status": "Open approximate reconstruction"
+    },
+    {
+      "id": 33,
+      "description": "Azo group [-N=N-]",
+      "smarts": "[Nv3$(N-[#6])]=[Nv3$(N-[#6])]",
+      "biowin3_coefficient": -0.30036,
+      "biowin4_coefficient": -0.05279,
+      "source_status": "Open approximate reconstruction"
+    },
+    {
+      "id": 34,
+      "description": "Carbamate or thiocarbamate",
+      "smarts": "[O,S;v2&$(*(-C)-[#6])]-C(=[O,S])-[Nv3!$(N~[!#1!#6])]",
+      "biowin3_coefficient": -0.04671,
+      "biowin4_coefficient": 0.19363,
+      "source_status": "Open approximate reconstruction"
+    },
+    {
+      "id": 35,
+      "description": "Trifluoromethyl group [-CF3]",
+      "smarts": "[C$(C(-F)(-F)(-F)-[!#1!#9])]",
+      "biowin3_coefficient": -0.51296,
+      "biowin4_coefficient": -0.2744,
+      "source_status": "Open approximate reconstruction"
+    },
+    {
+      "id": 36,
+      "description": "Unsubstituted phenyl group (C6H5-)",
+      "smarts": "[cH0$(c-[!#1])]1[cH1][cH1][cH1][cH1][cH1]1",
+      "biowin3_coefficient": 0.02201,
+      "biowin4_coefficient": 0.00489,
+      "source_status": "Open approximate reconstruction"
+    },
+    {
+      "id": 37,
+      "description": "Unsubstituted aromatic \u22643 rings: benzene",
+      "smarts": "[cH]1:[cH]:[cH]:[cH]:[cH]:[cH]:1",
+      "biowin3_coefficient": -0.58591,
+      "biowin4_coefficient": -0.3428,
+      "source_status": "Open approximate reconstruction"
+    },
+    {
+      "id": 38,
+      "description": "Unsubstituted aromatic \u22643 rings: naphthalene",
+      "smarts": "[cH]1:[cH]:[cH]:[cH]:[cH0R2x3]2:[cH0R2x3]:1:[cH]:[cH]:[cH]:[cH]:2",
+      "biowin3_coefficient": -0.58591,
+      "biowin4_coefficient": -0.3428,
+      "source_status": "Open approximate reconstruction"
+    },
+    {
+      "id": 39,
+      "description": "Unsubstituted aromatic \u22643 rings: 7:5 naphthalene",
+      "smarts": "[cH]1:[cH]:[cH]:[cH0R2x3]2-[cH0R2x3](:[cH]:[cH]:1):[cH]:[cH]:[cH]:2",
+      "biowin3_coefficient": -0.58591,
+      "biowin4_coefficient": -0.3428,
+      "source_status": "Open approximate reconstruction"
+    },
+    {
+      "id": 40,
+      "description": "Unsubstituted aromatic \u22643 rings: anthracene",
+      "smarts": "[cH]2:[cH]:[cH]:[cH]:[cH0R2x3]3:[cH]:[cH0R2x3]1:[cH]:[cH]:[cH]:[cH]:[cH0R2x3]:1:[cH]:[cH0R2x3]:2:3",
+      "biowin3_coefficient": -0.58591,
+      "biowin4_coefficient": -0.3428,
+      "source_status": "Open approximate reconstruction"
+    },
+    {
+      "id": 41,
+      "description": "Unsubstituted aromatic \u22643 rings: phenanthrene",
+      "smarts": "[cH]2:[cH]:[cH]:[cH]:[cH0R2x3]3:[cH]:[cH]:[cH0R2x3]1:[cH]:[cH]:[cH]:[cH]:[cH0R2x3]:1:[cH0R2x3]:2:3",
+      "biowin3_coefficient": -0.58591,
+      "biowin4_coefficient": -0.3428,
+      "source_status": "Open approximate reconstruction"
+    }
+  ],
+  "limitations": [
+    "Fragment counting may differ from EPA BIOWIN because exclusive-fragment rules and aromatic perception are not fully reproduced.",
+    "Scores are screening outputs and require validation against official EPI Suite detailed output.",
+    "BIOWIN 1, 2, 5, 6 and 7 are not reconstructed in this build."
+  ]
+}

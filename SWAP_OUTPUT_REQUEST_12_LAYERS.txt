@@ -1,0 +1,7 @@
+* PEARLpy SWAP coupling output
+SWMONTH = 0
+PERIOD = 1
+SWRES = 0
+SWODAT = 0
+SWCSV = 1
+INLIST_CSV = 'BOT,WC[1:12],Q[1:12],RWU[1:12],T[1:12]'

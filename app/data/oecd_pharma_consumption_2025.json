@@ -1,0 +1,66 @@
+{
+  "source": {
+    "title": "OECD (2025), Health at a Glance 2025: OECD Indicators",
+    "figure": "Figure 9.6 - Consumption of medicines for selected chronic conditions, 2023 and 2013 (or nearest year)",
+    "publication_page": 209,
+    "data_source": "OECD Health Statistics 2025",
+    "unit": "defined daily doses per 1,000 people per day",
+    "license": "CC BY 4.0",
+    "note": "The report figure covers four selected chronic-condition medicine categories only. DDD is an assumed average maintenance dose and does not necessarily equal actual daily dose. Country coverage can differ between outpatient-only and combined outpatient/hospital data."
+  },
+  "classes": {
+    "antihypertensives": {
+      "label": "Antihypertensives",
+      "atc_codes": ["C02", "C03", "C07", "C08", "C09"],
+      "values_2023_or_nearest": {
+        "Korea": 131, "Israel": 173, "Türkiye": 186, "Latvia": 194, "Austria": 198, "Luxembourg": 198,
+        "Australia": 231, "Portugal": 255, "Costa Rica": 292, "Iceland": 296, "Greece": 298, "Netherlands": 300,
+        "Norway": 304, "Belgium": 306, "Spain": 306, "New Zealand": 315, "OECD32": 338, "Estonia": 342,
+        "France": 351, "Canada": 352, "Chile": 366, "Slovenia": 372, "Italy": 374, "United Kingdom": 390,
+        "Slovak Republic": 393, "Poland": 401, "Lithuania": 405, "Croatia": 408, "Sweden": 425, "Czechia": 426,
+        "Denmark": 481, "Finland": 528, "Hungary": 549, "Germany": 668
+      }
+    },
+    "lipid_modifying": {
+      "label": "Lipid-modifying agents",
+      "atc_codes": ["C10"],
+      "values_2023_or_nearest": {
+        "Türkiye": 44, "Costa Rica": 63, "Korea": 100, "Austria": 100, "Chile": 111, "Iceland": 113,
+        "Estonia": 113, "Latvia": 114, "Luxembourg": 115, "France": 117, "Slovak Republic": 118, "Italy": 123,
+        "Hungary": 125, "Israel": 131, "Croatia": 140, "Lithuania": 141, "OECD32": 146, "Germany": 146,
+        "Spain": 149, "Netherlands": 149, "Poland": 156, "Portugal": 159, "Australia": 162, "Canada": 165,
+        "New Zealand": 171, "Greece": 176, "Belgium": 181, "Sweden": 188, "Slovenia": 196, "United Kingdom": 197,
+        "Norway": 197, "Czechia": 212, "Finland": 216, "Denmark": 230
+      }
+    },
+    "antidiabetics": {
+      "label": "Medicines used in diabetes",
+      "atc_codes": ["A10"],
+      "values_2023_or_nearest": {
+        "Latvia": 53, "New Zealand": 54, "Austria": 56, "Australia": 67, "Israel": 68, "Lithuania": 68,
+        "Iceland": 71, "Italy": 71, "Luxembourg": 77, "Estonia": 77, "Hungary": 78, "Chile": 79,
+        "Portugal": 84, "Netherlands": 85, "Korea": 86, "Croatia": 86, "Belgium": 86, "Costa Rica": 87,
+        "Sweden": 88, "Norway": 89, "Poland": 91, "OECD32": 93, "Spain": 93, "Denmark": 93,
+        "Slovenia": 96, "Türkiye": 97, "France": 98, "Czechia": 101, "United Kingdom": 102, "Greece": 103,
+        "Germany": 105, "Finland": 119, "Canada": 214, "Slovak Republic": 230
+      }
+    },
+    "antidepressants": {
+      "label": "Antidepressants",
+      "atc_codes": ["N06A"],
+      "values_2023_or_nearest": {
+        "Latvia": 26, "Hungary": 31, "Korea": 37, "Poland": 39, "Croatia": 39, "Lithuania": 42,
+        "Italy": 47, "Estonia": 48, "Costa Rica": 48, "Slovak Republic": 49, "Netherlands": 51, "Luxembourg": 60,
+        "Türkiye": 61, "Austria": 62, "Norway": 64, "France": 64, "Israel": 66, "Germany": 67,
+        "Slovenia": 70, "Czechia": 75, "Greece": 77, "OECD32": 77, "Belgium": 90, "Denmark": 92,
+        "Finland": 93, "Chile": 96, "New Zealand": 100, "Spain": 102, "Sweden": 118, "Australia": 131,
+        "Canada": 134, "United Kingdom": 137, "Portugal": 152, "Iceland": 168
+      }
+    }
+  },
+  "country_notes": {
+    "Australia": "Figure 9.6 footnote 1: latest data from 2022.",
+    "Croatia": "Accession/partner country in the figure.",
+    "OECD32": "Unweighted OECD average across the 32 countries represented in the figure."
+  }
+}

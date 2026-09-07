@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 210" role="img" aria-labelledby="title desc">
+  <title id="title">Chemical structure awaiting local rendering</title>
+  <desc id="desc">Generic molecular connectivity symbol used when an external structure image is unavailable.</desc>
+  <rect width="320" height="210" rx="12" fill="#f5f9f7"/>
+  <g stroke="#39766d" stroke-width="4" fill="none" stroke-linecap="round">
+    <path d="M64 105 105 68 154 84 198 52 250 78 244 132 196 158 151 129 104 151Z"/>
+    <path d="M154 84 151 129M198 52 196 158M105 68 104 151" opacity=".45"/>
+  </g>
+  <g fill="#173f39">
+    <circle cx="64" cy="105" r="8"/><circle cx="105" cy="68" r="8"/><circle cx="154" cy="84" r="8"/>
+    <circle cx="198" cy="52" r="8"/><circle cx="250" cy="78" r="8"/><circle cx="244" cy="132" r="8"/>
+    <circle cx="196" cy="158" r="8"/><circle cx="151" cy="129" r="8"/><circle cx="104" cy="151" r="8"/>
+  </g>
+  <text x="160" y="194" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#617b76">Confirmed SMILES stored · preview unavailable</text>
+</svg>

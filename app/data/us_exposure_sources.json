@@ -1,0 +1,648 @@
+{
+  "schema": "envirochem.us_exposure_sources",
+  "schema_version": "1.0",
+  "catalogue_version": "2026-09-02",
+  "scientific_position": "Source and scenario catalogue only. Listing a source does not reproduce EPA software, confer regulatory acceptance, or convert a draft scenario into an approved default.",
+  "archive": {
+    "title": "EPA Scenarios Documents for Screening-Level Exposure and Release Assessment",
+    "sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee",
+    "published_esd_count": 12,
+    "draft_esd_count": 3,
+    "draft_scenario_count": 45,
+    "bundled": false
+  },
+  "documents": [
+    {
+      "key": "epa_exposure_factors_handbook_2011",
+      "title": "Exposure Factors Handbook: 2011 Edition",
+      "owner": "US EPA",
+      "published": "2011",
+      "status": "authoritative_reference_with_updates",
+      "integration_mode": "versioned_reference_and_user_selected_values",
+      "default_enabled": true,
+      "url": "https://www.epa.gov/expobox/exposure-factors-handbook-2011-edition",
+      "rights_note": "Public EPA reference; preserve chapter/table, population, statistic and access date for every selected value."
+    },
+    {
+      "key": "epa_chemsteer_3_2",
+      "title": "ChemSTEER Version 3.2",
+      "owner": "US EPA",
+      "published": "current page; verify installed build",
+      "status": "external_official_tool",
+      "integration_mode": "managed_adapter_no_bundling_no_derivative",
+      "default_enabled": true,
+      "url": "https://www.epa.gov/tsca-screening-tools/chemsteer-chemical-screening-tool-exposures-and-environmental-releases",
+      "rights_note": "Use the EPA installation externally. EnviroChem stores an input manifest and reviewed output; it does not modify or redistribute the executable."
+    },
+    {
+      "key": "epa_cem_3_2",
+      "title": "Consumer Exposure Model (CEM) Version 3.2 User Guide",
+      "owner": "US EPA",
+      "published": "2023-10",
+      "status": "external_official_tool",
+      "integration_mode": "managed_adapter_no_bundling_no_derivative",
+      "default_enabled": true,
+      "url": "https://www.epa.gov/tsca-screening-tools/consumer-exposure-model-cem",
+      "local_reference_sha256": "598ea8353ee9728be9e7977305593d96ff65e40135e676197753a1ab77dea950",
+      "rights_note": "Use the EPA installation externally. Product/article category and model selections must be recorded with imported results."
+    },
+    {
+      "key": "epa_efast_2014",
+      "title": "E-FAST Exposure and Fate Assessment Screening Tool Version 2014",
+      "owner": "US EPA",
+      "published": "2014",
+      "status": "external_legacy_screening_tool",
+      "integration_mode": "managed_adapter_no_bundling_no_derivative",
+      "default_enabled": false,
+      "url": "https://www.epa.gov/tsca-screening-tools/e-fast-exposure-and-fate-assessment-screening-tool-version-2014",
+      "rights_note": "Legacy external tool. Do not modify, adapt or redistribute; label every imported result with executable/version and legacy status."
+    },
+    {
+      "key": "epa_statistical_analysis_1994",
+      "title": "Guidelines for Statistical Analysis of Occupational Exposure Data",
+      "owner": "US EPA",
+      "published": "1994-08",
+      "status": "historical_in_house_working_document",
+      "integration_mode": "qa_reference_not_regulatory_default",
+      "default_enabled": false,
+      "local_reference_sha256": "ff4b0d31f060f017b1c6c3514d7e7b4c44ec338ae70ccdcced2e095c028eefa7",
+      "rights_note": "The document states that procedures may change and do not constitute official Agency policy."
+    },
+    {
+      "key": "epa_exposure_assessment_considerations",
+      "title": "Considerations When Evaluating Exposure Assessments",
+      "owner": "US EPA",
+      "published": "historical; date retained in source file",
+      "status": "historical_review_checklist",
+      "integration_mode": "completeness_checklist",
+      "default_enabled": true,
+      "local_reference_sha256": "54d1566d40dcf529445012e851f360b8ba9c24f07d0accb09de272f32ba6bd0c",
+      "rights_note": "Used to structure completeness review, not to supply numerical defaults."
+    },
+    {
+      "key": "epa_use_exposure_information",
+      "title": "Use and Exposure Information",
+      "owner": "US EPA",
+      "published": "historical form",
+      "status": "historical_information_form",
+      "integration_mode": "data_capture_reference",
+      "default_enabled": false,
+      "local_reference_sha256": "49c53c9edda1d85d636f4139794cdc697d47a3f057512a52abe0a6c243d74a40",
+      "rights_note": "Retained as a historical data-capture reference; current requirements must be checked."
+    },
+    {
+      "key": "epa_legacy_meteorological_data",
+      "title": "Meteorological Data for Hydrologic and Water Quality Models",
+      "owner": "US EPA",
+      "published": "1961–1990 station period",
+      "status": "legacy_dataset",
+      "integration_mode": "versioned_external_dataset_reference",
+      "default_enabled": false,
+      "url": "https://www.epa.gov/hydrowq/meteorological-data",
+      "rights_note": "Legacy 1961–1990 data for 237 stations. Never present as current climate without an explicit historical-data choice."
+    }
+  ],
+  "scenarios": [
+    {
+      "key": "adhesive_formulation",
+      "title": "Adhesive Formulation",
+      "document_class": "exposure_scenario_document",
+      "publication_status": "published",
+      "default_enabled": true,
+      "use_mode": "screening_default_available",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "fragrance_oil_blending",
+      "title": "Blending of Fragrance Oils into Commercial and Consumer Products",
+      "document_class": "exposure_scenario_document",
+      "publication_status": "published",
+      "default_enabled": true,
+      "use_mode": "screening_default_available",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "semiconductor_chemical_vapor_deposition",
+      "title": "Chemical Vapor Deposition in the Semiconductor Industry",
+      "document_class": "exposure_scenario_document",
+      "publication_status": "published",
+      "default_enabled": true,
+      "use_mode": "screening_default_available",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "oil_well_production_chemicals",
+      "title": "Chemicals Used in Oil Well Production",
+      "document_class": "exposure_scenario_document",
+      "publication_status": "published",
+      "default_enabled": true,
+      "use_mode": "screening_default_available",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "industrial_institutional_laundries",
+      "title": "Chemicals Used in Water-Based Washing Operations at Industrial and Institutional Laundries",
+      "document_class": "exposure_scenario_document",
+      "publication_status": "published",
+      "default_enabled": true,
+      "use_mode": "screening_default_available",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "automotive_refinishing_spray_painting",
+      "title": "Coating Application via Spray-Painting in the Automotive Refinishing Industry",
+      "document_class": "exposure_scenario_document",
+      "publication_status": "published",
+      "default_enabled": true,
+      "use_mode": "screening_default_available",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "thermal_carbonless_copy_paper",
+      "title": "Formulation and Application of Thermal and Carbonless Copy Paper",
+      "document_class": "exposure_scenario_document",
+      "publication_status": "published",
+      "default_enabled": true,
+      "use_mode": "screening_default_available",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "semiconductor_photoresist_use",
+      "title": "Photoresist Use in Semiconductor Manufacturing",
+      "document_class": "exposure_scenario_document",
+      "publication_status": "published",
+      "default_enabled": true,
+      "use_mode": "screening_default_available",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "radiation_curable_coatings_inks_adhesives",
+      "title": "Radiation Curable Coatings, Inks and Adhesives",
+      "document_class": "exposure_scenario_document",
+      "publication_status": "published",
+      "default_enabled": true,
+      "use_mode": "screening_default_available",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "use_of_adhesives",
+      "title": "Use of Adhesives",
+      "document_class": "exposure_scenario_document",
+      "publication_status": "published",
+      "default_enabled": true,
+      "use_mode": "screening_default_available",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "metalworking_fluids",
+      "title": "Use of Metalworking Fluids",
+      "document_class": "exposure_scenario_document",
+      "publication_status": "published",
+      "default_enabled": true,
+      "use_mode": "screening_default_available",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "textile_dyes",
+      "title": "Use of Textile Dyes",
+      "document_class": "exposure_scenario_document",
+      "publication_status": "published",
+      "default_enabled": true,
+      "use_mode": "screening_default_available",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "firefighting_afff",
+      "title": "Aqueous Film-Forming Foams in Firefighting",
+      "document_class": "exposure_scenario_document",
+      "publication_status": "draft",
+      "default_enabled": false,
+      "use_mode": "reference_only_until_scientist_enables",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "automotive_lubricant_additives",
+      "title": "Chemical Additives Used in Automotive Lubricants",
+      "document_class": "exposure_scenario_document",
+      "publication_status": "draft",
+      "default_enabled": false,
+      "use_mode": "reference_only_until_scientist_enables",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "vapor_degreasers",
+      "title": "Use of Vapor Degreasers",
+      "document_class": "exposure_scenario_document",
+      "publication_status": "draft",
+      "default_enabled": false,
+      "use_mode": "reference_only_until_scientist_enables",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "enhanced_oil_recovery",
+      "title": "Application of Chemicals in Enhanced Oil Recovery—Steam Stimulation, Steam Flooding, and Polymer-Surfactant Flooding",
+      "document_class": "screening_scenario",
+      "publication_status": "draft",
+      "default_enabled": false,
+      "use_mode": "reference_only_until_scientist_enables",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "well_casing_cement",
+      "title": "Application of Chemicals in Well Casing and Cement",
+      "document_class": "screening_scenario",
+      "publication_status": "draft",
+      "default_enabled": false,
+      "use_mode": "reference_only_until_scientist_enables",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "semi_aqueous_metal_cleaning",
+      "title": "Application of Semi-Aqueous Cleaners for Metal Cleaning and Degreasing",
+      "document_class": "screening_scenario",
+      "publication_status": "draft",
+      "default_enabled": false,
+      "use_mode": "reference_only_until_scientist_enables",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "spray_polyurethane_foam",
+      "title": "Application of Spray Polyurethane Foam Insulation",
+      "document_class": "screening_scenario",
+      "publication_status": "draft",
+      "default_enabled": false,
+      "use_mode": "reference_only_until_scientist_enables",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "waterborne_wood_preservatives",
+      "title": "Application of Waterborne Wood Preservatives Using Pressure Treatment",
+      "document_class": "screening_scenario",
+      "publication_status": "draft",
+      "default_enabled": false,
+      "use_mode": "reference_only_until_scientist_enables",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "automotive_brake_pad_replacement",
+      "title": "Automotive Brake Pad Replacement",
+      "document_class": "screening_scenario",
+      "publication_status": "draft",
+      "default_enabled": false,
+      "use_mode": "reference_only_until_scientist_enables",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "automotive_oem_spray_coating",
+      "title": "Automotive Spray Coating (OEM)",
+      "document_class": "screening_scenario",
+      "publication_status": "draft",
+      "default_enabled": false,
+      "use_mode": "reference_only_until_scientist_enables",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "biotechnology_premanufacture_notices",
+      "title": "Biotechnology Premanufacture Notices",
+      "document_class": "screening_scenario",
+      "publication_status": "draft",
+      "default_enabled": false,
+      "use_mode": "reference_only_until_scientist_enables",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "mineral_metal_ore_flotation",
+      "title": "Chemical Additives Used in Mineral and Metal Ore Flotation",
+      "document_class": "screening_scenario",
+      "publication_status": "draft",
+      "default_enabled": false,
+      "use_mode": "reference_only_until_scientist_enables",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "electrodeposition",
+      "title": "Electrodeposition",
+      "document_class": "screening_scenario",
+      "publication_status": "draft",
+      "default_enabled": false,
+      "use_mode": "reference_only_until_scientist_enables",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "electroplating_metal_treatment",
+      "title": "Electroplating for Metal Treatment",
+      "document_class": "screening_scenario",
+      "publication_status": "draft",
+      "default_enabled": false,
+      "use_mode": "reference_only_until_scientist_enables",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "solid_powder_transfer_dust",
+      "title": "Dust Releases from Transfer, Unloading and Loading of Solid Powders",
+      "document_class": "screening_scenario",
+      "publication_status": "draft",
+      "default_enabled": false,
+      "use_mode": "reference_only_until_scientist_enables",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "fabric_finishing",
+      "title": "Fabric Finishing",
+      "document_class": "screening_scenario",
+      "publication_status": "draft",
+      "default_enabled": false,
+      "use_mode": "reference_only_until_scientist_enables",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "integrated_circuit_film_deposition",
+      "title": "Film Deposition in Integrated Circuit Fabrication",
+      "document_class": "screening_scenario",
+      "publication_status": "draft",
+      "default_enabled": false,
+      "use_mode": "reference_only_until_scientist_enables",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "filtration_drying_unit_operations",
+      "title": "Filtration and Drying Unit Operations",
+      "document_class": "screening_scenario",
+      "publication_status": "draft",
+      "default_enabled": false,
+      "use_mode": "reference_only_until_scientist_enables",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "flexographic_printing",
+      "title": "Flexographic Printing",
+      "document_class": "screening_scenario",
+      "publication_status": "draft",
+      "default_enabled": false,
+      "use_mode": "reference_only_until_scientist_enables",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "photoresist_formulation",
+      "title": "Formulation of Photoresists",
+      "document_class": "screening_scenario",
+      "publication_status": "draft",
+      "default_enabled": false,
+      "use_mode": "reference_only_until_scientist_enables",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "waterborne_coatings_formulation",
+      "title": "Formulation of Waterborne Coatings",
+      "document_class": "screening_scenario",
+      "publication_status": "draft",
+      "default_enabled": false,
+      "use_mode": "reference_only_until_scientist_enables",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "liquid_drum_container_residue",
+      "title": "Container Residue for Drums Containing Liquids",
+      "document_class": "screening_scenario",
+      "publication_status": "draft",
+      "default_enabled": false,
+      "use_mode": "reference_only_until_scientist_enables",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "granular_detergent_manufacture",
+      "title": "Granular Detergents Manufacture",
+      "document_class": "screening_scenario",
+      "publication_status": "draft",
+      "default_enabled": false,
+      "use_mode": "reference_only_until_scientist_enables",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "flexible_polyurethane_foam",
+      "title": "Flexible Polyurethane Foam Industry",
+      "document_class": "screening_scenario",
+      "publication_status": "draft",
+      "default_enabled": false,
+      "use_mode": "reference_only_until_scientist_enables",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "rigid_polyurethane_foam",
+      "title": "Rigid Polyurethane Foam Industry",
+      "document_class": "screening_scenario",
+      "publication_status": "draft",
+      "default_enabled": false,
+      "use_mode": "reference_only_until_scientist_enables",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "leather_dyeing",
+      "title": "Leather Dyeing",
+      "document_class": "screening_scenario",
+      "publication_status": "draft",
+      "default_enabled": false,
+      "use_mode": "reference_only_until_scientist_enables",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "leather_tanning",
+      "title": "Leather Tanning",
+      "document_class": "screening_scenario",
+      "publication_status": "draft",
+      "default_enabled": false,
+      "use_mode": "reference_only_until_scientist_enables",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "paper_dyes",
+      "title": "Manufacture and Use of Paper Dyes",
+      "document_class": "screening_scenario",
+      "publication_status": "draft",
+      "default_enabled": false,
+      "use_mode": "reference_only_until_scientist_enables",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "printing_inks",
+      "title": "Manufacture and Use of Printing Inks",
+      "document_class": "screening_scenario",
+      "publication_status": "draft",
+      "default_enabled": false,
+      "use_mode": "reference_only_until_scientist_enables",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "printed_circuit_board_fabrication",
+      "title": "Material Fabrication for Printed Circuit Boards",
+      "document_class": "screening_scenario",
+      "publication_status": "draft",
+      "default_enabled": false,
+      "use_mode": "reference_only_until_scientist_enables",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "metals_products_machinery",
+      "title": "Metals Products and Machinery",
+      "document_class": "screening_scenario",
+      "publication_status": "draft",
+      "default_enabled": false,
+      "use_mode": "reference_only_until_scientist_enables",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "newspaper_printing_cleaning_solvents",
+      "title": "Newspaper Printing and Cleaning Solvent Use",
+      "document_class": "screening_scenario",
+      "publication_status": "draft",
+      "default_enabled": false,
+      "use_mode": "reference_only_until_scientist_enables",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "petroleum_refining",
+      "title": "Petroleum Refining: Crude Separation and Catalytic Cracking",
+      "document_class": "screening_scenario",
+      "publication_status": "draft",
+      "default_enabled": false,
+      "use_mode": "reference_only_until_scientist_enables",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "photographic_industry",
+      "title": "Photographic Industry",
+      "document_class": "screening_scenario",
+      "publication_status": "draft",
+      "default_enabled": false,
+      "use_mode": "reference_only_until_scientist_enables",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "roll_curtain_coating",
+      "title": "Releases from Roll Coating and Curtain Coating Operations",
+      "document_class": "screening_scenario",
+      "publication_status": "draft",
+      "default_enabled": false,
+      "use_mode": "reference_only_until_scientist_enables",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "furniture_spray_coatings",
+      "title": "Spray Coatings in the Furniture Industry",
+      "document_class": "screening_scenario",
+      "publication_status": "draft",
+      "default_enabled": false,
+      "use_mode": "reference_only_until_scientist_enables",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "industrial_laundry_surfactants",
+      "title": "Surfactants in Industrial/Commercial Laundries",
+      "document_class": "screening_scenario",
+      "publication_status": "draft",
+      "default_enabled": false,
+      "use_mode": "reference_only_until_scientist_enables",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "synthetic_fiber_manufacture",
+      "title": "Synthetic Fiber Manufacture",
+      "document_class": "screening_scenario",
+      "publication_status": "draft",
+      "default_enabled": false,
+      "use_mode": "reference_only_until_scientist_enables",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "transformer_manufacturing",
+      "title": "Transformer Manufacturing",
+      "document_class": "screening_scenario",
+      "publication_status": "draft",
+      "default_enabled": false,
+      "use_mode": "reference_only_until_scientist_enables",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "transportation_equipment_cleaning",
+      "title": "Transportation Equipment Cleaning",
+      "document_class": "screening_scenario",
+      "publication_status": "draft",
+      "default_enabled": false,
+      "use_mode": "reference_only_until_scientist_enables",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "photoresist_release_updates",
+      "title": "Updates to Release Estimates for Photoresist Use in Semiconductor Manufacturing",
+      "document_class": "screening_scenario",
+      "publication_status": "draft",
+      "default_enabled": false,
+      "use_mode": "reference_only_until_scientist_enables",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "foamed_plastic_additives",
+      "title": "Use of Additives in Foamed Plastics",
+      "document_class": "screening_scenario",
+      "publication_status": "draft",
+      "default_enabled": false,
+      "use_mode": "reference_only_until_scientist_enables",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "papermaking_additives",
+      "title": "Use of Additives in Papermaking",
+      "document_class": "screening_scenario",
+      "publication_status": "draft",
+      "default_enabled": false,
+      "use_mode": "reference_only_until_scientist_enables",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "plastic_compounding_additives",
+      "title": "Use of Additives in Plastic Compounding",
+      "document_class": "screening_scenario",
+      "publication_status": "draft",
+      "default_enabled": false,
+      "use_mode": "reference_only_until_scientist_enables",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "thermoplastic_converting_additives",
+      "title": "Use of Additives in the Thermoplastic Converting Industry",
+      "document_class": "screening_scenario",
+      "publication_status": "draft",
+      "default_enabled": false,
+      "use_mode": "reference_only_until_scientist_enables",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "water_treatment_coagulants",
+      "title": "Water Treatment Coagulants Application",
+      "document_class": "screening_scenario",
+      "publication_status": "draft",
+      "default_enabled": false,
+      "use_mode": "reference_only_until_scientist_enables",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "water_treatment_disinfectants",
+      "title": "Water Treatment Disinfectants Application",
+      "document_class": "screening_scenario",
+      "publication_status": "draft",
+      "default_enabled": false,
+      "use_mode": "reference_only_until_scientist_enables",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    },
+    {
+      "key": "integrated_circuit_wet_cleaning",
+      "title": "Wet Cleaning in Integrated Circuit Fabrication",
+      "document_class": "screening_scenario",
+      "publication_status": "draft",
+      "default_enabled": false,
+      "use_mode": "reference_only_until_scientist_enables",
+      "source_archive_sha256": "672bb874c573960f8c999adf2ceb674c09af8497a55dee441bb7db945fc7e6ee"
+    }
+  ]
+}
+

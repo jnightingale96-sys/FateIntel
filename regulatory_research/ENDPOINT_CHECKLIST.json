@@ -1,0 +1,92 @@
+[
+  {
+    "key":"identity_composition",
+    "name":"Identity and composition",
+    "typical_content":"CAS\/EC identifiers, structure, purity, impurities, formulation, analytical methods and batch representativeness.",
+    "envirochem_modules":[
+      "identity_resolution",
+      "product_ingredients",
+      "evidence_engine",
+      "analytical_methods"
+    ]
+  },
+  {
+    "key":"physicochemical",
+    "name":"Physicochemical properties",
+    "typical_content":"Solubility, vapour pressure, pKa, log KOW\/log D, dissociation, particle size, stability and other sector-relevant properties.",
+    "envirochem_modules":[
+      "property_evidence",
+      "speciation",
+      "sorption",
+      "model_input_selection"
+    ]
+  },
+  {
+    "key":"environmental_fate",
+    "name":"Environmental fate",
+    "typical_content":"Hydrolysis, photolysis, biodegradation, transformation products, adsorption\/desorption, soil\/water\/sediment degradation, bioaccumulation and mobility.",
+    "envirochem_modules":[
+      "dt50_evidence",
+      "sorption",
+      "wwtp",
+      "transformation_products",
+      "pbt_pmt_screen"
+    ]
+  },
+  {
+    "key":"environmental_exposure",
+    "name":"Environmental exposure",
+    "typical_content":"Emission scenarios, releases, sewage treatment, biosolids, wastewater irrigation, direct discharge, air deposition, soil, groundwater, surface water\/sediment and food-chain pathways.",
+    "envirochem_modules":[
+      "emissions",
+      "simpletreat",
+      "soil_accumulation",
+      "model_orchestration",
+      "plant_uptake"
+    ]
+  },
+  {
+    "key":"ecotoxicology",
+    "name":"Ecotoxicology",
+    "typical_content":"Aquatic and terrestrial organisms, microbes, plants, pollinators, birds\/mammals, sediment organisms and higher-tier\/community assessments where triggered.",
+    "envirochem_modules":[
+      "ecotox_evidence",
+      "pnec_derivation",
+      "risk_characterisation"
+    ]
+  },
+  {
+    "key":"human_health",
+    "name":"Human health",
+    "typical_content":"Toxicokinetics, acute and repeated-dose toxicity, irritation\/sensitisation, genotoxicity, carcinogenicity, reproductive\/developmental toxicity, endocrine and organ-specific effects.",
+    "envirochem_modules":[
+      "sds_coshh",
+      "hazard_summary",
+      "external_human_health_linkage"
+    ]
+  },
+  {
+    "key":"exposure_risk",
+    "name":"Exposure and risk characterisation",
+    "typical_content":"Consumer, worker, resident\/bystander, dietary and environmental exposure; uncertainty; mixture\/cumulative considerations; margin\/RQ or probabilistic methods.",
+    "envirochem_modules":[
+      "tier_comparison",
+      "rq",
+      "uncertainty",
+      "mixtures",
+      "ai_summary"
+    ]
+  },
+  {
+    "key":"risk_management",
+    "name":"Risk management and post-market",
+    "typical_content":"Restrictions, use conditions, labels\/SDS, PPE\/engineering controls, emission limits, monitoring, stewardship, incident reporting and reassessment triggers.",
+    "envirochem_modules":[
+      "reporting",
+      "coshh",
+      "mitigation",
+      "monitoring",
+      "change_watch"
+    ]
+  }
+]

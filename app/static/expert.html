@@ -1,0 +1,539 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EnviroChem Studio v2.23 — Scientific Workspace</title>
+  <meta name="theme-color" content="#092f25">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="manifest" href="/static/manifest.webmanifest">
+  <link rel="icon" href="/static/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/expert-styles.css?v=studio-v2.23-alpha3.1-us-run-state-hotfix">
+</head>
+<body>
+<div aria-live="polite" class="toast-stack" id="toast-stack"></div>
+<div class="shell">
+  <aside>
+    <div class="brand"><div class="mark">EC</div><div><strong>EnviroChem Studio</strong><small>V2.23 ALPHA · IDENTITY-SAFE ASSESSMENT</small></div></div>
+    <nav>
+      <button class="nav active" data-page="project">Dashboard</button>
+      <button class="nav" data-page="planner">Assessment Planner</button>
+      <button class="nav" data-page="evidence">Evidence</button>
+      <button class="nav" data-page="selection">Selection</button>
+      <button class="nav" data-page="sorption">Sorption / Koc</button>
+      <button class="nav" data-page="emission">Emission & Metabolism</button>
+      <button class="nav" data-page="wwtp">Activity SimpleTreat & Risk</button>
+      <button class="nav" data-page="irrigation">Irrigation EU ↔ US</button>
+      <button class="nav" data-page="models">Model Library</button>
+      <button class="nav" data-page="homeapp">Home App</button>
+      <button class="nav" data-page="labsafety">Lab Safety</button>
+      <button class="nav" data-page="reach">REACH Review Bundle</button>
+      <button class="nav" data-page="audit">Audit Trail</button>
+    </nav>
+    <div class="local-status"><span></span>Persistent local database</div>
+  </aside>
+
+  <main>
+    <header>
+      <div><div class="eyebrow">ENVIRONMENTAL FATE PLATFORM</div><h1 id="title">Dashboard</h1></div>
+      <div class="header-actions"><button id="install-app" class="secondary hidden">Install app</button><a href="/docs" target="_blank">API docs</a></div>
+    </header>
+
+    <section id="page-project" class="page active">
+      <div class="new-build-banner">
+        ENVIROCHEM STUDIO V2.23 · IDENTITY-SAFE EVIDENCE WORKSPACE
+      </div>
+      <div class="hero">
+        <div><span>ONE SCIENTIFIC ENGINE · MULTIPLE AUDIENCES</span><h2>Identify → use → fate → exposure → report.</h2>
+        <p>The professional workspace, home-use app and laboratory safety workflow share one evidence-led engine. Chemical readiness, reviewed values and source-level evidence are now inspectable without leaving the selected project context.</p></div>
+      </div>
+      <div class="grid two">
+        <article class="panel">
+          <div class="panel-head"><div><small>PROJECTS</small><h3>Create or open</h3></div></div>
+          <form id="project-form">
+            <label>Project name</label>
+            <input id="project-name" value="New chemical assessment">
+            <label>Jurisdiction</label>
+            <input id="project-jurisdiction" value="UK/EU screening">
+            <button>Create project</button>
+          </form>
+          <div id="project-list" class="list"></div>
+        </article>
+        <article class="panel">
+          <div class="panel-head"><div><small>ACTIVE WORKSPACE</small><h3 id="active-project-name">No project selected</h3></div></div>
+          <div id="project-empty" class="empty">Create or select a project.</div>
+          <div id="project-details" class="hidden">
+            <label>Assessment chemical</label>
+            <select id="project-chemical-select"></select>
+            <div id="chemical-card"></div>
+            <button id="add-chemical" class="secondary">Add chemical to project</button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+
+    <section id="page-planner" class="page">
+      <div class="grid two">
+        <article class="panel">
+          <div class="panel-head"><div><small>REGULATORY ROUTING</small><h3>Build a tiered assessment plan</h3></div></div>
+          <form id="planner-form">
+            <label>Jurisdiction</label><select id="p-jurisdiction"></select>
+            <label>Contaminant group</label><select id="p-group"></select>
+            <label>Exposure scenario</label><select id="p-scenario"></select>
+            <label>Assessment tier</label><select id="p-tier"><option value="0">Tier 0 — identity and data sufficiency</option><option value="1" selected>Tier 1 — conservative screen</option><option value="2">Tier 2 — standard regulatory models</option><option value="3">Tier 3 — refined assessment</option><option value="4">Tier 4 — monitoring-informed</option></select>
+            <button>Generate assessment plan</button>
+          </form>
+        </article>
+        <article id="planner-result" class="panel">
+          <div class="empty">Choose the framework, contaminant group, scenario and tier.</div>
+        </article>
+      </div>
+    </section>
+
+    <section id="page-evidence" class="page">
+      <article class="panel">
+        <div class="panel-head split">
+          <div><small>SOURCE-LEVEL RECORDS</small><h3>Soil DT50 evidence</h3></div>
+          <button id="add-demo" class="secondary">Add 4 demo records</button>
+        </div>
+        <div class="warning">Demo records are clearly labelled and are only for testing the workflow.</div>
+        <div class="evidence-toolbar" aria-label="Evidence filters">
+          <label><span>Search records</span><input id="evidence-filter" type="search" placeholder="Title, DOI, endpoint, group or notes"></label>
+          <label><span>Endpoint</span><select id="evidence-endpoint-filter"><option value="">All endpoints</option></select></label>
+          <div id="evidence-filter-count" class="evidence-count" aria-live="polite">No records loaded</div>
+        </div>
+        <div id="evidence-table" class="table-wrap"></div>
+      </article>
+      <article class="panel">
+        <div class="panel-head"><div><small>NEW EVIDENCE</small><h3>Add a genuine study</h3></div></div>
+        <form id="evidence-form">
+          <div class="form-grid">
+            <div class="span2"><label>Source title</label><input id="source-title" required></div>
+            <div><label>Source identifier / DOI</label><input id="source-identifier"></div>
+            <div><label>Organisation</label><input id="source-organisation"></div>
+            <div><label>Publication year</label><input id="source-year" type="number"></div>
+            <div><label>Reported DT50 (days)</label><input id="ev-value" type="number" step="any" required></div>
+            <div><label>Independent soil/test-unit key</label><input id="ev-group" placeholder="study-1-soil-A" required></div>
+            <div><label>Soil type</label><input id="ev-soil"></div>
+            <div><label>Temperature (°C)</label><input id="ev-temp" type="number" step="any" required></div>
+            <div><label>Reliability score</label><select id="ev-rel"><option value="1">1</option><option value="2" selected>2</option><option value="3">3</option><option value="4">4</option></select></div>
+            <div><label>Guideline</label><input id="ev-guideline" value="OECD 307"></div>
+            <div><label>Kinetic model</label><input id="ev-kinetic" value="SFO"></div>
+          </div>
+          <button>Add evidence</button>
+        </form>
+      </article>
+    </section>
+
+    <section id="page-selection" class="page">
+      <article class="panel">
+        <div class="panel-head"><div><small>SCIENTIFIC RULESET</small><h3>Soil DT50 selection</h3></div></div>
+        <form id="selection-form">
+          <div class="form-grid">
+            <div><label>Target temperature (°C)</label><input id="sel-temp" type="number" value="20"></div>
+            <div><label>Activation energy (kJ/mol)</label><input id="sel-ea" type="number" step="any" value="65.4"></div>
+            <div><label>Maximum reliability score</label><select id="sel-rel"><option value="1">1</option><option value="2" selected>2</option><option value="3">3</option><option value="4">4</option></select></div>
+          </div>
+          <button>Calculate selection</button>
+        </form>
+      </article>
+      <article id="selection-result" class="panel hidden"></article>
+    </section>
+
+
+<section id="page-sorption" class="page">
+  <article class="panel">
+    <div class="panel-head"><div><small>IONISATION-AWARE SORPTION</small><h3>Koc and Kd modelling</h3></div></div>
+    <div class="warning">
+      This module reproduces the supplied spreadsheet logic, while also displaying the
+      publication-aligned neutral equation where the workbook differs.
+    </div>
+    <form id="sorption-form">
+      <div class="form-grid">
+        <div><label>Classification</label>
+          <select id="s-mode">
+            <option value="auto">Auto from pKaA/pKaB</option>
+            <option value="acid">Acid</option>
+            <option value="base">Base</option>
+            <option value="neutral" selected>Neutral</option>
+          </select>
+        </div>
+        <div><label>logP / neutral logKow</label><input id="s-logkow" type="number" step="any" value="2.28"></div>
+        <div><label>Neutral equation version</label>
+          <select id="s-neutral-variant">
+            <option value="workbook_literal" selected>Supplied workbook — exact cells E3:F3</option>
+            <option value="publication">Publication-aligned Li model</option>
+          </select>
+        </div>
+        <div><label>Base/cation method</label>
+          <select id="s-base-variant">
+            <option value="droge_goss" selected>Droge–Goss: organic matter + clay CEC</option>
+            <option value="ecetoc">ECETOC rapid screening comparison</option>
+          </select>
+        </div>
+        <div><label>pKaA (acid; optional)</label><input id="s-pkaa" type="number" step="any"></div>
+        <div><label>pKaB (base; optional)</label><input id="s-pkab" type="number" step="any"></div>
+        <div><label>Soil pH</label><input id="s-ph" type="number" step="any" value="7.2"></div>
+        <div><label>Organic carbon fraction, fOC (g/g)</label><input id="s-foc" type="number" step="any" value="0.016"></div>
+        <div><label>Ionic strength (mol/L)</label><input id="s-ionic" type="number" step="any" value="0.01"></div>
+      </div>
+      <details class="scientific-inputs"><summary>Droge–Goss cation descriptors</summary>
+        <p>Required when a base/cation is assessed with Droge–Goss. The primary output is Kd because organic matter and clay CEC are separate sorption phases.</p>
+        <div class="form-grid">
+          <div><label>Molecular formula</label><input id="s-formula" placeholder="e.g. C27H38N2O4"></div>
+          <div><label>Total soil CEC (mol charge/kg)</label><input id="s-cec" type="number" step="any" value="0.15"></div>
+          <div><label>Electrolyte system</label><input id="s-electrolyte" value="5 mM CaCl2"></div>
+          <div><label>Reviewed McGowan Vx (optional)</label><input id="s-vx" type="number" step="any"></div>
+          <div><label>Ring count</label><input id="s-rings" type="number" value="0"></div>
+          <div><label>Bond count (optional)</label><input id="s-bonds" type="number"></div>
+          <div><label>N–H attached to cationic N (Nai)</label><input id="s-nai" type="number" step="any" value="0"></div>
+        </div>
+        <h4>Optional reviewed atom counts</h4>
+        <div class="form-grid compact">
+          <div><label>C</label><input id="s-atom-c" type="number"></div><div><label>H</label><input id="s-atom-h" type="number"></div>
+          <div><label>N</label><input id="s-atom-n" type="number"></div><div><label>O</label><input id="s-atom-o" type="number"></div>
+          <div><label>Cl</label><input id="s-atom-cl" type="number"></div><div><label>F</label><input id="s-atom-f" type="number"></div>
+          <div><label>S</label><input id="s-atom-s" type="number"></div><div><label>I</label><input id="s-atom-i" type="number"></div>
+          <div><label>B</label><input id="s-atom-b" type="number"></div>
+        </div>
+        <h4>Functional-group increments</h4>
+        <div class="form-grid compact">
+          <div><label>OH</label><input id="s-oh" type="number" value="0"></div><div><label>NH₂</label><input id="s-nh2" type="number" value="0"></div>
+          <div><label>Ether</label><input id="s-ether" type="number" value="0"></div><div><label>Ester</label><input id="s-ester" type="number" value="0"></div>
+          <div><label>Ketone</label><input id="s-ketone" type="number" value="0"></div><div><label>Amide</label><input id="s-amide" type="number" value="0"></div>
+          <div><label>Single-ring charged pyridine</label><input id="s-pyridine" type="number" value="0"></div><div><label>Chloro groups</label><input id="s-chloro" type="number" value="0"></div>
+          <div><label>CONH₂</label><input id="s-carboxamide" type="number" value="0"></div><div><label>Multi-ring charged N</label><input id="s-multiring-n" type="number" value="0"></div>
+        </div>
+      </details>
+      <button>Calculate Koc and Kd</button>
+    </form>
+  </article>
+  <article id="sorption-result" class="panel hidden"></article>
+</section>
+
+
+    <section id="page-emission" class="page">
+      <article class="panel">
+        <div class="panel-head"><div><small>UPSTREAM MASS BALANCE</small><h3>Pharmaceutical emission and metabolism</h3></div></div>
+        <div class="warning">
+          Excretion and metabolite formation are applied before wastewater treatment. Population and wastewater flow are scaled together.
+        </div>
+        <form id="emission-form">
+          <div class="section-title">Product and source</div>
+          <div class="form-grid">
+            <div><label>Emission mode</label><select id="e-mode"><option value="screening_spc" selected>OECD class + SPC screening</option><option value="refined_annual_use">Refined annual active use</option></select></div>
+            <div><label>Product name</label><input id="e-product" value="Tegretol 100 mg Tablets"></div>
+            <div><label>Formulation</label><input id="e-formulation" value="tablet"></div>
+            <div><label>Administration route</label><select id="e-route"><option value="oral" selected>Oral</option><option value="topical">Topical</option><option value="ophthalmic">Ophthalmic</option><option value="otic">Otic</option><option value="oral_rinse">Oral rinse</option><option value="vaginal">Vaginal</option><option value="inhaled">Inhaled</option><option value="injectable">Injectable</option><option value="other">Other</option></select></div>
+            <div class="span2"><label>SPC / product source title</label><input id="e-spc-title" value="Tegretol 100 mg Tablets — Summary of Product Characteristics"></div>
+            <div><label>SPC identifier</label><input id="e-spc-id" placeholder="e.g. eMC product ID"></div>
+            <div><label>SPC URL</label><input id="e-spc-url" placeholder="official source URL"></div>
+            <div><label>SPC access date</label><input id="e-spc-date" type="date"></div>
+            <div><label>Dosage source quality</label><select id="e-spc-type"><option value="official_regulatory" selected>Official SPC / regulator</option><option value="peer_reviewed">Peer reviewed</option><option value="secondary_web">Secondary website</option><option value="other">Other</option></select></div>
+            <div class="span2"><label>Consumption source title</label><input id="e-consumption-title" value="OECD Health Statistics therapeutic-class consumption"></div>
+            <div class="span2"><label>Consumption source identifier</label><input id="e-consumption-id" placeholder="dataset, year, table or URL"></div>
+          </div>
+
+          <div class="section-title">Use, dose and catchment</div>
+          <div class="form-grid">
+            <div class="screening-field"><label>Therapeutic-class DDD/1,000/day</label><input id="e-ddd" type="number" step="any" value="196.51"></div>
+            <div class="screening-field"><label>Dose per administration</label><input id="e-dose" type="number" step="any" value="2000000"></div>
+            <div class="screening-field"><label>Dose unit</label><select id="e-dose-unit"><option value="ug" selected>µg</option><option value="mg">mg</option><option value="g">g</option></select></div>
+            <div class="screening-field"><label>Administrations/day</label><input id="e-admins" type="number" step="any" value="1"></div>
+            <div class="refined-field hidden"><label>Annual active ingredient (kg/year)</label><input id="e-annual-active" type="number" step="any" value="10"></div>
+            <div><label>Emitting days/year</label><input id="e-days" type="number" value="365"></div>
+            <div><label>Population</label><input id="e-population" type="number" value="1000"></div>
+            <div><label>Wastewater/person/day (L)</label><input id="e-water" type="number" step="any" value="200"></div>
+          </div>
+
+          <div class="section-title">Route and unchanged parent</div>
+          <div class="form-grid">
+            <div><label>Direct-to-sewer fraction</label><input id="e-direct" type="number" step="0.01" value="0"></div>
+            <div><label>Systemic fraction</label><input id="e-systemic" type="number" step="0.01" value="1"></div>
+            <div><label>Unchanged parent in urine</label><input id="e-parent-urine" type="number" step="0.01" value="0.51"></div>
+            <div><label>Unchanged parent in faeces</label><input id="e-parent-faeces" type="number" step="0.01" value="0"></div>
+          </div>
+
+          <div class="section-title split-line"><span>Named metabolites</span><button type="button" id="add-metabolite" class="secondary">Add metabolite</button></div>
+          <div id="metabolite-rows"></div>
+          <button>Calculate emission and influent</button>
+        </form>
+      </article>
+      <article id="emission-result" class="panel hidden"></article>
+    </section>
+
+    <section id="page-wwtp" class="page">
+      <article class="panel">
+        <div class="panel-head"><div><small>CORRECTED POST-EXCRETION MODEL</small><h3>Activity SimpleTreat, river and risk</h3></div></div>
+        <div class="warning">
+          This module requires a completed Emission & Metabolism run. It does not apply excretion after treatment.
+        </div>
+        <form id="wwtp-form">
+          <div class="form-grid">
+            <div><label>Emission run</label><select id="w-emission-run"></select></div>
+            <div><label>Species</label><select id="w-species"></select></div>
+            <div><label>Treatment model</label><select id="w-model-mode"><option value="supplied_workbook_9box_preset" selected>Supplied workbook 9-box Carbamazepine preset</option><option value="custom_screening">Custom transparent fractions</option></select></div>
+            <div><label>Receiving-water dilution</label><input id="w-dil" type="number" step="any" value="10"></div>
+            <div><label>Post-WWTP biodegradation fraction</label><input id="w-post-bio" type="number" step="0.01" value="0"></div>
+            <div><label>Sludge-to-soil fraction</label><input id="w-sludge" type="number" step="0.01" value="0.1"></div>
+            <div><label>Mixed soil mass (kg)</label><input id="w-soil-mass" type="number" value="2000000"></div>
+            <div><label>Aquatic PNEC (µg/L)</label><input id="w-aq-pnec" type="number" step="any" placeholder="optional"></div>
+            <div><label>Soil PNEC (µg/kg)</label><input id="w-soil-pnec" type="number" step="any" placeholder="optional"></div>
+          </div>
+          <div id="custom-wwtp-fields" class="form-grid hidden">
+            <div><label>Biodegradation fraction</label><input id="w-bio" type="number" step="any" value="0.07209507243873131"></div>
+            <div><label>Primary sludge fraction</label><input id="w-primary" type="number" step="any" value="0.007868396178849157"></div>
+            <div><label>Secondary sludge fraction</label><input id="w-secondary" type="number" step="any" value="0.0028491031300824854"></div>
+            <div><label>Volatilisation fraction</label><input id="w-vol" type="number" step="any" value="0.000000016806982721404515"></div>
+          </div>
+          <button>Run Activity SimpleTreat and risk</button>
+        </form>
+      </article>
+      <article id="wwtp-result" class="panel hidden"></article>
+    </section>
+
+
+    <section id="page-irrigation" class="page">
+      <article class="panel">
+        <div class="panel-head"><div><small>VALIDATED WASTEWATER–SOIL CONTINUUM</small><h3>EU ↔ US wastewater-irrigation comparison</h3></div></div>
+        <div class="warning">The native soil calculation uses a consistent irrigation rate, area, soil mass, Kd, degradation and leaching balance. It then prepares separate EU FOCUS and US EPA workflow manifests without inventing external-model outputs.</div>
+        <form id="irrigation-form">
+          <div class="form-grid">
+            <div><label>Effluent source</label><select id="ir-source"><option value="direct" selected>Enter reviewed effluent concentration</option><option value="linked">Link an Activity SimpleTreat run</option></select></div>
+            <div class="ir-direct"><label>Effluent concentration (µg/L)</label><input id="ir-effluent" type="number" step="any" value="0.641"></div>
+            <div class="ir-linked hidden"><label>Activity SimpleTreat run</label><select id="ir-activity-run"></select></div>
+            <div><label>Irrigation rate (L/m²/day)</label><input id="ir-rate" type="number" step="any" value="0.5"></div>
+            <div><label>Irrigated area (m²)</label><input id="ir-area" type="number" step="any" value="3680000"></div>
+            <div><label>Optional supplied total flow (L/day)</label><input id="ir-flow" type="number" step="any" placeholder="Used only for consistency check"></div>
+            <div><label>Soil depth (m)</label><input id="ir-depth" type="number" step="any" value="0.4"></div>
+            <div><label>Bulk density (kg/m³)</label><input id="ir-density" type="number" step="any" value="1350"></div>
+            <div><label>Kd (L/kg)</label><input id="ir-kd" type="number" step="any" value="4.62"></div>
+            <div><label>Organic carbon fraction</label><input id="ir-foc" type="number" step="any" value="0.0164"></div>
+            <div><label>Soil DT50 (days)</label><input id="ir-dt50" type="number" step="any" value="40"></div>
+            <div><label>Assessment duration (years)</label><input id="ir-years" type="number" step="any" value="1"></div>
+            <div><label>Receiving-water dilution</label><input id="ir-dilution" type="number" step="any" value="10"></div>
+            <div><label>Aquatic PNEC (µg/L)</label><input id="ir-pnec" type="number" step="any" placeholder="optional"></div>
+            <div><label>Crop</label><input id="ir-crop" value="maize"></div>
+            <div><label>Water solubility (mg/L)</label><input id="ir-solubility" type="number" step="any" value="17.7"></div>
+            <div><label>Vapour pressure (Pa)</label><input id="ir-vp" type="number" step="any"></div>
+          </div>
+          <button>Run native screen and prepare EU + US workflows</button>
+        </form>
+      </article>
+      <article id="irrigation-result" class="panel hidden"></article>
+    </section>
+
+
+    <section id="page-models" class="page">
+      <article class="panel">
+        <div class="panel-head"><div><small>EU · UK · US · SWITZERLAND</small><h3>Environmental fate model library</h3></div></div>
+        <div class="warning">“Included” means EnviroChem manages the workflow, input manifest, execution record, raw outputs, parsed outputs, review decision and audit hashes. External executable redistribution remains subject to licence and platform constraints.</div>
+        <div class="model-filters">
+          <select id="model-filter-region"><option value="all">All regions</option><option>EU</option><option>UK</option><option>US</option><option>CH</option></select>
+          <select id="model-filter-tier"><option value="all">All tiers</option><option value="1">Tier 1</option><option value="2">Tier 2</option><option value="3">Tier 3</option><option value="4">Tier 4</option></select>
+          <select id="model-filter-implementation"><option value="all">All implementations</option><option value="native">Native</option><option value="native_research_screen">Native research screen</option><option value="native_and_adapter">Native + adapter</option><option value="managed_adapter">Managed adapter</option><option value="managed_dependency_workspace">Managed dependency workspace</option><option value="managed_research_adapter">Managed research adapter</option><option value="legacy_adapter">Legacy adapter</option></select>
+        </div>
+        <div class="external-model-strip" id="external-model-integrations"><div class="empty">Loading external-model integration status…</div></div>
+        <div id="model-library" class="model-grid"></div>
+      </article>
+
+      <div class="grid two">
+        <article class="panel">
+          <div class="panel-head"><div><small>NATIVE · MULTIMEDIA</small><h3>Air–water–soil–sediment fate</h3></div></div>
+          <p>Run the transparent steady-state mass-balance screen. Transfer coefficients remain visible reviewed inputs; this is not labelled as SimpleBox output.</p>
+          <form id="multimedia-form">
+            <label>Emissions by compartment (kg/day JSON)</label>
+            <textarea id="mm-emissions" class="code-input" rows="3">{"air": 1.0, "freshwater": 0.2}</textarea>
+            <label>Compartments (JSON)</label>
+            <textarea id="mm-compartments" class="code-input" rows="10">[
+  {"key":"air","volume_m3":1000000000,"half_life_days":10,"advective_loss_per_day":0.1},
+  {"key":"freshwater","volume_m3":1000000,"half_life_days":20,"advective_loss_per_day":0.02},
+  {"key":"soil","volume_m3":500000,"bulk_density_kg_m3":1500,"half_life_days":80,"advective_loss_per_day":0.001},
+  {"key":"sediment","volume_m3":50000,"bulk_density_kg_m3":800,"half_life_days":120,"advective_loss_per_day":0.0005}
+]</textarea>
+            <label>Directed transfer rates (per day JSON)</label>
+            <textarea id="mm-transfers" class="code-input" rows="7">[
+  {"source":"air","target":"freshwater","rate_per_day":0.01},
+  {"source":"air","target":"soil","rate_per_day":0.02},
+  {"source":"freshwater","target":"sediment","rate_per_day":0.03},
+  {"source":"soil","target":"freshwater","rate_per_day":0.001}
+]</textarea>
+            <button>Run multimedia fate screen</button>
+          </form>
+          <div id="multimedia-result" class="native-model-result"><div class="empty">No multimedia run yet.</div></div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head"><div><small>NATIVE · CATCHMENT</small><h3>WWTP-to-river network exposure</h3></div></div>
+          <p>Route pharmaceutical or industrial point-source loads through a branched river network. Use ClocalINF/SimpleTreat effluent outputs as the point-source basis.</p>
+          <form id="river-network-form">
+            <div class="form-grid">
+              <div><label>Default water DT50 (days)</label><input id="river-dt50" type="number" step="any" value="40"></div>
+              <div><label>Aquatic PNEC (µg/L, optional)</label><input id="river-pnec" type="number" step="any" value="0.1"></div>
+            </div>
+            <label>Directed river segments (JSON)</label>
+            <textarea id="river-segments" class="code-input" rows="18">[
+  {
+    "segment_id":"upstream",
+    "upstream_ids":[],
+    "flow_m3_day":200000,
+    "travel_time_days":1,
+    "local_effluent_concentration_ug_l":0.640775,
+    "local_effluent_flow_m3_day":20000
+  },
+  {
+    "segment_id":"downstream",
+    "upstream_ids":["upstream"],
+    "flow_m3_day":500000,
+    "travel_time_days":2
+  }
+]</textarea>
+            <button>Run catchment river screen</button>
+          </form>
+          <div id="river-network-result" class="native-model-result"><div class="empty">No river-network run yet.</div></div>
+        </article>
+      </div>
+
+      <div class="grid two">
+        <article class="panel">
+          <div class="panel-head"><div><small>INPUT CONTROL</small><h3>Prepare a model workflow</h3></div></div>
+          <p>Creates a versioned run manifest for native or external execution. Missing inputs remain visible rather than being silently defaulted.</p>
+          <form id="model-workflow-form">
+            <label>Model</label><select id="mw-model"></select>
+            <div class="form-grid">
+              <div><label>Jurisdiction</label><select id="mw-region"><option>EU</option><option>UK</option><option>US</option><option>CH</option></select></div>
+              <div><label>Tier</label><select id="mw-tier"><option value="1">1</option><option value="2" selected>2</option><option value="3">3</option><option value="4">4</option></select></div>
+            </div>
+            <label>Scenario name</label><input id="mw-scenario" value="Tiered environmental fate assessment">
+            <label>Run-record executable path, where applicable</label><input id="mw-executable" placeholder="Optional provenance only; execution uses the server .env path"><small>For safety, entering a path here never enables process execution.</small>
+            <label>Reviewed inputs (JSON)</label>
+            <textarea id="mw-inputs" class="code-input" rows="12">{
+  "molecular_weight_g_mol": 236.27,
+  "soil_dt50": {"value": 35, "unit": "days", "evidence_status": "review_required"},
+  "koc_or_kd": {"value": 500, "unit": "L/kg", "evidence_status": "review_required"}
+}</textarea>
+            <button>Prepare workflow manifest</button>
+          </form>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head split"><div><small>PROJECT RUNS</small><h3>Model workflow history</h3></div><button id="refresh-model-workflows" class="secondary">Refresh</button></div>
+          <div id="model-workflow-list" class="list"><div class="empty">Select a project and prepare a workflow.</div></div>
+        </article>
+      </div>
+
+      <article id="model-workflow-detail" class="panel hidden"></article>
+    </section>
+
+    <section id="page-homeapp" class="page">
+      <div class="phone-layout">
+        <article class="panel phone-card">
+          <div class="panel-head"><div><small>ENVIROCHEM HOME</small><h3>Product-use fate summary</h3></div></div>
+          <div class="home-scope-note"><strong>Qualitative screen only</strong><span>No product lookup, treatment-plant scaling, PEC, PNEC or risk quotient is inferred here.</span></div>
+          <div class="home-profile-link">
+            <div><small>SELECTED WORKSPACE CHEMICAL</small><strong id="home-link-state">Select a reviewed project chemical to bind trusted properties.</strong></div>
+            <button id="h-use-selected" class="secondary" type="button" disabled>Use selected reviewed profile</button>
+          </div>
+          <form id="home-form">
+            <label>Barcode or product identifier</label><input id="h-identifier" inputmode="numeric" autocomplete="off" placeholder="Optional manual reference; it does not resolve ingredients">
+            <div class="field-note">A barcode is stored as a reference only. Confirm the active ingredient from an authoritative product source.</div>
+            <label>Product name</label><input id="h-product" placeholder="e.g. household cleaner">
+            <label>Chemical or active ingredient</label><input id="h-chemical" placeholder="CAS, IUPAC, common name or SMILES">
+            <input id="h-profile-bound" type="hidden" value="false">
+            <div class="form-grid">
+              <div><label>Amount per use</label><input id="h-amount" type="number" step="any" value="10"></div>
+              <div><label>Unit</label><select id="h-unit"><option>mL</option><option>g</option><option>mg</option><option>L</option><option>kg</option></select></div>
+              <div><label>Frequency</label><input id="h-frequency" type="number" step="any" value="1"></div>
+              <div><label>Per</label><select id="h-frequency-unit"><option value="week">week</option><option value="day">day</option><option value="month">month</option><option value="year">year</option><option value="one_off">one-off use</option></select></div>
+            </div>
+            <label>Where does it go?</label><select id="h-route"><option value="down_drain">Down the drain / washed off</option><option value="outdoor_soil">Applied to outdoor soil</option><option value="outdoor_surface">Outdoor hard surface / runoff</option><option value="spray_air">Sprayed into air</option><option value="hazardous_waste">Hazardous-waste collection</option><option value="general_bin">General household bin</option></select>
+            <details><summary>Optional reviewed fate properties</summary>
+              <div class="form-grid"><div><label>logKow/logP</label><input id="h-logkow" type="number" step="any"></div><div><label>Koc (L/kg)</label><input id="h-koc" type="number" step="any"></div><div><label>Soil DT50 (days)</label><input id="h-dt50" type="number" step="any"></div></div>
+            </details>
+            <button>Explain environmental fate</button>
+          </form>
+        </article>
+        <article id="home-result" class="panel phone-card"><div class="empty">Enter a product use to generate a friendly summary.</div></article>
+      </div>
+    </section>
+
+    <section id="page-labsafety" class="page">
+      <div class="grid two">
+        <article class="panel">
+          <div class="panel-head"><div><small>SDS → TASK-SPECIFIC DRAFT</small><h3>Automated COSHH preparation</h3></div></div>
+          <div class="warning">The result is a draft for competent-person review and signature. An SDS alone is not a task-specific risk assessment.</div>
+          <form id="coshh-form">
+            <label>Safety Data Sheet (.pdf or .txt)</label><input id="c-file" type="file" accept=".pdf,.txt,text/plain,application/pdf" required>
+            <label>Substance or mixture</label><input id="c-substance" required>
+            <label>Laboratory task</label><textarea id="c-task" required placeholder="Describe weighing, dilution, extraction, heating, sonication, analysis or disposal"></textarea>
+            <div class="form-grid"><div><label>Quantity/concentration</label><input id="c-quantity" value="10 mL at working concentration"></div><div><label>Frequency/duration</label><input id="c-frequency" value="Weekly; 30 minutes"></div></div>
+            <label>Persons at risk</label><input id="c-persons" value="Laboratory researchers and technicians">
+            <div class="check-grid"><label><input id="c-open" type="checkbox" checked> Open handling</label><label><input id="c-aerosol" type="checkbox"> Heating, aerosol, spray or sonication</label></div>
+            <button>Prepare COSHH draft</button>
+          </form>
+        </article>
+        <article id="coshh-result" class="panel"><div class="empty">Upload an SDS and describe the actual task.</div></article>
+      </div>
+    </section>
+
+    <section id="page-reach" class="page">
+      <div class="boundary-warning">
+        <strong>Preparation and review only.</strong> The generated ZIP is not an IUCLID dossier,
+        not an .i6z archive and not submission-ready. Do not rename or submit it to REACH-IT.
+      </div>
+      <div class="grid two">
+        <article class="panel">
+          <div class="panel-head"><div><small>EVIDENCE-BOUND EXPORT</small><h3>Prepare REACH review bundle</h3></div></div>
+          <div id="reach-readiness" class="warning">Select a project and confirmed chemical.</div>
+          <form id="reach-bundle-form">
+            <label>Critical aquatic ecotoxicity evidence</label>
+            <select id="reach-critical-evidence" required></select>
+            <label>Evidence included in the snapshot</label>
+            <div id="reach-evidence-list" class="reach-evidence-list"></div>
+            <div class="form-grid">
+              <div><label>Assessment factor</label><input id="reach-af" type="number" min="1" step="any" value="1000" required></div>
+              <div><label>Target compartment</label><input value="Freshwater" disabled></div>
+            </div>
+            <label>Assessment-factor rationale</label>
+            <textarea id="reach-af-rationale" required placeholder="Explain why this factor is appropriate for the usable dataset, trophic coverage and endpoint quality."></textarea>
+            <label>Guidance or decision reference</label>
+            <input id="reach-guidance" value="ECHA IR&amp;CSA Chapter R.10 — applicability confirmed by reviewer" required>
+            <label>Completed model-run IDs to include (optional, comma-separated)</label>
+            <input id="reach-model-runs" placeholder="e.g. 12, 15">
+            <div class="form-grid">
+              <div><label>Reviewer name</label><input id="reach-reviewer" required></div>
+              <div><label>Reviewer role</label><input id="reach-reviewer-role" value="Environmental scientist" required></div>
+              <div><label>Signing</label><select id="reach-signing"><option value="unsigned">Unsigned review export</option><option value="rsa">RSA-PSS signed manifest</option></select></div>
+            </div>
+            <label class="inline-confirm"><input id="reach-confirm" type="checkbox" required> I reviewed the identity, assessment profile, evidence selection and AF rationale, and understand this is not submission-ready.</label>
+            <button>Download review bundle</button>
+          </form>
+        </article>
+        <article class="panel">
+          <div class="panel-head"><div><small>INTEGRITY &amp; TRUST</small><h3>Bundle controls</h3></div></div>
+          <div id="reach-capabilities" class="empty">Open this workspace to check capabilities.</div>
+          <div id="reach-export-result"></div>
+          <h3>Independent verification</h3>
+          <p>Use <code>python -m app.reach.cli &lt;bundle.zip&gt; --public-key &lt;trusted-public.pem&gt;</code>. A valid signature establishes integrity relative to that key; verify its SHA-256 fingerprint through an independent trust record.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="page-audit" class="page">
+      <article class="panel">
+        <div class="panel-head split"><div><small>REPRODUCIBILITY</small><h3>Audit events</h3></div><button id="refresh-audit" class="secondary">Refresh</button></div>
+        <div id="audit-list" class="timeline"></div>
+      </article>
+    </section>
+    <dialog id="provenance-dialog" class="provenance-dialog" aria-labelledby="provenance-title">
+      <form method="dialog" class="provenance-dialog-shell">
+        <div class="provenance-dialog-head"><div><small>WHY THIS RECORD?</small><h2 id="provenance-title">Provenance</h2></div><button value="close" aria-label="Close provenance dialog">×</button></div>
+        <div id="provenance-dialog-body"></div>
+      </form>
+    </dialog>
+  </main>
+</div>
+<script src="/static/expert-app.js?v=studio-v2.23-alpha3.1-us-run-state-hotfix"></script>
+</body>
+</html>

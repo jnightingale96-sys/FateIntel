@@ -1,0 +1,28 @@
+EnviroChem Studio v2.23.0 Alpha 1.1 — Windows Startup Hotfix
+============================================================
+
+Start:
+  1. Extract the complete ZIP to a normal, short folder.
+  2. Double-click START_ENVIROCHEM.bat.
+  3. Keep the visible console open while the application is running.
+
+Expected first screen:
+  - No assessment selected.
+  - No chemical selected.
+  - Resolve and confirm a substance before its profile can be edited.
+
+Carbamazepine is retained only as an explicit protected verification example.
+Use "Load Carbamazepine example" when that benchmark is wanted.
+
+Validation:
+  - 193 tests passed.
+  - 4 optional native-RDKit tests skipped; browser/WASM remains primary.
+  - Python and JavaScript syntax checks passed.
+  - Live /api/ready and /api/build smoke checks passed.
+
+Startup correction:
+  - The background browser readiness helper does not share STARTUP_LOG.txt.
+  - Uvicorn is the sole long-running writer to the log on Windows.
+
+Next planned increment:
+  Typed quantities, UseScenario/ReleaseEvent and parent/TP mass-molar ledgers.

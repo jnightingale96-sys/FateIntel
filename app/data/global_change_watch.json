@@ -1,0 +1,74 @@
+[
+  {
+    "item": "Australia AICIS categorisation guidelines",
+    "jurisdiction": "Australia",
+    "change_trigger": "Finalised September 2026 guideline changes become effective after the snapshot date.",
+    "effective_expected": "September 2026",
+    "required_action": "Use the September 2025 edition until the effective date, then recheck the AICIS portal.",
+    "official_url": "https://www.industrialchemicals.gov.au/news-and-notices/changes-categorisation-guidelines-september-2026"
+  },
+  {
+    "item": "China new chemical registration measures",
+    "jurisdiction": "China",
+    "change_trigger": "A 2026 revision process has been notified/reported; legal status and effective date must be checked against final MEE publication.",
+    "effective_expected": "2026 - status uncertain at snapshot",
+    "required_action": "Do not rely on draft or trade-notification summaries for a filing; verify final Chinese MEE text.",
+    "official_url": "https://www.mee.gov.cn/"
+  },
+  {
+    "item": "UN GHS national adoption",
+    "jurisdiction": "Global",
+    "change_trigger": "GHS Rev.11 is the current UN edition, but national systems may still implement Rev.7-10 or selected building blocks.",
+    "effective_expected": "Varies by jurisdiction",
+    "required_action": "Check the jurisdiction-specific CLP/GHS law and transition period.",
+    "official_url": "https://unece.org/about-ghs"
+  },
+  {
+    "item": "EU REACH / CLP guidance revisions",
+    "jurisdiction": "European Union / EEA",
+    "change_trigger": "ECHA guidance chapters and CLP guidance are modular and revised at different times, including for new hazard classes and nanoforms.",
+    "effective_expected": "Ongoing",
+    "required_action": "Check the version/date printed on each downloaded ECHA chapter.",
+    "official_url": "https://echa.europa.eu/guidance-documents"
+  },
+  {
+    "item": "UK REACH policy changes",
+    "jurisdiction": "United Kingdom (GB)",
+    "change_trigger": "Transitional registration and data-model policy may change through legislation and HSE/Defra notices.",
+    "effective_expected": "Ongoing",
+    "required_action": "Check HSE UK REACH news and the governing statutory instrument before a submission.",
+    "official_url": "https://www.hse.gov.uk/reach/"
+  },
+  {
+    "item": "EAEU TR 041 implementation",
+    "jurisdiction": "EAEU",
+    "change_trigger": "Implementation has experienced delays and depends on supporting acts and member-state readiness.",
+    "effective_expected": "Uncertain / member-state dependent",
+    "required_action": "Verify with the competent authority in the target EAEU state before market access.",
+    "official_url": "https://eec.eaeunion.org/en/comission/department/deptexreg/tr/"
+  },
+  {
+    "item": "K-REACH amendments and thresholds",
+    "jurisdiction": "South Korea",
+    "change_trigger": "Registration thresholds, exemptions and implementation rules are periodically amended.",
+    "effective_expected": "Ongoing",
+    "required_action": "Use the Korean K-REACH portal and current legal text, not an older English summary.",
+    "official_url": "https://kreach.me.go.kr/repwrt/index.do"
+  },
+  {
+    "item": "Emerging Latin American inventories",
+    "jurisdiction": "Colombia / Chile / others",
+    "change_trigger": "Industrial-chemical inventories and notification cycles are being implemented or expanded.",
+    "effective_expected": "Country-specific",
+    "required_action": "Check current inventory window, thresholds and local representative requirements.",
+    "official_url": "https://quimicos.minambiente.gov.co/"
+  },
+  {
+    "item": "OECD Test Guideline updates",
+    "jurisdiction": "Global",
+    "change_trigger": "OECD publishes new and updated Test Guidelines, commonly in annual batches.",
+    "effective_expected": "Latest batch 2 July 2026",
+    "required_action": "Confirm the current TG number/version and whether the receiving regulator accepts it for the endpoint.",
+    "official_url": "https://www.oecd.org/en/topics/sub-issues/testing-of-chemicals/test-guidelines.html"
+  }
+]

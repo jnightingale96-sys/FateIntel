@@ -1,0 +1,253 @@
+EnviroChem Studio v2.23 Alpha 3.1 — US Run-State Hotfix
+Validation date: 2026-09-05
+
+Alpha 3.1 release result
+------------------------
+- 226 automated tests passed.
+- 5 optional tests skipped: four native-RDKit and one RSA test.
+- 0 test failures against a fresh isolated database.
+- Python compilation: passed.
+- Guided, Expert and service-worker JavaScript syntax: passed.
+- High-confidence Ruff error checks: passed.
+- Canonical US project/chemical binding, sorption, emission and WWTP replay: passed.
+- Failure-state spinner termination, persistent diagnostics and retry contract: passed.
+
+Inherited Alpha 3 validation record follows
+-------------------------------------------
+
+EnviroChem Studio v2.23 Alpha 3 — EPA Execution Bridge
+Validation date: 2026-09-05
+
+Alpha 3 release result
+----------------------
+- 225 automated tests passed.
+- 5 optional tests skipped: four native-RDKit and one RSA test.
+- 0 test failures.
+- Python compilation: passed.
+- Guided and Expert JavaScript syntax: passed.
+
+EPA execution and output trust controls
+---------------------------------------
+- PWC, ChemSTEER, CEM and E-FAST status/control-plane registration: passed.
+- Default-disabled local execution and manual-handoff fallback: passed.
+- Exact executable path, fixed arguments/globs and acknowledged executable SHA-256: passed.
+- No-shell launch, fixed timeout, isolated workspace and captured artefact hashes: passed.
+- Zero-exit/no-output failure classification: implementation test passed.
+- Official output original-file upload, size/extension limits and file-set SHA-256: passed.
+- Weak pasted-text import for the four EPA workflows: rejected.
+- Acceptance without genuine execution or with unmapped required endpoints: rejected.
+- Handoff ZIP manifest/checklist/checksums and no bundled official software: passed.
+
+US groundwater and tier-safe routing
+------------------------------------
+- Industrial soil-release source-zone partitioning and vertical leaching screen: passed.
+- Kd, retardation, travel time, first-order survival and groundwater endpoint trace: passed.
+- Direct soil release without groundwater inputs remains an explicit gap: passed.
+- US industrial panel requires US + Industrial + Manufacturing/processing: passed.
+- Non-industrial chemicals do not receive ChemSTEER/native industrial routing: passed.
+- Native EU water-sediment workbench starts at Tier 2 and is not labelled TOXSWA: passed.
+- Official FOCUS_TOXSWA is restricted to EU pesticide soil/spray Tier 3-4: passed.
+
+Inherited validation record follows
+-----------------------------------
+
+EnviroChem Studio v2.23 Alpha 2 — US Exposure Foundations
+Validation date: 2026-09-02
+
+Alpha 2 release result
+----------------------
+- 202 automated tests passed.
+- 4 optional native-RDKit tests skipped in browser-first mode.
+- 0 test failures.
+- Python compilation: passed.
+- High-confidence Ruff error checks: passed.
+- Guided-workspace, Expert-workspace and service-worker JavaScript syntax: passed.
+- HTML identifier uniqueness: passed (400 IDs, no duplicates).
+- Windows launchers: CRLF-only line endings and launcher regression tests passed.
+
+US exposure foundations
+-----------------------
+- 60 unique EPA scenario records loaded: 12 published and 48 draft/reference-only.
+- Default API/UI scenario list contains only the 12 published ESDs.
+- Draft/reference-only records require explicit opt-in and retain draft status.
+- Typed release event validates media fractions and rejects shared-basis event sums above one.
+- Air, water, soil, landfill, incineration and off-site treatment routing: passed.
+- Controlled mass is retained as managed-waste transfer rather than assumed destruction.
+- Daily/annual mass balance and exact closure tests: passed.
+- Measured-air inhalation, dermal contact, absorption and PPE calculations: passed.
+- Time-averaged well-mixed-room build-up calculation: passed.
+- Fifteen-domain conventional-assessment completeness control: passed.
+- Persisted US screens receive an immutable confirmed-identity binding: passed.
+- ChemSTEER 3.2, CEM 3.2 and E-FAST 2014 adapter manifests and output-review contracts: passed.
+- E-FAST is explicitly legacy; native output is explicitly not EPA-equivalent.
+- EPA executables and source documents are not included in the release archive.
+
+Inherited validation record follows
+-----------------------------------
+
+Release result
+--------------
+- 187 automated tests passed.
+- 4 optional native-RDKit tests skipped in browser-first mode.
+- 0 test failures.
+- Python compilation: passed.
+- Guided-workspace JavaScript syntax: passed.
+- Expert-workspace JavaScript syntax: passed.
+- FastAPI live uvicorn smoke on isolated port 8897: passed.
+- Runtime database, caches, virtual environments, logs and uploaded source databases are excluded from the release archive.
+
+Configuration validation
+------------------------
+- Pydantic v2 settings validation without a new runtime dependency: passed.
+- Recognised `.env` loading: passed.
+- Precedence explicit value > operating-system environment > `.env` > default: passed.
+- Port range and log-level/format validation: passed.
+- Credential-safe database backend reporting: passed.
+- Central external-model and optional native-RDKit settings: passed.
+- Windows launcher resolves the application’s `.env` port without executing a quoted folder path: static contract passed.
+- Existing matching EnviroChem build is reopened rather than rejected as a port conflict: implementation/unit contract passed.
+- A non-EnviroChem port conflict selects the next available loopback port: implementation/unit contract passed.
+
+Logging and error validation
+----------------------------
+- Human-readable logging configuration: passed.
+- Machine-readable JSON log formatter: passed.
+- UTC timestamp, level, logger, request ID and message fields: passed.
+- Caller-supplied valid X-Request-ID preserved: passed.
+- Generated request IDs returned when none is supplied: passed.
+- Request completion timing and status logging: passed.
+- Typed chemical-identity error returns safe detail, error code, details and request ID: passed.
+- External-source failures avoid returning raw upstream exception text: passed by implementation review.
+
+Lifecycle and diagnostics
+-------------------------
+- FastAPI lifespan initializes schema and seed records: passed.
+- SQLAlchemy engine disposal on shutdown: passed.
+- Previous FastAPI on_event deprecation removed.
+- /api/health executes SELECT 1 and reports database backend/status/latency: passed.
+- /health compatibility alias: passed.
+- /api/ready returns 200 when the database is ready: passed.
+- /api/ready returns 503 under a simulated database failure: passed.
+- Windows launcher waits for /api/ready before opening the browser: static contract passed.
+
+Live-server smoke
+-----------------
+- Isolated SQLite database creation: passed.
+- /api/ready: ready.
+- /api/health: ok; database query passed.
+- /api/build: version 2.22-beta, default port 8792, generic-chemical, transformation-pathway, provenance-explorer, reviewed-home-profile and REACH review-bundle flags passed.
+- Request-correlation response header: passed.
+- JSON application-start log parsed successfully: passed.
+
+CI and development contract
+---------------------------
+- Python 3.12 and 3.14 matrix declared.
+- Runtime and development requirements separated.
+- Python compilation step declared.
+- High-confidence Ruff error checks declared.
+- Guided/expert JavaScript syntax steps declared.
+- Full pytest step declared.
+- Black, Ruff and pytest project configuration present.
+
+v2.22 transformation pathway validation
+-----------------------------------------
+- BioTransformer ENVMICRO one-parent request and one-to-three-generation validation: passed.
+- JSON POST/poll contract with provider query identifier: passed using deterministic transport fixtures.
+- Substrate/product predictions normalised into provider-neutral nodes and edges: passed.
+- Primary and secondary product generation assignment: passed.
+- Predicted status, generic soil/water matrix and provider provenance retained: passed.
+- Raw provider-response SHA-256 and query metadata retained: passed.
+- Formation fractions, rate constants and DT50 values remain explicitly unavailable: passed.
+- Staging/production request blocked without commercial-licence confirmation: passed.
+- Completed pathway model run and audit event persistence: passed.
+- Browser prediction, generation selector, provider status and editable scientist-review controls: static contract passed.
+- Guided-workspace JavaScript syntax and high-confidence Python error checks: passed.
+- No live BioTransformer query was issued during automated validation; provider availability and service limits remain external operational dependencies.
+
+v2.21 provenance and Home App validation
+-----------------------------------------
+- Home summary reports qualitative scope and explicitly marks PEC/PNEC/RQ as not calculated: passed.
+- Partial or implicit reviewed-profile binding: rejected.
+- Confirmed chemical identity and reviewed assessment-profile binding: passed.
+- Conflicting chemical text and profile values are replaced by the bound records: passed.
+- Koc remains labelled manual/unreviewed because it is not a stored profile field: passed.
+- Evidence API returns a deterministic 64-character SHA-256 snapshot hash: passed.
+- Expert UI contains searchable endpoint filters, provenance dialog and reviewed-profile binding controls: static contract passed.
+- Mock barcode lookup, simulated AI Copilot and fake IUCLID XML controls are absent: passed.
+
+Inherited generic-chemical validation
+-------------------------------------
+- Identity resolution remains candidate-only until explicit confirmation.
+- Immutable identity snapshot and project/chemical profile binding: passed.
+- Draft/reviewed and release-specific readiness gates: passed.
+- Diclofenac sorption, emission, custom WWTP, biosolids and irrigation lifecycle: passed.
+- Cross-chemical identity/evidence substitution: rejected.
+- Altered reviewed profile inputs and originating-run values: rejected.
+- Carbamazepine workbook fixture remains parent-identity locked.
+- QA-only Diclofenac parameters remain test fixtures, not regulatory selections.
+
+REACH review-bundle validation
+--------------------------------
+- Unit conversion covers ng/L, ASCII/Unicode microgram aliases, mg/L and g/L: passed.
+- Zero, negative, non-finite and unsupported concentration inputs: rejected.
+- PNEC arithmetic uses only an explicit reviewer-supplied assessment factor: passed.
+- Invalid factors never receive a silent default: passed.
+- Confirmed identity and reviewed profile gates: passed.
+- Critical PNEC endpoint is bound to a stored aquatic ecotoxicity evidence record: passed.
+- Cross-chemical, missing, non-ecotoxicity and incomplete model-run selections: rejected by implementation/tests.
+- Canonical JSON, EnviroChem-native XML, escaped HTML and explicit non-submission README: passed.
+- Complete payload size/SHA-256 manifest reconciliation: passed.
+- ZIP path traversal, duplicate-path, encryption, size and suspicious compression controls: passed by implementation/tests.
+- Unsigned integrity verification: passed.
+- Detached RSA-PSS/SHA-256 signature and public-key fingerprint verification: passed.
+- Wrong public key and payload tampering: detected.
+- Signed-bundle inspection without a public key remains explicitly incomplete/untrusted: passed.
+- Requested RSA signing without configured capability fails with HTTP 503; no fallback: passed.
+- Diclofenac end-to-end browser/API export, upload verification and audit record: passed.
+- Expert Workspace non-IUCLID boundary and evidence-bound download wiring: passed.
+- Command-line verifier available through `python -m app.reach.cli`: compile/import contract passed.
+
+Inherited scientific and platform validation
+--------------------------------------------
+- Soil selection, sorption, emission, Activity SimpleTreat, irrigation, biosolids and plant-uptake tests: passed.
+- Native multimedia fate and catchment river-network tests: passed.
+- SPIN, FOCUS MACRO and GREAT-ER integration-contract tests: passed.
+- PEARL, TOXSWA, model registry, adapters and workflow lifecycle tests: passed.
+- Veterinary ERA, Home Use, SDS/COSHH, EnviroDesign and global-regulatory tests: passed.
+- Guided and expert UI contract tests: passed.
+- PEARL/SWASH flat process-graphic alignment and preservation of all live PEARL SVG layers: passed.
+
+Deliberately excluded supplied scaffold elements
+-----------------------------------------------
+- No replacement of the working FastAPI application or interfaces.
+- No simulated assessment endpoint or fire-and-forget scientific job.
+- No undocumented replacement Koc equation.
+- No unused API-key or secret placeholders.
+- No unsupported claim that deployment hardening is complete.
+- No ad-hoc `IUCLID_Dossier` XML, `.i6z` output or submission-ready claim.
+- No endpoint-label-only “ECHA-like” assessment-factor table.
+- No HMAC substitute for independently verifiable signing and no silent signing fallback.
+- No arbitrary server filesystem evidence/output paths and no unescaped reviewer HTML.
+
+Remaining production boundaries
+-------------------------------
+- Authentication, authorization, tenancy, durable job queues, migrations, public-internet hardening, backup/restore and secret-manager integration remain future work.
+- A prepared external workflow remains distinct from a completed external-model run.
+- Generic custom WWTP fractions remain a transparent screen, not an official SimpleTreat execution.
+- A REACH review bundle remains a preparation artefact, not an IUCLID dossier or REACH-IT submission.
+- RSA file-path signing is for controlled local/private use; regulated production needs approved key custody and signer authorization.
+
+Non-failing notice
+------------------
+- The installed Starlette TestClient/httpx bridge emits one deprecation notice.
+- This affects only the current test harness and not runtime API operation.
+EnviroChem Studio v2.22.1 startup-hotfix validation — 17 August 2026
+---------------------------------------------------------------------
+- Python source compilation: passed.
+- Windows launcher files converted to CRLF line endings.
+- Visible wrapper/extraction guard: passed static verification.
+- Hidden PowerShell startup command removed: passed static verification.
+- Launcher and server build identifiers: exact match verified.
+- Readiness polling/browser-open helper: deterministic smoke test passed.
+- Occupied-port detection and alternate-port helper: deterministic smoke test passed.
+- The underlying v2.22 scientific suite remains the previously validated 187 passed / 4 optional native-RDKit skips; the full dependency-backed suite was not rerun for this launcher-only packaging hotfix.

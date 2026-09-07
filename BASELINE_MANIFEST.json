@@ -1,0 +1,55 @@
+{
+  "audit_date": "2026-09-02",
+  "canonical_input": {
+    "archive_name": "EnviroChem_Studio_v2_22_1_TRANSFORMATION_PATHWAYS_STARTUP_HOTFIX (1) (1).zip",
+    "archive_sha256": "4b4f903ac23fbba94108579702c5f51243908a1bee9b3d2cac7360ce0fb080f8",
+    "archive_size_bytes": 552978,
+    "archive_members": 168,
+    "expanded_size_bytes": 2141010,
+    "declared_app_version": "2.22.1-beta",
+    "declared_build_id": "envirochem-studio-v2.22.1-startup-hotfix-2026-08-17",
+    "version_control_metadata_present": false
+  },
+  "baseline_validation": {
+    "python": "3.12",
+    "pytest_passed": 186,
+    "pytest_failed": 2,
+    "pytest_skipped": 5,
+    "failure_classification": "two stale launcher assertions inspected START_ENVIROCHEM.bat instead of START_ENVIROCHEM_CONSOLE.cmd; no scientific calculation failed",
+    "native_rdkit_skips": 4,
+    "optional_rsa_signing_skips": 1
+  },
+  "release_slice": {
+    "app_version": "2.23.0-alpha2",
+    "build_id": "envirochem-studio-v2.23.0-alpha2-us-exposure-foundations-2026-09-02",
+    "scope": [
+      "canonical baseline and route/test inventory",
+      "neutral guided startup with no automatic pilot selection",
+      "exact project and chemical workspace binding",
+      "identifier conflict handling",
+      "immutable identity binding for every new model run",
+      "historical identity-binding backfill where a complete confirmed identity exists",
+      "twenty-chemical cross-state regression",
+      "Windows startup log-handle separation",
+      "typed US industrial release events and worker tasks",
+      "air-water-soil and managed-waste mass routing",
+      "measured-air and well-mixed occupational screening",
+      "60-record EPA scenario catalogue with draft isolation",
+      "ChemSTEER, CEM and E-FAST external workflow contracts",
+      "15-domain conventional assessment completeness control"
+    ],
+    "pytest_passed": 202,
+    "pytest_failed": 0,
+    "pytest_skipped": 4
+  },
+  "preserved_boundaries": {
+    "biotransformer": "provider-neutral hypothesis generation only; blocked in staging/production unless written commercial permission is operator-confirmed",
+    "transformation_quantitation": "no formation fractions, rate constants, DT50 values or concentrations inferred from predicted pathways",
+    "focus": "native screens, prepared hand-offs and imported official outputs remain explicitly distinct",
+    "reach": "EnviroChem review bundles remain distinct from IUCLID i6z dossiers"
+    ,
+    "us_epa_tools": "ChemSTEER, CEM, E-FAST and PWC remain external, versioned workflows; no EPA executable is bundled, modified or represented as native output",
+    "draft_scenarios": "only 12 published ESDs are enabled by default; 48 draft/reference records require explicit selection and remain labelled",
+    "waste": "landfill, incineration and off-site treatment are mass transfers in Alpha 2, not downstream fate or destruction claims"
+  }
+}

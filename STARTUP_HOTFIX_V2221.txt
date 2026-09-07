@@ -1,0 +1,11 @@
+EnviroChem Studio v2.22.1 Windows startup hotfix
+================================================
+
+1. Extract the complete ZIP to a new normal folder.
+2. Do not double-click START_ENVIROCHEM.bat while browsing inside the ZIP.
+3. Double-click START_ENVIROCHEM.bat in the extracted folder.
+4. Keep the visible console open while EnviroChem is running.
+
+The launcher no longer creates a hidden PowerShell process. Browser readiness
+polling uses the local Python environment, and the wrapper remains visible when
+startup fails. Diagnostic output is written to STARTUP_LOG.txt.

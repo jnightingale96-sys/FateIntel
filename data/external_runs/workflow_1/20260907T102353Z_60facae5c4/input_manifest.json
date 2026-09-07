@@ -1,0 +1,114 @@
+{
+  "assessment": {
+    "chemical_id": 1,
+    "jurisdiction": "US",
+    "project_id": 1,
+    "scenario_name": "PWC QA official workflow",
+    "tier": 2
+  },
+  "created_at": "2026-09-07T10:23:53.174147+00:00",
+  "execution": {
+    "accepted_output_formats": [
+      "txt",
+      "csv",
+      "zip"
+    ],
+    "configured_executable_path": null,
+    "mode": "managed_adapter",
+    "redistribution_note": "EnviroChem manages the current EPA PWC3 workflow and preserves the exact software/scenario version. Legacy PWC, PRZM and EXAMS records remain reproducible but are not presented as current PWC3 runs."
+  },
+  "expected_outputs": [
+    "surface_water_concentration",
+    "sediment_concentration",
+    "groundwater_concentration",
+    "drinking_water_endpoints",
+    "batch_results"
+  ],
+  "input_hash": "94cffef7a51ab6653ef6612dd3a6b4b0913767c1336eba2d8cfe44d1fa356dc6",
+  "inputs": {
+    "application_pattern": {
+      "applications": 1,
+      "rate_kg_ha": 1
+    },
+    "aquatic_fate_inputs": {
+      "sediment_dt50_days": 40,
+      "water_dt50_days": 20
+    },
+    "contaminant_group": "pesticide",
+    "groundwater_and_waterbody_configuration": {
+      "groundwater": true,
+      "surface_water": true
+    },
+    "koc_or_kd": {
+      "unit": "L/kgOC",
+      "value": 100
+    },
+    "pwc3_us_scenario": {
+      "scenario": "QA fixture",
+      "version": "test"
+    },
+    "soil_and_crop_inputs": {
+      "crop": "QA crop",
+      "soil": "QA soil"
+    },
+    "soil_dt50": {
+      "unit": "days",
+      "value": 30
+    },
+    "weather_series": {
+      "file": "QA weather",
+      "version": "test"
+    }
+  },
+  "manifest_version": "ENVIROCHEM_MODEL_WORKFLOW_1.0",
+  "missing_inputs": [],
+  "model": {
+    "domain": "US pesticide water exposure",
+    "implementation": "managed_adapter",
+    "key": "PWC",
+    "name": "EPA Pesticide in Water Calculator 3 (PWC3)",
+    "registry_status": "current_official_adapter_contract"
+  },
+  "model_specific_validation": {
+    "host_workflows": [
+      "FIFRA pesticide surface-water assessment",
+      "FIFRA simple-groundwater assessment"
+    ],
+    "is_simulation_model": true,
+    "missing_inputs": [],
+    "official_name": "US EPA Pesticide in Water Calculator",
+    "official_page": "https://www.epa.gov/pesticide-science-and-assessing-pesticide-risks/models-pesticide-risk-assessment",
+    "official_version": "3.003 (verify installed build and scenario files)",
+    "prerequisites": [
+      "separately obtained official PWC installation",
+      "current EPA scenario and meteorological files",
+      "reviewed pesticide application and fate inputs"
+    ],
+    "role": "FIFRA pesticide surface-water, sediment and simple-groundwater exposure modelling",
+    "warnings": [
+      "PWC is a pesticide model; do not route an industrial chemical to it solely because a soil release exists.",
+      "Scenario and meteorological file versions are part of the result provenance.",
+      "EnviroChem does not redistribute PWC or represent a prepared manifest as a completed PWC run."
+    ]
+  },
+  "required_inputs": [
+    "contaminant_group",
+    "application_pattern",
+    "pwc3_us_scenario",
+    "soil_and_crop_inputs",
+    "weather_series",
+    "soil_dt50",
+    "koc_or_kd",
+    "aquatic_fate_inputs",
+    "groundwater_and_waterbody_configuration"
+  ],
+  "workflow_steps": [
+    "verify the current PWC3 build and scenario database",
+    "validate the US pesticide scenario",
+    "write the PWC3 project and optional batch package",
+    "execute the configured installation",
+    "capture logs and complete raw output",
+    "parse surface-water, sediment, groundwater and drinking-water endpoints",
+    "review and lock output"
+  ]
+}

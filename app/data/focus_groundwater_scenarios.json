@@ -1,0 +1,9 @@
+{
+  "title": "FOCUS groundwater scenario register",
+  "guidance_version": "FOCUS Groundwater Generic Guidance v2.4",
+  "official_guidance_url": "https://esdac.jrc.ec.europa.eu/public_path//projects_data/focus/gw/docs/Generic_guidance_FOCUS_GW_V2-4final.pdf",
+  "official_pearl_url": "https://esdac.jrc.ec.europa.eu/projects/pearl",
+  "official_focus_pearl_version": "5.5.5",
+  "native_status": "Okehampton depth profile transcribed; the other eight scenarios are selectable official-workflow metadata until their full profiles are independently transcribed and validated",
+  "regulatory_boundary": "Scenario selection does not mean the official FOCUS model was executed. Official weather, crop and SWAP hydrology remain external locked inputs."
+}

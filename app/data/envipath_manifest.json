@@ -1,0 +1,182 @@
+{
+  "integration_status": "manual_import_and_adapter_contract_only",
+  "commercial_warning": "The source inventory states that enviPath data may be subject to CC BY-NC-SA 4.0. Commercial embedding or redistribution requires licence clarification or permission.",
+  "packages": [
+    {
+      "Package": "EAWAG-BBD",
+      "UUID": "32de3cf4-e3e6-4168-956e-32fa5ddb0ce1",
+      "Scope": "Broad microbial xenobiotic biodegradation pathways",
+      "Included data": "Compounds; reactions; rules; pathways; scenarios; EC links",
+      "URL": "https://envipath.org/package/32de3cf4-e3e6-4168-956e-32fa5ddb0ce1"
+    },
+    {
+      "Package": "EAWAG-SOIL",
+      "UUID": "5882df9c-dae1-4d80-a40e-db4724271456",
+      "Scope": "Pesticide soil degradation studies from EFSA DARs",
+      "Included data": "Pathways; experimental conditions; DT50 where available",
+      "URL": "https://envipath.org/package/5882df9c-dae1-4d80-a40e-db4724271456"
+    },
+    {
+      "Package": "EAWAG-SLUDGE",
+      "UUID": "4a3cd0f4-4d2b-4f00-b3e6-a29e721f7038",
+      "Scope": "Activated-sludge biodegradation and kinetics",
+      "Included data": "27 publications (1999\u20132023); pathways; kinetic data; sludge metadata",
+      "URL": "https://envipath.org/package/4a3cd0f4-4d2b-4f00-b3e6-a29e721f7038"
+    },
+    {
+      "Package": "enviPath-PFAS",
+      "UUID": null,
+      "Scope": "PFAS precursor biotransformation across environmental systems",
+      "Included data": "117 pathways; 435 compounds; 779 reactions (wiki-reported)",
+      "URL": "https://wiki.envipath.org/doku.php?id=packages"
+    }
+  ],
+  "api_routes": [
+    {
+      "Object/action": "Package",
+      "Method": "GET",
+      "Route / client call": "/package/<uuid>",
+      "Purpose": "Package metadata and contained object links"
+    },
+    {
+      "Object/action": "Pathways in package",
+      "Method": "GET",
+      "Route / client call": "/package/<uuid>/pathway",
+      "Purpose": "Observed or predicted pathways"
+    },
+    {
+      "Object/action": "Compounds in package",
+      "Method": "GET",
+      "Route / client call": "/package/<uuid>/compound",
+      "Purpose": "Compound records and structures"
+    },
+    {
+      "Object/action": "Reactions in package",
+      "Method": "GET",
+      "Route / client call": "/package/<uuid>/reaction",
+      "Purpose": "Substrate-product transformations"
+    },
+    {
+      "Object/action": "Rules in package",
+      "Method": "GET",
+      "Route / client call": "/package/<uuid>/rule",
+      "Purpose": "Biotransformation rules, generally SMIRKS-based"
+    },
+    {
+      "Object/action": "Scenarios in package",
+      "Method": "GET",
+      "Route / client call": "/package/<uuid>/scenario",
+      "Purpose": "Experimental/environmental metadata"
+    },
+    {
+      "Object/action": "Search",
+      "Method": "client/API",
+      "Route / client call": "search(SMILES, packages)",
+      "Purpose": "Structure search across selected packages"
+    },
+    {
+      "Object/action": "Python package access",
+      "Method": "Python",
+      "Route / client call": "enviPath-python",
+      "Purpose": "REST client; package/pathway/compound/rule extraction"
+    }
+  ],
+  "scenario_metadata_fields": [
+    {
+      "Area": "General",
+      "Field": "pH / acidity",
+      "Use": "Experimental condition"
+    },
+    {
+      "Area": "General",
+      "Field": "Temperature",
+      "Use": "Experimental condition"
+    },
+    {
+      "Area": "General",
+      "Field": "Redox condition",
+      "Use": "Aerobic/anaerobic context"
+    },
+    {
+      "Area": "Kinetics",
+      "Field": "Rate constant",
+      "Use": "May include lower, upper and fit"
+    },
+    {
+      "Area": "Kinetics",
+      "Field": "Half-life / DT50",
+      "Use": "May be attached to a compound and scenario"
+    },
+    {
+      "Area": "Sludge",
+      "Field": "Sludge retention time",
+      "Use": "Activated-sludge-specific"
+    },
+    {
+      "Area": "Sludge",
+      "Field": "Total suspended solids (TSS)",
+      "Use": "Activated-sludge-specific"
+    },
+    {
+      "Area": "Sludge",
+      "Field": "Volatile suspended solids (VSS)",
+      "Use": "Activated-sludge-specific"
+    },
+    {
+      "Area": "Sludge",
+      "Field": "Inoculum/sludge source",
+      "Use": "WWTP and sampling information"
+    },
+    {
+      "Area": "Sludge",
+      "Field": "Bioreactor type and volume",
+      "Use": "Experimental setup"
+    },
+    {
+      "Area": "Sludge",
+      "Field": "Treatment technology",
+      "Use": "Biological treatment metadata"
+    },
+    {
+      "Area": "Sludge",
+      "Field": "Aeration type",
+      "Use": "Experimental setup"
+    },
+    {
+      "Area": "Sludge",
+      "Field": "Spike concentration and solvent",
+      "Use": "Dosing metadata"
+    },
+    {
+      "Area": "Sludge",
+      "Field": "Nutrients / nitrogen content",
+      "Use": "Experimental metadata"
+    },
+    {
+      "Area": "Soil",
+      "Field": "Soil properties and study conditions",
+      "Use": "DAR-derived metadata"
+    },
+    {
+      "Area": "Provenance",
+      "Field": "Publication / source",
+      "Use": "Traceability"
+    },
+    {
+      "Area": "Rule",
+      "Field": "Aerobic rule likelihood",
+      "Use": "Used for pathway truncation/prioritisation"
+    },
+    {
+      "Area": "Rule",
+      "Field": "EC class linkage",
+      "Use": "Known enzymes consistent with the rule"
+    },
+    {
+      "Area": "Rule",
+      "Field": "SMARTS filters",
+      "Use": "Exclude reactants/products from rule application"
+    }
+  ],
+  "implementation_rule": "Store matrix, conditions, provenance and observed/predicted status with every pathway. Do not transfer sludge or soil kinetics between matrices without a documented justification."
+}
