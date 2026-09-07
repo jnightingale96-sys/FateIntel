@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 from pathlib import Path
 from typing import Any
 
@@ -130,19 +131,19 @@ MODEL_PROFILES: dict[str, dict[str, Any]] = {
             "groundwater_and_waterbody_configuration": {"status": "required", "waterbody_type": None, "depth_m": None},
         },
         "field_types": {
-            "application_pattern.application_rate_kg_ha": {"type": "number", "unit": "kg/ha", "min": 0},
-            "application_pattern.number_of_applications": {"type": "number", "min": 1, "step": 1},
+            "application_pattern.application_rate_kg_ha": {"type": "number", "unit": "kg/ha", "min": 0, "required": True},
+            "application_pattern.number_of_applications": {"type": "number", "min": 1, "step": 1, "required": True},
             "application_pattern.application_interval_days": {"type": "number", "unit": "days", "min": 0},
-            "application_pattern.application_method": {"type": "select", "options": APPLICATION_METHODS},
+            "application_pattern.application_method": {"type": "select", "options": APPLICATION_METHODS, "required": True},
             "soil_and_crop_inputs.canopy_interception_fraction": {"type": "number", "min": 0, "max": 1, "step": "any"},
             "weather_series.simulation_years": {"type": "number", "min": 1, "step": 1},
-            "soil_dt50.value_days": {"type": "number", "unit": "days", "min": 0},
-            "koc_or_kd.value": {"type": "number", "min": 0},
-            "koc_or_kd.unit": {"type": "select", "options": ["L/kg", "L/kg_oc"]},
+            "soil_dt50.value_days": {"type": "number", "unit": "days", "min": 0, "required": True},
+            "koc_or_kd.value": {"type": "number", "min": 0, "required": True},
+            "koc_or_kd.unit": {"type": "select", "options": ["L/kg", "L/kg_oc"], "required": True},
             "aquatic_fate_inputs.water_column_dt50_days": {"type": "number", "unit": "days", "min": 0},
             "aquatic_fate_inputs.benthic_dt50_days": {"type": "number", "unit": "days", "min": 0},
             "aquatic_fate_inputs.hydrolysis_dt50_days": {"type": "number", "unit": "days", "min": 0},
-            "groundwater_and_waterbody_configuration.waterbody_type": {"type": "select", "options": ["index_reservoir", "index_pond", "farm_pond"]},
+            "groundwater_and_waterbody_configuration.waterbody_type": {"type": "select", "options": ["index_reservoir", "index_pond", "farm_pond"], "required": True},
             "groundwater_and_waterbody_configuration.depth_m": {"type": "number", "unit": "m", "min": 0},
         },
         "known_constraints": [
@@ -174,16 +175,16 @@ MODEL_PROFILES: dict[str, dict[str, Any]] = {
             "root_zone_parameters": {"status": "required", "root_depth_cm": None, "field_capacity": None, "wilting_point": None},
         },
         "field_types": {
-            "application_pattern.application_rate_kg_ha": {"type": "number", "unit": "kg/ha", "min": 0},
-            "application_pattern.number_of_applications": {"type": "number", "min": 1, "step": 1},
+            "application_pattern.application_rate_kg_ha": {"type": "number", "unit": "kg/ha", "min": 0, "required": True},
+            "application_pattern.number_of_applications": {"type": "number", "min": 1, "step": 1, "required": True},
             "application_pattern.application_interval_days": {"type": "number", "unit": "days", "min": 0},
-            "application_pattern.application_method": {"type": "select", "options": APPLICATION_METHODS},
+            "application_pattern.application_method": {"type": "select", "options": APPLICATION_METHODS, "required": True},
             "weather_series.simulation_years": {"type": "number", "min": 1, "step": 1},
-            "soil_dt50.value_days": {"type": "number", "unit": "days", "min": 0},
-            "koc_or_kd.value": {"type": "number", "min": 0},
-            "koc_or_kd.unit": {"type": "select", "options": ["L/kg", "L/kg_oc"]},
-            "runoff_and_erosion_parameters.curve_number": {"type": "number", "min": 0, "max": 100},
-            "runoff_and_erosion_parameters.usle_k": {"type": "number", "min": 0, "step": "any"},
+            "soil_dt50.value_days": {"type": "number", "unit": "days", "min": 0, "required": True},
+            "koc_or_kd.value": {"type": "number", "min": 0, "required": True},
+            "koc_or_kd.unit": {"type": "select", "options": ["L/kg", "L/kg_oc"], "required": True},
+            "runoff_and_erosion_parameters.curve_number": {"type": "number", "min": 0, "max": 100, "required": True},
+            "runoff_and_erosion_parameters.usle_k": {"type": "number", "min": 0, "step": "any", "required": True},
             "runoff_and_erosion_parameters.usle_ls": {"type": "number", "min": 0, "step": "any"},
             "runoff_and_erosion_parameters.usle_c": {"type": "number", "min": 0, "step": "any"},
             "root_zone_parameters.root_depth_cm": {"type": "number", "unit": "cm", "min": 0},
@@ -214,14 +215,14 @@ MODEL_PROFILES: dict[str, dict[str, Any]] = {
             "buffer_and_geometry": {"status": "required", "buffer_distance_m": None, "waterbody_width_m": None},
         },
         "field_types": {
-            "application_parameters.application_method": {"type": "select", "options": APPLICATION_METHODS},
-            "application_parameters.boom_height_m": {"type": "number", "unit": "m", "min": 0},
-            "application_parameters.droplet_size_category": {"type": "select", "options": ["very_fine", "fine", "medium", "coarse", "very_coarse", "extremely_coarse"]},
-            "application_parameters.application_rate_kg_ha": {"type": "number", "unit": "kg/ha", "min": 0},
-            "meteorological_conditions.wind_speed_m_s": {"type": "number", "unit": "m/s", "min": 0},
+            "application_parameters.application_method": {"type": "select", "options": APPLICATION_METHODS, "required": True},
+            "application_parameters.boom_height_m": {"type": "number", "unit": "m", "min": 0, "required": True},
+            "application_parameters.droplet_size_category": {"type": "select", "options": ["very_fine", "fine", "medium", "coarse", "very_coarse", "extremely_coarse"], "required": True},
+            "application_parameters.application_rate_kg_ha": {"type": "number", "unit": "kg/ha", "min": 0, "required": True},
+            "meteorological_conditions.wind_speed_m_s": {"type": "number", "unit": "m/s", "min": 0, "required": True},
             "meteorological_conditions.temperature_c": {"type": "number", "unit": "°C"},
-            "buffer_and_geometry.buffer_distance_m": {"type": "number", "unit": "m", "min": 0},
-            "buffer_and_geometry.waterbody_width_m": {"type": "number", "unit": "m", "min": 0},
+            "buffer_and_geometry.buffer_distance_m": {"type": "number", "unit": "m", "min": 0, "required": True},
+            "buffer_and_geometry.waterbody_width_m": {"type": "number", "unit": "m", "min": 0, "required": True},
         },
         "known_constraints": [
             "EnviroChem does not reproduce or modify AgDRIFT/AGDISP; execution occurs in an authorised external installation.",
@@ -246,12 +247,12 @@ MODEL_PROFILES: dict[str, dict[str, Any]] = {
             "toxicity_endpoints": {"status": "required", "seedling_emergence_ec25": None, "vegetative_vigor_ec25": None},
         },
         "field_types": {
-            "application_parameters.application_rate_lb_ac": {"type": "number", "unit": "lb/ac", "min": 0},
-            "application_parameters.application_method": {"type": "select", "options": APPLICATION_METHODS},
-            "runoff_and_drift_inputs.distance_to_habitat_m": {"type": "number", "unit": "m", "min": 0},
+            "application_parameters.application_rate_lb_ac": {"type": "number", "unit": "lb/ac", "min": 0, "required": True},
+            "application_parameters.application_method": {"type": "select", "options": APPLICATION_METHODS, "required": True},
+            "runoff_and_drift_inputs.distance_to_habitat_m": {"type": "number", "unit": "m", "min": 0, "required": True},
             "runoff_and_drift_inputs.soil_type": {"type": "select", "options": ["sand", "loam", "clay", "silt"]},
-            "toxicity_endpoints.seedling_emergence_ec25": {"type": "number", "min": 0},
-            "toxicity_endpoints.vegetative_vigor_ec25": {"type": "number", "min": 0},
+            "toxicity_endpoints.seedling_emergence_ec25": {"type": "number", "min": 0, "required": True},
+            "toxicity_endpoints.vegetative_vigor_ec25": {"type": "number", "min": 0, "required": True},
         },
         "known_constraints": [
             "EnviroChem does not reproduce or modify TerrPlant; execution occurs in an authorised external installation.",
@@ -275,12 +276,12 @@ MODEL_PROFILES: dict[str, dict[str, Any]] = {
             "toxicity_endpoints": {"status": "required", "avian_lc50_or_ld50": None, "mammalian_ld50": None},
         },
         "field_types": {
-            "application_parameters.application_rate_lb_ac": {"type": "number", "unit": "lb/ac", "min": 0},
-            "application_parameters.number_of_applications": {"type": "number", "min": 1, "step": 1},
-            "dietary_inputs.food_item_category": {"type": "select", "options": ["short_grass", "tall_grass", "broadleaf_forage", "seeds", "insects", "fruits"]},
+            "application_parameters.application_rate_lb_ac": {"type": "number", "unit": "lb/ac", "min": 0, "required": True},
+            "application_parameters.number_of_applications": {"type": "number", "min": 1, "step": 1, "required": True},
+            "dietary_inputs.food_item_category": {"type": "select", "options": ["short_grass", "tall_grass", "broadleaf_forage", "seeds", "insects", "fruits"], "required": True},
             "dietary_inputs.body_weight_g": {"type": "number", "unit": "g", "min": 0},
-            "toxicity_endpoints.avian_lc50_or_ld50": {"type": "number", "min": 0},
-            "toxicity_endpoints.mammalian_ld50": {"type": "number", "min": 0},
+            "toxicity_endpoints.avian_lc50_or_ld50": {"type": "number", "min": 0, "required": True},
+            "toxicity_endpoints.mammalian_ld50": {"type": "number", "min": 0, "required": True},
         },
         "known_constraints": [
             "EnviroChem does not reproduce or modify T-REX; execution occurs in an authorised external installation.",
@@ -304,12 +305,12 @@ MODEL_PROFILES: dict[str, dict[str, Any]] = {
             "toxicity_endpoints": {"status": "required", "contact_ld50_bee": None, "oral_ld50_bee": None},
         },
         "field_types": {
-            "application_parameters.application_rate_lb_ac": {"type": "number", "unit": "lb/ac", "min": 0},
-            "application_parameters.application_method": {"type": "select", "options": APPLICATION_METHODS},
-            "exposure_route_inputs.contact_or_dietary": {"type": "select", "options": ["contact", "dietary", "both"]},
-            "exposure_route_inputs.crop_bee_attractiveness": {"type": "select", "options": ["high", "moderate", "low", "none"]},
-            "toxicity_endpoints.contact_ld50_bee": {"type": "number", "min": 0},
-            "toxicity_endpoints.oral_ld50_bee": {"type": "number", "min": 0},
+            "application_parameters.application_rate_lb_ac": {"type": "number", "unit": "lb/ac", "min": 0, "required": True},
+            "application_parameters.application_method": {"type": "select", "options": APPLICATION_METHODS, "required": True},
+            "exposure_route_inputs.contact_or_dietary": {"type": "select", "options": ["contact", "dietary", "both"], "required": True},
+            "exposure_route_inputs.crop_bee_attractiveness": {"type": "select", "options": ["high", "moderate", "low", "none"], "required": True},
+            "toxicity_endpoints.contact_ld50_bee": {"type": "number", "min": 0, "required": True},
+            "toxicity_endpoints.oral_ld50_bee": {"type": "number", "min": 0, "required": True},
         },
         "known_constraints": [
             "EnviroChem does not reproduce or modify BeeREX; execution occurs in an authorised external installation.",
@@ -427,27 +428,46 @@ def validate_external_model_inputs(model_key: str, input_data: dict[str, Any]) -
 
     field_types = profile.get("field_types", {})
 
-    def require_numeric(section_name: str, fields: list[str]) -> None:
-        # Defense in depth behind the frontend's <input type="number">: even a
-        # direct API call bypassing the form cannot submit a non-numeric or
-        # out-of-range value for a field the profile declares numeric.
-        section = input_data.get(section_name)
-        if not isinstance(section, dict) or str(section.get("status", "")).lower() in {"required", "missing", "unresolved"}:
-            return
-        for field in fields:
+    def validate_field_types() -> None:
+        # Generic, defense-in-depth pass over every declared field_types entry
+        # (not a hand-picked subset): a direct API call bypassing the form
+        # cannot submit an invalid enum option, a non-finite ("NaN"/"Infinity")
+        # or non-numeric value, a fractional value in an integer-only field, or
+        # an out-of-range value for ANY field the profile declares typed --
+        # required or optional. Presence/requiredness for fields without a
+        # field_types entry is still handled by require_nested() below.
+        for path, meta in field_types.items():
+            section_name, field = path.split(".", 1)
+            section = input_data.get(section_name)
+            if not isinstance(section, dict) or str(section.get("status", "")).lower() in {"required", "missing", "unresolved"}:
+                continue
             raw = section.get(field)
             if _unresolved(raw):
-                continue  # already reported by require_nested's presence check
-            meta = field_types.get(f"{section_name}.{field}", {})
-            try:
-                numeric_value = float(raw)
-            except (TypeError, ValueError):
-                missing.append(f"{section_name}.{field} (must be numeric)")
+                if meta.get("required"):
+                    missing.append(f"{path} (required)")
                 continue
-            minimum = meta.get("min")
-            maximum = meta.get("max")
-            if (minimum is not None and numeric_value < minimum) or (maximum is not None and numeric_value > maximum):
-                missing.append(f"{section_name}.{field} (out of range)")
+            field_type = meta.get("type")
+            if field_type == "select":
+                if raw not in (meta.get("options") or []):
+                    missing.append(f"{path} (invalid option)")
+            elif field_type == "number":
+                try:
+                    numeric_value = float(raw)
+                except (TypeError, ValueError):
+                    missing.append(f"{path} (must be numeric)")
+                    continue
+                if not math.isfinite(numeric_value):
+                    missing.append(f"{path} (must be a finite number)")
+                    continue
+                if meta.get("step") == 1 and not numeric_value.is_integer():
+                    missing.append(f"{path} (must be a whole number)")
+                    continue
+                minimum = meta.get("min")
+                maximum = meta.get("max")
+                if (minimum is not None and numeric_value < minimum) or (maximum is not None and numeric_value > maximum):
+                    missing.append(f"{path} (out of range)")
+
+    validate_field_types()
 
     if model_key == "SPIN":
         require_nested("substance_identity", ["preferred_name", "molecular_weight_g_mol"])
@@ -492,47 +512,28 @@ def validate_external_model_inputs(model_key: str, input_data: dict[str, Any]) -
         require_nested("soil_dt50", ["value_days", "source"])
         require_nested("koc_or_kd", ["value", "unit"])
         require_nested("groundwater_and_waterbody_configuration", ["waterbody_type"])
-        require_numeric("application_pattern", ["application_rate_kg_ha", "number_of_applications"])
-        require_numeric("soil_dt50", ["value_days"])
-        require_numeric("koc_or_kd", ["value"])
-        require_numeric("groundwater_and_waterbody_configuration", ["depth_m"])
     elif model_key == "PRZM":
         require_nested("application_pattern", ["application_rate_kg_ha", "number_of_applications", "application_method"])
         require_nested("soil_and_crop_scenario", ["przm_scenario_id", "crop"])
         require_nested("soil_dt50", ["value_days", "source"])
         require_nested("koc_or_kd", ["value", "unit"])
         require_nested("runoff_and_erosion_parameters", ["curve_number", "usle_k"])
-        require_numeric("application_pattern", ["application_rate_kg_ha", "number_of_applications"])
-        require_numeric("soil_dt50", ["value_days"])
-        require_numeric("koc_or_kd", ["value"])
-        require_numeric("runoff_and_erosion_parameters", ["curve_number", "usle_k", "usle_ls", "usle_c"])
     elif model_key == "AGDRIFT":
         require_nested("application_parameters", ["application_method", "boom_height_m", "droplet_size_category", "application_rate_kg_ha"])
         require_nested("meteorological_conditions", ["wind_speed_m_s"])
         require_nested("buffer_and_geometry", ["buffer_distance_m", "waterbody_width_m"])
-        require_numeric("application_parameters", ["boom_height_m", "application_rate_kg_ha"])
-        require_numeric("meteorological_conditions", ["wind_speed_m_s"])
-        require_numeric("buffer_and_geometry", ["buffer_distance_m", "waterbody_width_m"])
     elif model_key == "TERRPLANT":
         require_nested("application_parameters", ["application_rate_lb_ac", "application_method"])
         require_nested("runoff_and_drift_inputs", ["distance_to_habitat_m"])
         require_nested("toxicity_endpoints", ["seedling_emergence_ec25", "vegetative_vigor_ec25"])
-        require_numeric("application_parameters", ["application_rate_lb_ac"])
-        require_numeric("runoff_and_drift_inputs", ["distance_to_habitat_m"])
-        require_numeric("toxicity_endpoints", ["seedling_emergence_ec25", "vegetative_vigor_ec25"])
     elif model_key == "TREX":
         require_nested("application_parameters", ["application_rate_lb_ac", "number_of_applications"])
         require_nested("dietary_inputs", ["food_item_category"])
         require_nested("toxicity_endpoints", ["avian_lc50_or_ld50", "mammalian_ld50"])
-        require_numeric("application_parameters", ["application_rate_lb_ac", "number_of_applications"])
-        require_numeric("dietary_inputs", ["body_weight_g"])
-        require_numeric("toxicity_endpoints", ["avian_lc50_or_ld50", "mammalian_ld50"])
     elif model_key == "BEEREX":
         require_nested("application_parameters", ["application_rate_lb_ac", "application_method"])
         require_nested("exposure_route_inputs", ["contact_or_dietary", "crop_bee_attractiveness"])
         require_nested("toxicity_endpoints", ["contact_ld50_bee", "oral_ld50_bee"])
-        require_numeric("application_parameters", ["application_rate_lb_ac"])
-        require_numeric("toxicity_endpoints", ["contact_ld50_bee", "oral_ld50_bee"])
 
     return {
         "official_name": profile["name"],
@@ -548,22 +549,36 @@ def validate_external_model_inputs(model_key: str, input_data: dict[str, Any]) -
 
 
 def validate_external_model_output(model_key: str, structured_outputs: dict[str, Any]) -> dict[str, Any] | None:
-    if model_key not in MODEL_PROFILES:
-        return None
-    recommended = {
-        "SPIN": ["substance_record_snapshot", "transformation_pathway", "spin_database_version"],
-        "MACRO": ["scenario", "model_version", "groundwater_or_drainage_endpoint", "run_log_reference"],
-        "GREATER": ["basin_id", "river_reach_concentrations", "catchment_pec_distribution", "database_version"],
-        "PWC": ["model_version", "scenario_file_version", "surface_water_concentration", "sediment_concentration", "groundwater_concentration", "raw_output_archive"],
-        "PRZM": ["model_version", "runoff_load", "erosion_load", "leaching_flux", "raw_output_archive"],
-        "AGDRIFT": ["model_version", "off_site_deposition_fraction", "downwind_deposition_curve", "raw_output_archive"],
-        "TERRPLANT": ["model_version", "terrestrial_plant_risk_quotient", "raw_output_archive"],
-        "TREX": ["model_version", "avian_dietary_concentration", "avian_risk_quotient", "mammalian_risk_quotient", "raw_output_archive"],
-        "BEEREX": ["model_version", "contact_risk_quotient", "oral_risk_quotient", "raw_output_archive"],
-        "CHEMSTEER": ["model_version", "environmental_releases", "worker_inhalation_exposure", "worker_dermal_exposure", "raw_output_archive"],
-        "CEM": ["model_version", "product_or_article_category", "consumer_inhalation_exposure", "consumer_dermal_exposure", "consumer_ingestion_exposure", "raw_output_archive"],
-        "EFAST": ["model_version", "legacy_use_justification", "release_or_use_scenario", "general_population_exposure", "raw_output_archive"],
-    }[model_key]
+    if model_key in MODEL_PROFILES:
+        recommended = {
+            "SPIN": ["substance_record_snapshot", "transformation_pathway", "spin_database_version"],
+            "MACRO": ["scenario", "model_version", "groundwater_or_drainage_endpoint", "run_log_reference"],
+            "GREATER": ["basin_id", "river_reach_concentrations", "catchment_pec_distribution", "database_version"],
+            "PWC": ["model_version", "scenario_file_version", "surface_water_concentration", "sediment_concentration", "groundwater_concentration", "raw_output_archive"],
+            "PRZM": ["model_version", "runoff_load", "erosion_load", "leaching_flux", "raw_output_archive"],
+            "AGDRIFT": ["model_version", "off_site_deposition_fraction", "downwind_deposition_curve", "raw_output_archive"],
+            "TERRPLANT": ["model_version", "terrestrial_plant_risk_quotient", "raw_output_archive"],
+            "TREX": ["model_version", "avian_dietary_concentration", "avian_risk_quotient", "mammalian_risk_quotient", "raw_output_archive"],
+            "BEEREX": ["model_version", "contact_risk_quotient", "oral_risk_quotient", "raw_output_archive"],
+            "CHEMSTEER": ["model_version", "environmental_releases", "worker_inhalation_exposure", "worker_dermal_exposure", "raw_output_archive"],
+            "CEM": ["model_version", "product_or_article_category", "consumer_inhalation_exposure", "consumer_dermal_exposure", "consumer_ingestion_exposure", "raw_output_archive"],
+            "EFAST": ["model_version", "legacy_use_justification", "release_or_use_scenario", "general_population_exposure", "raw_output_archive"],
+        }[model_key]
+    else:
+        # Fallback for every genuinely externally-managed model outside the
+        # hand-curated set above (PEARL, PELMO, SWASH, TOXSWA, EXAMS, EPIE,
+        # SIMPLEBOX, EPI_SUITE, ...): its own adapter contract's expected_outputs
+        # becomes the completeness requirement, so output-completeness is never
+        # silently absent for an official model just because it lacks a
+        # hand-picked recommended list. Native EnviroChem screens (execution_mode
+        # starting with "native") compute inline and are excluded -- they never
+        # go through a genuine-execution import/review gate.
+        from .adapters import ADAPTER_CONTRACTS  # deferred: adapters.py imports MODEL_PROFILES from this module
+
+        contract = ADAPTER_CONTRACTS.get(model_key)
+        if contract is None or str(contract.get("execution_mode", "")).startswith("native"):
+            return None
+        recommended = contract["expected_outputs"]
     missing = [key for key in recommended if key not in structured_outputs or _unresolved(structured_outputs.get(key))]
     return {
         "recommended_structured_outputs": recommended,

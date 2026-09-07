@@ -28,7 +28,7 @@ def _complete_pwc_inputs() -> dict:
         "soil_and_crop_inputs": {"crop": "QA crop", "canopy_interception_fraction": 0.2},
         "weather_series": {"weather_station_id": "QA weather", "simulation_years": 30},
         "soil_dt50": {"value_days": 30, "source": "QA fixture"},
-        "koc_or_kd": {"value": 100, "unit": "L/kgOC"},
+        "koc_or_kd": {"value": 100, "unit": "L/kg_oc"},
         "aquatic_fate_inputs": {"water_column_dt50_days": 20, "benthic_dt50_days": 40, "hydrolysis_dt50_days": 60},
         "groundwater_and_waterbody_configuration": {"waterbody_type": "index_pond", "depth_m": 2.0},
     }

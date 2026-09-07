@@ -1,6 +1,49 @@
-# EnviroChem Studio v2.23.0 Alpha 3.1 — US Run-State Hotfix
+# EnviroChem Studio v2.23.0 Alpha 3.2.2 — Trust and Validation Hotfix
 
-EnviroChem is an evidence-led environmental fate, exposure and regulatory modelling workspace. Alpha 3.1 fixes the guided US assessment failure state while retaining Alpha 3's EPA execution bridge and transparent US industrial soil-to-groundwater screen.
+EnviroChem is an evidence-led environmental fate, exposure and regulatory modelling workspace. Alpha 3.2.2 closes two independently audited trust gaps in the FIFRA companion-model workflow lifecycle: every model-input field declared with a type (numeric or enumerated) is now validated generically against that declaration — rejecting invalid enum options, non-finite ("NaN"/"Infinity") values, fractional integer-only fields and out-of-range optional values — and every genuinely externally-managed model, not just a hand-picked subset, now enforces output-completeness before a workflow can be marked reviewed. A reviewed or rejected workflow can no longer be silently overwritten by a later import.
+
+## v2.23 Alpha 3.2.2 trust-and-validation hotfix
+
+- **Generic, `field_types`-driven input validation.** Every PWC/PRZM/AgDRIFT/TerrPlant/T-REX/BeeREX
+  field declared as numeric or enumerated is now validated from that single declaration instead of
+  a hand-picked subset: invalid enum options (e.g. an application method outside the registered
+  list), the literal strings `"NaN"`/`"Infinity"`, fractional values in whole-number-only fields
+  (application counts, simulation years) and out-of-range values in *optional* numeric fields are
+  all rejected before a workflow can reach "prepared". The browser form now marks the same fields
+  `required` and the guided screen calls `form.checkValidity()` before submitting.
+- **Output-completeness enforcement extended to every externally-managed model.** Previously only
+  the 12 models with a hand-curated recommended-outputs list (SPIN, MACRO, GREATER, PWC, PRZM,
+  AgDRIFT, TerrPlant, T-REX, BeeREX, ChemSTEER, CEM, E-FAST) were checked for complete outputs
+  before acceptance; every other officially adapted model (PEARL, PELMO, SWASH, TOXSWA, EXAMS,
+  EPIE, SimpleBox, EPI Suite and more) now falls back to its own adapter contract's expected
+  outputs, so an unrelated file can no longer be imported and accepted as a complete result. Native
+  EnviroChem screens, which compute inline and never go through a genuine-execution import, are
+  unaffected.
+- **Reviewed and rejected workflows are now immutable.** Both import routes reject a further
+  import once a workflow has reached `status: "reviewed"` or `"rejected"`, closing a gap where a
+  subsequent plain-text import could silently revert an accepted record back to `output_imported`.
+- **The remaining stale version-identity references.** `START_ENVIROCHEM.bat` (distinct from
+  `START_ENVIROCHEM_CONSOLE.cmd`, fixed last round) and this README's own heading still said Alpha
+  3.1; both are now synchronised, and the release-identity consistency test checks the launcher
+  `.bat` file and this heading specifically, not just a single embedded build-ID reference anywhere
+  in the file.
+- Full clean-database regression result: see `RELEASE_NOTES_v2.23.0-alpha3.2.2.md`.
+
+## v2.23 Alpha 3.2.1 trust-and-release hotfix
+
+- Synchronised the version identity (launcher, README, service worker, web manifest and
+  cache-busting query strings) with `app/version.py` across the whole package, and added an
+  automated consistency test so this cannot silently drift again.
+- Closed a review-acceptance bypass: the `/review` endpoint's genuine-provenance gate previously
+  applied only to the four local-execution-bridge models; every other model (including the new
+  FIFRA companion models) could be marked "reviewed" from an arbitrary plain-text import. The gate
+  now applies to every model, and the hashed-file import route is available to every model, not
+  just the execution-bridge four.
+- Replaced free-text input fields with typed numeric/select fields plus matching backend
+  validation for the pesticide-model forms (PWC, PRZM, AgDRIFT, TerrPlant, T-REX, BeeREX).
+- Removed the advertised `path_environment_variable` entries for the five pesticide-adapter models
+  that have no matching configuration field and no verified executable.
+- See `RELEASE_NOTES_v2.23.0-alpha3.2.1.md`.
 
 ## v2.23 Alpha 3.1 US run-state hotfix
 
@@ -67,7 +110,7 @@ Alpha 3 still is not a complete US risk assessment implementation. It executes o
 1. Extract the ZIP to a new folder.
 2. Double-click `START_ENVIROCHEM.bat`. The visible console remains open so any startup error can be read.
 3. Keep the terminal window open while EnviroChem is running.
-4. Manual URL (default): `http://127.0.0.1:8792/?build=envirochem-studio-v2.23.0-alpha3.2.1-fifra-companion-models-2026-09-07`.
+4. Manual URL (default): `http://127.0.0.1:8792/?build=envirochem-studio-v2.23.0-alpha3.2.2-trust-and-validation-hotfix-2026-09-07`.
 
 The launcher supports folders containing spaces. If the selected port already serves
 the same EnviroChem build, a second launch reopens that instance. If another

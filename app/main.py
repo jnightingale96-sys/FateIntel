@@ -2054,6 +2054,8 @@ async def import_model_workflow_output_files(
     row = db.get(ModelWorkflow, workflow_id)
     if row is None:
         raise HTTPException(404, "Model workflow not found")
+    if row.status in {"reviewed", "rejected"}:
+        raise HTTPException(409, "This workflow has already been reviewed; create a new workflow revision rather than overwriting a closed review record")
     # Available to every registered model, not just EPA_EXECUTION_MODEL_KEYS: this
     # is the genuine, hashed-file, confirmation-gated import route, and every
     # official external model -- not only the four with a local execution bridge
@@ -2160,6 +2162,8 @@ def import_model_workflow_output(
     row = db.get(ModelWorkflow, workflow_id)
     if row is None:
         raise HTTPException(404, "Model workflow not found")
+    if row.status in {"reviewed", "rejected"}:
+        raise HTTPException(409, "This workflow has already been reviewed; create a new workflow revision rather than overwriting a closed review record")
     if row.model_key in EPA_EXECUTION_MODEL_KEYS:
         raise HTTPException(
             409,

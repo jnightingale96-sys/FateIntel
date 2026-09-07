@@ -4,17 +4,17 @@ cd /d "%~dp0"
 
 set "PORT=8792"
 if defined ENVIROCHEM_PORT set "PORT=%ENVIROCHEM_PORT%"
-set "BUILD=envirochem-studio-v2.23.0-alpha3.2.1-fifra-companion-models-2026-09-07"
+set "BUILD=envirochem-studio-v2.23.0-alpha3.2.2-trust-and-validation-hotfix-2026-09-07"
 set "LOG=%CD%\STARTUP_LOG.txt"
 set "VENV_PY=%CD%\.venv\Scripts\python.exe"
 set "READY_MARKER=%CD%\.venv\.envirochem_core_ready_v223a3"
 
-> "%LOG%" echo EnviroChem Studio v2.23.0 Alpha 3.2.1 startup log
+> "%LOG%" echo EnviroChem Studio v2.23.0 Alpha 3.2.2 startup log
 >>"%LOG%" echo Started: %DATE% %TIME%
 >>"%LOG%" echo Folder: %CD%
 
 echo ==================================================
-echo EnviroChem Studio v2.23.0 Alpha 3.2.1
+echo EnviroChem Studio v2.23.0 Alpha 3.2.2
 echo US EPA execution bridge, groundwater screen and tier-safe model routing
 echo ==================================================
 echo.

@@ -1,4 +1,24 @@
-# EnviroChem Studio v2.23 Alpha 3.2.1 progress status
+# EnviroChem Studio v2.23 Alpha 3.2.2 progress status
+
+## Alpha 3.2.2 trust-and-validation hotfix
+
+- Replaced the hand-picked `require_numeric()` subset with one generic pass driven from every
+  `field_types` declaration: invalid enum options, non-finite (`"NaN"`/`"Infinity"`) numbers,
+  fractional values in whole-number-only fields and out-of-range *optional* numeric fields are now
+  all rejected uniformly, for every field the profile declares typed, not just the previously
+  hand-picked ones.
+- Extended `validate_external_model_output()` with a fallback for every genuinely
+  externally-managed model outside the 12-key hand-curated set: its own adapter contract's
+  `expected_outputs` becomes the completeness requirement, closing the gap that let PEARL (and
+  PELMO/SWASH/TOXSWA/EXAMS/EPIE/SimpleBox/EPI Suite and others) reach "reviewed" after importing
+  an unrelated file. Native EnviroChem screens remain excluded.
+- Added an immutability guard to both import routes: a workflow already `"reviewed"` or
+  `"rejected"` now rejects a further import with 409 instead of silently reverting to
+  `output_imported`.
+- Fixed the two release-identity references the previous round's consistency test missed:
+  `START_ENVIROCHEM.bat` (a distinct launcher file from `START_ENVIROCHEM_CONSOLE.cmd`) and this
+  README's own H1/intro. The test now checks both.
+- Full clean-database regression result: see `RELEASE_NOTES_v2.23.0-alpha3.2.2.md`.
 
 ## Alpha 3.2.1 trust-and-release hotfix
 

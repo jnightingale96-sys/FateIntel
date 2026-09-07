@@ -1049,15 +1049,16 @@ function renderModelInputForm(modelKey, template, fieldTypes = {}) {
       const meta = fieldTypes[path] || {type: 'text'};
       const label = `${fieldLabel(fieldKey)}${meta.unit ? ` (${meta.unit})` : ''}`;
       let control;
+      const requiredAttr = meta.required ? ' required' : '';
       if (meta.type === 'select' && Array.isArray(meta.options)) {
-        control = `<select data-field="${escapeHtml(path)}"><option value="">Select…</option>${meta.options.map(o => `<option value="${escapeHtml(o)}">${escapeHtml(fieldLabel(o))}</option>`).join('')}</select>`;
+        control = `<select data-field="${escapeHtml(path)}"${requiredAttr}><option value="">Select…</option>${meta.options.map(o => `<option value="${escapeHtml(o)}">${escapeHtml(fieldLabel(o))}</option>`).join('')}</select>`;
       } else if (meta.type === 'number') {
         const attrs = [
           meta.min !== undefined ? `min="${escapeHtml(String(meta.min))}"` : '',
           meta.max !== undefined ? `max="${escapeHtml(String(meta.max))}"` : '',
           `step="${escapeHtml(String(meta.step ?? 'any'))}"`,
         ].filter(Boolean).join(' ');
-        control = `<input data-field="${escapeHtml(path)}" type="number" ${attrs}>`;
+        control = `<input data-field="${escapeHtml(path)}" type="number" ${attrs}${requiredAttr}>`;
       } else {
         control = `<input data-field="${escapeHtml(path)}" type="text">`;
       }
@@ -1149,6 +1150,7 @@ function setupRegulatoryProgramme() {
     if (submitter) {
       const modelKey = submitter.dataset.submitWorkflow;
       const form = submitter.closest('form');
+      if (form && !form.checkValidity()) { form.reportValidity(); return; }
       prepareRegulatoryWorkflow(modelKey, collectWorkflowFormInputData(form));
     }
   });
