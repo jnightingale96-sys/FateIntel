@@ -1,8 +1,8 @@
-const CACHE="envirochem-studio-v2.23-alpha3.2.2-trust-and-validation-hotfix";
+const CACHE="envirochem-studio-v2.23-alpha3.2.3-trust-release-patch";
 const STATIC=[
   "/",
-  "/static/styles.css?v=guided-v2.23-alpha3.2.2-trust-and-validation-hotfix",
-  "/static/app.js?v=guided-v2.23-alpha3.2.2-trust-and-validation-hotfix",
+  "/static/styles.css?v=guided-v2.23-alpha3.2.3-trust-release-patch",
+  "/static/app.js?v=guided-v2.23-alpha3.2.3-trust-release-patch",
   "/static/carbamazepine.svg",
   "/static/chemical-placeholder.svg",
   "/static/icon.svg",

@@ -162,6 +162,12 @@ ADAPTER_CONTRACTS: dict[str, dict[str, Any]] = {
             "global_max_pecsw", "global_max_pecsed", "twaecsw", "twaecsed",
             "water_mass_balance", "sediment_mass_balance", "time_series_if_requested"
         ],
+        # time_series_if_requested is conditional on the operator actually
+        # requesting a time-series export -- it must not block acceptance of a
+        # run where no time series was requested. See "optional_outputs" in
+        # validate_external_model_output()'s fallback for models outside
+        # MODEL_PROFILES.
+        "optional_outputs": ["time_series_if_requested"],
         "workflow_steps": [
             "verify SPIN, SWASH and TOXSWA versions", "prepare the official Step 3 project in SWASH",
             "run MACRO drainage or PRZM runoff/erosion when required", "export application edits and drift values",

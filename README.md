@@ -1,6 +1,29 @@
-# EnviroChem Studio v2.23.0 Alpha 3.2.2 — Trust and Validation Hotfix
+# EnviroChem Studio v2.23.0 Alpha 3.2.3 — Trust Release Patch
 
-EnviroChem is an evidence-led environmental fate, exposure and regulatory modelling workspace. Alpha 3.2.2 closes two independently audited trust gaps in the FIFRA companion-model workflow lifecycle: every model-input field declared with a type (numeric or enumerated) is now validated generically against that declaration — rejecting invalid enum options, non-finite ("NaN"/"Infinity") values, fractional integer-only fields and out-of-range optional values — and every genuinely externally-managed model, not just a hand-picked subset, now enforces output-completeness before a workflow can be marked reviewed. A reviewed or rejected workflow can no longer be silently overwritten by a later import.
+EnviroChem is an evidence-led environmental fate, exposure and regulatory modelling workspace. Alpha 3.2.3 closes four residual trust gaps found by a third independent audit of the Alpha 3.2.2 hotfix: a reviewed or rejected workflow's decision could still be changed by a second `/review` call; the JSON boolean `true` silently satisfied a numeric field's requirement; a conditional TOXSWA output blocked acceptance even when it was never requested; and the release ZIP shipped five pre-existing QA artifact files that predated the data-directory exclusion rules.
+
+## v2.23 Alpha 3.2.3 trust release patch
+
+- **`/review` is now immutable once closed.** A second call to `/review` on a workflow already
+  `"reviewed"` or `"rejected"` previously returned 200 and silently overwrote the reviewer, decision
+  and notes on a closed record (e.g. `reviewed` → `rejected`). Both import routes already rejected
+  this; `/review` itself now does too, returning 409.
+- **Booleans no longer satisfy numeric fields.** `bool` is a subclass of `int` in Python, so
+  `float(True) == 1.0` succeeds without raising -- a JSON `true` sent for a numeric field (e.g.
+  AgDRIFT's `boom_height_m`) silently passed the generic field-type validator added last round. The
+  validator now explicitly rejects `bool` values before attempting the numeric conversion.
+- **TOXSWA's conditional time-series output no longer blocks acceptance.** The generic
+  output-completeness fallback added last round treated every entry in a model's adapter contract
+  `expected_outputs` as unconditionally mandatory, so a genuine TOXSWA run that never requested a
+  time-series export (`time_series_if_requested`) could not be accepted. Adapter contracts can now
+  declare an `optional_outputs` list; those entries stay listed for visibility but never block
+  acceptance on their own.
+- **The release ZIP no longer ships pre-existing QA artifacts.** Five files under
+  `data/external_runs/` and `data/model_workflows/` had been committed to git before those
+  directories were added to `.gitignore`, so the ignore rule never stopped them from being tracked
+  and shipped in every release ZIP since. They have been untracked (`git rm --cached`); the ignore
+  rule now actually keeps new artifacts like them out of every future release.
+- Full clean-database regression result: see `RELEASE_NOTES_v2.23.0-alpha3.2.3.md`.
 
 ## v2.23 Alpha 3.2.2 trust-and-validation hotfix
 
@@ -110,7 +133,7 @@ Alpha 3 still is not a complete US risk assessment implementation. It executes o
 1. Extract the ZIP to a new folder.
 2. Double-click `START_ENVIROCHEM.bat`. The visible console remains open so any startup error can be read.
 3. Keep the terminal window open while EnviroChem is running.
-4. Manual URL (default): `http://127.0.0.1:8792/?build=envirochem-studio-v2.23.0-alpha3.2.2-trust-and-validation-hotfix-2026-09-07`.
+4. Manual URL (default): `http://127.0.0.1:8792/?build=envirochem-studio-v2.23.0-alpha3.2.3-trust-release-patch-2026-09-08`.
 
 The launcher supports folders containing spaces. If the selected port already serves
 the same EnviroChem build, a second launch reopens that instance. If another

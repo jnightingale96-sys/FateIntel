@@ -451,6 +451,11 @@ def validate_external_model_inputs(model_key: str, input_data: dict[str, Any]) -
                 if raw not in (meta.get("options") or []):
                     missing.append(f"{path} (invalid option)")
             elif field_type == "number":
+                # bool is a subclass of int in Python, so float(True) == 1.0
+                # succeeds silently -- reject it explicitly before conversion.
+                if isinstance(raw, bool):
+                    missing.append(f"{path} (must be numeric)")
+                    continue
                 try:
                     numeric_value = float(raw)
                 except (TypeError, ValueError):
@@ -549,6 +554,7 @@ def validate_external_model_inputs(model_key: str, input_data: dict[str, Any]) -
 
 
 def validate_external_model_output(model_key: str, structured_outputs: dict[str, Any]) -> dict[str, Any] | None:
+    optional_outputs: list[str] = []
     if model_key in MODEL_PROFILES:
         recommended = {
             "SPIN": ["substance_record_snapshot", "transformation_pathway", "spin_database_version"],
@@ -579,7 +585,12 @@ def validate_external_model_output(model_key: str, structured_outputs: dict[str,
         if contract is None or str(contract.get("execution_mode", "")).startswith("native"):
             return None
         recommended = contract["expected_outputs"]
-    missing = [key for key in recommended if key not in structured_outputs or _unresolved(structured_outputs.get(key))]
+        optional_outputs = contract.get("optional_outputs", [])
+    # Optional outputs (e.g. TOXSWA's time_series_if_requested, conditional on
+    # the operator actually requesting a time-series export) are still listed
+    # for visibility but never block acceptance just because they're absent.
+    mandatory = [key for key in recommended if key not in optional_outputs]
+    missing = [key for key in mandatory if key not in structured_outputs or _unresolved(structured_outputs.get(key))]
     return {
         "recommended_structured_outputs": recommended,
         "missing_recommended_outputs": missing,

@@ -20,7 +20,20 @@ was itself incomplete:
     "output_imported" by a later plain-text import, overwriting the accepted
     output record.
 
-Every one of these six was independently reproduced against the live app
+A third, independent audit of the Alpha 3.2.2 fix then demonstrated that it
+was itself incomplete in four further ways:
+(g) a workflow already "reviewed" could have its decision silently changed by
+    a second /review call (e.g. reviewed -> rejected), overwriting the
+    reviewer and notes on a closed record;
+(h) the JSON boolean `true` reached a numeric field's requirement, since
+    Python's float(True) == 1.0 succeeds without raising (bool is a subclass
+    of int);
+(i) TOXSWA's conditional time_series_if_requested output blocked acceptance
+    even when no time series was requested, because the generic output-
+    completeness fallback treated every entry in a contract's expected_outputs
+    as unconditionally mandatory.
+
+Every one of these ten was independently reproduced against the live app
 before its respective hotfix, and all are captured here as permanent
 regressions to guard against reintroducing any of them.
 """
@@ -40,14 +53,14 @@ def _project(client: TestClient, label: str, jurisdiction: str = "US") -> dict:
     return client.post("/api/projects", json={"name": f"{label} {uuid4().hex[:8]}", "jurisdiction": jurisdiction}).json()
 
 
-def _prepare(client: TestClient, model_key: str, input_data: dict, jurisdiction: str = "US") -> dict:
+def _prepare(client: TestClient, model_key: str, input_data: dict, jurisdiction: str = "US", tier: int = 2) -> dict:
     project = _project(client, f"{model_key} review-gate QA", jurisdiction)
     response = client.post("/api/model-workflows", json={
         "project_id": project["id"],
         "chemical_id": _chemical(client)["id"],
         "model_key": model_key,
         "jurisdiction": jurisdiction,
-        "tier": 2,
+        "tier": tier,
         "scenario_name": f"{model_key} review-gate QA",
         "input_data": input_data,
     })
@@ -263,3 +276,102 @@ def test_reviewed_workflow_cannot_be_overwritten_by_a_later_import():
         after = client.get(f"/api/model-workflows/{workflow['id']}")
         assert after.json()["status"] == "reviewed"
         assert after.json()["output_hash"] == original_output_hash
+
+
+def test_reviewed_workflow_decision_cannot_be_changed_by_a_second_review_call():
+    # Exact reproduction of the third-round audit: the import routes were
+    # guarded against overwriting a closed workflow, but /review itself was
+    # not -- a second /review call (reviewed -> rejected) returned 200 and
+    # silently overwrote the reviewer, decision and notes on a closed record.
+    with TestClient(app) as client:
+        workflow = _prepare(client, "AGDRIFT", VALID_AGDRIFT_INPUTS)
+        assert workflow["status"] == "prepared", workflow
+
+        imported = client.post(
+            f"/api/model-workflows/{workflow['id']}/import-output-files",
+            data={
+                "model_version": "QA build", "executable_version": "QA build",
+                "operator": "QA operator", "execution_notes": "Genuine import before double-review check",
+                "structured_outputs_json": json.dumps({
+                    "off_site_deposition_fraction": 0.02, "downwind_deposition_curve": "QA curve",
+                }),
+                "confirm_genuine_execution": "true", "confirm_authorised_installation": "true",
+            },
+            files={"files": ("agdrift_result.txt", b"off_site_deposition_fraction=0.02", "text/plain")},
+        )
+        assert imported.status_code == 200, imported.text
+
+        first_review = client.post(f"/api/model-workflows/{workflow['id']}/review", json={
+            "reviewer": "QA", "decision": "accepted", "notes": "genuine",
+        })
+        assert first_review.status_code == 200, first_review.text
+        assert first_review.json()["status"] == "reviewed"
+
+        second_review = client.post(f"/api/model-workflows/{workflow['id']}/review", json={
+            "reviewer": "QA2", "decision": "rejected", "notes": "changed my mind",
+        })
+        assert second_review.status_code == 409, second_review.text
+
+        after = client.get(f"/api/model-workflows/{workflow['id']}")
+        assert after.json()["status"] == "reviewed"
+        assert after.json()["reviewer"] == "QA"
+        assert after.json()["review_notes"] == "genuine"
+
+
+def test_boolean_value_never_satisfies_a_numeric_field():
+    # Exact reproduction of the third-round audit: bool is a subclass of int
+    # in Python, so float(True) == 1.0 succeeds without raising -- a naive
+    # try/except (TypeError, ValueError) guard around float() alone lets a
+    # JSON boolean silently satisfy a numeric field's requirement.
+    with TestClient(app) as client:
+        bad_inputs = json.loads(json.dumps(VALID_AGDRIFT_INPUTS))
+        bad_inputs["application_parameters"]["boom_height_m"] = True
+        workflow = _prepare(client, "AGDRIFT", bad_inputs)
+        assert workflow["status"] != "prepared"
+        missing = workflow["manifest"]["missing_inputs"]
+        assert any("boom_height_m" in item and "must be numeric" in item for item in missing), missing
+
+
+def test_toxswa_optional_time_series_does_not_block_acceptance():
+    # Exact reproduction of the third-round audit: TOXSWA's expected_outputs
+    # includes "time_series_if_requested", which is conditional on the
+    # operator actually requesting a time-series export. The generic
+    # output-completeness fallback for models outside MODEL_PROFILES
+    # previously treated every entry in a contract's expected_outputs as
+    # unconditionally mandatory, blocking acceptance of a genuine run that
+    # simply never requested a time series.
+    with TestClient(app) as client:
+        workflow = _prepare(client, "TOXSWA", {
+            "contaminant_group": "pesticide",
+            "spin_substance_record": {"a": 1}, "swash_surface_water_scenario": {"a": 1},
+            "application_pattern": {"a": 1}, "drift_deposition": {"a": 1},
+            "macro_m2t_or_przm_p2t_when_applicable": {"a": 1}, "water_and_sediment_dt50": {"a": 1},
+            "freundlich_sorption_parameters": {"a": 1},
+            "molar_mass_vapour_pressure_solubility_diffusion": {"a": 1},
+            "metabolite_scheme_if_applicable": {"a": 1},
+        }, jurisdiction="EU", tier=3)
+        assert workflow["status"] == "prepared", workflow
+
+        imported = client.post(
+            f"/api/model-workflows/{workflow['id']}/import-output-files",
+            data={
+                "model_version": "QA build", "executable_version": "QA build",
+                "operator": "QA operator", "execution_notes": "Genuine run, no time series requested",
+                "structured_outputs_json": json.dumps({
+                    "global_max_pecsw": 0.01, "global_max_pecsed": 0.02, "twaecsw": 0.005, "twaecsed": 0.006,
+                    "water_mass_balance": "balanced", "sediment_mass_balance": "balanced",
+                }),
+                "confirm_genuine_execution": "true", "confirm_authorised_installation": "true",
+            },
+            files={"files": ("toxswa_result.sum", b"global_max_pecsw=0.01", "text/plain")},
+        )
+        assert imported.status_code == 200, imported.text
+        validation = imported.json()["output_record"]["model_specific_validation"]
+        assert validation["missing_recommended_outputs"] == [], validation
+        assert "time_series_if_requested" in validation["recommended_structured_outputs"]
+
+        reviewed = client.post(f"/api/model-workflows/{workflow['id']}/review", json={
+            "reviewer": "QA", "decision": "accepted", "notes": "genuine, no time series requested",
+        })
+        assert reviewed.status_code == 200, reviewed.text
+        assert reviewed.json()["status"] == "reviewed"

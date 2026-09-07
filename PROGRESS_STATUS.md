@@ -1,4 +1,19 @@
-# EnviroChem Studio v2.23 Alpha 3.2.2 progress status
+# EnviroChem Studio v2.23 Alpha 3.2.3 progress status
+
+## Alpha 3.2.3 trust release patch
+
+- Closed the last review-mutability gap: `/review` itself now rejects a second call on a workflow
+  already `"reviewed"` or `"rejected"` with 409, matching the guard already on both import routes.
+- Fixed a bool/numeric confusion: `bool` is a subclass of `int` in Python, so `float(True)` silently
+  succeeded as `1.0` past the generic field-type validator. Booleans are now explicitly rejected
+  before the numeric conversion is attempted.
+- Adapter contracts can now declare `optional_outputs` (used for TOXSWA's conditional
+  `time_series_if_requested`) so the output-completeness fallback no longer blocks acceptance of a
+  genuine run that legitimately never produced a conditional output.
+- Untracked five pre-existing QA artifact files under `data/external_runs/` and
+  `data/model_workflows/` that had been committed before those paths were added to `.gitignore`,
+  so the ignore rule never stopped them shipping in the release ZIP.
+- Full clean-database regression result: see `RELEASE_NOTES_v2.23.0-alpha3.2.3.md`.
 
 ## Alpha 3.2.2 trust-and-validation hotfix
 

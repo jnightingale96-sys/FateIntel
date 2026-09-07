@@ -2195,6 +2195,8 @@ def review_model_workflow(
     row = db.get(ModelWorkflow, workflow_id)
     if row is None:
         raise HTTPException(404, "Model workflow not found")
+    if row.status in {"reviewed", "rejected"}:
+        raise HTTPException(409, "This workflow has already been reviewed; create a new workflow revision rather than changing a closed review record")
     if not row.output_record_json:
         raise HTTPException(409, "Import model output before review")
     if payload.decision == "accepted":
