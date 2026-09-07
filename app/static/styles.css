@@ -348,4 +348,6 @@ main{padding:20px 24px 80px}.layout-grid{gap:14px}.flow-line{left:25px;border-le
 .external-model-form-body input{height:32px;border:1px solid var(--line);border-radius:6px;padding:0 8px;font-size:10px}
 .external-model-form-actions{display:flex;justify-content:flex-end;gap:8px}
 .mini-fields input[type="checkbox"]{width:auto;height:auto;justify-self:start}
+.model-note-inline{display:block;margin-top:4px;font-size:8px;font-style:normal;color:#6a7e7b}
+.external-model-form-body select{height:32px;border:1px solid var(--line);border-radius:6px;padding:0 6px;font-size:10px}
 @media(max-width:720px){.pharma-mode-grid{grid-template-columns:1fr}.pharma-mode-grid label.wide{grid-column:auto}.pharma-influent-head{grid-template-columns:1fr}.influent-badge{justify-self:start}.preview-flow{display:flex;flex-wrap:wrap}.preview-flow strong{width:100%}}

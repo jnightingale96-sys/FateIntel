@@ -6,6 +6,14 @@ from typing import Any
 from ..config import settings
 from .external_execution import EPA_EXECUTION_MODEL_KEYS, external_tool_status
 
+# Matches AssessmentPlanCreate.application_method in app/schemas.py -- kept as
+# one shared list so the guided screen's routing enum and the pesticide-model
+# input forms' <select> options can never drift apart.
+APPLICATION_METHODS = [
+    "aerial", "ground_broadcast", "airblast_orchard",
+    "soil_incorporated", "seed_treatment", "chemigation", "granular",
+]
+
 
 MODEL_PROFILES: dict[str, dict[str, Any]] = {
     "SPIN": {
@@ -121,6 +129,22 @@ MODEL_PROFILES: dict[str, dict[str, Any]] = {
             "aquatic_fate_inputs": {"status": "required", "water_column_dt50_days": None, "benthic_dt50_days": None, "hydrolysis_dt50_days": None},
             "groundwater_and_waterbody_configuration": {"status": "required", "waterbody_type": None, "depth_m": None},
         },
+        "field_types": {
+            "application_pattern.application_rate_kg_ha": {"type": "number", "unit": "kg/ha", "min": 0},
+            "application_pattern.number_of_applications": {"type": "number", "min": 1, "step": 1},
+            "application_pattern.application_interval_days": {"type": "number", "unit": "days", "min": 0},
+            "application_pattern.application_method": {"type": "select", "options": APPLICATION_METHODS},
+            "soil_and_crop_inputs.canopy_interception_fraction": {"type": "number", "min": 0, "max": 1, "step": "any"},
+            "weather_series.simulation_years": {"type": "number", "min": 1, "step": 1},
+            "soil_dt50.value_days": {"type": "number", "unit": "days", "min": 0},
+            "koc_or_kd.value": {"type": "number", "min": 0},
+            "koc_or_kd.unit": {"type": "select", "options": ["L/kg", "L/kg_oc"]},
+            "aquatic_fate_inputs.water_column_dt50_days": {"type": "number", "unit": "days", "min": 0},
+            "aquatic_fate_inputs.benthic_dt50_days": {"type": "number", "unit": "days", "min": 0},
+            "aquatic_fate_inputs.hydrolysis_dt50_days": {"type": "number", "unit": "days", "min": 0},
+            "groundwater_and_waterbody_configuration.waterbody_type": {"type": "select", "options": ["index_reservoir", "index_pond", "farm_pond"]},
+            "groundwater_and_waterbody_configuration.depth_m": {"type": "number", "unit": "m", "min": 0},
+        },
         "known_constraints": [
             "PWC is a pesticide model; do not route an industrial chemical to it solely because a soil release exists.",
             "Scenario and meteorological file versions are part of the result provenance.",
@@ -133,7 +157,9 @@ MODEL_PROFILES: dict[str, dict[str, Any]] = {
         "role": "FIFRA pesticide runoff, erosion and leaching loading from the treated field",
         "is_simulation_model": True,
         "official_page": "https://www.epa.gov/pesticide-science-and-assessing-pesticide-risks/models-pesticide-risk-assessment",
-        "path_environment_variable": "ENVIROCHEM_PRZM_PATH",
+        # No path_environment_variable: no local-execution config field exists for
+        # this model (see EPA_EXECUTION_MODEL_KEYS) -- advertising one that has no
+        # effect would be misleading. Manual handoff via /import-output-files only.
         "default_path": None,
         "prerequisites": ["authorised local PRZM installation", "reviewed pesticide-use scenario and formulation basis"],
         "host_workflows": ["FIFRA runoff/erosion/leaching loading assessment", "PWC/EXAMS receiving-water follow-on", "FOCUS EU groundwater/surface-water configurations"],
@@ -146,6 +172,23 @@ MODEL_PROFILES: dict[str, dict[str, Any]] = {
             "koc_or_kd": {"status": "required", "value": None, "unit": None, "basis": None},
             "runoff_and_erosion_parameters": {"status": "required", "curve_number": None, "usle_k": None, "usle_ls": None, "usle_c": None},
             "root_zone_parameters": {"status": "required", "root_depth_cm": None, "field_capacity": None, "wilting_point": None},
+        },
+        "field_types": {
+            "application_pattern.application_rate_kg_ha": {"type": "number", "unit": "kg/ha", "min": 0},
+            "application_pattern.number_of_applications": {"type": "number", "min": 1, "step": 1},
+            "application_pattern.application_interval_days": {"type": "number", "unit": "days", "min": 0},
+            "application_pattern.application_method": {"type": "select", "options": APPLICATION_METHODS},
+            "weather_series.simulation_years": {"type": "number", "min": 1, "step": 1},
+            "soil_dt50.value_days": {"type": "number", "unit": "days", "min": 0},
+            "koc_or_kd.value": {"type": "number", "min": 0},
+            "koc_or_kd.unit": {"type": "select", "options": ["L/kg", "L/kg_oc"]},
+            "runoff_and_erosion_parameters.curve_number": {"type": "number", "min": 0, "max": 100},
+            "runoff_and_erosion_parameters.usle_k": {"type": "number", "min": 0, "step": "any"},
+            "runoff_and_erosion_parameters.usle_ls": {"type": "number", "min": 0, "step": "any"},
+            "runoff_and_erosion_parameters.usle_c": {"type": "number", "min": 0, "step": "any"},
+            "root_zone_parameters.root_depth_cm": {"type": "number", "unit": "cm", "min": 0},
+            "root_zone_parameters.field_capacity": {"type": "number", "min": 0, "max": 1, "step": "any"},
+            "root_zone_parameters.wilting_point": {"type": "number", "min": 0, "max": 1, "step": "any"},
         },
         "known_constraints": [
             "EnviroChem does not reproduce or modify PRZM; execution occurs in an authorised external installation.",
@@ -160,7 +203,7 @@ MODEL_PROFILES: dict[str, dict[str, Any]] = {
         "role": "Spray-drift deposition and off-site exposure from agricultural pesticide applications",
         "is_simulation_model": True,
         "official_page": "https://www.epa.gov/pesticide-science-and-assessing-pesticide-risks/models-pesticide-risk-assessment",
-        "path_environment_variable": "ENVIROCHEM_AGDRIFT_PATH",
+        # No path_environment_variable: see the PRZM entry above for why.
         "default_path": None,
         "prerequisites": ["authorised local AgDRIFT/AGDISP installation", "reviewed application method and equipment basis"],
         "host_workflows": ["FIFRA spray-drift deposition assessment"],
@@ -169,6 +212,16 @@ MODEL_PROFILES: dict[str, dict[str, Any]] = {
             "application_parameters": {"status": "required", "application_method": None, "boom_height_m": None, "droplet_size_category": None, "application_rate_kg_ha": None},
             "meteorological_conditions": {"status": "required", "wind_speed_m_s": None, "temperature_c": None},
             "buffer_and_geometry": {"status": "required", "buffer_distance_m": None, "waterbody_width_m": None},
+        },
+        "field_types": {
+            "application_parameters.application_method": {"type": "select", "options": APPLICATION_METHODS},
+            "application_parameters.boom_height_m": {"type": "number", "unit": "m", "min": 0},
+            "application_parameters.droplet_size_category": {"type": "select", "options": ["very_fine", "fine", "medium", "coarse", "very_coarse", "extremely_coarse"]},
+            "application_parameters.application_rate_kg_ha": {"type": "number", "unit": "kg/ha", "min": 0},
+            "meteorological_conditions.wind_speed_m_s": {"type": "number", "unit": "m/s", "min": 0},
+            "meteorological_conditions.temperature_c": {"type": "number", "unit": "°C"},
+            "buffer_and_geometry.buffer_distance_m": {"type": "number", "unit": "m", "min": 0},
+            "buffer_and_geometry.waterbody_width_m": {"type": "number", "unit": "m", "min": 0},
         },
         "known_constraints": [
             "EnviroChem does not reproduce or modify AgDRIFT/AGDISP; execution occurs in an authorised external installation.",
@@ -182,7 +235,7 @@ MODEL_PROFILES: dict[str, dict[str, Any]] = {
         "role": "Screening-level terrestrial plant exposure from runoff and drift of pesticide applications",
         "is_simulation_model": True,
         "official_page": "https://www.epa.gov/pesticide-science-and-assessing-pesticide-risks/models-pesticide-risk-assessment",
-        "path_environment_variable": "ENVIROCHEM_TERRPLANT_PATH",
+        # No path_environment_variable: see the PRZM entry above for why.
         "default_path": None,
         "prerequisites": ["authorised local TerrPlant installation", "reviewed seedling emergence / vegetative vigour toxicity endpoints"],
         "host_workflows": ["FIFRA terrestrial plant risk assessment"],
@@ -191,6 +244,14 @@ MODEL_PROFILES: dict[str, dict[str, Any]] = {
             "application_parameters": {"status": "required", "application_rate_lb_ac": None, "application_method": None},
             "runoff_and_drift_inputs": {"status": "required", "distance_to_habitat_m": None, "soil_type": None},
             "toxicity_endpoints": {"status": "required", "seedling_emergence_ec25": None, "vegetative_vigor_ec25": None},
+        },
+        "field_types": {
+            "application_parameters.application_rate_lb_ac": {"type": "number", "unit": "lb/ac", "min": 0},
+            "application_parameters.application_method": {"type": "select", "options": APPLICATION_METHODS},
+            "runoff_and_drift_inputs.distance_to_habitat_m": {"type": "number", "unit": "m", "min": 0},
+            "runoff_and_drift_inputs.soil_type": {"type": "select", "options": ["sand", "loam", "clay", "silt"]},
+            "toxicity_endpoints.seedling_emergence_ec25": {"type": "number", "min": 0},
+            "toxicity_endpoints.vegetative_vigor_ec25": {"type": "number", "min": 0},
         },
         "known_constraints": [
             "EnviroChem does not reproduce or modify TerrPlant; execution occurs in an authorised external installation.",
@@ -203,7 +264,7 @@ MODEL_PROFILES: dict[str, dict[str, Any]] = {
         "role": "Avian and mammalian dietary exposure and risk quotient from pesticide residues on food items",
         "is_simulation_model": True,
         "official_page": "https://www.epa.gov/pesticide-science-and-assessing-pesticide-risks/models-pesticide-risk-assessment",
-        "path_environment_variable": "ENVIROCHEM_TREX_PATH",
+        # No path_environment_variable: see the PRZM entry above for why.
         "default_path": None,
         "prerequisites": ["authorised local T-REX installation", "reviewed avian and mammalian toxicity endpoints"],
         "host_workflows": ["FIFRA avian and mammalian dietary risk assessment"],
@@ -212,6 +273,14 @@ MODEL_PROFILES: dict[str, dict[str, Any]] = {
             "application_parameters": {"status": "required", "application_rate_lb_ac": None, "number_of_applications": None},
             "dietary_inputs": {"status": "required", "food_item_category": None, "body_weight_g": None},
             "toxicity_endpoints": {"status": "required", "avian_lc50_or_ld50": None, "mammalian_ld50": None},
+        },
+        "field_types": {
+            "application_parameters.application_rate_lb_ac": {"type": "number", "unit": "lb/ac", "min": 0},
+            "application_parameters.number_of_applications": {"type": "number", "min": 1, "step": 1},
+            "dietary_inputs.food_item_category": {"type": "select", "options": ["short_grass", "tall_grass", "broadleaf_forage", "seeds", "insects", "fruits"]},
+            "dietary_inputs.body_weight_g": {"type": "number", "unit": "g", "min": 0},
+            "toxicity_endpoints.avian_lc50_or_ld50": {"type": "number", "min": 0},
+            "toxicity_endpoints.mammalian_ld50": {"type": "number", "min": 0},
         },
         "known_constraints": [
             "EnviroChem does not reproduce or modify T-REX; execution occurs in an authorised external installation.",
@@ -224,7 +293,7 @@ MODEL_PROFILES: dict[str, dict[str, Any]] = {
         "role": "Screening-level bee exposure and contact/oral risk quotient from pesticide applications",
         "is_simulation_model": True,
         "official_page": "https://www.epa.gov/pesticide-science-and-assessing-pesticide-risks/models-pesticide-risk-assessment",
-        "path_environment_variable": "ENVIROCHEM_BEEREX_PATH",
+        # No path_environment_variable: see the PRZM entry above for why.
         "default_path": None,
         "prerequisites": ["authorised local BeeREX installation", "reviewed contact and oral bee toxicity endpoints"],
         "host_workflows": ["FIFRA pollinator risk assessment"],
@@ -233,6 +302,14 @@ MODEL_PROFILES: dict[str, dict[str, Any]] = {
             "application_parameters": {"status": "required", "application_rate_lb_ac": None, "application_method": None},
             "exposure_route_inputs": {"status": "required", "contact_or_dietary": None, "crop_bee_attractiveness": None},
             "toxicity_endpoints": {"status": "required", "contact_ld50_bee": None, "oral_ld50_bee": None},
+        },
+        "field_types": {
+            "application_parameters.application_rate_lb_ac": {"type": "number", "unit": "lb/ac", "min": 0},
+            "application_parameters.application_method": {"type": "select", "options": APPLICATION_METHODS},
+            "exposure_route_inputs.contact_or_dietary": {"type": "select", "options": ["contact", "dietary", "both"]},
+            "exposure_route_inputs.crop_bee_attractiveness": {"type": "select", "options": ["high", "moderate", "low", "none"]},
+            "toxicity_endpoints.contact_ld50_bee": {"type": "number", "min": 0},
+            "toxicity_endpoints.oral_ld50_bee": {"type": "number", "min": 0},
         },
         "known_constraints": [
             "EnviroChem does not reproduce or modify BeeREX; execution occurs in an authorised external installation.",
@@ -348,6 +425,30 @@ def validate_external_model_inputs(model_key: str, input_data: dict[str, Any]) -
             if _unresolved(section.get(field)):
                 missing.append(f"{section_name}.{field}")
 
+    field_types = profile.get("field_types", {})
+
+    def require_numeric(section_name: str, fields: list[str]) -> None:
+        # Defense in depth behind the frontend's <input type="number">: even a
+        # direct API call bypassing the form cannot submit a non-numeric or
+        # out-of-range value for a field the profile declares numeric.
+        section = input_data.get(section_name)
+        if not isinstance(section, dict) or str(section.get("status", "")).lower() in {"required", "missing", "unresolved"}:
+            return
+        for field in fields:
+            raw = section.get(field)
+            if _unresolved(raw):
+                continue  # already reported by require_nested's presence check
+            meta = field_types.get(f"{section_name}.{field}", {})
+            try:
+                numeric_value = float(raw)
+            except (TypeError, ValueError):
+                missing.append(f"{section_name}.{field} (must be numeric)")
+                continue
+            minimum = meta.get("min")
+            maximum = meta.get("max")
+            if (minimum is not None and numeric_value < minimum) or (maximum is not None and numeric_value > maximum):
+                missing.append(f"{section_name}.{field} (out of range)")
+
     if model_key == "SPIN":
         require_nested("substance_identity", ["preferred_name", "molecular_weight_g_mol"])
         require_nested("substance_properties", ["koc_or_freundlich", "water_solubility_mg_l", "vapour_pressure_pa", "soil_dt50_days"])
@@ -391,28 +492,47 @@ def validate_external_model_inputs(model_key: str, input_data: dict[str, Any]) -
         require_nested("soil_dt50", ["value_days", "source"])
         require_nested("koc_or_kd", ["value", "unit"])
         require_nested("groundwater_and_waterbody_configuration", ["waterbody_type"])
+        require_numeric("application_pattern", ["application_rate_kg_ha", "number_of_applications"])
+        require_numeric("soil_dt50", ["value_days"])
+        require_numeric("koc_or_kd", ["value"])
+        require_numeric("groundwater_and_waterbody_configuration", ["depth_m"])
     elif model_key == "PRZM":
         require_nested("application_pattern", ["application_rate_kg_ha", "number_of_applications", "application_method"])
         require_nested("soil_and_crop_scenario", ["przm_scenario_id", "crop"])
         require_nested("soil_dt50", ["value_days", "source"])
         require_nested("koc_or_kd", ["value", "unit"])
         require_nested("runoff_and_erosion_parameters", ["curve_number", "usle_k"])
+        require_numeric("application_pattern", ["application_rate_kg_ha", "number_of_applications"])
+        require_numeric("soil_dt50", ["value_days"])
+        require_numeric("koc_or_kd", ["value"])
+        require_numeric("runoff_and_erosion_parameters", ["curve_number", "usle_k", "usle_ls", "usle_c"])
     elif model_key == "AGDRIFT":
         require_nested("application_parameters", ["application_method", "boom_height_m", "droplet_size_category", "application_rate_kg_ha"])
         require_nested("meteorological_conditions", ["wind_speed_m_s"])
         require_nested("buffer_and_geometry", ["buffer_distance_m", "waterbody_width_m"])
+        require_numeric("application_parameters", ["boom_height_m", "application_rate_kg_ha"])
+        require_numeric("meteorological_conditions", ["wind_speed_m_s"])
+        require_numeric("buffer_and_geometry", ["buffer_distance_m", "waterbody_width_m"])
     elif model_key == "TERRPLANT":
         require_nested("application_parameters", ["application_rate_lb_ac", "application_method"])
         require_nested("runoff_and_drift_inputs", ["distance_to_habitat_m"])
         require_nested("toxicity_endpoints", ["seedling_emergence_ec25", "vegetative_vigor_ec25"])
+        require_numeric("application_parameters", ["application_rate_lb_ac"])
+        require_numeric("runoff_and_drift_inputs", ["distance_to_habitat_m"])
+        require_numeric("toxicity_endpoints", ["seedling_emergence_ec25", "vegetative_vigor_ec25"])
     elif model_key == "TREX":
         require_nested("application_parameters", ["application_rate_lb_ac", "number_of_applications"])
         require_nested("dietary_inputs", ["food_item_category"])
         require_nested("toxicity_endpoints", ["avian_lc50_or_ld50", "mammalian_ld50"])
+        require_numeric("application_parameters", ["application_rate_lb_ac", "number_of_applications"])
+        require_numeric("dietary_inputs", ["body_weight_g"])
+        require_numeric("toxicity_endpoints", ["avian_lc50_or_ld50", "mammalian_ld50"])
     elif model_key == "BEEREX":
         require_nested("application_parameters", ["application_rate_lb_ac", "application_method"])
         require_nested("exposure_route_inputs", ["contact_or_dietary", "crop_bee_attractiveness"])
         require_nested("toxicity_endpoints", ["contact_ld50_bee", "oral_ld50_bee"])
+        require_numeric("application_parameters", ["application_rate_lb_ac"])
+        require_numeric("toxicity_endpoints", ["contact_ld50_bee", "oral_ld50_bee"])
 
     return {
         "official_name": profile["name"],

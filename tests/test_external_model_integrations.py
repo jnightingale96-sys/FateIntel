@@ -1,3 +1,4 @@
+import json
 from copy import deepcopy
 
 from fastapi.testclient import TestClient
@@ -126,13 +127,27 @@ def test_spin_workflow_full_prepare_import_review_lifecycle():
         assert workflow["status"] == "prepared"
         assert workflow["manifest"]["missing_inputs"] == []
 
-        imported = client.post(f"/api/model-workflows/{workflow['id']}/import-output", json={
-            "raw_output_text": "substance_record_snapshot=CBZ review-1\ntransformation_pathway=parent only\nspin_database_version=4.4",
-            "structured_outputs": {},
-            "model_version": "4.4",
-            "executable_version": "4.4",
-            "execution_notes": "Dependency record reviewed in standalone SPIN",
-        })
+        # The genuine, hashed-file import route (not the plain text-paste route):
+        # /review's completeness gate now applies to every model, and a plain
+        # /import-output paste never produces execution_provenance, so it can
+        # never reach "reviewed" for any model -- see test_review_gate_integrity.py.
+        imported = client.post(
+            f"/api/model-workflows/{workflow['id']}/import-output-files",
+            data={
+                "model_version": "4.4",
+                "executable_version": "4.4",
+                "operator": "Integration test reviewer",
+                "execution_notes": "Dependency record reviewed in standalone SPIN",
+                "structured_outputs_json": json.dumps({
+                    "substance_record_snapshot": "CBZ review-1",
+                    "transformation_pathway": "parent only",
+                    "spin_database_version": "4.4",
+                }),
+                "confirm_genuine_execution": "true",
+                "confirm_authorised_installation": "true",
+            },
+            files={"files": ("spin_record.txt", b"substance_record_snapshot=CBZ review-1", "text/plain")},
+        )
         assert imported.status_code == 200, imported.text
         output_validation = imported.json()["output_record"]["model_specific_validation"]
         assert output_validation["review_required"] is False

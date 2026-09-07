@@ -2054,8 +2054,11 @@ async def import_model_workflow_output_files(
     row = db.get(ModelWorkflow, workflow_id)
     if row is None:
         raise HTTPException(404, "Model workflow not found")
-    if row.model_key not in EPA_EXECUTION_MODEL_KEYS:
-        raise HTTPException(409, "Use the standard output importer for this model")
+    # Available to every registered model, not just EPA_EXECUTION_MODEL_KEYS: this
+    # is the genuine, hashed-file, confirmation-gated import route, and every
+    # official external model -- not only the four with a local execution bridge
+    # -- needs a path to produce real execution_provenance before it can be
+    # reviewed as accepted (see the /review gate below).
     if row.status == "inputs_required":
         raise HTTPException(409, "Complete every required workflow input before importing an official result")
     if not confirm_genuine_execution or not confirm_authorised_installation:
@@ -2190,12 +2193,18 @@ def review_model_workflow(
         raise HTTPException(404, "Model workflow not found")
     if not row.output_record_json:
         raise HTTPException(409, "Import model output before review")
-    if row.model_key in EPA_EXECUTION_MODEL_KEYS and payload.decision == "accepted":
+    if payload.decision == "accepted":
+        # Applies to every model, not just EPA_EXECUTION_MODEL_KEYS -- an
+        # arbitrary plain-text /import-output paste (which never sets
+        # execution_provenance) must never be acceptable as "reviewed" for any
+        # official model. Genuine provenance comes from either real local
+        # execution (the execution-bridge models) or a hashed-file import via
+        # /import-output-files (available to every model).
         output_record = json.loads(row.output_record_json)
         provenance = output_record.get("execution_provenance") or {}
         validation = output_record.get("model_specific_validation") or {}
         if not provenance.get("real_execution"):
-            raise HTTPException(409, "A genuine official execution record is required before acceptance")
+            raise HTTPException(409, "A genuine official execution or hashed-file import record is required before acceptance")
         missing_outputs = validation.get("missing_recommended_outputs") or []
         if missing_outputs:
             raise HTTPException(409, "Map the required reviewed outputs before acceptance: " + ", ".join(missing_outputs))

@@ -1,8 +1,8 @@
 {
-  "name": "EnviroChem Studio v2.23 Alpha 3.1",
+  "name": "EnviroChem Studio v2.23 Alpha 3.2.1",
   "short_name": "EnviroChem v2.23",
   "description": "Professional environmental fate workspace with controlled EPA execution bridging",
-  "start_url": "/?build=envirochem-studio-v2.23.0-alpha3.1-us-run-state-hotfix-2026-09-05",
+  "start_url": "/?build=envirochem-studio-v2.23.0-alpha3.2.1-fifra-companion-models-2026-09-07",
   "display": "standalone",
   "background_color": "#edf2ef",
   "theme_color": "#092f25",

@@ -67,7 +67,7 @@ Alpha 3 still is not a complete US risk assessment implementation. It executes o
 1. Extract the ZIP to a new folder.
 2. Double-click `START_ENVIROCHEM.bat`. The visible console remains open so any startup error can be read.
 3. Keep the terminal window open while EnviroChem is running.
-4. Manual URL (default): `http://127.0.0.1:8792/?build=envirochem-studio-v2.23.0-alpha3.1-us-run-state-hotfix-2026-09-05`.
+4. Manual URL (default): `http://127.0.0.1:8792/?build=envirochem-studio-v2.23.0-alpha3.2.1-fifra-companion-models-2026-09-07`.
 
 The launcher supports folders containing spaces. If the selected port already serves
 the same EnviroChem build, a second launch reopens that instance. If another

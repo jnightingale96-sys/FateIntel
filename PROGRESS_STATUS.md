@@ -1,4 +1,22 @@
-# EnviroChem Studio v2.23 Alpha 3.1 progress status
+# EnviroChem Studio v2.23 Alpha 3.2.1 progress status
+
+## Alpha 3.2.1 trust-and-release hotfix
+
+- Synchronised the version identity (launcher, README, service worker, web manifest and
+  cache-busting query strings) with `app/version.py` across the whole package, and added an
+  automated consistency test so this cannot silently drift again.
+- Closed a real review-acceptance bypass: the `/review` endpoint's genuine-provenance gate
+  previously applied only to the four local-execution-bridge models; every other model
+  (including the new FIFRA companion models) could be marked "reviewed" from an arbitrary
+  plain-text import. The gate now applies to every model, and the hashed-file import route is
+  available to every model, not just the execution-bridge four.
+- Replaced free-text input fields with typed numeric/select fields plus matching backend
+  validation for the pesticide-model forms (PWC, PRZM, AgDRIFT, TerrPlant, T-REX, BeeREX) —
+  non-numeric values can no longer reach a "prepared" workflow status.
+- Removed the advertised `path_environment_variable` entries for the five pesticide-adapter
+  models that have no matching configuration field and no verified executable, rather than
+  leave a documented setting that silently does nothing.
+- Full clean-database regression result: see `RELEASE_NOTES_v2.23.0-alpha3.2.1.md`.
 
 ## Alpha 3.1 guided-run recovery
 

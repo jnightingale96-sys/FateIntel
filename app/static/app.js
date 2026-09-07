@@ -970,8 +970,12 @@ async function loadRegulatoryProgrammePanel() {
     });
     state.assessmentPlan = plan;
     const applicable = plan.models.filter(m => m.applicable);
-    const workflows = await api(`/api/projects/${state.project.id}/model-workflows`).catch(() => []);
-    renderRegulatoryProgrammePanel(plan, applicable, workflows, context);
+    const [workflows, integrations] = await Promise.all([
+      api(`/api/projects/${state.project.id}/model-workflows`).catch(() => []),
+      api('/api/external-model-integrations').catch(() => []),
+    ]);
+    const executionModes = Object.fromEntries(integrations.map(row => [row.key, row.execution_bridge]));
+    renderRegulatoryProgrammePanel(plan, applicable, workflows, context, executionModes);
   } catch (error) {
     planBox.innerHTML = `<p>Assessment-plan lookup stopped: ${escapeHtml(error.message)}</p>`;
   }
@@ -984,7 +988,7 @@ function workflowMatchesPlanContext(workflow, context) {
   return String(workflow.scenario_name || '').includes(`[${context.scenario}]`);
 }
 
-function renderRegulatoryProgrammePanel(plan, applicable, workflows, context = currentPlanContext()) {
+function renderRegulatoryProgrammePanel(plan, applicable, workflows, context = currentPlanContext(), executionModes = {}) {
   const planBox = $('regulatory-plan');
   const programme = plan.regulatory_programme || {name: programmeLabel(context), scope: ''};
   const external = applicable.filter(m => !String(m.implementation || '').startsWith('native'));
@@ -996,7 +1000,19 @@ function renderRegulatoryProgrammePanel(plan, applicable, workflows, context = c
       : 'native EnviroChem screen · calculation not run by this planning panel';
     const status = latest ? latest.status.replaceAll('_',' ') : (prepareable ? 'not yet prepared' : nativeAvailable);
     const button = prepareable ? `<button class="text-button" data-open-workflow-form="${escapeHtml(model.key)}" type="button">Enter inputs &amp; prepare</button>` : '';
-    return `<article class="model-tile selected" data-model="${escapeHtml(model.key)}"><span><strong>${escapeHtml(model.name || model.key)}</strong><small>${escapeHtml(status)}</small></span>${button}<div class="external-model-form hidden" id="external-model-form-${escapeHtml(model.key)}"></div></article>`;
+    // Distinguish "EnviroChem can run this executable locally, once configured"
+    // from "manual official handoff -- a hashed original-file import is
+    // required before this can ever be marked reviewed". Both are honest;
+    // neither claims a result exists until one actually does.
+    const bridge = prepareable ? executionModes[model.key] : null;
+    const executionNote = bridge
+      ? (bridge.execution_ready
+          ? '<em class="model-note-inline">Controlled local execution configured.</em>'
+          : bridge.supported
+            ? '<em class="model-note-inline">Controlled local execution supported, not yet configured.</em>'
+            : '<em class="model-note-inline">Manual official handoff -- hashed file import required for review.</em>')
+      : '';
+    return `<article class="model-tile selected" data-model="${escapeHtml(model.key)}"><span><strong>${escapeHtml(model.name || model.key)}</strong><small>${escapeHtml(status)}</small></span>${executionNote}${button}<div class="external-model-form hidden" id="external-model-form-${escapeHtml(model.key)}"></div></article>`;
   };
   planBox.innerHTML = applicable.length
     ? `<p><strong>${escapeHtml(programme.name)} · Tier ${plan.tier}.</strong> ${escapeHtml(context.scenario.replaceAll('_',' '))} remains the selected exposure scenario; the models below are specific to ${escapeHtml(context.jurisdiction)}.${programme.scope ? ` ${escapeHtml(programme.scope)}.` : ''}</p><div class="model-grid">${external.map(m => modelCard(m, true)).join('')}${native.map(m => modelCard(m, false)).join('')}</div>`
@@ -1020,11 +1036,33 @@ function fieldLabel(key) {
 // literal "contaminant_group": "pesticide" entry some templates carry is a
 // plain string, not a section, and is skipped here -- it's merged back in by
 // prepareRegulatoryWorkflow() from currentPlanContext() instead.
-function renderModelInputForm(modelKey, template) {
+// fieldTypes (from MODEL_PROFILES[key]["field_types"], "section.field" -> {type,
+// unit, min, max, step, options}) drives real input types instead of a blanket
+// <input type="text"> -- a number input cannot hold non-numeric text, and a
+// select cannot hold a value outside its options, so this closes the
+// "supplied not-a-number for every field, reached prepared anyway" gap at the
+// browser level, with backend require_numeric()/enum checks as defense in depth.
+function renderModelInputForm(modelKey, template, fieldTypes = {}) {
   const sections = Object.entries(template).filter(([, fields]) => typeof fields === 'object' && fields !== null).map(([sectionKey, fields]) => {
-    const inputs = Object.keys(fields).filter(k => k !== 'status').map(fieldKey =>
-      `<label><span>${escapeHtml(fieldLabel(fieldKey))}</span><input data-field="${escapeHtml(sectionKey)}.${escapeHtml(fieldKey)}" type="text"></label>`
-    ).join('');
+    const inputs = Object.keys(fields).filter(k => k !== 'status').map(fieldKey => {
+      const path = `${sectionKey}.${fieldKey}`;
+      const meta = fieldTypes[path] || {type: 'text'};
+      const label = `${fieldLabel(fieldKey)}${meta.unit ? ` (${meta.unit})` : ''}`;
+      let control;
+      if (meta.type === 'select' && Array.isArray(meta.options)) {
+        control = `<select data-field="${escapeHtml(path)}"><option value="">Select…</option>${meta.options.map(o => `<option value="${escapeHtml(o)}">${escapeHtml(fieldLabel(o))}</option>`).join('')}</select>`;
+      } else if (meta.type === 'number') {
+        const attrs = [
+          meta.min !== undefined ? `min="${escapeHtml(String(meta.min))}"` : '',
+          meta.max !== undefined ? `max="${escapeHtml(String(meta.max))}"` : '',
+          `step="${escapeHtml(String(meta.step ?? 'any'))}"`,
+        ].filter(Boolean).join(' ');
+        control = `<input data-field="${escapeHtml(path)}" type="number" ${attrs}>`;
+      } else {
+        control = `<input data-field="${escapeHtml(path)}" type="text">`;
+      }
+      return `<label><span>${escapeHtml(label)}</span>${control}</label>`;
+    }).join('');
     return `<fieldset><legend>${escapeHtml(fieldLabel(sectionKey))}</legend>${inputs}</fieldset>`;
   }).join('');
   return `<form class="external-model-form-body" data-model-key="${escapeHtml(modelKey)}">
@@ -1046,7 +1084,7 @@ async function openWorkflowForm(modelKey) {
   container.classList.remove('hidden');
   try {
     const profile = await api(`/api/external-model-integrations/${modelKey}`);
-    container.innerHTML = renderModelInputForm(modelKey, profile.input_template);
+    container.innerHTML = renderModelInputForm(modelKey, profile.input_template, profile.field_types || {});
   } catch (error) {
     container.innerHTML = `<p>Could not load ${escapeHtml(modelKey)}'s input fields: ${escapeHtml(error.message)}</p>`;
   }

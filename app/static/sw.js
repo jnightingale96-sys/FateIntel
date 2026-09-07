@@ -1,8 +1,8 @@
-const CACHE="envirochem-studio-v2.23-alpha3.1-us-run-state-hotfix";
+const CACHE="envirochem-studio-v2.23-alpha3.2.1-fifra-companion-models";
 const STATIC=[
   "/",
-  "/static/styles.css?v=guided-v2.23-alpha3.1-us-run-state-hotfix",
-  "/static/app.js?v=guided-v2.23-alpha3.1-us-run-state-hotfix",
+  "/static/styles.css?v=guided-v2.23-alpha3.2.1-fifra-companion-models",
+  "/static/app.js?v=guided-v2.23-alpha3.2.1-fifra-companion-models",
   "/static/carbamazepine.svg",
   "/static/chemical-placeholder.svg",
   "/static/icon.svg",
