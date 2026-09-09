@@ -1879,7 +1879,7 @@ function renderProjectSwitcher() {
   if (!$("project-pill") || !$("project-menu")) return;
   $("project-pill").innerHTML = `${escapeHtml(state.project?.name || "No assessment selected")} <span>⌄</span>`;
   $("project-menu").innerHTML = state.projects.map(project => `
-    <button class="${project.id === state.project.id ? "active" : ""}" data-project-id="${project.id}" role="menuitem" type="button">
+    <button class="${project.id === state.project?.id ? "active" : ""}" data-project-id="${project.id}" role="menuitem" type="button">
       <strong>${escapeHtml(project.name)}</strong><small>${escapeHtml(project.jurisdiction || "Unspecified jurisdiction")}</small>
     </button>`).join("");
   $$('#project-menu [data-project-id]').forEach(button => button.addEventListener('click', async () => {
@@ -3961,7 +3961,7 @@ async function init() {
   updateCompartments(); updateModels(); updateSummaries(); await refreshRegulatoryPathway();
   try {
     const build = await api("/api/build");
-    if (!String(build.build_id || "").includes("v2.23")) toast("Warning: this page is not connected to the v2.23 server build.",6000);
+    if (!String(build.build_id || "").includes("v2.24")) toast("Warning: this page is not connected to the v2.24 server build.",6000);
     await loadInitialWorkspace();
     if (state.project && state.chemical) await refreshGuidedReadiness();
     // EnviroDesign is an advanced, user-invoked screen. Do not load external RDKit.js/WASM during core startup.
