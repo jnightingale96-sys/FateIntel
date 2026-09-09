@@ -1,4 +1,4 @@
-"""Build and verify EnviroChem REACH review bundles.
+"""Build and verify FateIntel REACH review bundles.
 
 The archive is an auditable hand-off package.  It is not an IUCLID ``.i6z``
 archive, a REACH-IT submission, or a replacement for regulatory review.
@@ -175,7 +175,7 @@ body{{font-family:Arial,sans-serif;max-width:1040px;margin:32px auto;padding:0 2
 table{{border-collapse:collapse;width:100%;margin:12px 0 24px}}th,td{{border:1px solid #ccd9d5;padding:8px;text-align:left;vertical-align:top}}
 th{{background:#eef5f2}}code{{overflow-wrap:anywhere}}h1,h2{{color:#0d5c50}}
 </style></head><body>
-<h1>EnviroChem REACH review summary</h1>
+<h1>FateIntel REACH review summary</h1>
 <div class="boundary">Preparation/review artefact only. This is not an IUCLID dossier, not an .i6z archive, and not submission-ready.</div>
 <h2>Identity</h2><table>
 <tr><th>Name</th><td>{_html_value(chemical.get('preferred_name'))}</td><th>CAS</th><td>{_html_value(chemical.get('cas_number'))}</td></tr>
@@ -206,13 +206,13 @@ th{{background:#eef5f2}}code{{overflow-wrap:anywhere}}h1,h2{{color:#0d5c50}}
 
 def _readme() -> bytes:
     return (
-        "EnviroChem REACH review bundle\n"
+        "FateIntel REACH review bundle\n"
         "================================\n\n"
         "PURPOSE: regulatory preparation, evidence review and controlled hand-off.\n"
         "BOUNDARY: this archive is NOT an IUCLID dossier, NOT an .i6z archive, and\n"
         "NOT submission-ready. It must not be renamed or submitted to REACH-IT.\n\n"
         "reach-review.json is the canonical review record. reach-review.xml is an\n"
-        "EnviroChem-native interchange view using the urn:envirochem namespace.\n"
+        "FateIntel interchange view using the versioned legacy urn:envirochem namespace.\n"
         "csr-review.html is a human-readable summary. manifest.json records exact\n"
         "file hashes. If present, manifest.sig signs the exact manifest.json bytes.\n"
         "A valid signature proves integrity relative to a key; independently verify\n"
@@ -276,7 +276,7 @@ def build_review_bundle(
         "bundle_format": "envirochem-reach-review",
         "bundle_format_version": "1.0",
         "created_at": _utc_iso(created_at),
-        "exporter": {"name": "EnviroChem Studio", "version": exporter_version},
+        "exporter": {"name": "FateIntel", "version": exporter_version},
         "submission_status": "NOT_IUCLID_NOT_SUBMISSION_READY",
         "manifest_scope": "All payload files; excludes manifest.json and detached manifest.sig.",
         "chemical_identity_hash": record["chemical"].get("identity_hash"),

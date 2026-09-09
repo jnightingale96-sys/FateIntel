@@ -12,7 +12,7 @@ Alpha 3.2.2 hotfix fixed those but missed a static "NEW · v2.23 ALPHA 3.1"
 release badge in index.html, in a space-separated prose form that no
 hyphenated-tag check would catch. All were confirmed by independent external
 audits and independently reproduced. This test makes that whole class of
-drift fail loudly instead of silently, matching the existing "v2.23" in
+drift fail loudly instead of silently, matching the existing "v2.24" in
 BUILD_ID convention already used elsewhere in this suite.
 
 SUPERSEDED_TAGS accumulates one entry per past release rather than being
@@ -25,9 +25,9 @@ from pathlib import Path
 from app.version import APP_VERSION, BUILD_ID
 
 ROOT = Path(__file__).resolve().parents[1]
-CURRENT_TAG = "alpha3.4.0"  # bump alongside app/version.py at each release
-CURRENT_NUMBER = "3.4.0"  # numeric core, for the space-separated prose forms
-SUPERSEDED_TAGS = ("alpha3.1", "alpha3.2.1", "alpha3.2.2", "alpha3.2.3", "alpha3.3.0")  # append the previous CURRENT_TAG here at each release
+CURRENT_TAG = "alpha4.0"  # bump alongside app/version.py at each release
+CURRENT_NUMBER = "4.0"  # numeric core, for the space-separated prose forms
+SUPERSEDED_TAGS = ("alpha3.1", "alpha3.2.1", "alpha3.2.2", "alpha3.2.3", "alpha3.3.0", "alpha3.4.0")  # append the previous CURRENT_TAG here at each release
 
 
 def _read(relative_path: str) -> str:

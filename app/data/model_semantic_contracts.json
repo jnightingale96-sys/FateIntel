@@ -1,0 +1,161 @@
+{
+  "schema_version": "FATEINTEL_MODEL_PORTS_0.1.0",
+  "contracts": {
+    "SIMPLETREAT": {
+      "status": "draft",
+      "inputs": [
+        {"port_key": "influent_concentration", "endpoint_kind": "concentration", "compartment": "wwtp_influent", "phase": "total", "basis": "volume", "temporal_statistic": "mean", "averaging_period_days": 1, "spatial_scale": "local", "substance_basis": "parent", "unit": "µg/L"}
+      ],
+      "outputs": [
+        {"port_key": "effluent_concentration", "endpoint_kind": "concentration", "compartment": "wwtp_effluent", "phase": "total", "basis": "volume", "temporal_statistic": "mean", "averaging_period_days": 1, "spatial_scale": "local", "substance_basis": "parent", "unit": "µg/L"},
+        {"port_key": "sludge_concentration", "endpoint_kind": "concentration", "compartment": "sludge", "phase": "bulk", "basis": "dry_weight", "temporal_statistic": "mean", "averaging_period_days": 1, "spatial_scale": "local", "substance_basis": "parent", "unit": "µg/kg"}
+      ]
+    },
+    "ACTIVITY_SIMPLETREAT": {
+      "status": "verified",
+      "inputs": [
+        {"port_key": "influent_concentration", "endpoint_kind": "concentration", "compartment": "wwtp_influent", "phase": "total", "basis": "volume", "temporal_statistic": "mean", "averaging_period_days": 1, "spatial_scale": "local", "substance_basis": "parent", "unit": "µg/L"}
+      ],
+      "outputs": [
+        {"port_key": "effluent_concentration", "endpoint_kind": "concentration", "compartment": "wwtp_effluent", "phase": "total", "basis": "volume", "temporal_statistic": "mean", "averaging_period_days": 1, "spatial_scale": "local", "substance_basis": "parent", "unit": "µg/L"},
+        {"port_key": "secondary_sludge_concentration", "endpoint_kind": "concentration", "compartment": "sludge", "phase": "bulk", "basis": "dry_weight", "temporal_statistic": "mean", "averaging_period_days": 1, "spatial_scale": "local", "substance_basis": "parent", "unit": "µg/kg"}
+      ]
+    },
+    "ENVIROCHEM_CATCHMENT_RIVER_NETWORK": {
+      "status": "verified",
+      "inputs": [
+        {"port_key": "effluent_concentration", "endpoint_kind": "concentration", "compartment": "wwtp_effluent", "phase": "total", "basis": "volume", "temporal_statistic": "mean", "averaging_period_days": 1, "spatial_scale": "local", "substance_basis": "parent", "unit": "µg/L"},
+        {"port_key": "direct_load", "endpoint_kind": "mass_rate", "compartment": "surface_water", "phase": "total", "basis": "not_applicable", "temporal_statistic": "mean", "averaging_period_days": 1, "spatial_scale": "local", "substance_basis": "parent", "unit": "kg/day"}
+      ],
+      "outputs": [
+        {"port_key": "surface_water_mean", "endpoint_kind": "concentration", "compartment": "surface_water", "phase": "total", "basis": "volume", "temporal_statistic": "mean", "averaging_period_days": 1, "spatial_scale": "catchment", "substance_basis": "parent", "unit": "µg/L"}
+      ]
+    },
+    "ENVIROCHEM_SOIL_SCREEN": {
+      "status": "verified",
+      "inputs": [
+        {"port_key": "soil_loading", "endpoint_kind": "areal_loading", "compartment": "soil", "phase": "bulk", "basis": "dry_weight", "temporal_statistic": "annual_average", "averaging_period_days": 365, "spatial_scale": "site", "substance_basis": "parent", "unit": "kg/ha"}
+      ],
+      "outputs": [
+        {"port_key": "soil_concentration", "endpoint_kind": "concentration", "compartment": "soil", "phase": "bulk", "basis": "dry_weight", "temporal_statistic": "mean", "averaging_period_days": 365, "spatial_scale": "site", "substance_basis": "parent", "unit": "µg/kg"}
+      ]
+    },
+    "ENVIROCHEM_BIOSOLIDS_LAND_APPLICATION": {
+      "status": "verified",
+      "inputs": [
+        {"port_key": "sludge_concentration", "endpoint_kind": "concentration", "compartment": "sludge", "phase": "bulk", "basis": "dry_weight", "temporal_statistic": "mean", "averaging_period_days": 1, "spatial_scale": "local", "substance_basis": "parent", "unit": "µg/kg"}
+      ],
+      "outputs": [
+        {"port_key": "soil_concentration", "endpoint_kind": "concentration", "compartment": "soil", "phase": "bulk", "basis": "dry_weight", "temporal_statistic": "mean", "averaging_period_days": 365, "spatial_scale": "site", "substance_basis": "parent", "unit": "µg/kg"}
+      ]
+    },
+    "ENVIROCHEM_PLANT_UPTAKE": {
+      "status": "verified",
+      "inputs": [
+        {"port_key": "soil_concentration", "endpoint_kind": "concentration", "compartment": "soil", "phase": "bulk", "basis": "dry_weight", "temporal_statistic": "mean", "averaging_period_days": 365, "spatial_scale": "site", "substance_basis": "parent", "unit": "µg/kg"}
+      ],
+      "outputs": [
+        {"port_key": "edible_tissue_concentration", "endpoint_kind": "concentration", "compartment": "food", "phase": "bulk", "basis": "fresh_weight", "temporal_statistic": "mean", "averaging_period_days": 1, "spatial_scale": "site", "substance_basis": "parent", "unit": "µg/kg"}
+      ]
+    },
+    "ENVIROCHEM_DUAL_WASTEWATER_IRRIGATION": {
+      "status": "verified",
+      "inputs": [
+        {"port_key": "effluent_concentration", "endpoint_kind": "concentration", "compartment": "wwtp_effluent", "phase": "total", "basis": "volume", "temporal_statistic": "mean", "averaging_period_days": 1, "spatial_scale": "local", "substance_basis": "parent", "unit": "µg/L"}
+      ],
+      "outputs": [
+        {"port_key": "soil_concentration", "endpoint_kind": "concentration", "compartment": "soil", "phase": "bulk", "basis": "dry_weight", "temporal_statistic": "mean", "averaging_period_days": 365, "spatial_scale": "site", "substance_basis": "parent", "unit": "µg/kg"}
+      ]
+    },
+    "ENVIROCHEM_TOXSWA_PROCESS_SCREEN": {
+      "status": "draft",
+      "inputs": [
+        {"port_key": "surface_water_load", "endpoint_kind": "mass_rate", "compartment": "surface_water", "phase": "total", "basis": "not_applicable", "temporal_statistic": "mean", "averaging_period_days": 1, "spatial_scale": "local", "substance_basis": "parent", "unit": "kg/day"}
+      ],
+      "outputs": [
+        {"port_key": "water_peak", "endpoint_kind": "concentration", "compartment": "surface_water", "phase": "dissolved", "basis": "volume", "temporal_statistic": "peak", "averaging_period_days": 1, "spatial_scale": "local", "substance_basis": "parent", "unit": "µg/L"},
+        {"port_key": "sediment_peak", "endpoint_kind": "concentration", "compartment": "sediment", "phase": "bulk", "basis": "dry_weight", "temporal_statistic": "peak", "averaging_period_days": 1, "spatial_scale": "local", "substance_basis": "parent", "unit": "µg/kg"}
+      ]
+    },
+    "PEARL": {
+      "status": "draft",
+      "inputs": [
+        {"port_key": "application_rate", "endpoint_kind": "areal_loading", "compartment": "soil", "phase": "bulk", "basis": "not_applicable", "temporal_statistic": "instantaneous", "averaging_period_days": null, "spatial_scale": "site", "substance_basis": "active_ingredient", "unit": "kg/ha"}
+      ],
+      "outputs": [
+        {"port_key": "groundwater_concentration", "endpoint_kind": "concentration", "compartment": "groundwater", "phase": "dissolved", "basis": "volume", "temporal_statistic": "annual_average", "averaging_period_days": 365, "spatial_scale": "site", "substance_basis": "parent", "unit": "µg/L"}
+      ]
+    },
+    "TOXSWA": {
+      "status": "draft",
+      "inputs": [
+        {"port_key": "surface_water_load", "endpoint_kind": "mass_rate", "compartment": "surface_water", "phase": "total", "basis": "not_applicable", "temporal_statistic": "mean", "averaging_period_days": 1, "spatial_scale": "site", "substance_basis": "active_ingredient", "unit": "kg/day"}
+      ],
+      "outputs": [
+        {"port_key": "water_peak", "endpoint_kind": "concentration", "compartment": "surface_water", "phase": "dissolved", "basis": "volume", "temporal_statistic": "peak", "averaging_period_days": 1, "spatial_scale": "site", "substance_basis": "parent", "unit": "µg/L"},
+        {"port_key": "sediment_peak", "endpoint_kind": "concentration", "compartment": "sediment", "phase": "bulk", "basis": "dry_weight", "temporal_statistic": "peak", "averaging_period_days": 1, "spatial_scale": "site", "substance_basis": "parent", "unit": "µg/kg"}
+      ]
+    },
+    "PWC": {
+      "status": "draft",
+      "inputs": [
+        {"port_key": "application_rate", "endpoint_kind": "areal_loading", "compartment": "soil", "phase": "bulk", "basis": "not_applicable", "temporal_statistic": "instantaneous", "averaging_period_days": null, "spatial_scale": "site", "substance_basis": "active_ingredient", "unit": "kg/ha"}
+      ],
+      "outputs": [
+        {"port_key": "groundwater_annual_average", "endpoint_kind": "concentration", "compartment": "groundwater", "phase": "dissolved", "basis": "volume", "temporal_statistic": "annual_average", "averaging_period_days": 365, "spatial_scale": "site", "substance_basis": "parent", "unit": "µg/L"},
+        {"port_key": "surface_water_peak", "endpoint_kind": "concentration", "compartment": "surface_water", "phase": "dissolved", "basis": "volume", "temporal_statistic": "peak", "averaging_period_days": 1, "spatial_scale": "site", "substance_basis": "parent", "unit": "µg/L"}
+      ]
+    },
+    "GREATER": {
+      "status": "draft",
+      "inputs": [
+        {"port_key": "effluent_load", "endpoint_kind": "mass_rate", "compartment": "wwtp_effluent", "phase": "total", "basis": "not_applicable", "temporal_statistic": "mean", "averaging_period_days": 1, "spatial_scale": "local", "substance_basis": "parent", "unit": "kg/day"}
+      ],
+      "outputs": [
+        {"port_key": "catchment_surface_water", "endpoint_kind": "concentration", "compartment": "surface_water", "phase": "total", "basis": "volume", "temporal_statistic": "mean", "averaging_period_days": 1, "spatial_scale": "catchment", "substance_basis": "parent", "unit": "µg/L"}
+      ]
+    },
+    "EPIE": {
+      "status": "draft",
+      "inputs": [
+        {"port_key": "pharmaceutical_use_load", "endpoint_kind": "mass_rate", "compartment": "wwtp_influent", "phase": "total", "basis": "not_applicable", "temporal_statistic": "annual_average", "averaging_period_days": 365, "spatial_scale": "regional", "substance_basis": "active_ingredient", "unit": "kg/day"}
+      ],
+      "outputs": [
+        {"port_key": "spatial_surface_water", "endpoint_kind": "concentration", "compartment": "surface_water", "phase": "total", "basis": "volume", "temporal_statistic": "annual_average", "averaging_period_days": 365, "spatial_scale": "regional", "substance_basis": "parent", "unit": "µg/L"}
+      ]
+    },
+    "ENVIROCHEM_US_INDUSTRIAL_EXPOSURE_SCREEN": {
+      "status": "draft",
+      "inputs": [
+        {"port_key": "process_throughput", "endpoint_kind": "mass_rate", "compartment": "not_applicable", "phase": "not_applicable", "basis": "not_applicable", "temporal_statistic": "mean", "averaging_period_days": 1, "spatial_scale": "site", "substance_basis": "parent", "unit": "kg/day"}
+      ],
+      "outputs": [
+        {"port_key": "water_release", "endpoint_kind": "mass_rate", "compartment": "surface_water", "phase": "total", "basis": "not_applicable", "temporal_statistic": "mean", "averaging_period_days": 1, "spatial_scale": "site", "substance_basis": "parent", "unit": "kg/day"},
+        {"port_key": "worker_inhalation_dose", "endpoint_kind": "dose", "compartment": "worker", "phase": "not_applicable", "basis": "body_weight", "temporal_statistic": "mean", "averaging_period_days": 1, "spatial_scale": "individual", "substance_basis": "parent", "unit": "mg/kg bw/day"}
+      ]
+    },
+    "CHEMSTEER": {
+      "status": "draft",
+      "inputs": [
+        {"port_key": "process_throughput", "endpoint_kind": "mass_rate", "compartment": "not_applicable", "phase": "not_applicable", "basis": "not_applicable", "temporal_statistic": "mean", "averaging_period_days": 1, "spatial_scale": "site", "substance_basis": "parent", "unit": "kg/day"}
+      ],
+      "outputs": [
+        {"port_key": "worker_inhalation_dose", "endpoint_kind": "dose", "compartment": "worker", "phase": "not_applicable", "basis": "body_weight", "temporal_statistic": "mean", "averaging_period_days": 1, "spatial_scale": "individual", "substance_basis": "parent", "unit": "mg/kg bw/day"}
+      ]
+    },
+    "CEM": {
+      "status": "draft",
+      "inputs": [],
+      "outputs": [
+        {"port_key": "consumer_inhalation_dose", "endpoint_kind": "dose", "compartment": "consumer", "phase": "not_applicable", "basis": "body_weight", "temporal_statistic": "mean", "averaging_period_days": 1, "spatial_scale": "individual", "substance_basis": "parent", "unit": "mg/kg bw/day"}
+      ]
+    },
+    "EFAST": {
+      "status": "draft",
+      "inputs": [],
+      "outputs": [
+        {"port_key": "surface_water_concentration", "endpoint_kind": "concentration", "compartment": "surface_water", "phase": "total", "basis": "volume", "temporal_statistic": "mean", "averaging_period_days": 1, "spatial_scale": "local", "substance_basis": "parent", "unit": "µg/L"}
+      ]
+    }
+  }
+}

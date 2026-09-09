@@ -297,3 +297,52 @@ class ModelWorkflow(Base):
     review_notes: Mapped[str | None] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow)
+
+
+class OrchestratedAssessmentRecord(Base):
+    """Immutable snapshot of one cross-model assessment decision state.
+
+    Refinement and finalisation create a successor row rather than rewriting a
+    scientific record.  The exact canonical JSON is content-addressed and bound
+    to the confirmed chemical identity used when it was created.
+    """
+
+    __tablename__ = "orchestrated_assessment_records"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), index=True)
+    chemical_id: Mapped[int] = mapped_column(ForeignKey("chemicals.id"), index=True)
+    identity_snapshot_id: Mapped[int] = mapped_column(
+        ForeignKey("chemical_identity_snapshots.id"), index=True
+    )
+    supersedes_id: Mapped[int | None] = mapped_column(
+        ForeignKey("orchestrated_assessment_records.id"), index=True
+    )
+    jurisdiction: Mapped[str] = mapped_column(String(10), index=True)
+    contaminant_group: Mapped[str] = mapped_column(String(100), index=True)
+    scenario: Mapped[str] = mapped_column(String(100), index=True)
+    current_tier: Mapped[int] = mapped_column(Integer)
+    maximum_tier: Mapped[int] = mapped_column(Integer)
+    assessment_mode: Mapped[str] = mapped_column(String(30))
+    status: Mapped[str] = mapped_column(String(30), default="assessment_snapshot")
+    record_json: Mapped[str] = mapped_column(Text)
+    record_hash: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    reviewer: Mapped[str | None] = mapped_column(String(200))
+    review_decision: Mapped[str | None] = mapped_column(String(50))
+    review_rationale: Mapped[str | None] = mapped_column(Text)
+    stated_purpose: Mapped[str | None] = mapped_column(String(500))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
+@event.listens_for(Session, "before_flush")
+def prevent_orchestrated_assessment_mutation(
+    session: Session, _flush_context, _instances
+) -> None:
+    """Scientific assessment snapshots are append-only at the ORM boundary."""
+
+    for row in tuple(session.dirty):
+        if isinstance(row, OrchestratedAssessmentRecord) and session.is_modified(
+            row, include_collections=False
+        ):
+            raise ValueError(
+                "Orchestrated assessment records are immutable; create a successor record"
+            )

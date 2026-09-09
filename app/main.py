@@ -2,6 +2,7 @@ from __future__ import annotations
 from contextlib import asynccontextmanager
 from io import BytesIO
 import json
+import math
 import re
 import shutil
 import tempfile
@@ -31,6 +32,7 @@ from .models import (
     Project, Chemical, ProjectChemical, Source, EvidenceRecord,
     SelectionSet, SelectionMember, ModelRun, RiskAssessment, AuditEvent, ModelWorkflow,
     ChemicalIdentitySnapshot, ChemicalAssessmentProfile, ModelRunIdentityBinding,
+    OrchestratedAssessmentRecord,
 )
 from .schemas import (
     ProjectCreate, IdentityResolveCreate, ChemicalIdentityConfirmCreate,
@@ -49,6 +51,10 @@ from .schemas import (
     ReachPnecPreviewCreate, ReachReviewBundleCreate,
     USIndustrialExposureRunCreate, USExposureCompletenessCreate,
     DegradationKineticsAssessmentCreate,
+    OrchestrationHarmoniseCreate, OrchestrationCompatibilityCreate,
+    ModelPortCompatibilityCreate, RiskCharacterisationCreate,
+    CrossJurisdictionComparisonCreate, OrchestrationPlanCreate,
+    OrchestratedAssessmentCreate, OrchestratedAssessmentFinaliseCreate,
 )
 from .seed import seed
 from .services.selection import calculate_selection, evidence_hash
@@ -112,6 +118,13 @@ from .services.global_regulatory import (
     get_framework as get_global_framework, recommend_regulatory_pathway,
     research_status as global_research_status,
 )
+from .services.orchestration import (
+    orchestration_manifest, semantic_contract_catalogue, harmonise_quantity,
+    check_endpoint_compatibility, model_port_compatibility, characterise_risk,
+    compare_jurisdictional_results, build_tier_sequence, build_assessment_record,
+    record_hash as orchestration_record_hash,
+)
+from .services.specialist_groups import specialist_substance_group_requirements
 from .reach.exporter import (
     BundleVerificationError, MAX_BUNDLE_BYTES, REVIEW_SCHEMA,
     build_review_bundle, verify_review_bundle,
@@ -143,9 +156,9 @@ async def lifespan(application: FastAPI):
         logger.info("application_stopped version=%s", APP_VERSION)
 
 app = FastAPI(
-    title="EnviroChem Studio",
+    title="FateIntel",
     version=APP_VERSION,
-    description="Evidence-led environmental fate, exposure and laboratory safety platform.",
+    description="Evidence-led, cross-jurisdiction environmental fate and tiered risk-assessment platform.",
     lifespan=lifespan,
 )
 app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
@@ -209,6 +222,7 @@ async def disable_browser_cache(request, call_next):
     response.headers["Pragma"] = "no-cache"
     response.headers["Expires"] = "0"
     response.headers["X-EnviroChem-Build"] = BUILD_ID
+    response.headers["X-FateIntel-Build"] = BUILD_ID
     return response
 
 @app.get("/api/build")
@@ -236,7 +250,11 @@ def build_information():
         "epa_execution_bridge": True,
         "official_output_file_hashing": True,
         "tier_safe_water_sediment_routing": True,
-        "navigation": ["Guided Assessment", "Chemical Identity + Reviewed Profile", "Human Pharma Influent", "Evidence Data Hub", "Tier 1–2 Results", "Transformation Pathways", "Catchment River Network", "Multimedia Fate", "US Exposure Foundations", "SPIN Dependency Workspace", "FOCUS MACRO", "GREAT-ER", "TOXSWA Surface Water", "EU FOCUS PEARL", "EnviroDesign", "Veterinary ERA", "Global Framework Navigator", "REACH Review Bundles", "Expert Workspace"],
+        "alpha4_tier_orchestration": True,
+        "semantic_model_compatibility": True,
+        "cross_jurisdiction_comparison": True,
+        "immutable_assessment_records": True,
+        "navigation": ["Guided Assessment", "Chemical Identity + Reviewed Profile", "Tier Orchestration", "Human Pharma Influent", "Evidence Data Hub", "Tier 1–2 Results", "Transformation Pathways", "Catchment River Network", "Multimedia Fate", "US Exposure Foundations", "SPIN Dependency Workspace", "FOCUS MACRO", "GREAT-ER", "TOXSWA Surface Water", "EU FOCUS PEARL", "EnviroDesign", "Veterinary ERA", "Global Framework Navigator", "REACH Review Bundles", "Expert Workspace"],
     }
 
 
@@ -944,7 +962,7 @@ def create_reach_review_bundle(
     })
     db.commit()
     slug = re.sub(r"[^a-z0-9]+", "-", record["chemical"]["preferred_name"].casefold()).strip("-")
-    filename = f"envirochem-reach-review-{slug or 'chemical'}.zip"
+    filename = f"fateintel-reach-review-{slug or 'chemical'}.zip"
     return StreamingResponse(
         BytesIO(bundle.data),
         media_type="application/zip",
@@ -954,6 +972,10 @@ def create_reach_review_bundle(
             "X-EnviroChem-Bundle-SHA256": bundle.bundle_sha256,
             "X-EnviroChem-Signing-Mode": bundle.signing_mode,
             "X-EnviroChem-Submission-Status": "NOT_IUCLID_NOT_SUBMISSION_READY",
+            "X-FateIntel-Manifest-SHA256": bundle.manifest_sha256,
+            "X-FateIntel-Bundle-SHA256": bundle.bundle_sha256,
+            "X-FateIntel-Signing-Mode": bundle.signing_mode,
+            "X-FateIntel-Submission-Status": "NOT_IUCLID_NOT_SUBMISSION_READY",
         },
     )
 
@@ -1067,7 +1089,7 @@ def import_evidence_candidate(payload: EvidenceCandidateImportCreate, db: Sessio
 
     provenance_hash = candidate_provenance_hash(candidate)
     note_parts = [
-        f"Imported from EnviroChem evidence candidate {candidate.get('candidate_id') or provenance_hash[:24]}.",
+        f"Imported from FateIntel evidence candidate {candidate.get('candidate_id') or provenance_hash[:24]}.",
         f"Source key: {source_key}; rights status: {candidate.get('rights_status') or source_manifest.get('commercial_status')}.",
         f"Extraction status: {candidate.get('extraction_status', 'external_candidate')}.",
         f"Candidate SHA-256: {provenance_hash}.",
@@ -1963,6 +1985,759 @@ def assessment_plan(payload: AssessmentPlanCreate):
     return build_assessment_plan(payload.model_dump())
 
 
+def _orchestration_model(model_key: str) -> dict:
+    model = next((item for item in MODELS if item["key"] == model_key), None)
+    if model is None:
+        raise HTTPException(422, f"Unknown model key: {model_key}")
+    return model
+
+
+OFFICIAL_REGULATORY_WORKFLOW_KEYS = {
+    "PEARL", "PELMO", "MACRO", "SWASH", "TOXSWA", "PRZM", "EXAMS",
+    "PWC", "AGDRIFT", "TERRPLANT", "TREX", "BEEREX",
+    "CHEMSTEER", "CEM", "EFAST",
+}
+
+
+def _orchestration_identity(
+    db: Session,
+    project_id: int,
+    chemical_id: int,
+) -> tuple[Project, Chemical, ChemicalIdentitySnapshot, dict]:
+    project = db.get(Project, project_id)
+    chemical = db.get(Chemical, chemical_id)
+    if project is None or chemical is None:
+        raise HTTPException(404, "Project or chemical not found")
+    membership = db.get(
+        ProjectChemical,
+        {"project_id": project_id, "chemical_id": chemical_id},
+    )
+    if membership is None:
+        raise HTTPException(422, "Chemical is not attached to the selected project")
+    snapshot = db.scalar(
+        select(ChemicalIdentitySnapshot).where(
+            ChemicalIdentitySnapshot.chemical_id == chemical_id
+        )
+    )
+    if snapshot is None:
+        raise HTTPException(
+            422,
+            "A confirmed immutable chemical identity snapshot is required before orchestration",
+        )
+    identity = json.loads(snapshot.snapshot_json)
+    identity.update({
+        "identity_snapshot_id": snapshot.id,
+        "identity_hash": snapshot.identity_hash,
+        "source_key": snapshot.source_key,
+        "source_record_id": snapshot.source_record_id,
+        "source_url": snapshot.source_url,
+        "confirmed_at": snapshot.confirmed_at.isoformat(),
+    })
+    return project, chemical, snapshot, identity
+
+
+def _orchestration_evidence_snapshot(row: EvidenceRecord) -> dict:
+    payload = {
+        "id": row.id,
+        "chemical_id": row.chemical_id,
+        "property_code": row.property_code,
+        "evidence_type": row.evidence_type,
+        "value": row.original_value,
+        "unit": row.original_unit,
+        "endpoint_kind": row.endpoint_kind,
+        "test_guideline": row.test_guideline,
+        "reliability_score": row.reliability_score,
+        "representative_group_key": row.representative_group_key,
+        "source": {
+            "id": row.source.id,
+            "title": row.source.title,
+            "organisation": row.source.organisation,
+            "publication_year": row.source.publication_year,
+            "identifier": row.source.identifier,
+            "url": row.source.url,
+        },
+    }
+    payload["evidence_hash"] = sha256_payload(payload)
+    return payload
+
+
+def _validate_benchmark_evidence(
+    db: Session,
+    *,
+    risk: dict,
+    project_id: int,
+    chemical_id: int,
+    jurisdiction: str,
+) -> None:
+    evidence_ids = risk.get("benchmark_evidence_ids") or []
+    if not evidence_ids:
+        risk["benchmark_evidence"] = []
+        risk["benchmark_value_verified"] = False
+        risk["benchmark_derivation"] = {
+            "status": "unverified_manual_benchmark",
+            "message": "No reviewed benchmark evidence was bound to this risk calculation.",
+        }
+        return
+    if db.get(ProjectChemical, {"project_id": project_id, "chemical_id": chemical_id}) is None:
+        raise HTTPException(422, "Benchmark evidence chemical is not attached to this project")
+    rows = list(db.scalars(
+        select(EvidenceRecord).where(EvidenceRecord.id.in_(evidence_ids))
+    ).all())
+    by_id = {row.id: row for row in rows}
+    if set(by_id) != set(evidence_ids):
+        raise HTTPException(404, "One or more benchmark evidence records were not found")
+    if any(row.chemical_id != chemical_id for row in rows):
+        raise HTTPException(422, "Benchmark evidence does not belong to the selected chemical")
+    critical = by_id[risk["critical_benchmark_evidence_id"]]
+    risk["benchmark_evidence"] = [
+        _orchestration_evidence_snapshot(by_id[evidence_id])
+        for evidence_id in evidence_ids
+    ]
+
+    if risk["metric"] == "pec_pnec_rq":
+        endpoint_type = SUPPORTED_AQUATIC_ENDPOINTS.get(critical.property_code)
+        if endpoint_type is None:
+            raise HTTPException(422, "Evidence-derived freshwater PNEC requires LC50, EC50, NOEC or EC10 evidence")
+        if critical.endpoint_kind:
+            normalised_kind = re.sub(r"[^A-Z0-9]", "", critical.endpoint_kind.upper())
+            if normalised_kind != endpoint_type:
+                raise HTTPException(422, "Critical evidence endpoint kind conflicts with its property code")
+        if risk["benchmark"]["compartment"] not in {"water", "surface_water"}:
+            raise HTTPException(422, "This evidence-derived PNEC implementation currently supports freshwater only")
+        try:
+            derivation = derive_pnec(
+                endpoint_value=critical.original_value,
+                endpoint_unit=critical.original_unit,
+                endpoint_type=endpoint_type,
+                assessment_factor=risk["assessment_factor"],
+                assessment_factor_rationale=risk["assessment_factor_rationale"],
+                guidance_reference=risk["guidance_reference"],
+                target_compartment="freshwater",
+            )
+            derived_quantity = {
+                **risk["benchmark"],
+                "value": derivation["pnec"]["value"],
+                "unit": derivation["pnec"]["unit"],
+            }
+            derived_on_declared_basis = harmonise_quantity(
+                derived_quantity, risk["benchmark"]["unit"]
+            )
+        except ValueError as exc:
+            raise HTTPException(422, str(exc)) from exc
+        declared_value = float(risk["benchmark"]["value"])
+        if not math.isclose(
+            derived_on_declared_basis["value"], declared_value,
+            rel_tol=1e-9, abs_tol=1e-12,
+        ):
+            raise HTTPException(
+                422,
+                "Declared PNEC does not match the selected critical endpoint divided by the explicit assessment factor",
+            )
+        derivation["critical_evidence_id"] = critical.id
+        derivation["jurisdiction"] = jurisdiction
+        derivation["jurisdictional_status"] = (
+            "eu_style_explicit_af_requires_competent_review"
+            if jurisdiction in {"EU", "UK", "CH"}
+            else "research_adaptation_not_us_programme_pnec"
+        )
+        risk["benchmark_derivation"] = derivation
+    elif risk["metric"] == "pesticide_rq_loc":
+        if not critical.property_code.startswith("ECOTOX."):
+            raise HTTPException(422, "Pesticide RQ/LOC requires an ecotoxicity effect endpoint")
+        evidence_quantity = {
+            **risk["benchmark"],
+            "value": critical.original_value,
+            "unit": critical.original_unit,
+        }
+        try:
+            effect_on_declared_basis = harmonise_quantity(
+                evidence_quantity, risk["benchmark"]["unit"]
+            )
+        except ValueError as exc:
+            raise HTTPException(422, str(exc)) from exc
+        if not math.isclose(
+            effect_on_declared_basis["value"], float(risk["benchmark"]["value"]),
+            rel_tol=1e-9, abs_tol=1e-12,
+        ):
+            raise HTTPException(422, "Declared pesticide effect benchmark does not match the selected evidence")
+        risk["benchmark_derivation"] = {
+            "critical_evidence_id": critical.id,
+            "jurisdiction": jurisdiction,
+            "calculation": "reviewed effect endpoint used directly; RQ compared with explicit programme LOC",
+            "jurisdictional_status": "programme_specific_loc_requires_competent_review",
+        }
+    risk["benchmark_value_verified"] = True
+
+
+def _model_run_output_payload(row: ModelRun):
+    try:
+        return json.loads(row.output_json)
+    except (json.JSONDecodeError, TypeError):
+        return row.output_json
+
+
+def _model_run_output_hash(row: ModelRun) -> str:
+    return sha256_payload(_model_run_output_payload(row))
+
+
+def _find_output_endpoint(payload, endpoint_key: str) -> list:
+    matches: list = []
+    if isinstance(payload, dict):
+        for key, value in payload.items():
+            if key == endpoint_key:
+                matches.append(value)
+            matches.extend(_find_output_endpoint(value, endpoint_key))
+    elif isinstance(payload, list):
+        for value in payload:
+            matches.extend(_find_output_endpoint(value, endpoint_key))
+    return matches
+
+
+def _endpoint_unit_from_key(endpoint_key: str) -> str | None:
+    token = endpoint_key.casefold().replace("µ", "u").replace("μ", "u")
+    suffixes = {
+        "_ng_l": "ng/L",
+        "_ug_l": "µg/L",
+        "_mg_l": "mg/L",
+        "_ng_kg": "ng/kg",
+        "_ug_kg": "µg/kg",
+        "_mg_kg": "mg/kg",
+        "_kg_day": "kg/day",
+        "_g_day": "g/day",
+        "_kg_ha": "kg/ha",
+    }
+    return next((unit for suffix, unit in suffixes.items() if token.endswith(suffix)), None)
+
+
+def _reconcile_exposure_value(risk: dict, output_payload) -> dict:
+    endpoint_key = risk.get("exposure_endpoint_key")
+    if not endpoint_key:
+        return {
+            "verified": False,
+            "status": "endpoint_key_required",
+            "message": "Name the stored exposure endpoint before this value can control a tier gate.",
+        }
+    matches = _find_output_endpoint(output_payload, endpoint_key)
+    if len(matches) != 1:
+        if not matches:
+            raise HTTPException(422, f"Exposure endpoint {endpoint_key} was not found in the referenced output")
+        raise HTTPException(422, f"Exposure endpoint {endpoint_key} is ambiguous in the referenced output")
+    stored = matches[0]
+    stored_unit = None
+    if isinstance(stored, dict):
+        stored_unit = stored.get("unit")
+        stored = stored.get("value")
+    try:
+        stored_value = float(stored)
+    except (TypeError, ValueError) as exc:
+        raise HTTPException(422, f"Exposure endpoint {endpoint_key} is not a numeric output") from exc
+    if not math.isfinite(stored_value):
+        raise HTTPException(422, f"Exposure endpoint {endpoint_key} is not finite")
+    stored_unit = stored_unit or _endpoint_unit_from_key(endpoint_key)
+    if not stored_unit:
+        return {
+            "verified": False,
+            "status": "stored_unit_not_machine_readable",
+            "stored_value": stored_value,
+            "message": "The stored endpoint unit could not be verified from output metadata or its key.",
+        }
+    try:
+        declared = harmonise_quantity(risk["exposure"], stored_unit)
+    except ValueError as exc:
+        raise HTTPException(422, f"Exposure endpoint unit reconciliation failed: {exc}") from exc
+    if not math.isclose(declared["value"], stored_value, rel_tol=1e-9, abs_tol=1e-12):
+        raise HTTPException(
+            422,
+            f"Declared exposure does not match stored endpoint {endpoint_key}: "
+            f"{declared['value']} {stored_unit} versus {stored_value} {stored_unit}",
+        )
+    return {
+        "verified": True,
+        "status": "matched_stored_output",
+        "endpoint_key": endpoint_key,
+        "stored_value": stored_value,
+        "stored_unit": stored_unit,
+    }
+
+
+def _validated_execution_reference(
+    db: Session,
+    *,
+    project_id: int,
+    chemical_id: int,
+    identity_hash: str,
+    model_key: str,
+    run_id: int | None,
+    workflow_id: int | None,
+    supplied_output_hash: str | None,
+) -> dict:
+    if run_id is not None and workflow_id is not None:
+        raise HTTPException(422, "Use either a model run or a model workflow reference, not both")
+    if run_id is None and workflow_id is None:
+        if supplied_output_hash:
+            raise HTTPException(422, "An output hash must be accompanied by an internal run or workflow reference")
+        return {
+            "provenance_verified": False,
+            "reference_kind": None,
+            "execution_status": None,
+            "output_hash": None,
+            "model_version": None,
+            "output_payload": None,
+        }
+
+    if run_id is not None:
+        row = db.get(ModelRun, run_id)
+        if row is None:
+            raise HTTPException(404, f"Model run {run_id} not found")
+        if (row.project_id, row.chemical_id, row.model_key) != (
+            project_id, chemical_id, model_key,
+        ):
+            raise HTTPException(422, "Model run does not belong to the selected project, chemical and model")
+        binding = db.scalar(
+            select(ModelRunIdentityBinding).where(
+                ModelRunIdentityBinding.model_run_id == row.id
+            )
+        )
+        if binding is None or binding.identity_hash != identity_hash:
+            raise HTTPException(422, "Model run is not bound to the selected confirmed identity")
+        actual_hash = _model_run_output_hash(row)
+        if supplied_output_hash and supplied_output_hash.casefold() != actual_hash.casefold():
+            raise HTTPException(422, "Supplied output hash does not match the referenced model run")
+        execution_status = "completed" if row.status.startswith("completed") else row.status
+        return {
+            "provenance_verified": True,
+            "reference_kind": "model_run",
+            "execution_status": execution_status,
+            "output_hash": actual_hash,
+            "model_version": row.model_version,
+            "run_id": row.id,
+            "workflow_id": None,
+            "output_payload": _model_run_output_payload(row),
+        }
+
+    row = db.get(ModelWorkflow, workflow_id)
+    if row is None:
+        raise HTTPException(404, f"Model workflow {workflow_id} not found")
+    if (row.project_id, row.chemical_id, row.model_key) != (
+        project_id, chemical_id, model_key,
+    ):
+        raise HTTPException(422, "Model workflow does not belong to the selected project, chemical and model")
+    actual_hash = row.output_hash
+    if supplied_output_hash and (
+        actual_hash is None or supplied_output_hash.casefold() != actual_hash.casefold()
+    ):
+        raise HTTPException(422, "Supplied output hash does not match the referenced model workflow")
+    return {
+        "provenance_verified": bool(actual_hash),
+        "reference_kind": "model_workflow",
+        "execution_status": row.status,
+        "output_hash": actual_hash,
+        "model_version": row.model_version,
+        "run_id": None,
+        "workflow_id": row.id,
+        "review_decision": row.review_decision,
+        "jurisdiction": row.jurisdiction,
+        "output_payload": json.loads(row.output_record_json) if row.output_record_json else None,
+    }
+
+
+def _validated_orchestration_payload(
+    payload: OrchestratedAssessmentCreate,
+    db: Session,
+) -> tuple[dict, ChemicalIdentitySnapshot, dict]:
+    if payload.contaminant_group not in CONTAMINANT_GROUPS:
+        raise HTTPException(422, "Unsupported contaminant group")
+    if payload.scenario not in SCENARIOS:
+        raise HTTPException(422, "Unsupported exposure scenario")
+    _, _, snapshot, identity = _orchestration_identity(
+        db, payload.project_id, payload.chemical_id
+    )
+    data = payload.model_dump(mode="json")
+    tier_sequence = build_tier_sequence(data)
+    applicable_by_tier = {
+        stage["tier"]: {model["key"] for model in stage["models"]}
+        for stage in tier_sequence
+    }
+
+    validated_results: list[dict] = []
+    for result in data["model_results"]:
+        model = _orchestration_model(result["model_key"])
+        if result["jurisdiction"] not in model["regions"]:
+            raise HTTPException(
+                422,
+                f"{model['name']} is not registered for {result['jurisdiction']}",
+            )
+        tier_ok = result["tier"] in model["tiers"] or (
+            result["tier"] > max(model["tiers"]) and max(model["tiers"]) >= 3
+        )
+        if not tier_ok or result["tier"] > payload.current_tier:
+            raise HTTPException(422, f"{model['name']} result is not valid at the declared current tier")
+        if (
+            payload.assessment_mode == "regulatory"
+            and result["model_key"] not in applicable_by_tier[result["tier"]]
+        ):
+            raise HTTPException(
+                422,
+                f"{model['name']} is not part of this jurisdiction, use, release and tier route",
+            )
+        reference = _validated_execution_reference(
+            db,
+            project_id=payload.project_id,
+            chemical_id=payload.chemical_id,
+            identity_hash=snapshot.identity_hash,
+            model_key=result["model_key"],
+            run_id=result.get("run_id"),
+            workflow_id=result.get("workflow_id"),
+            supplied_output_hash=result.get("output_hash"),
+        )
+        if reference.get("jurisdiction") and reference["jurisdiction"] != result["jurisdiction"]:
+            raise HTTPException(422, "Model workflow jurisdiction does not match the declared result")
+        if result.get("run_id") or result.get("workflow_id"):
+            result["execution_status"] = reference["execution_status"]
+            result["output_hash"] = reference["output_hash"]
+            result["model_version"] = reference["model_version"] or result.get("model_version")
+        else:
+            result["execution_status"] = "not_started"
+        result["provenance_verified"] = reference["provenance_verified"]
+        if result["alignment_claim"] == "regulatory_accepted":
+            alignment_verified = (
+                reference.get("reference_kind") == "model_workflow"
+                and reference.get("review_decision") == "accepted"
+                and reference.get("provenance_verified")
+                and result["model_key"] in OFFICIAL_REGULATORY_WORKFLOW_KEYS
+            )
+            if not alignment_verified:
+                result["alignment_claim"] = (
+                    "research_screen" if reference.get("reference_kind") == "model_run"
+                    else "adapted_method"
+                )
+                result["alignment_validation"] = "requested regulatory alignment was not supported by a reviewed official workflow and was downgraded"
+            else:
+                result["alignment_validation"] = "reviewed official workflow provenance verified"
+        result["declared_output_values_status"] = (
+            "declared_against_hashed_execution_not_machine_reconciled"
+            if result.get("outputs") and reference["provenance_verified"]
+            else "no_declared_output_values" if not result.get("outputs")
+            else "unverified_declared_values"
+        )
+        validated_results.append(result)
+    data["model_results"] = validated_results
+
+    validated_risks: list[dict] = []
+    for risk in data["risk_characterisations"]:
+        _validate_benchmark_evidence(
+            db,
+            risk=risk,
+            project_id=payload.project_id,
+            chemical_id=payload.chemical_id,
+            jurisdiction=payload.jurisdiction,
+        )
+        if risk.get("model_key"):
+            risk_model = _orchestration_model(risk["model_key"])
+            if (
+                payload.assessment_mode == "regulatory"
+                and payload.jurisdiction not in risk_model["regions"]
+            ):
+                raise HTTPException(
+                    422,
+                    "A single-jurisdiction regulatory risk result cannot use a model from another jurisdiction",
+                )
+        if risk.get("exposure_run_id") or risk.get("exposure_workflow_id"):
+            if not risk.get("model_key"):
+                raise HTTPException(422, "A model_key is required for an internal exposure reference")
+            reference = _validated_execution_reference(
+                db,
+                project_id=payload.project_id,
+                chemical_id=payload.chemical_id,
+                identity_hash=snapshot.identity_hash,
+                model_key=risk["model_key"],
+                run_id=risk.get("exposure_run_id"),
+                workflow_id=risk.get("exposure_workflow_id"),
+                supplied_output_hash=risk.get("exposure_output_hash"),
+            )
+            if not reference["provenance_verified"]:
+                raise HTTPException(422, "Referenced exposure has no genuine hashed output")
+            risk["exposure_output_hash"] = reference["output_hash"]
+            reconciliation = _reconcile_exposure_value(risk, reference["output_payload"])
+            execution_eligible = (
+                reference["reference_kind"] == "model_run"
+                and reference["execution_status"] in {"completed", "reviewed"}
+            ) or (
+                reference["reference_kind"] == "model_workflow"
+                and reference["execution_status"] == "reviewed"
+                and reference.get("review_decision") == "accepted"
+            )
+            risk["exposure_value_verified"] = bool(reconciliation["verified"] and execution_eligible)
+            if reconciliation["verified"] and not execution_eligible:
+                reconciliation["status"] = "value_matched_but_execution_not_reviewed"
+                reconciliation["message"] = "The endpoint value matches, but the referenced execution is not complete/reviewed."
+            risk["exposure_reconciliation"] = reconciliation
+        validated_risks.append(risk)
+    data["risk_characterisations"] = validated_risks
+    return data, snapshot, identity
+
+
+def _orchestrated_assessment_dict(row: OrchestratedAssessmentRecord) -> dict:
+    return {
+        "id": row.id,
+        "project_id": row.project_id,
+        "chemical_id": row.chemical_id,
+        "identity_snapshot_id": row.identity_snapshot_id,
+        "supersedes_id": row.supersedes_id,
+        "jurisdiction": row.jurisdiction,
+        "contaminant_group": row.contaminant_group,
+        "scenario": row.scenario,
+        "current_tier": row.current_tier,
+        "maximum_tier": row.maximum_tier,
+        "assessment_mode": row.assessment_mode,
+        "status": row.status,
+        "record_hash": row.record_hash,
+        "reviewer": row.reviewer,
+        "review_decision": row.review_decision,
+        "review_rationale": row.review_rationale,
+        "stated_purpose": row.stated_purpose,
+        "created_at": row.created_at.isoformat(),
+        "record": json.loads(row.record_json),
+    }
+
+
+@app.get("/api/orchestration/manifest")
+def get_orchestration_manifest():
+    return orchestration_manifest()
+
+
+@app.get("/api/orchestration/model-contracts")
+def get_orchestration_model_contracts():
+    return semantic_contract_catalogue()
+
+
+@app.get("/api/orchestration/specialist-substance-groups")
+def get_specialist_substance_group_requirements():
+    """Expose evidenced requirements without claiming executable specialist rules."""
+
+    return specialist_substance_group_requirements()
+
+
+@app.get("/api/orchestration/specialist-substance-groups")
+def get_specialist_substance_groups():
+    """Expose implementation requirements without claiming an executable method."""
+
+    return specialist_substance_group_requirements()
+
+
+@app.post("/api/orchestration/plan")
+def orchestration_plan(payload: OrchestrationPlanCreate):
+    if payload.contaminant_group not in CONTAMINANT_GROUPS:
+        raise HTTPException(422, "Unsupported contaminant group")
+    if payload.scenario not in SCENARIOS:
+        raise HTTPException(422, "Unsupported exposure scenario")
+    try:
+        sequence = build_tier_sequence(payload.model_dump(mode="json"))
+    except ValueError as exc:
+        raise HTTPException(422, str(exc)) from exc
+    return {
+        "context": payload.model_dump(mode="json"),
+        "tier_sequence": sequence,
+        "boundary": "A routed plan identifies applicable work; it does not claim those models have been executed.",
+    }
+
+
+@app.post("/api/orchestration/harmonise")
+def orchestration_harmonise(payload: OrchestrationHarmoniseCreate):
+    try:
+        return harmonise_quantity(
+            payload.quantity.model_dump(mode="json"), payload.target_unit
+        )
+    except ValueError as exc:
+        raise HTTPException(422, str(exc)) from exc
+
+
+@app.post("/api/orchestration/compatibility")
+def orchestration_compatibility(payload: OrchestrationCompatibilityCreate):
+    return check_endpoint_compatibility(
+        payload.source.model_dump(mode="json"),
+        payload.target.model_dump(mode="json"),
+        allow_unspecified=payload.allow_unspecified,
+    )
+
+
+@app.post("/api/orchestration/model-compatibility")
+def orchestration_model_compatibility(payload: ModelPortCompatibilityCreate):
+    return model_port_compatibility(**payload.model_dump(mode="json"))
+
+
+@app.post("/api/orchestration/risk-characterise")
+def orchestration_risk_characterise(payload: RiskCharacterisationCreate):
+    if payload.benchmark_evidence_ids:
+        raise HTTPException(
+            422,
+            "Evidence-bound risk characterisation requires an assessment preview or saved assessment with project and chemical context",
+        )
+    try:
+        return characterise_risk(payload.model_dump(mode="json"))
+    except ValueError as exc:
+        raise HTTPException(422, str(exc)) from exc
+
+
+@app.post("/api/orchestration/compare")
+def orchestration_compare(payload: CrossJurisdictionComparisonCreate):
+    try:
+        return compare_jurisdictional_results(payload.model_dump(mode="json"))
+    except ValueError as exc:
+        raise HTTPException(422, str(exc)) from exc
+
+
+@app.post("/api/orchestration/preview")
+def preview_orchestrated_assessment(
+    payload: OrchestratedAssessmentCreate,
+    db: Session = Depends(get_db),
+):
+    data, _, identity = _validated_orchestration_payload(payload, db)
+    try:
+        return build_assessment_record(data, identity)
+    except ValueError as exc:
+        raise HTTPException(422, str(exc)) from exc
+
+
+@app.post("/api/orchestration/assessments", status_code=201)
+def create_orchestrated_assessment(
+    payload: OrchestratedAssessmentCreate,
+    db: Session = Depends(get_db),
+):
+    data, snapshot, identity = _validated_orchestration_payload(payload, db)
+    try:
+        record = build_assessment_record(data, identity)
+    except ValueError as exc:
+        raise HTTPException(422, str(exc)) from exc
+    row = OrchestratedAssessmentRecord(
+        project_id=payload.project_id,
+        chemical_id=payload.chemical_id,
+        identity_snapshot_id=snapshot.id,
+        jurisdiction=payload.jurisdiction,
+        contaminant_group=payload.contaminant_group,
+        scenario=payload.scenario,
+        current_tier=payload.current_tier,
+        maximum_tier=payload.maximum_tier,
+        assessment_mode=payload.assessment_mode,
+        status="assessment_snapshot",
+        record_json=json.dumps(record, sort_keys=True),
+        record_hash=record["record_hash"],
+    )
+    db.add(row)
+    db.flush()
+    audit(db, row.project_id, "orchestrated_assessment", row.id, "assessment_snapshot_created", {
+        "record_hash": row.record_hash,
+        "identity_hash": snapshot.identity_hash,
+        "jurisdiction": row.jurisdiction,
+        "current_tier": row.current_tier,
+        "gate_action": record["current_tier_decision"]["action"],
+        "regulatory_status": record["regulatory_status"]["code"],
+    })
+    db.commit()
+    db.refresh(row)
+    return _orchestrated_assessment_dict(row)
+
+
+@app.get("/api/projects/{project_id}/orchestrated-assessments")
+def list_orchestrated_assessments(
+    project_id: int,
+    chemical_id: int | None = Query(default=None, gt=0),
+    db: Session = Depends(get_db),
+):
+    if db.get(Project, project_id) is None:
+        raise HTTPException(404, "Project not found")
+    statement = select(OrchestratedAssessmentRecord).where(
+        OrchestratedAssessmentRecord.project_id == project_id
+    )
+    if chemical_id is not None:
+        statement = statement.where(OrchestratedAssessmentRecord.chemical_id == chemical_id)
+    rows = list(db.scalars(
+        statement.order_by(OrchestratedAssessmentRecord.created_at.desc())
+    ).all())
+    return [_orchestrated_assessment_dict(row) for row in rows]
+
+
+@app.get("/api/orchestration/assessments/{assessment_id}")
+def get_orchestrated_assessment(assessment_id: int, db: Session = Depends(get_db)):
+    row = db.get(OrchestratedAssessmentRecord, assessment_id)
+    if row is None:
+        raise HTTPException(404, "Orchestrated assessment not found")
+    return _orchestrated_assessment_dict(row)
+
+
+@app.post("/api/orchestration/assessments/{assessment_id}/finalise", status_code=201)
+def finalise_orchestrated_assessment(
+    assessment_id: int,
+    payload: OrchestratedAssessmentFinaliseCreate,
+    db: Session = Depends(get_db),
+):
+    row = db.get(OrchestratedAssessmentRecord, assessment_id)
+    if row is None:
+        raise HTTPException(404, "Orchestrated assessment not found")
+    if row.status == "finalised_review_record":
+        raise HTTPException(409, "This immutable assessment has already been finalised")
+    existing_successor = db.scalar(
+        select(OrchestratedAssessmentRecord).where(
+            OrchestratedAssessmentRecord.supersedes_id == row.id
+        )
+    )
+    if existing_successor is not None:
+        raise HTTPException(409, "This immutable assessment already has a final review successor")
+    record = json.loads(row.record_json)
+    record.pop("record_hash", None)
+    record["supersedes_record_id"] = row.id
+    record["finalised_at"] = datetime.now(timezone.utc).isoformat()
+    record["review"] = payload.model_dump(mode="json")
+    record["overall_conclusion"]["final_regulatory_decision"] = False
+    record["overall_conclusion"]["review_decision"] = payload.decision
+    record["record_hash"] = orchestration_record_hash(record)
+    successor = OrchestratedAssessmentRecord(
+        project_id=row.project_id,
+        chemical_id=row.chemical_id,
+        identity_snapshot_id=row.identity_snapshot_id,
+        supersedes_id=row.id,
+        jurisdiction=row.jurisdiction,
+        contaminant_group=row.contaminant_group,
+        scenario=row.scenario,
+        current_tier=row.current_tier,
+        maximum_tier=row.maximum_tier,
+        assessment_mode=row.assessment_mode,
+        status="finalised_review_record",
+        record_json=json.dumps(record, sort_keys=True),
+        record_hash=record["record_hash"],
+        reviewer=payload.reviewer,
+        review_decision=payload.decision,
+        review_rationale=payload.rationale,
+        stated_purpose=payload.stated_purpose,
+    )
+    db.add(successor)
+    db.flush()
+    audit(db, successor.project_id, "orchestrated_assessment", successor.id, "review_record_finalised", {
+        "supersedes_id": row.id,
+        "record_hash": successor.record_hash,
+        "decision": payload.decision,
+        "reviewer": payload.reviewer,
+        "final_regulatory_decision": False,
+    })
+    db.commit()
+    db.refresh(successor)
+    return _orchestrated_assessment_dict(successor)
+
+
+@app.get("/api/orchestration/assessments/{assessment_id}/export")
+def export_orchestrated_assessment(assessment_id: int, db: Session = Depends(get_db)):
+    row = db.get(OrchestratedAssessmentRecord, assessment_id)
+    if row is None:
+        raise HTTPException(404, "Orchestrated assessment not found")
+    payload = json.dumps(json.loads(row.record_json), indent=2, sort_keys=True).encode("utf-8")
+    filename = f"FateIntel_assessment_{row.id}_{row.record_hash[:12]}.json"
+    return StreamingResponse(
+        BytesIO(payload),
+        media_type="application/json",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
+
+
 def _workflow_dict(row: ModelWorkflow) -> dict:
     return {
         "id": row.id,
@@ -2068,7 +2843,7 @@ def download_model_workflow_handoff(workflow_id: int, db: Session = Depends(get_
     profile = external_integration_profile(row.model_key)
     tool_status = external_tool_status(row.model_key) if row.model_key in EPA_EXECUTION_MODEL_KEYS else None
     payload = build_handoff_bundle(workflow=workflow, profile=profile, tool_status=tool_status)
-    filename = f"EnviroChem_workflow_{row.id}_{row.model_key}_official_handoff.zip"
+    filename = f"FateIntel_workflow_{row.id}_{row.model_key}_official_handoff.zip"
     return StreamingResponse(
         BytesIO(payload),
         media_type="application/zip",

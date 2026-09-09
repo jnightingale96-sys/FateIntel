@@ -118,7 +118,7 @@ def test_evidence_records_include_canonical_provenance_hash():
 
 
 def test_v221_ui_uses_real_workspace_data_not_the_supplied_mock_scaffold():
-    assert "v2.23" in BUILD_ID
+    assert "v2.24" in BUILD_ID
     assert 'id="evidence-filter"' in EXPERT_HTML
     assert 'id="provenance-dialog"' in EXPERT_HTML
     assert 'id="h-use-selected"' in EXPERT_HTML

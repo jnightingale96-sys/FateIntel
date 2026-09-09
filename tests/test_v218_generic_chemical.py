@@ -315,7 +315,7 @@ def test_property_candidates_cover_generic_profile_fields():
 
 
 def test_v219_guided_ui_uses_confirmed_identity_and_reviewed_profile_contract():
-    assert "v2.23" in BUILD_ID and "8792" not in BUILD_ID
+    assert "v2.24" in BUILD_ID and "8792" not in BUILD_ID
     for marker in (
         'id="identity-candidate"', 'id="confirm-identity"', 'id="chemical-profile-panel"',
         'id="profile-logkow"', 'id="profile-wwtp-bio"', 'id="profile-reviewed"',

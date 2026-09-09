@@ -16,14 +16,14 @@ TOOLS = (ROOT / "ENVIROCHEM_TOOLS.bat").read_text(encoding="utf-8")
 
 
 def test_build_identity_is_decoupled_from_runtime_port():
-    assert "v2.23" in BUILD_ID
+    assert "v2.24" in BUILD_ID
     assert "8792" not in BUILD_ID
     assert 'set "PORT=8792"' in LAUNCHER
     assert 'if defined ENVIROCHEM_PORT set "PORT=%ENVIROCHEM_PORT%"' in LAUNCHER
     assert "-m app.launcher_support configured-port" in LAUNCHER
     assert "-m app.launcher_support probe-build" in LAUNCHER
     assert "-m app.launcher_support find-port" in LAUNCHER
-    assert "EnviroChem is already running" in LAUNCHER
+    assert "FateIntel is already running" in LAUNCHER
     assert "open-when-ready" in LAUNCHER
     assert "/api/ready" in LAUNCHER_SUPPORT
     with TestClient(app) as client:

@@ -1,4 +1,4 @@
-"""Validated, non-secret runtime configuration for EnviroChem.
+"""Validated, non-secret runtime configuration for FateIntel.
 
 Settings are read from environment variables and an optional project-root
 ``.env`` file.  The application does not define placeholder API keys or
@@ -128,12 +128,22 @@ class Settings(BaseModel):
         file_values = _read_env_file(Path(_env_file) if _env_file is not None else None)
         resolved: dict[str, object] = {}
         for field_name in type(self).model_fields:
-            environment_name = field_name.upper()
-            if environment_name in file_values:
-                resolved[field_name] = file_values[environment_name]
-            environment_value = os.environ.get(environment_name)
-            if environment_value not in {None, ""}:
-                resolved[field_name] = environment_value
+            legacy_name = field_name.upper()
+            current_name = (
+                "FATEINTEL_" + legacy_name.removeprefix("ENVIROCHEM_")
+                if legacy_name.startswith("ENVIROCHEM_") else legacy_name
+            )
+            # FATEINTEL_* is the current public configuration surface. Existing
+            # ENVIROCHEM_* deployments remain valid and are intentionally not
+            # broken by the product rename.
+            environment_names = tuple(dict.fromkeys((legacy_name, current_name)))
+            for environment_name in environment_names:
+                if environment_name in file_values:
+                    resolved[field_name] = file_values[environment_name]
+            for environment_name in environment_names:
+                environment_value = os.environ.get(environment_name)
+                if environment_value not in {None, ""}:
+                    resolved[field_name] = environment_value
         resolved.update(values)
         super().__init__(**resolved)
 

@@ -170,7 +170,7 @@ def test_v214_ui_exposes_influent_builder_and_daily_kg_units():
     root = Path(__file__).resolve().parents[1]
     html = (root / "app" / "static" / "index.html").read_text(encoding="utf-8")
     js = (root / "app" / "static" / "app.js").read_text(encoding="utf-8")
-    assert "v2.23" in BUILD_ID and "8792" not in BUILD_ID
+    assert "v2.24" in BUILD_ID and "8792" not in BUILD_ID
     assert 'id="pharma-influent-panel"' in html
     assert '<option>kg/day</option>' in html
     assert 'id="metric-card-influent"' in html

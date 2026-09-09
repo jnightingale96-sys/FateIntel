@@ -1,8 +1,8 @@
-const CACHE="envirochem-studio-v2.23-alpha3.4.0-applied-environmental-fate";
+const CACHE="fateintel-v2.24-alpha4.0-core-orchestration";
 const STATIC=[
   "/",
-  "/static/styles.css?v=guided-v2.23-alpha3.4.0-applied-environmental-fate",
-  "/static/app.js?v=guided-v2.23-alpha3.4.0-applied-environmental-fate",
+  "/static/styles.css?v=fateintel-guided-v2.24-alpha4.0-core-orchestration",
+  "/static/app.js?v=fateintel-guided-v2.24-alpha4.0-core-orchestration",
   "/static/carbamazepine.svg",
   "/static/chemical-placeholder.svg",
   "/static/icon.svg",

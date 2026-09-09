@@ -79,7 +79,7 @@ def test_rights_gate_blocks_sci_bot_and_requires_rights_for_aeru_and_premier():
 
 
 def test_v213_ui_and_client_are_wired():
-    assert "v2.23" in BUILD_ID and "8792" not in BUILD_ID
+    assert "v2.24" in BUILD_ID and "8792" not in BUILD_ID
     assert 'id="evidence-data-hub"' in HTML
     assert 'id="search-evidence"' in HTML
     assert "searchEvidenceHub" in JS

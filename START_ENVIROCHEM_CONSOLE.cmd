@@ -4,18 +4,19 @@ cd /d "%~dp0"
 
 set "PORT=8792"
 if defined ENVIROCHEM_PORT set "PORT=%ENVIROCHEM_PORT%"
-set "BUILD=envirochem-studio-v2.23.0-alpha3.4.0-applied-environmental-fate-2026-09-09"
+if defined FATEINTEL_PORT set "PORT=%FATEINTEL_PORT%"
+set "BUILD=fateintel-v2.24.0-alpha4.0-core-orchestration-2026-09-09"
 set "LOG=%CD%\STARTUP_LOG.txt"
 set "VENV_PY=%CD%\.venv\Scripts\python.exe"
-set "READY_MARKER=%CD%\.venv\.envirochem_core_ready_v223a3"
+set "READY_MARKER=%CD%\.venv\.fateintel_core_ready_v224a4"
 
-> "%LOG%" echo EnviroChem Studio v2.23.0 Alpha 3.4.0 startup log
+> "%LOG%" echo FateIntel v2.24.0 Alpha 4 startup log
 >>"%LOG%" echo Started: %DATE% %TIME%
 >>"%LOG%" echo Folder: %CD%
 
 echo ==================================================
-echo EnviroChem Studio v2.23.0 Alpha 3.4.0
-echo US EPA execution bridge, groundwater screen and tier-safe model routing
+echo FateIntel v2.24.0 Alpha 4
+echo Cross-jurisdiction tier orchestration, compatibility and immutable assessment records
 echo ==================================================
 echo.
 echo Native Python RDKit is NOT required for normal startup.
@@ -76,13 +77,13 @@ if not exist "%READY_MARKER%" (
   echo Core dependencies already prepared.
 )
 
-if not defined ENVIROCHEM_PORT (
+if not defined ENVIROCHEM_PORT if not defined FATEINTEL_PORT (
   set "PORT_FILE=%TEMP%\envirochem_port_%RANDOM%_%RANDOM%.txt"
   "%VENV_PY%" -m app.launcher_support configured-port > "!PORT_FILE!" 2>>"%LOG%"
   if not errorlevel 1 set /p "PORT="<"!PORT_FILE!"
   if exist "!PORT_FILE!" del /q "!PORT_FILE!"
 )
-echo Runtime port: %PORT%  ^(set ENVIROCHEM_PORT or use .env to override^)
+echo Runtime port: %PORT%  ^(set FATEINTEL_PORT, legacy ENVIROCHEM_PORT, or use .env to override^)
 >>"%LOG%" echo Resolved runtime port: %PORT%
 
 if not exist "data" mkdir "data"
@@ -92,8 +93,8 @@ set "URL=http://127.0.0.1:%PORT%/?build=%BUILD%"
 if errorlevel 1 (
   "%VENV_PY%" -m app.launcher_support probe-build --port %PORT% --build "%BUILD%" >>"%LOG%" 2>&1
   if not errorlevel 1 (
-    echo EnviroChem is already running on port %PORT%. Opening it now...
-    >>"%LOG%" echo Existing matching EnviroChem instance reused on port %PORT%.
+    echo FateIntel is already running on port %PORT%. Opening it now...
+    >>"%LOG%" echo Existing matching FateIntel instance reused on port %PORT%.
     start "" "%URL%"
     exit /b 0
   )
@@ -104,19 +105,20 @@ if errorlevel 1 (
   if errorlevel 1 (
     if exist "!PORT_FILE!" del /q "!PORT_FILE!"
     echo ERROR: No unused local port was found after %PORT%.
-    echo Close the process using that port or set ENVIROCHEM_PORT to another unused port.
+    echo Close the process using that port or set FATEINTEL_PORT to another unused port.
     pause
     exit /b 1
   )
   set /p "PORT="<"!PORT_FILE!"
   if exist "!PORT_FILE!" del /q "!PORT_FILE!"
+  set "FATEINTEL_PORT=!PORT!"
   set "ENVIROCHEM_PORT=!PORT!"
   set "URL=http://127.0.0.1:!PORT!/?build=%BUILD%"
   echo Using port !PORT! instead.
   >>"%LOG%" echo Occupied configured port; selected alternate port !PORT!.
 )
 
-echo Starting EnviroChem...
+echo Starting FateIntel...
 echo The browser opens after the health check passes.
 >>"%LOG%" echo Starting server at %URL%
 >>"%LOG%" echo Browser readiness helper started without a shared log handle.
@@ -130,10 +132,10 @@ set "SERVER_EXIT=%ERRORLEVEL%"
 
 echo.
 if not "%SERVER_EXIT%"=="0" (
-  echo EnviroChem stopped because the server reported an error.
+  echo FateIntel stopped because the server reported an error.
   start "" notepad "%LOG%"
 ) else (
-  echo EnviroChem stopped normally.
+  echo FateIntel stopped normally.
 )
 pause
 exit /b %SERVER_EXIT%

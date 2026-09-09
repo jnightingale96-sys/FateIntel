@@ -4,19 +4,19 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>EnviroChem Studio v2.23 — Identity Foundation</title>
+<title>FateIntel v2.24 — Identity Foundation</title>
 <meta content="#062f31" name="theme-color"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <link href="/static/manifest.webmanifest" rel="manifest"/>
 <link href="/static/icon.svg" rel="icon" type="image/svg+xml"/>
-<link href="/static/styles.css?v=guided-v2.23-alpha3.4.0-applied-environmental-fate" rel="stylesheet"/>
+<link href="/static/styles.css?v=fateintel-guided-v2.24-alpha4.0-core-orchestration" rel="stylesheet"/>
 </head>
 <body>
 <div class="app-shell">
 <aside class="sidebar">
 <a class="brand" href="/">
 <span class="brand-mark"><span></span></span>
-<span><strong>EnviroChem</strong><small>Environmental Fate Intelligence</small></span>
+<span><strong>FateIntel</strong><small>Environmental Fate Intelligence</small></span>
 </a>
 <nav aria-label="Primary navigation" class="primary-nav">
 
@@ -65,7 +65,7 @@
 <main>
 <section class="welcome-strip" id="welcome">
 <div>
-<span class="release-badge">NEW · v2.23 ALPHA 3.4.0 · APPLIED ENVIRONMENTAL FATE</span>
+<span class="release-badge">NEW · v2.24 ALPHA 4.0 · TIER ORCHESTRATION</span>
 <h2>Start with exposure. Refine only where the evidence takes you.</h2>
 <p>Identify the chemical, define use and release, run the Tier 1–2 exposure screen, then move into jurisdiction-specific models and molecular design only when they add value.</p>
 </div>
@@ -272,7 +272,7 @@
 <div class="regulatory-hero">
 <div>
 <span class="regulatory-kicker">139 OFFICIAL-SOURCE FRAMEWORK ENTRIES</span>
-<h3>EnviroChem routes the same chemical through the correct regulatory story.</h3>
+<h3>FateIntel routes the same chemical through the correct regulatory story.</h3>
 <p>The pathway starts with product class and use, then combines international standards, jurisdiction-specific rules, specialist environmental guidance and change-watch warnings.</p>
 </div>
 <div class="verification-stack">
@@ -382,7 +382,7 @@
 </div>
 </div>
 <div class="context-panel hidden" id="regulatory-programme">
-<div><span class="context-icon">▤</span><div><strong>Jurisdiction-specific model plan</strong><small>The exposure scenario stays selected when EU/US changes. EnviroChem replaces the regulatory programme, model requirements and workflow provenance; it does not fabricate an official result.</small></div></div>
+<div><span class="context-icon">▤</span><div><strong>Jurisdiction-specific model plan</strong><small>The exposure scenario stays selected when EU/US changes. FateIntel replaces the regulatory programme, model requirements and workflow provenance; it does not fabricate an official result.</small></div></div>
 <div class="mini-fields hidden" id="fifra-triggers">
 <label><span>Application method</span><select id="fifra-application-method"><option value="">Select…</option><option value="aerial">Aerial</option><option value="ground_broadcast">Ground broadcast spray</option><option value="airblast_orchard">Airblast (orchard)</option><option value="soil_incorporated">Soil incorporated</option><option value="seed_treatment">Seed treatment</option><option value="chemigation">Chemigation</option><option value="granular">Granular</option></select><small>Drives whether spray-drift deposition (AgDRIFT) applies.</small></label>
 <label><span>Use site</span><select id="fifra-use-site"><option value="field_crop">Field crop</option><option value="orchard">Orchard</option><option value="turf">Turf</option><option value="rice_flooded">Rice / flooded</option><option value="residential_outdoor">Residential outdoor</option><option value="enclosed_greenhouse">Enclosed greenhouse</option></select><small>Enclosed greenhouse use has no outdoor terrestrial exposure pathway.</small></label>
@@ -507,7 +507,7 @@
 <div class="assistant-guard"><span>✓</span><p>Uses stored evidence, selected assumptions and model outputs only.</p></div>
 <section class="assistant-section">
 <h4 id="assessment-story-title">What happens to Carbamazepine?</h4>
-<p id="ai-summary">Carbamazepine is expected to enter wastewater in the current pilot. Run the selected emission pathway first; EnviroChem will only show compartments and refinements that were actually selected and calculated.</p>
+<p id="ai-summary">Carbamazepine is expected to enter wastewater in the current pilot. Run the selected emission pathway first; FateIntel will only show compartments and refinements that were actually selected and calculated.</p>
 </section>
 <section class="assistant-section">
 <h4>Dominant fate pathways</h4>
@@ -642,7 +642,7 @@
 <section class="toxswa-detail-card"><div class="mini-heading"><span>Scientific warnings</span><small>applicability + numerical boundary</small></div><div id="toxswa-warnings"><p>No run yet.</p></div></section>
 </div>
 <section class="toxswa-official-import hidden" data-focus-official="1">
-<div><span class="section-kicker">OFFICIAL OUTPUT IMPORT</span><h3>Run FOCUS_TOXSWA locally, then bring the result back into the same audit trail.</h3><p>The importer reads the official summary/report, preserves its SHA-256 hash, model/kernel version and parsed PEC/TWA endpoints. EnviroChem does not fabricate an official result when only a scenario has been prepared.</p></div>
+<div><span class="section-kicker">OFFICIAL OUTPUT IMPORT</span><h3>Run FOCUS_TOXSWA locally, then bring the result back into the same audit trail.</h3><p>The importer reads the official summary/report, preserves its SHA-256 hash, model/kernel version and parsed PEC/TWA endpoints. FateIntel does not fabricate an official result when only a scenario has been prepared.</p></div>
 <div class="toxswa-import-controls"><input id="toxswa-summary-file" type="file" accept=".sum,.txt,.out"><button class="ghost-button" id="prepare-toxswa-workflow" type="button">Prepare official workflow</button><button class="ghost-button" id="import-toxswa-summary" type="button">Parse official summary</button><span id="toxswa-import-status">No official file imported.</span></div>
 <div id="toxswa-official-result" class="toxswa-official-result hidden"></div>
 </section>
@@ -933,7 +933,7 @@
 <section class="design-lab-card">
 <span class="drawer-kicker">SAFER-DESIGN COMPARISON</span>
 <h3>Compare candidate structures against the parent</h3>
-<p>Use candidates that preserve the required function or pharmacophore. EnviroChem compares environmental direction and trade-offs; it does not declare a chemically or biologically valid winner.</p>
+<p>Use candidates that preserve the required function or pharmacophore. FateIntel compares environmental direction and trade-offs; it does not declare a chemically or biologically valid winner.</p>
 <textarea id="candidate-smiles" rows="4">Hydrogenated analogue|NC(=O)N1c2ccccc2CCc2ccccc21</textarea>
 <label><span>Protected SMARTS, comma separated</span><input id="protected-smarts" value="C(=O)N"/></label>
 <button class="ghost-button" id="compare-envirodesign" type="button">Compare candidates</button>
@@ -1054,6 +1054,6 @@
 <div id="drawer-content"></div>
 </aside>
 <div class="toast hidden" id="toast"></div>
-<script src="/static/app.js?v=guided-v2.23-alpha3.4.0-applied-environmental-fate"></script>
+<script src="/static/app.js?v=fateintel-guided-v2.24-alpha4.0-core-orchestration"></script>
 </body>
 </html>

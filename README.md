@@ -1,6 +1,28 @@
-# EnviroChem Studio v2.23.0 Alpha 3.4.0 — Applied Environmental Fate
+# FateIntel v2.24.0 Alpha 4 — Core Orchestration
 
-EnviroChem is an evidence-led environmental fate, exposure and regulatory modelling workspace. Alpha 3.4.0 adds an Applied Environmental Fate screen: SFO/FOMC/HS/DFOP degradation-kinetics fitting against raw replicate residue-decline data, a FOCUS Kinetics-style chi-square model comparison, and FOCUS/VICH GL38 metabolite significance classification -- every model equation, threshold and citation verified directly against the primary regulatory guidance documents, not secondary summaries.
+FateIntel (formerly EnviroChem Studio) is an evidence-led, cross-jurisdiction environmental fate and tiered risk-assessment workspace. Alpha 4 merges the Tier Orchestration engine -- a semantic-contract compatibility system, a PEC/PNEC risk-characterisation engine, immutable orchestrated-assessment records, and a source-backed, fail-closed nanomaterial/PFAS specification registry -- into the existing analytical-identification, degradation-kinetics and evidence-provenance platform. Every value shown must be sourced and citable, or explicitly marked absent, matching the discipline already applied to every other feature in this app.
+
+## v2.24 Alpha 4.0 core orchestration
+
+- **Tier Orchestration engine** (`app/services/orchestration.py`, merged from the Alpha 4 fork).
+  Builds a jurisdiction- and scenario-aware tier sequence (Tier 0-4), evaluates data gaps and
+  uncertainty, and produces an immutable `OrchestratedAssessmentRecord` (hashed, supersession-linked,
+  mutation-blocked at the database layer) rather than a mutable in-place edit.
+- **Semantic model-compatibility system.** Typed `OrchestrationQuantityInput`/model-port contracts
+  (compartment, phase, concentration basis, temporal statistic, spatial scale, substance basis) so
+  one model's output can be checked -- not assumed -- to be a valid input to another; draft contracts
+  require explicit manual review and are never chained automatically.
+- **PEC/PNEC risk-characterisation and cross-jurisdiction comparison routes**, plus a
+  `specialist_substance_group_requirements` registry for nanomaterial and PFAS assessments that fails
+  closed: it flags what a full specialist assessment would require without claiming to perform one.
+  See [`docs/FATEINTEL_NANO_PFAS_REGULATORY_REQUIREMENTS.md`](docs/FATEINTEL_NANO_PFAS_REGULATORY_REQUIREMENTS.md).
+- **New "Tier Orchestration" scientific-workspace screen** (assessment builder, PEC/PNEC sub-form,
+  semantic compatibility inspector, immutable-assessment history) merged into `expert.html`/
+  `expert-app.js` alongside the existing planner, evidence and model-library screens.
+- **`FATEINTEL_*` environment variables** take precedence over the legacy `ENVIROCHEM_*` names
+  (`app/config.py`); both remain supported so existing `.env` files keep working.
+- Full backend test suite green after the merge (331 passed, 5 skipped); the two skipped-optional
+  and cryptography-dependent tests are pre-existing, environment-only gaps, not regressions.
 
 ## v2.23 Alpha 3.4.0 applied environmental fate
 
@@ -180,11 +202,11 @@ Alpha 3 still is not a complete US risk assessment implementation. It executes o
 
 1. Extract the ZIP to a new folder.
 2. Double-click `START_ENVIROCHEM.bat`. The visible console remains open so any startup error can be read.
-3. Keep the terminal window open while EnviroChem is running.
-4. Manual URL (default): `http://127.0.0.1:8792/?build=envirochem-studio-v2.23.0-alpha3.4.0-applied-environmental-fate-2026-09-09`.
+3. Keep the terminal window open while FateIntel is running.
+4. Manual URL (default): `http://127.0.0.1:8792/?build=fateintel-v2.24.0-alpha4.0-core-orchestration-2026-09-09`.
 
 The launcher supports folders containing spaces. If the selected port already serves
-the same EnviroChem build, a second launch reopens that instance. If another
+the same FateIntel build, a second launch reopens that instance. If another
 application owns the port, the launcher selects the next available local port and
 reports it before starting.
 

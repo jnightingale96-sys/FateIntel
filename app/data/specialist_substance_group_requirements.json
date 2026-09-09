@@ -1,0 +1,677 @@
+{
+  "schema_version": "1.0",
+  "title": "FateIntel specialist substance-group requirements",
+  "as_of_date": "2026-09-09",
+  "status": "specification_only",
+  "scope": [
+    "manufactured nanoforms and nanomaterials",
+    "PFAS members, salts, isomers, precursors, terminal products, side-chain fluorinated polymers and fluoropolymers"
+  ],
+  "implementation_boundary": {
+    "executable_rules": false,
+    "regulatory_decision_support": false,
+    "automatic_read_across": false,
+    "automatic_waiver": false,
+    "automatic_pnec": false,
+    "automatic_pmt_vpvm_classification": false,
+    "statement": "This registry records reviewed software requirements and source provenance. It must not be presented as an implemented regulatory method, completed assessment, legal classification or authority acceptance.",
+    "required_runtime_behaviour": "Fail closed into specialist review whenever a nanoform/nanomaterial or PFAS trigger is present until the applicable jurisdictional method and evidence basis are implemented, versioned and validated."
+  },
+  "status_vocabulary": {
+    "specified_not_implemented": "Requirement is evidenced and designed but has no executable calculation.",
+    "external_review_required": "A specialist or external model must produce a reviewed, hashed result before orchestration can continue.",
+    "jurisdiction_check_required": "The legal or guidance status must be checked against the current competent-authority source.",
+    "research_only": "The method may support exploration but cannot claim regulatory alignment."
+  },
+  "specialist_groups": {
+    "nanomaterials": {
+      "display_name": "Nanoforms and manufactured nanomaterials",
+      "runtime_status": "specified_not_implemented",
+      "trigger_logic": {
+        "mode": "jurisdiction_specific_identity_gate",
+        "requirements": [
+          "Retain the jurisdiction's legal definition separately from the scientific particle description.",
+          "Record whether the introduced or registered material is a nanoform, a justified set of similar nanoforms, a nanoscale form of an existing substance, or outside the applicable legal definition.",
+          "Do not infer nano status from a trade name, a single mean size, or a bulk-substance record."
+        ],
+        "source_ids": ["NANO-EU-REG-2018-1881", "NANO-US-TSCA-8A", "NANO-AU-AICIS", "NANO-CA-CEPA-FRAMEWORK"]
+      },
+      "assessment_entities": [
+        "registered nanoform",
+        "justified set of similar nanoforms",
+        "non-nano bulk form",
+        "as-manufactured particle",
+        "surface-treated or coated particle",
+        "aggregate and agglomerate state",
+        "environmentally transformed particle",
+        "dissolved ion or molecule",
+        "released coating, additive or impurity"
+      ],
+      "identity_and_characterisation_fields": [
+        {"field": "chemical_composition", "required": true, "notes": "Include impurities, dopants, additives and stabilisers."},
+        {"field": "number_based_particle_size_distribution", "required": true, "notes": "Store method, lower/upper range and fraction by number; do not substitute mass distribution."},
+        {"field": "shape_and_aspect_ratio", "required": true, "notes": "Include fibres, plates and irregular morphologies where relevant."},
+        {"field": "surface_functionalisation_or_treatment", "required": true, "notes": "Record chemistry, coverage and durability."},
+        {"field": "specific_surface_area", "required": true, "notes": "Record technique and mass- or volume-specific basis."},
+        {"field": "crystallinity_and_phase", "required": true, "notes": "Distinguish polymorphs and amorphous fractions."},
+        {"field": "surface_charge_and_zeta_potential", "required": true, "notes": "Bind to medium composition, pH and ionic strength."},
+        {"field": "dispersion_protocol", "required": true, "notes": "Record stock preparation, sonication energy and dispersant."},
+        {"field": "test_item_batch", "required": true, "notes": "Bind every study to the tested batch and characterisation snapshot."},
+        {"field": "solubility_and_dissolution_rate", "required": true, "notes": "Keep apparent solubility and time-resolved dissolution distinct."}
+      ],
+      "environmental_fate_processes": [
+        {
+          "process": "dispersion stability, homoagglomeration and settling",
+          "assessment": "Use medium-specific time courses under relevant pH, ionic strength and natural organic matter conditions. Preserve preparation and sonication details.",
+          "preferred_methods": ["OECD TG 318"],
+          "source_ids": ["NANO-OECD-TG318"]
+        },
+        {
+          "process": "dissolution and release of dissolved species",
+          "assessment": "Measure apparent solubility and dissolution kinetics over relevant pH and time; track the particulate and dissolved fractions separately.",
+          "preferred_methods": ["OECD TG 322", "OECD GD on dissolution and dispersion stability"],
+          "source_ids": ["NANO-OECD-TG322", "NANO-OECD-GD-DISSOLUTION"]
+        },
+        {
+          "process": "heteroaggregation, attachment and filtration",
+          "assessment": "Represent interactions with natural colloids, suspended solids, porous media and biota; simple equilibrium partitioning is insufficient unless justified.",
+          "preferred_methods": ["weight-of-evidence and validated external transport modelling"],
+          "source_ids": ["NANO-CA-CEPA-FRAMEWORK"]
+        },
+        {
+          "process": "environmental transformation",
+          "assessment": "Track redox reactions, sulfidation, oxidation, phototransformation, coating loss and biomolecule-corona changes as new material states linked to the original nanoform.",
+          "preferred_methods": ["substance-specific study or reviewed read-across"],
+          "source_ids": ["NANO-CA-CEPA-FRAMEWORK", "NANO-ECHA-R6-1"]
+        },
+        {
+          "process": "wastewater treatment and sludge transfer",
+          "assessment": "Account for aggregation and solids association, transformation, dissolved release, effluent passage and sludge transfer without equating removal from water with destruction.",
+          "preferred_methods": ["measured mass balance or validated nano-enabled external model"],
+          "source_ids": ["NANO-CA-CEPA-FRAMEWORK"]
+        },
+        {
+          "process": "sedimentation and resuspension",
+          "assessment": "Treat sediment as a dynamic compartment; retain deposition, burial, resuspension and transformed-particle state.",
+          "preferred_methods": ["OECD GD 420 and site/scenario-specific mass balance"],
+          "source_ids": ["NANO-OECD-GD420"]
+        },
+        {
+          "process": "bioaccumulation",
+          "assessment": "Do not use log Kow as the controlling descriptor for particulate materials. Select waterborne or dietary evidence from dispersion stability, dissolution and likely exposure route.",
+          "preferred_methods": ["OECD TG 305 interpreted through OECD GD 406"],
+          "source_ids": ["NANO-OECD-GD406"]
+        }
+      ],
+      "ecotoxicology_requirements": [
+        "Characterise the tested material and verify exposure concentrations and material state through the test.",
+        "Separate particle-mediated effects from effects of dissolved ions or molecules where scientifically possible.",
+        "Consider settling, agglomeration, feeding inhibition, physical fouling, shading and analytical interference when interpreting effects.",
+        "Use measured or justified time-weighted concentrations when nominal exposure is unstable.",
+        "Record medium chemistry, dispersion preparation and test-vessel conditions needed to reproduce exposure.",
+        "Apply aquatic and sediment guideline adaptations rather than assuming an unmodified conventional test is valid.",
+        "Use endpoint-specific grouping/read-across; similarity for one endpoint does not establish similarity for all endpoints."
+      ],
+      "ecotoxicology_source_ids": ["NANO-OECD-GD420", "NANO-OECD-GD406", "NANO-ECHA-R6-1", "NANO-UK-HSE-ARTICLE54"],
+      "quantity_bases": [
+        "mass concentration of total material",
+        "mass concentration of particulate material",
+        "mass concentration of dissolved species",
+        "particle-number concentration",
+        "surface-area concentration"
+      ],
+      "compatibility_rules": [
+        "PEC and effect benchmark must refer to the same nanoform or justified set, transformation state and composition.",
+        "Total, particulate and dissolved concentrations are not interchangeable.",
+        "Mass, number and surface-area concentration bases may not be converted without measured particle distributions and an explicit model.",
+        "Media pH, ionic strength, dissolved organic matter and exposure preparation must be compared before chaining fate and effect evidence.",
+        "A bulk-substance PNEC cannot be silently applied to a nanoform.",
+        "A model that assumes equilibrium Koc partitioning cannot automatically consume a colloidal-particle output."
+      ],
+      "jurisdiction_routes": [
+        {
+          "jurisdiction": "European Union / EEA",
+          "route": "REACH nanoform-specific information requirements and ECHA endpoint/read-across guidance",
+          "assessment_character": "Regulatory dossier route",
+          "key_requirements": [
+            "Report nanoforms individually or in a scientifically justified set.",
+            "Bind information requirements and chemical safety assessment to the covered nanoform or set.",
+            "Document the characterisation parameters required by the amended REACH annexes.",
+            "Justify endpoint-specific grouping/read-across."
+          ],
+          "status": "external_review_required",
+          "source_ids": ["NANO-EU-REG-2018-1881", "NANO-ECHA-R6-1"]
+        },
+        {
+          "jurisdiction": "United Kingdom (GB)",
+          "route": "UK REACH with HSE recommendations and current nanoform guidance",
+          "assessment_character": "Regulatory dossier route",
+          "key_requirements": [
+            "Use the current UK legal text and HSE recommendations.",
+            "Provide robust study summaries with test-item and batch characterisation.",
+            "Use measured rather than nominal aquatic concentrations where instability makes nominal values unreliable."
+          ],
+          "status": "jurisdiction_check_required",
+          "source_ids": ["NANO-UK-HSE-ARTICLE54"]
+        },
+        {
+          "jurisdiction": "United States",
+          "route": "TSCA new-chemical review, section 8(a) nanoscale reporting and case-specific controls",
+          "assessment_character": "Reporting plus case-specific risk review",
+          "key_requirements": [
+            "Determine whether a discrete nanoscale form is reportable under 40 CFR part 704.",
+            "Preserve manufacture, processing, use, exposure, release and health/safety information.",
+            "For a new chemical, route through PMN review; retain consent-order or SNUR conditions where imposed.",
+            "Do not infer a finding of harm or safety from nanoscale reporting status alone."
+          ],
+          "status": "external_review_required",
+          "source_ids": ["NANO-US-TSCA-8A", "NANO-US-FEDREG-2017"]
+        },
+        {
+          "jurisdiction": "Canada",
+          "route": "CEPA framework for existing and new manufactured nanomaterials",
+          "assessment_character": "Weight-of-evidence risk assessment",
+          "key_requirements": [
+            "Adapt conventional exposure and hazard assessment to particle-specific identity, fate and dosimetry.",
+            "Use multiple quantity metrics when necessary and match PEC/PNEC bases.",
+            "Evaluate aggregation, dissolution, transformation and media effects explicitly."
+          ],
+          "status": "external_review_required",
+          "source_ids": ["NANO-CA-CEPA-FRAMEWORK"]
+        },
+        {
+          "jurisdiction": "Australia",
+          "route": "AICIS introduction categorisation and assessment",
+          "assessment_character": "Introduction-category gate",
+          "key_requirements": [
+            "Apply the current AICIS nanoscale definition and exclusions.",
+            "Treat applicable nanoscale introductions as the specified class/risk category required by current guidance.",
+            "Do not transfer EU or US nano status without rechecking the Australian criteria."
+          ],
+          "status": "jurisdiction_check_required",
+          "source_ids": ["NANO-AU-AICIS"]
+        },
+        {
+          "jurisdiction": "OECD / cross-border evidence",
+          "route": "OECD test guidelines, guidance documents, grouping and Mutual Acceptance of Data",
+          "assessment_character": "Method and evidence-acceptability framework",
+          "key_requirements": [
+            "Record the exact guideline version, deviations, GLP and test-material characterisation.",
+            "Use nano-specific adaptations and guidance for dispersion, dissolution, aquatic/sediment testing and bioaccumulation.",
+            "Confirm receiving-authority acceptance; an OECD document is not itself a marketing authorisation."
+          ],
+          "status": "external_review_required",
+          "source_ids": ["NANO-OECD-TG318", "NANO-OECD-TG322", "NANO-OECD-GD420", "NANO-OECD-GD406"]
+        }
+      ],
+      "required_software_modules": [
+        {"module": "nano_identity_gate", "status": "specified_not_implemented"},
+        {"module": "nanoform_set_and_endpoint_read_across", "status": "specified_not_implemented"},
+        {"module": "particle_state_and_transformation_graph", "status": "specified_not_implemented"},
+        {"module": "multi_basis_exposure_ledger", "status": "specified_not_implemented"},
+        {"module": "nano_test_validity_and_interference_review", "status": "specified_not_implemented"},
+        {"module": "nano_pec_pnec_compatibility_gate", "status": "specified_not_implemented"},
+        {"module": "external_nano_transport_model_handoff", "status": "specified_not_implemented"}
+      ]
+    },
+    "pfas": {
+      "display_name": "Per- and polyfluoroalkyl substances and associated chemicals",
+      "runtime_status": "specified_not_implemented",
+      "trigger_logic": {
+        "mode": "definition_and_structure_evidence_gate",
+        "requirements": [
+          "Record the PFAS definition used by each jurisdiction or programme; do not treat the OECD structural terminology as a universally adopted legal scope.",
+          "Record structure-level evidence and group membership with confidence, exclusions and source version.",
+          "Distinguish individual analytes from class-, sum- and total-fluorine measurements."
+        ],
+        "source_ids": ["PFAS-OECD-TERMINOLOGY", "PFAS-EU-COMMISSION", "PFAS-CA-STATE", "PFAS-AU-AICIS"]
+      },
+      "assessment_entities": [
+        "individual PFAS member",
+        "linear and branched isomers",
+        "acid and salt forms",
+        "precursor",
+        "terminal perfluoroalkyl acid",
+        "ultrashort-chain or highly mobile product including TFA when structurally relevant",
+        "side-chain fluorinated polymer",
+        "fluoropolymer",
+        "commercial formulation or mixture",
+        "targeted analyte sum",
+        "extractable or total organic fluorine fraction"
+      ],
+      "identity_and_measurement_fields": [
+        {"field": "pfas_definition_and_version", "required": true, "notes": "Store OECD terminology separately from each legal/programme definition."},
+        {"field": "exact_structure_and_identifiers", "required": true, "notes": "Include CAS, InChIKey, formula, charge, salt/counterion and isomer information where known."},
+        {"field": "subgroup_and_chain_length", "required": true, "notes": "Record functional group, perfluoroalkyl chain and precursor/terminal role."},
+        {"field": "analytical_method", "required": true, "notes": "Record method version, analytes, matrices, reporting limits, recovery, blanks and isotope dilution."},
+        {"field": "measurement_basis", "required": true, "notes": "Target analyte, sum, TOP assay, EOF/TOF or non-target result; these are not interchangeable."},
+        {"field": "precursor_relationships", "required": true, "notes": "Store transformations as a directed network, not a single parent-only half-life."},
+        {"field": "phase_and_interface", "required": true, "notes": "Dissolved, colloidal, particulate, air-water interface, NAPL-water interface and solid-associated states."},
+        {"field": "matrix_properties", "required": true, "notes": "pH, ionic strength/salinity, organic carbon, mineralogy, redox and relevant cosolutes."},
+        {"field": "protein_binding_or_tissue_basis", "required": true, "notes": "For biota, record tissue, wet/dry/lipid basis and whole-body versus organ data."}
+      ],
+      "environmental_fate_processes": [
+        {
+          "process": "source inventory and life-cycle release",
+          "assessment": "Quantify manufacture, formulation, product use, aqueous film-forming foam use, wastewater, biosolids, landfill leachate, recycling, incineration and other relevant releases. Transfer is not destruction.",
+          "source_ids": ["PFAS-CA-STATE", "PFAS-EPA-DISPOSAL", "PFAS-AU-NEMP31"]
+        },
+        {
+          "process": "aqueous advection, dispersion and groundwater transport",
+          "assessment": "Use a conceptual site model and site-specific hydrogeology. Track mobile ionic species and interactions with solids and interfaces; do not assume a single generic Koc describes transport.",
+          "source_ids": ["PFAS-AU-NEMP31", "PFAS-ITRC-FATE"]
+        },
+        {
+          "process": "sorption and interfacial retention",
+          "assessment": "Evaluate hydrophobic and electrostatic interactions, organic carbon/mineral surfaces, air-water and NAPL-water interfaces, concentration dependence, chain length and functional group.",
+          "source_ids": ["PFAS-AU-NEMP31", "PFAS-ITRC-FATE"]
+        },
+        {
+          "process": "precursor transformation",
+          "assessment": "Represent precursor-to-intermediate-to-terminal product networks. Absence of target PFAAs at one time does not establish absence of future persistent products.",
+          "source_ids": ["PFAS-CA-STATE", "PFAS-AU-NEMP31", "PFAS-ITRC-FATE"]
+        },
+        {
+          "process": "volatilisation and atmospheric transport",
+          "assessment": "Treat neutral volatile precursors separately from ionic terminal acids and salts; include atmospheric transformation/deposition where relevant.",
+          "source_ids": ["PFAS-CA-STATE", "PFAS-ITRC-FATE"]
+        },
+        {
+          "process": "wastewater, biosolids, landfill, recycling and destruction",
+          "assessment": "Maintain mass flow across effluent, sludge/biosolids, leachate, air emissions and residues. A removal efficiency cannot be labelled degradation without analytical mass-balance evidence.",
+          "source_ids": ["PFAS-EPA-DISPOSAL", "PFAS-AU-NEMP31", "PFAS-CA-STATE"]
+        },
+        {
+          "process": "bioaccumulation and food-web transfer",
+          "assessment": "Use measured tissue- and species-relevant evidence. Protein binding, dietary exposure and air-breathing-organism biomagnification mean lipid-normalised BCF and log Kow alone are inadequate.",
+          "source_ids": ["PFAS-CA-STATE", "PFAS-AU-NEMP31", "PFAS-EPA-PFOA-ALC", "PFAS-EPA-PFOS-ALC"]
+        }
+      ],
+      "ecotoxicology_requirements": [
+        "Preserve exact analyte, salt/isomer form, purity and precursor/terminal-product status.",
+        "Match water-column criteria, sediment/soil benchmarks and tissue values to the correct matrix and concentration basis.",
+        "Represent acute, chronic and tissue criteria with their distinct averaging periods and frequency assumptions.",
+        "Support individual-substance, sum, mixture and class-based lines of evidence without treating them as mathematically interchangeable.",
+        "Record dietary and tissue exposure where water-only assessment is not protective or not scientifically representative.",
+        "Do not use a single generic PFAS PNEC or extrapolate one member's endpoint to the entire class without an explicit, reviewed grouping rationale.",
+        "Maintain targeted, precursor-oxidation, total-organic-fluorine and non-target measurements as separate evidence types."
+      ],
+      "ecotoxicology_source_ids": ["PFAS-EPA-PFOA-ALC", "PFAS-EPA-PFOS-ALC", "PFAS-AU-NEMP31", "PFAS-CA-STATE"],
+      "pmt_vpvm_screen": {
+        "runtime_status": "specified_not_implemented",
+        "legal_scope": "EU CLP hazard classification criteria; elsewhere a prioritisation or policy concept only where adopted",
+        "criteria": {
+          "P": "degradation half-life >60 d in marine water, >40 d in fresh/estuarine water, >180 d in marine sediment, >120 d in fresh/estuarine sediment, or >120 d in soil",
+          "M": "log Koc <3; for ionisable substances, the lowest log Koc across pH 4-9",
+          "T": "long-term aquatic NOEC or ECx <0.01 mg/L, or specified CMR/STOT RE/endocrine-disruption classifications",
+          "vP": "degradation half-life >60 d in marine/fresh/estuarine water or >180 d in marine/freshwater/estuarine sediment or soil",
+          "vM": "log Koc <2; for ionisable substances, the lowest log Koc across pH 4-9"
+        },
+        "guardrails": [
+          "Implement only against the exact current legal text and full weight-of-evidence provisions.",
+          "Do not label PFAS as PMT/vPvM merely because it is a PFAS.",
+          "Do not describe PMT/vPvM as a REACH-created class; the harmonised criteria were introduced into EU CLP by Delegated Regulation (EU) 2023/707.",
+          "For GB, label the current HSE/Defra PMT approach as interim unless and until it is formally adopted in law."
+        ],
+        "source_ids": ["PFAS-EU-CLP-2023-707", "PFAS-UK-PMT-INTERIM"]
+      },
+      "compatibility_rules": [
+        "The PEC and benchmark must identify the same PFAS member or explicitly defined sum/group.",
+        "Targeted concentration, TOP assay response, EOF/TOF and non-target signal are not interchangeable quantities.",
+        "Linear/branched isomer and acid/salt conversions require a documented molar basis.",
+        "Water, porewater, sediment, soil, whole-body and tissue-specific values cannot be chained without an explicit transfer model.",
+        "Dissolved, colloidal, particulate and interfacial mass must remain distinguishable.",
+        "A precursor concentration cannot be compared directly with a terminal-product PNEC unless a reviewed transformation and stoichiometric model is applied.",
+        "A conventional organic-chemical Koc model cannot automatically drive PFAS groundwater transport.",
+        "Water-column and tissue criteria retain their distinct temporal/frequency and concentration bases."
+      ],
+      "jurisdiction_routes": [
+        {
+          "jurisdiction": "European Union / EEA",
+          "route": "Substance-specific REACH/CLP and environmental-media requirements, plus the evolving broad PFAS restriction process",
+          "assessment_character": "Hazard classification, risk assessment and restriction are distinct workflows",
+          "key_requirements": [
+            "Apply the current CLP PMT/vPvM criteria only through a complete weight-of-evidence evaluation.",
+            "Check the current ECHA/Commission restriction status; the 2023 universal PFAS restriction dossier is a proposal until the legal process is complete.",
+            "Retain substance-specific water, biota and other legal standards separately from proposed class restrictions."
+          ],
+          "status": "jurisdiction_check_required",
+          "source_ids": ["PFAS-EU-CLP-2023-707", "PFAS-EU-COMMISSION"]
+        },
+        {
+          "jurisdiction": "United Kingdom (GB)",
+          "route": "UK REACH/GB CLP and interim PMT approach for PFAS risk management",
+          "assessment_character": "Existing law plus interim policy prioritisation",
+          "key_requirements": [
+            "State clearly that the published PMT approach is interim and not itself a harmonised GB legal classification.",
+            "Use it to prioritise evidence and risk-management questions, not to fabricate a binding classification.",
+            "Check current HSE/Defra decisions before relying on the route."
+          ],
+          "status": "jurisdiction_check_required",
+          "source_ids": ["PFAS-UK-PMT-INTERIM"]
+        },
+        {
+          "jurisdiction": "United States",
+          "route": "Programme-specific TSCA, CERCLA/RCRA/CWA/SDWA/FIFRA or site-assessment pathway",
+          "assessment_character": "Fragmented by statute, PFAS member, medium and decision context",
+          "key_requirements": [
+            "Route new PFAS through the current TSCA new-chemicals framework and retain case-specific exposure/release conclusions.",
+            "Use current, method-specific analytical evidence such as EPA Method 1633 where applicable.",
+            "Represent EPA aquatic-life water-column and tissue criteria with their exact status and basis.",
+            "Treat EPA destruction/disposal guidance as nonbinding guidance and retain technology-specific uncertainty."
+          ],
+          "status": "external_review_required",
+          "source_ids": ["PFAS-EPA-NEW-CHEM", "PFAS-EPA-METHODS", "PFAS-EPA-PFOA-ALC", "PFAS-EPA-PFOS-ALC", "PFAS-EPA-DISPOSAL"]
+        },
+        {
+          "jurisdiction": "Canada",
+          "route": "CEPA class assessment and subsequent risk-management instruments",
+          "assessment_character": "Class-level weight of evidence with exclusions and instrument-specific follow-on",
+          "key_requirements": [
+            "Use the exact class scope and exclusions in the current Government of Canada report.",
+            "Preserve evidence on precursors, terminal PFAAs, transport, exposure and effects across environmental and human-health lines.",
+            "Do not turn a qualitative class conclusion into a member-specific numeric RQ without suitable member-specific evidence."
+          ],
+          "status": "jurisdiction_check_required",
+          "source_ids": ["PFAS-CA-STATE"]
+        },
+        {
+          "jurisdiction": "Australia",
+          "route": "PFAS NEMP 3.1 contaminated-site/environmental management plus AICIS introduction assessment",
+          "assessment_character": "National guidance plus industrial-chemical introduction gate",
+          "key_requirements": [
+            "Build and iteratively refine a conceptual site model covering sources, pathways, receptors and temporal variability.",
+            "Use targeted and broader analytical lines of evidence where appropriate; preserve TOP/EOF/TOF limitations.",
+            "Assess soil, groundwater, surface water, sediment, biota, biosolids, landfill and reuse pathways as applicable.",
+            "Apply the current AICIS designated-fluorinated-chemical categorisation separately from contaminated-site assessment."
+          ],
+          "status": "external_review_required",
+          "source_ids": ["PFAS-AU-NEMP31", "PFAS-AU-AICIS"]
+        },
+        {
+          "jurisdiction": "Global / Stockholm Convention",
+          "route": "POPs listing and national implementation for listed PFAS",
+          "assessment_character": "International elimination/restriction obligations implemented through national law",
+          "key_requirements": [
+            "Check chemical, salt/isomer/related-compound scope, annex, exemptions and national implementation.",
+            "Keep Stockholm listing separate from broader OECD PFAS identity and domestic class assessments."
+          ],
+          "status": "jurisdiction_check_required",
+          "source_ids": ["PFAS-STOCKHOLM"]
+        }
+      ],
+      "required_software_modules": [
+        {"module": "pfas_definition_and_structure_gate", "status": "specified_not_implemented"},
+        {"module": "pfas_member_precursor_product_graph", "status": "specified_not_implemented"},
+        {"module": "target_sum_total_fluorine_evidence_model", "status": "specified_not_implemented"},
+        {"module": "pmt_vpvm_weight_of_evidence", "status": "specified_not_implemented"},
+        {"module": "pfas_multiphase_source_mass_ledger", "status": "specified_not_implemented"},
+        {"module": "site_specific_groundwater_handoff", "status": "specified_not_implemented"},
+        {"module": "water_tissue_benchmark_and_mixture_characterisation", "status": "specified_not_implemented"},
+        {"module": "pfas_regulatory_change_watch", "status": "specified_not_implemented"}
+      ]
+    }
+  },
+  "cross_group_orchestration_requirements": [
+    "A specialist-group trigger must block ordinary neutral-organic defaults until reviewed applicability is recorded.",
+    "Every entity transition must preserve mass and identity provenance: nanoform to transformed particle/dissolved species, or PFAS precursor to terminal product.",
+    "A result may be displayed as exploratory, but it may not control a regulatory tier until method, jurisdiction, identity, concentration basis, medium, time basis and evidence provenance are compatible.",
+    "Research models must use controlled handoff/import with executable/version, input snapshot, raw-output hashes, endpoint mapping and independent review.",
+    "A classification/restriction/emission-minimisation conclusion is not reducible to an RQ and needs a separate decision object."
+  ],
+  "implementation_phases": [
+    {
+      "phase": 1,
+      "name": "Identity and applicability gates",
+      "deliverables": ["jurisdiction-specific trigger", "entity graph", "batch/form/member identity", "fail-closed routing"],
+      "exit_criteria": "No specialist material can silently enter the conventional-organic workflow."
+    },
+    {
+      "phase": 2,
+      "name": "Evidence and analytical basis",
+      "deliverables": ["nano characterisation schema", "PFAS analytical-basis schema", "study validity review", "source snapshots"],
+      "exit_criteria": "Every fate/effect value identifies the tested/measured entity, method and concentration basis."
+    },
+    {
+      "phase": 3,
+      "name": "Fate state and mass ledgers",
+      "deliverables": ["particle/dissolved mass ledger", "PFAS precursor-product ledger", "interface/phase states", "waste-transfer accounting"],
+      "exit_criteria": "Transfer, transformation and destruction are distinguishable and mass closure is auditable."
+    },
+    {
+      "phase": 4,
+      "name": "Ecotoxicology and risk characterisation",
+      "deliverables": ["nano test-validity adaptations", "multi-basis PEC/PNEC gate", "PFAS water/tissue benchmarks", "mixture/group logic"],
+      "exit_criteria": "Only compatible evidence can generate a decision-eligible risk result."
+    },
+    {
+      "phase": 5,
+      "name": "Jurisdictional workflows and external models",
+      "deliverables": ["EU/UK/US/Canada/Australia routes", "OECD versioning", "external transport-model handoffs", "change watch"],
+      "exit_criteria": "Regulatory-aligned and research-only pathways are automatically and correctly distinguished."
+    }
+  ],
+  "minimum_acceptance_tests": [
+    "A bulk TiO2 record cannot satisfy a nanoform identity requirement without a reviewed relationship.",
+    "A dissolved-ion ecotoxicity endpoint cannot be compared directly with total-particle PEC.",
+    "A mass concentration cannot be converted to particle-number concentration without measured particle data and an explicit model.",
+    "An OECD PFAS structural match does not automatically create a legal PFAS-scope decision for every jurisdiction.",
+    "A PFAS TOP assay result cannot be entered as a target-analyte concentration.",
+    "A precursor PEC cannot be divided by a terminal-product PNEC without an accepted transformation model.",
+    "A conventional Koc-only groundwater result cannot be marked regulatory-aligned for PFAS or a colloidal nanomaterial.",
+    "A PMT/vPvM screen cannot conclude without complete persistence, mobility and toxicity weight-of-evidence inputs.",
+    "A US aquatic tissue criterion cannot be treated as a water-column PNEC.",
+    "A reviewed external site model preserves inputs, version, hashes, mapped endpoints and reviewer decision.",
+    "A current source check is required when an instrument is marked proposed, interim, nonbinding or living guidance."
+  ],
+  "sources": [
+    {
+      "id": "NANO-EU-REG-2018-1881",
+      "authority": "European Commission / EUR-Lex",
+      "title": "Commission Regulation (EU) 2018/1881 amending REACH annexes to address nanoforms",
+      "date_or_version": "2018; applicable from 2020-01-01",
+      "url": "https://eur-lex.europa.eu/eli/reg/2018/1881/oj/eng",
+      "source_class": "binding_law"
+    },
+    {
+      "id": "NANO-ECHA-R6-1",
+      "authority": "European Chemicals Agency",
+      "title": "Appendix R.6-1 for nanoforms applicable to Guidance Chapter R.6: QSARs and grouping of chemicals",
+      "date_or_version": "December 2019",
+      "url": "https://echa.europa.eu/documents/10162/2324906/appendix_r6_nanomaterials_en.pdf/71ad76f0-ab4c-fb04-acba-074cf045eaaa",
+      "source_class": "regulatory_guidance"
+    },
+    {
+      "id": "NANO-UK-HSE-ARTICLE54",
+      "authority": "UK Health and Safety Executive",
+      "title": "Article 54 reports and recommendations: nanomaterials recommendations",
+      "date_or_version": "page current at 2026-09-09",
+      "url": "https://www.hse.gov.uk/reach/reports/recommendations.htm",
+      "source_class": "competent_authority_guidance"
+    },
+    {
+      "id": "NANO-OECD-TG318",
+      "authority": "OECD",
+      "title": "Test No. 318: Dispersion Stability of Nanomaterials in Simulated Environmental Media",
+      "date_or_version": "2017",
+      "url": "https://www.oecd.org/en/publications/2017/10/test-no-318-dispersion-stability-of-nanomaterials-in-simulated-environmental-media_g1g837a1.html",
+      "source_class": "test_guideline"
+    },
+    {
+      "id": "NANO-OECD-GD-DISSOLUTION",
+      "authority": "OECD",
+      "title": "Guidance Document for the Testing of Dissolution and Dispersion Stability of Nanomaterials and the Use of the Data for Further Environmental Testing and Assessment",
+      "date_or_version": "2020",
+      "url": "https://www.oecd.org/en/publications/guidance-document-for-the-testing-of-dissolution-and-dispersion-stability-of-nanomaterials-and-the-use-of-the-data-for-further-environmental-testing-and-assessment_f0539ec5-en.html",
+      "source_class": "technical_guidance"
+    },
+    {
+      "id": "NANO-OECD-TG322",
+      "authority": "OECD",
+      "title": "Test No. 322: Determination of the Solubility and Dissolution Rate of Nanomaterials for Environmental Fate Assessment",
+      "date_or_version": "2026",
+      "url": "https://www.oecd.org/en/publications/2026/07/test-no-322-determination-of-the-solubility-and-dissolution-rate-of-nanomaterials-for-environmental-fate-assessment_9a487069.html",
+      "source_class": "test_guideline"
+    },
+    {
+      "id": "NANO-OECD-GD420",
+      "authority": "OECD",
+      "title": "Guidance Document on Aquatic and Sediment Toxicological Testing of Nanomaterials, Second Edition",
+      "date_or_version": "2025",
+      "url": "https://www.oecd.org/en/publications/guidance-document-on-aquatic-and-sediment-toxicological-testing-of-nanomaterials-second-edition_17b3ce6f-en.html",
+      "source_class": "technical_guidance"
+    },
+    {
+      "id": "NANO-OECD-GD406",
+      "authority": "OECD",
+      "title": "Guidance Document on an Integrated Approach on Testing and Assessment for the Apparent Accumulation Potential of Nanomaterials",
+      "date_or_version": "2025",
+      "url": "https://one.oecd.org/document/ENV/CBC/MONO(2025)3/en/pdf",
+      "source_class": "technical_guidance"
+    },
+    {
+      "id": "NANO-US-TSCA-8A",
+      "authority": "US Environmental Protection Agency",
+      "title": "Control of Nanoscale Materials under the Toxic Substances Control Act",
+      "date_or_version": "page current at 2026-09-09",
+      "url": "https://www.epa.gov/reviewing-new-chemicals-under-toxic-substances-control-act-tsca/control-nanoscale-materials-under",
+      "source_class": "regulatory_programme_guidance"
+    },
+    {
+      "id": "NANO-US-FEDREG-2017",
+      "authority": "US Environmental Protection Agency / Federal Register",
+      "title": "Chemical Substances When Manufactured or Processed as Nanoscale Materials; TSCA Reporting and Recordkeeping Requirements",
+      "date_or_version": "2017 final rule",
+      "url": "https://www.federalregister.gov/documents/2017/01/12/2017-00052/chemical-substances-when-manufactured-or-processed-as-nanoscale-materials-tsca-reporting-and",
+      "source_class": "binding_rule"
+    },
+    {
+      "id": "NANO-CA-CEPA-FRAMEWORK",
+      "authority": "Environment and Climate Change Canada / Health Canada",
+      "title": "Framework for the Risk Assessment of Manufactured Nanomaterials under CEPA",
+      "date_or_version": "2026",
+      "url": "https://www.canada.ca/en/environment-climate-change/services/evaluating-existing-substances/framework-risk-assessment-manufactured-nanomaterials-cepa.html",
+      "source_class": "government_risk_assessment_framework"
+    },
+    {
+      "id": "NANO-AU-AICIS",
+      "authority": "Australian Industrial Chemicals Introduction Scheme",
+      "title": "Categorisation of chemicals at the nanoscale",
+      "date_or_version": "page current at 2026-09-09",
+      "url": "https://www.industrialchemicals.gov.au/help-and-guides/extra-resources-help-you-categorise-your-introduction/categorisation-chemicals-nanoscale",
+      "source_class": "competent_authority_guidance"
+    },
+    {
+      "id": "PFAS-OECD-TERMINOLOGY",
+      "authority": "OECD",
+      "title": "Reconciling Terminology of the Universe of Per- and Polyfluoroalkyl Substances",
+      "date_or_version": "2021",
+      "url": "https://www.oecd.org/en/publications/reconciling-terminology-of-the-universe-of-per-and-polyfluoroalkyl-substances_e458e796-en.html",
+      "source_class": "technical_terminology"
+    },
+    {
+      "id": "PFAS-EU-CLP-2023-707",
+      "authority": "European Commission / EUR-Lex",
+      "title": "Commission Delegated Regulation (EU) 2023/707 introducing, among other classes, PMT/vPvM criteria into CLP",
+      "date_or_version": "2023",
+      "url": "https://eur-lex.europa.eu/eli/reg_del/2023/707/oj/eng",
+      "source_class": "binding_law"
+    },
+    {
+      "id": "PFAS-EU-COMMISSION",
+      "authority": "European Commission",
+      "title": "PFAS pollution and the EU restriction process",
+      "date_or_version": "page current at 2026-09-09",
+      "url": "https://environment.ec.europa.eu/topics/chemicals/pfas-pollution_en",
+      "source_class": "official_status_page"
+    },
+    {
+      "id": "PFAS-UK-PMT-INTERIM",
+      "authority": "UK Department for Environment, Food and Rural Affairs / HSE",
+      "title": "Interim approach to the PMT concept to support UK REACH risk management of PFAS",
+      "date_or_version": "interim position; page current at 2026-09-09",
+      "url": "https://www.gov.uk/government/publications/interim-position-statement-on-the-approach-to-pmt-concept-to-support-uk-reach-risk-management-of-pfas/interim-approach-to-the-pmt-concept-to-support-uk-reach-risk-management-of-pfas",
+      "source_class": "interim_policy_guidance"
+    },
+    {
+      "id": "PFAS-EPA-NEW-CHEM",
+      "authority": "US Environmental Protection Agency",
+      "title": "Framework for Addressing New PFAS and New Uses of PFAS under TSCA",
+      "date_or_version": "2023 framework; page current at 2026-09-09",
+      "url": "https://www.epa.gov/reviewing-new-chemicals-under-toxic-substances-control-act-tsca/framework-addressing-new-pfas-and",
+      "source_class": "regulatory_programme_framework"
+    },
+    {
+      "id": "PFAS-EPA-METHODS",
+      "authority": "US Environmental Protection Agency",
+      "title": "PFAS analytical methods development and sampling research, including Method 1633",
+      "date_or_version": "page current at 2026-09-09",
+      "url": "https://www.epa.gov/water-research/pfas-analytical-methods-development-and-sampling-research",
+      "source_class": "official_analytical_methods_page"
+    },
+    {
+      "id": "PFAS-EPA-PFOA-ALC",
+      "authority": "US Environmental Protection Agency",
+      "title": "Aquatic Life Criteria for Perfluorooctanoic Acid (PFOA)",
+      "date_or_version": "final recommended criteria, 2024",
+      "url": "https://www.epa.gov/wqc/aquatic-life-criteria-perfluorooctanoic-acid-pfoa",
+      "source_class": "recommended_criteria"
+    },
+    {
+      "id": "PFAS-EPA-PFOS-ALC",
+      "authority": "US Environmental Protection Agency",
+      "title": "Aquatic Life Criteria for Perfluorooctane Sulfonate (PFOS)",
+      "date_or_version": "final recommended criteria, 2024",
+      "url": "https://www.epa.gov/wqc/aquatic-life-criteria-perfluorooctane-sulfonate-pfos",
+      "source_class": "recommended_criteria"
+    },
+    {
+      "id": "PFAS-EPA-DISPOSAL",
+      "authority": "US Environmental Protection Agency",
+      "title": "Interim Guidance on the Destruction and Disposal of PFAS and Materials Containing PFAS",
+      "date_or_version": "2026 interim guidance",
+      "url": "https://www.epa.gov/pfas/interim-guidance-destruction-and-disposal-pfas-and-materials-containing-pfas",
+      "source_class": "nonbinding_interim_guidance"
+    },
+    {
+      "id": "PFAS-CA-STATE",
+      "authority": "Environment and Climate Change Canada / Health Canada",
+      "title": "State of Per- and Polyfluoroalkyl Substances (PFAS) Report",
+      "date_or_version": "2025",
+      "url": "https://www.canada.ca/en/environment-climate-change/services/evaluating-existing-substances/state-per-polyfluoroalkyl-substances-report.html",
+      "source_class": "government_assessment_report"
+    },
+    {
+      "id": "PFAS-AU-NEMP31",
+      "authority": "Australian Government / Heads of EPAs Australia and New Zealand",
+      "title": "PFAS National Environmental Management Plan 3.1",
+      "date_or_version": "2026",
+      "url": "https://www.dcceew.gov.au/environment/protection/publications/pfas-nemp-3",
+      "source_class": "national_environmental_guidance"
+    },
+    {
+      "id": "PFAS-AU-AICIS",
+      "authority": "Australian Industrial Chemicals Introduction Scheme",
+      "title": "Categorisation of fluorinated chemicals",
+      "date_or_version": "page current at 2026-09-09",
+      "url": "https://www.industrialchemicals.gov.au/help-and-guides/extra-resources-help-you-categorise-your-introduction/categorisation-fluorinated-chemicals",
+      "source_class": "competent_authority_guidance"
+    },
+    {
+      "id": "PFAS-ITRC-FATE",
+      "authority": "Interstate Technology and Regulatory Council",
+      "title": "PFAS Technical and Regulatory Guidance: Environmental Fate and Transport Processes",
+      "date_or_version": "living technical guidance; page current at 2026-09-09",
+      "url": "https://pfas-1.itrcweb.org/5-environmental-fate-and-transport-processes/",
+      "source_class": "interstate_technical_guidance"
+    },
+    {
+      "id": "PFAS-STOCKHOLM",
+      "authority": "Secretariat of the Stockholm Convention",
+      "title": "PFAS listed under the Stockholm Convention",
+      "date_or_version": "page current at 2026-09-09",
+      "url": "https://www.pops.int/Implementation/IndustrialPOPs/PFAS/Overview/tabid/5221/Default.aspx",
+      "source_class": "international_treaty_status"
+    }
+  ]
+}

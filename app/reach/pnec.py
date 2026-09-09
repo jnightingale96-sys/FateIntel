@@ -40,12 +40,12 @@ def derive_pnec(
     """Derive a freshwater screening PNEC without inferring the AF.
 
     Assessment-factor selection depends on the usable dataset and expert
-    interpretation.  EnviroChem therefore performs and records the arithmetic,
+    interpretation.  FateIntel therefore performs and records the arithmetic,
     but never chooses a factor from the endpoint label alone.
     """
 
     if target_compartment != "freshwater":
-        raise ValueError("EnviroChem currently supports explicit-AF freshwater PNEC derivation only")
+        raise ValueError("FateIntel currently supports explicit-AF freshwater PNEC derivation only")
     if endpoint_type not in set(SUPPORTED_AQUATIC_ENDPOINTS.values()):
         raise ValueError("Endpoint type must be LC50, EC50, NOEC or EC10")
     rationale = assessment_factor_rationale.strip()

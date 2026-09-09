@@ -1,4 +1,17 @@
-# EnviroChem Studio v2.23 Alpha 3.4.0 progress status
+# FateIntel v2.24 Alpha 4.0 progress status
+
+## Alpha 4.0 core orchestration
+
+- Merged the Alpha 4 fork's Tier Orchestration engine (`app/services/orchestration.py`),
+  semantic model-compatibility system, PEC/PNEC risk-characterisation and cross-jurisdiction
+  comparison routes, immutable `OrchestratedAssessmentRecord` model (database-level
+  mutation-blocking listener), and the nano/PFAS specialist-substance-group requirements
+  registry into this codebase, which stays canonical going forward.
+- New "Tier Orchestration" scientific-workspace screen merged into `expert.html`/`expert-app.js`.
+- Rebranded EnviroChem Studio -> FateIntel across the app (title, headers, nav, `app/config.py`
+  dual `FATEINTEL_*`/`ENVIROCHEM_*` env-var resolution, launcher scripts).
+- Full backend suite green after the merge: 331 passed, 5 skipped (pre-existing environment-only
+  skips, not regressions).
 
 ## Alpha 3.4.0 applied environmental fate
 

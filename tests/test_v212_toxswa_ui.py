@@ -44,7 +44,7 @@ def test_official_workflow_and_output_import_are_wired_in_frontend():
 
 
 def test_current_port_build_and_crisp_toxswa_geometry():
-    assert "v2.23" in BUILD_ID
+    assert "v2.24" in BUILD_ID
     assert "8792" not in BUILD_ID
     assert 'set "PORT=%ENVIROCHEM_PORT%"' in LAUNCHER
     assert '.toxswa-shell{' in CSS and 'border:1px solid #d3dedb' in CSS

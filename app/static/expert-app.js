@@ -1,4 +1,4 @@
-let state = {projects:[], chemicals:[], project:null, chemical:null, projectChemicalIds:new Set(), profile:null, evidence:[], selection:null, emissionRuns:[], activityRuns:[], latestEmission:null, frameworks:[], groups:[], scenarios:[], models:[], contracts:{}, externalIntegrations:[], modelWorkflows:[], selectedWorkflow:null};
+let state = {projects:[], chemicals:[], project:null, chemical:null, projectChemicalIds:new Set(), profile:null, evidence:[], selection:null, emissionRuns:[], activityRuns:[], latestEmission:null, frameworks:[], groups:[], scenarios:[], models:[], contracts:{}, externalIntegrations:[], modelWorkflows:[], selectedWorkflow:null, orchestrationManifest:null, semanticContracts:null, orchestratedAssessments:[], orchestrationPreview:null};
 const el = id => document.getElementById(id);
 const fmt = (v,d=4) => v === null || v === undefined ? "—" : Number(v).toPrecision(d);
 
@@ -24,10 +24,11 @@ function page(name){
   document.querySelectorAll(".nav").forEach(x=>x.classList.remove("active"));
   el(`page-${name}`).classList.add("active");
   document.querySelector(`[data-page="${name}"]`).classList.add("active");
-  el("title").textContent = {project:"Dashboard",planner:"Assessment Planner",evidence:"Evidence",selection:"Selection",sorption:"Sorption / Koc",emission:"Emission & Metabolism",wwtp:"Activity SimpleTreat & Risk",irrigation:"Irrigation EU ↔ US",models:"Model Library",homeapp:"Home App",labsafety:"Lab Safety",reach:"REACH Review Bundle",audit:"Audit Trail"}[name];
+  el("title").textContent = {project:"Dashboard",planner:"Assessment Planner",orchestration:"Tier Orchestration",evidence:"Evidence",selection:"Selection",sorption:"Sorption / Koc",emission:"Emission & Metabolism",wwtp:"Activity SimpleTreat & Risk",irrigation:"Irrigation EU ↔ US",models:"Model Library",homeapp:"Home App",labsafety:"Lab Safety",reach:"REACH Review Bundle",audit:"Audit Trail"}[name];
   if(name==="audit") loadAudit();
   if(name==="models") loadModelWorkflows();
   if(name==="reach") loadReachWorkspace().catch(error=>showToast(error.message,"error"));
+  if(name==="orchestration") loadOrchestratedAssessments().catch(error=>showToast(error.message,"error"));
 }
 document.querySelectorAll(".nav").forEach(b=>b.onclick=()=>page(b.dataset.page));
 
@@ -39,11 +40,12 @@ async function api(url, opts={}){
 }
 
 async function init(){
-  [state.projects, state.chemicals, state.frameworks, state.groups, state.scenarios, state.models, state.contracts, state.externalIntegrations] = await Promise.all([
+  [state.projects, state.chemicals, state.frameworks, state.groups, state.scenarios, state.models, state.contracts, state.externalIntegrations, state.orchestrationManifest, state.semanticContracts] = await Promise.all([
     api("/api/projects"), api("/api/chemicals"), api("/api/frameworks"),
-    api("/api/contaminant-groups"), api("/api/scenarios"), api("/api/model-registry"), api("/api/model-adapter-contracts"), api("/api/external-model-integrations")
+    api("/api/contaminant-groups"), api("/api/scenarios"), api("/api/model-registry"), api("/api/model-adapter-contracts"), api("/api/external-model-integrations"), api("/api/orchestration/manifest"), api("/api/orchestration/model-contracts")
   ]);
   initialisePlanner();
+  initialiseOrchestration();
   initialiseModelWorkflow();
   renderModelLibrary();
   renderExternalIntegrations();
@@ -79,6 +81,7 @@ async function selectProject(p){
   await loadEmissionRuns();
   await loadActivityRuns();
   await loadModelWorkflows();
+  await loadOrchestratedAssessments();
 }
 
 function renderChemicalSelector(){
@@ -90,12 +93,14 @@ el("project-chemical-select").onchange=async()=>{
   setHomeProfileBinding(false);
   state.chemical=state.chemicals.find(c=>c.id===Number(el("project-chemical-select").value));
   state.evidence=[];
+  renderOrchestrationEvidenceOptions();
   renderChemical(state.projectChemicalIds.has(state.chemical.id));
   await loadAssessmentProfileIntoExpert();
   if(state.projectChemicalIds.has(state.chemical.id)) await loadEvidence();
   else el("evidence-table").innerHTML='<div class="empty">Add the selected chemical to this project before reviewing evidence.</div>';
   renderChemical(state.projectChemicalIds.has(state.chemical.id));
   updateHomeProfileBinding();
+  await loadOrchestratedAssessments();
 };
 
 async function loadAssessmentProfileIntoExpert(){
@@ -173,7 +178,18 @@ async function loadEvidence(){
   endpointFilter.innerHTML=`<option value="">All endpoints</option>${endpoints.map(code=>`<option value="${escapeHtml(code)}">${escapeHtml(code)}</option>`).join("")}`;
   if(endpoints.includes(previous))endpointFilter.value=previous;
   renderEvidenceTable();
+  renderOrchestrationEvidenceOptions();
   renderChemical(state.projectChemicalIds.has(state.chemical.id));
+}
+
+function renderOrchestrationEvidenceOptions(){
+  const select=el("orch-benchmark-evidence");
+  if(!select)return;
+  const previous=select.value;
+  const supported=new Set(["ECOTOX.AQUATIC.LC50","ECOTOX.AQUATIC.EC50","ECOTOX.AQUATIC.NOEC","ECOTOX.AQUATIC.EC10"]);
+  const rows=state.evidence.filter(row=>supported.has(row.property_code));
+  select.innerHTML=`<option value="">No evidence bound — exploratory only</option>${rows.map(row=>`<option value="${row.id}">#${row.id} · ${escapeHtml(row.property_code)} · ${row.original_value} ${escapeHtml(row.original_unit)} · ${escapeHtml(row.source.title)}</option>`).join("")}`;
+  if(rows.some(row=>String(row.id)===previous))select.value=previous;
 }
 
 function renderEvidenceTable(){
@@ -649,14 +665,14 @@ el("reach-bundle-form").onsubmit=async event=>{
   }
   const blob=await response.blob();
   const disposition=response.headers.get("Content-Disposition")||"";
-  const filename=disposition.match(/filename="([^"]+)"/)?.[1]||"envirochem-reach-review.zip";
+  const filename=disposition.match(/filename="([^"]+)"/)?.[1]||"fateintel-reach-review.zip";
   const url=URL.createObjectURL(blob), link=document.createElement("a");
   link.href=url;link.download=filename;document.body.appendChild(link);link.click();link.remove();
   window.setTimeout(()=>URL.revokeObjectURL(url),1000);
-  const manifestHash=response.headers.get("X-EnviroChem-Manifest-SHA256");
-  const bundleHash=response.headers.get("X-EnviroChem-Bundle-SHA256");
+  const manifestHash=response.headers.get("X-FateIntel-Manifest-SHA256")||response.headers.get("X-EnviroChem-Manifest-SHA256");
+  const bundleHash=response.headers.get("X-FateIntel-Bundle-SHA256")||response.headers.get("X-EnviroChem-Bundle-SHA256");
   el("reach-export-result").className="reach-export-result";
-  el("reach-export-result").innerHTML=`<strong>Downloaded ${escapeHtml(filename)}</strong><p>${escapeHtml(response.headers.get("X-EnviroChem-Signing-Mode")||"unknown")} · NOT IUCLID / NOT SUBMISSION-READY</p><small>Manifest SHA-256</small><code>${escapeHtml(manifestHash)}</code><small>Bundle SHA-256</small><code>${escapeHtml(bundleHash)}</code>`;
+  el("reach-export-result").innerHTML=`<strong>Downloaded ${escapeHtml(filename)}</strong><p>${escapeHtml(response.headers.get("X-FateIntel-Signing-Mode")||response.headers.get("X-EnviroChem-Signing-Mode")||"unknown")} · NOT IUCLID / NOT SUBMISSION-READY</p><small>Manifest SHA-256</small><code>${escapeHtml(manifestHash)}</code><small>Bundle SHA-256</small><code>${escapeHtml(bundleHash)}</code>`;
   showToast("REACH review bundle prepared and recorded in the audit trail","success");
   await loadAudit();
 };
@@ -708,6 +724,215 @@ function renderPlan(plan){
     ${plan.warnings.length?`<div class="warning"><strong>Applicability warnings</strong><ul>${plan.warnings.map(x=>`<li>${x}</li>`).join("")}</ul></div>`:""}
     <details><summary>Framework packs</summary><ul>${plan.jurisdiction.packs.map(x=>`<li>${x}</li>`).join("")}</ul></details>`;
 }
+
+function initialiseOrchestration(){
+  el("orch-jurisdiction").innerHTML=state.frameworks.map(x=>`<option value="${x.key}">${escapeHtml(x.name)}</option>`).join("");
+  el("orch-group").innerHTML=state.groups.map(x=>`<option value="${x}">${pretty(x)}</option>`).join("");
+  el("orch-scenario").innerHTML=state.scenarios.map(x=>`<option value="${x}">${pretty(x)}</option>`).join("");
+  el("orch-risk-model").innerHTML=state.models.map(x=>`<option value="${x.key}">${escapeHtml(x.name)}</option>`).join("");
+  el("orch-jurisdiction").value="EU";
+  el("orch-group").value="human_pharmaceutical";
+  el("orch-scenario").value="municipal_wastewater";
+  el("orch-risk-model").value="ENVIROCHEM_CATCHMENT_RIVER_NETWORK";
+  initialiseCompatibilityInspector();
+  syncOrchestrationCompartment();
+}
+
+function semanticContractRows(){
+  return state.semanticContracts?.contracts||[];
+}
+
+function contractRow(modelKey){
+  return semanticContractRows().find(row=>row.model_key===modelKey);
+}
+
+function initialiseCompatibilityInspector(){
+  const sources=semanticContractRows().filter(row=>row.outputs.length);
+  const targets=semanticContractRows().filter(row=>row.inputs.length);
+  el("compat-source-model").innerHTML=sources.map(row=>`<option value="${row.model_key}">${escapeHtml(row.model_name)} · ${pretty(row.semantic_status)}</option>`).join("");
+  el("compat-target-model").innerHTML=targets.map(row=>`<option value="${row.model_key}">${escapeHtml(row.model_name)} · ${pretty(row.semantic_status)}</option>`).join("");
+  if(sources.some(row=>row.model_key==="ACTIVITY_SIMPLETREAT"))el("compat-source-model").value="ACTIVITY_SIMPLETREAT";
+  if(targets.some(row=>row.model_key==="ENVIROCHEM_CATCHMENT_RIVER_NETWORK"))el("compat-target-model").value="ENVIROCHEM_CATCHMENT_RIVER_NETWORK";
+  updateCompatibilityPorts();
+}
+
+function updateCompatibilityPorts(){
+  const source=contractRow(el("compat-source-model").value);
+  const target=contractRow(el("compat-target-model").value);
+  el("compat-source-port").innerHTML=(source?.outputs||[]).map(port=>`<option value="${port.port_key}">${pretty(port.port_key)} · ${escapeHtml(port.unit)}</option>`).join("");
+  el("compat-target-port").innerHTML=(target?.inputs||[]).map(port=>`<option value="${port.port_key}">${pretty(port.port_key)} · ${escapeHtml(port.unit)}</option>`).join("");
+}
+
+el("compat-source-model").onchange=updateCompatibilityPorts;
+el("compat-target-model").onchange=updateCompatibilityPorts;
+
+function syncOrchestrationCompartment(){
+  const solid=["soil","sediment"].includes(el("orch-compartment").value);
+  el("orch-unit").value=solid?"µg/kg":"µg/L";
+  el("orch-phase").value=solid?"bulk":"total";
+  el("orch-basis").value=solid?"dry_weight":"volume";
+}
+el("orch-compartment").onchange=syncOrchestrationCompartment;
+
+function orchestrationPayload(){
+  requireProject();
+  const currentTier=Number(el("orch-current-tier").value);
+  const maximumTier=Number(el("orch-maximum-tier").value);
+  if(currentTier>maximumTier)throw new Error("Current tier cannot exceed maximum tier");
+  const dataGaps=el("orch-data-gaps").value.split(/\r?\n/).map(value=>value.trim()).filter(Boolean).map((description,index)=>({
+    code:`USER_GAP_${index+1}`,
+    description,
+    blocks_conclusion:true,
+    required_by_tier:currentTier
+  }));
+  const pecText=el("orch-pec").value.trim();
+  const benchmarkText=el("orch-benchmark").value.trim();
+  const risks=[];
+  const modelResults=[];
+  if(pecText||benchmarkText){
+    if(!pecText||!benchmarkText)throw new Error("Provide both PEC and PNEC, or leave both blank");
+    if(Number(benchmarkText)<=0)throw new Error("PNEC / benchmark must be greater than zero");
+    const benchmarkSource=el("orch-benchmark-source").value.trim();
+    const guidance=el("orch-guidance").value.trim();
+    if(!benchmarkSource||!guidance)throw new Error("Benchmark source and guidance reference are required for an RQ");
+    const runId=el("orch-run-id").value?Number(el("orch-run-id").value):null;
+    const evidenceId=el("orch-benchmark-evidence").value?Number(el("orch-benchmark-evidence").value):null;
+    const assessmentFactor=el("orch-assessment-factor").value?Number(el("orch-assessment-factor").value):null;
+    const evidenceReviewed=el("orch-evidence-reviewed").checked;
+    const afRationale=el("orch-af-rationale").value.trim();
+    if(evidenceId&&(!assessmentFactor||!evidenceReviewed||afRationale.length<10))throw new Error("Reviewed evidence requires an assessment factor and a rationale of at least 10 characters");
+    const modelKey=el("orch-risk-model").value;
+    const metadata={
+      unit:el("orch-unit").value,
+      endpoint_kind:"concentration",
+      compartment:el("orch-compartment").value,
+      phase:el("orch-phase").value,
+      basis:el("orch-basis").value,
+      temporal_statistic:el("orch-temporal").value,
+      averaging_period_days:Number(el("orch-period").value),
+      spatial_scale:el("orch-scale").value,
+      substance_basis:el("orch-substance-basis").value
+    };
+    risks.push({
+      name:`${pretty(metadata.compartment)} PEC/PNEC risk quotient`,
+      metric:"pec_pnec_rq",
+      exposure:{...metadata,value:Number(pecText),label:"Predicted exposure concentration"},
+      benchmark:{...metadata,value:Number(benchmarkText),label:"Reviewed effect benchmark"},
+      threshold:1,
+      benchmark_type:`PNEC ${pretty(metadata.compartment)}`,
+      benchmark_source:benchmarkSource,
+      guidance_reference:guidance,
+      model_key:modelKey,
+      exposure_run_id:runId,
+      exposure_endpoint_key:el("orch-endpoint-key").value.trim()||null,
+      benchmark_evidence_ids:evidenceId?[evidenceId]:[],
+      critical_benchmark_evidence_id:evidenceId,
+      benchmark_evidence_review_confirmed:evidenceId?evidenceReviewed:false,
+      assessment_factor:evidenceId?assessmentFactor:null,
+      assessment_factor_rationale:evidenceId?afRationale:null
+    });
+    if(runId){
+      modelResults.push({
+        model_key:modelKey,
+        jurisdiction:el("orch-jurisdiction").value,
+        tier:currentTier,
+        execution_status:"not_started",
+        alignment_claim:el("orch-alignment").value,
+        guidance_reference:guidance,
+        run_id:runId,
+        outputs:[]
+      });
+    }
+  }
+  return {
+    project_id:state.project.id,
+    chemical_id:state.chemical.id,
+    jurisdiction:el("orch-jurisdiction").value,
+    contaminant_group:el("orch-group").value,
+    scenario:el("orch-scenario").value,
+    current_tier:currentTier,
+    maximum_tier:maximumTier,
+    assessment_mode:el("orch-mode").value,
+    uncertainty:el("orch-uncertainty").value,
+    application_method:el("orch-application").value||null,
+    use_site_category:el("orch-use-site").value||null,
+    bee_attractive:el("orch-bee-attractive").checked,
+    data_gaps:dataGaps,
+    model_results:modelResults,
+    risk_characterisations:risks,
+    model_connections:[]
+  };
+}
+
+function orchestrationStatusClass(code){
+  if(["stop_screening","below_trigger_at_current_tier","regulatory_aligned_workflow"].includes(code))return "orch-good";
+  if(["potential_concern","resolve_incompatibility","expert_review"].includes(code))return "orch-alert";
+  return "orch-review";
+}
+
+function renderOrchestrationRecord(record, persisted=null){
+  state.orchestrationPreview=record;
+  const gate=record.current_tier_decision;
+  const regulatory=record.regulatory_status;
+  const conclusion=record.overall_conclusion;
+  const riskRows=record.risk_characterisations.map(result=>`<div class="orchestration-risk-row"><div><small>${pretty(result.metric)}</small><strong>${result.value==null?"Not calculated":fmt(result.value,5)}</strong></div><span class="${orchestrationStatusClass(result.status)}">${pretty(result.status)}</span><p>${escapeHtml(result.conclusion)}</p><small>${result.decision_eligible?"PEC endpoint and benchmark evidence verified":"Exploratory result — verified PEC endpoint and reviewed benchmark evidence are both required to control the tier gate"}</small></div>`).join("");
+  const stages=record.tier_sequence.map(stage=>`<div class="orchestration-tier ${stage.tier===record.context.current_tier?"current":""}"><div class="orchestration-tier-number">${stage.tier}</div><div><small>${escapeHtml(stage.title)}</small><strong>${stage.regulatory_programme?escapeHtml(stage.regulatory_programme.name):"Identity and evidence foundation"}</strong><p>${stage.models.length?stage.models.map(model=>escapeHtml(model.name)).join(" · "):"No simulator execution at this stage"}</p>${stage.introduced_models.length?`<span>${stage.introduced_models.length} newly introduced model(s)</span>`:""}</div></div>`).join("");
+  el("orchestration-result").innerHTML=`
+    <div class="panel-head"><div><small>${escapeHtml(record.context.jurisdiction)} · ${pretty(record.context.assessment_mode)} · ${persisted?`SAVED #${persisted.id}`:"PREVIEW"}</small><h3>${escapeHtml(record.identity.preferred_name||state.chemical?.preferred_name||"Assessment")} tier route</h3></div></div>
+    <div class="orchestration-decision ${orchestrationStatusClass(gate.action)}"><small>CURRENT GATE</small><strong>${pretty(gate.action)}</strong><p>${gate.reasons.map(escapeHtml).join(" ")}</p>${gate.next_tier!==null?`<span>Next: Tier ${gate.next_tier}</span>`:""}</div>
+    <div class="orchestration-regulatory"><small>REGULATORY STATUS</small><strong>${escapeHtml(regulatory.label)}</strong><p>${escapeHtml(regulatory.reason)}</p></div>
+    <div class="orchestration-conclusion"><small>PROVISIONAL CONCLUSION</small><strong>${pretty(conclusion.code)}</strong><p>${escapeHtml(conclusion.text)}</p></div>
+    <h3>Tier sequence</h3><div class="orchestration-tier-stack">${stages}</div>
+    ${riskRows?`<h3>Risk characterisation</h3>${riskRows}`:"<div class=\"warning\">No PEC/PNEC risk characterisation was supplied. The route can be planned, but the current tier cannot close.</div>"}
+    <details><summary>Record integrity and graph</summary><dl class="provenance-list"><div><dt>Identity hash</dt><dd><code>${escapeHtml(record.identity.identity_hash)}</code></dd></div><div><dt>Record hash</dt><dd><code>${escapeHtml(record.record_hash)}</code></dd></div><div><dt>Graph</dt><dd>${record.graph.nodes.length} nodes · ${record.graph.edges.length} edges</dd></div><div><dt>Ruleset</dt><dd>${escapeHtml(record.risk_ruleset_version)}</dd></div></dl></details>
+    <div class="scope-boundary"><strong>Competent review required</strong><span>FateIntel has not issued a final regulatory decision.</span></div>`;
+}
+
+el("orchestration-form").onsubmit=async event=>{
+  event.preventDefault();
+  const record=await api("/api/orchestration/preview",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(orchestrationPayload())});
+  renderOrchestrationRecord(record);
+  showToast("Tier route previewed; no assessment record was saved","success");
+};
+
+el("orch-save").onclick=async()=>{
+  const saved=await api("/api/orchestration/assessments",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(orchestrationPayload())});
+  renderOrchestrationRecord(saved.record,saved);
+  await loadOrchestratedAssessments();
+  await loadAudit();
+  showToast(`Immutable assessment #${saved.id} saved`,"success");
+};
+
+async function loadOrchestratedAssessments(){
+  const box=el("orchestration-history");
+  if(!box)return;
+  if(!state.project){box.className="empty";box.innerHTML="Select a project.";return;}
+  const chemicalQuery=state.chemical?`?chemical_id=${state.chemical.id}`:"";
+  state.orchestratedAssessments=await api(`/api/projects/${state.project.id}/orchestrated-assessments${chemicalQuery}`);
+  box.className="orchestration-history";
+  box.innerHTML=state.orchestratedAssessments.length?state.orchestratedAssessments.map(row=>`<div class="orchestration-history-row"><button type="button" data-orchestration-id="${row.id}"><span><small>${escapeHtml(row.jurisdiction)} · Tier ${row.current_tier} · ${pretty(row.status)}</small><strong>#${row.id} · ${pretty(row.scenario)}</strong></span><span>${new Date(row.created_at).toLocaleString()}</span></button><a href="/api/orchestration/assessments/${row.id}/export" download>JSON</a></div>`).join(""):'<div class="empty">No immutable assessment records yet.</div>';
+  box.querySelectorAll("[data-orchestration-id]").forEach(button=>button.onclick=()=>{
+    const row=state.orchestratedAssessments.find(item=>item.id===Number(button.dataset.orchestrationId));
+    if(row)renderOrchestrationRecord(row.record,row);
+  });
+}
+
+el("refresh-orchestrated-assessments").onclick=()=>loadOrchestratedAssessments().catch(error=>showToast(error.message,"error"));
+
+el("compatibility-form").onsubmit=async event=>{
+  event.preventDefault();
+  const result=await api("/api/orchestration/model-compatibility",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({
+    source_model_key:el("compat-source-model").value,
+    source_port_key:el("compat-source-port").value,
+    target_model_key:el("compat-target-model").value,
+    target_port_key:el("compat-target-port").value,
+    value:Number(el("compat-value").value),
+    allow_draft_contracts:el("compat-allow-draft").checked
+  })});
+  const reasons=(result.reasons||[]).map(reason=>`<li><strong>${pretty(reason.code)}</strong> — ${escapeHtml(reason.message)}</li>`).join("");
+  const converted=result.harmonised_source;
+  el("compatibility-result").innerHTML=`<div class="compatibility-answer ${result.compatible?"orch-good":"orch-alert"}"><small>CONNECTION ${result.compatible?"COMPATIBLE":"BLOCKED"}</small><strong>${escapeHtml(result.source_model_key||el("compat-source-model").value)} → ${escapeHtml(result.target_model_key||el("compat-target-model").value)}</strong>${converted?`<p>${fmt(converted.value,6)} ${escapeHtml(converted.unit)} on the target basis</p>`:""}${reasons?`<ul>${reasons}</ul>`:"<p>Units and all declared scientific bases match.</p>"}<span>${el("compat-allow-draft").checked?"Draft-contract result requires manual review":"Only verified semantic contracts can pass automatically"}</span></div>`;
+};
 
 function renderModelLibrary(){
   const region=el("model-filter-region")?.value||"all";
@@ -962,7 +1187,7 @@ function renderModelWorkflowDetail(w){
       <span>${bridge.execution_ready?'Pinned local process is ready':'Use the handoff ZIP for a GUI/manual run'}</span>
       ${bridge.executable_sha256?`<p>Configured executable SHA-256<br><code>${bridge.executable_sha256}</code></p>`:''}
       ${bridge.missing_requirements?.length?`<ul>${bridge.missing_requirements.map(item=>`<li>${escapeHtml(item)}</li>`).join('')}</ul>`:''}
-      <p>EnviroChem neither bundles nor modifies the EPA software. A prepared manifest is not an execution.</p>
+      <p>FateIntel neither bundles nor modifies the EPA software. A prepared manifest is not an execution.</p>
     </div>
     ${bridge.execution_ready?`<form id="official-execute-form" class="official-execute-form">
       <h3>Execute pinned local installation</h3>
@@ -1049,7 +1274,7 @@ function renderModelWorkflowDetail(w){
       structured_outputs:{},
       model_version:el("mwo-model-version").value||null,
       executable_version:el("mwo-executable-version").value||null,
-      execution_notes:"Imported through EnviroChem Studio model control plane"
+      execution_notes:"Imported through FateIntel model control plane"
     })});
     state.selectedWorkflow=updated; await loadModelWorkflows(); renderModelWorkflowDetail(updated);
   };

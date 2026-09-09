@@ -1175,6 +1175,232 @@ class TransformationPathwayPredictCreate(BaseModel):
         return self
 
 
+
+
+# FateIntel Alpha 4 orchestration contracts.  Scientific bases are explicit so
+# unit conversion cannot silently join incompatible compartments or endpoints.
+class OrchestrationQuantityInput(BaseModel):
+    value: float
+    unit: str = Field(min_length=1, max_length=50)
+    endpoint_kind: Literal[
+        "concentration", "mass_rate", "areal_loading", "dose", "half_life",
+        "duration", "fraction", "risk_quotient", "partition_coefficient",
+    ]
+    compartment: Literal[
+        "water", "surface_water", "groundwater", "drinking_water", "porewater",
+        "wwtp_influent", "wwtp_effluent", "soil", "sediment", "sludge",
+        "biosolids", "air", "biota", "food", "worker", "consumer",
+        "not_applicable", "unspecified",
+    ]
+    phase: Literal[
+        "dissolved", "total", "porewater", "bulk", "gas", "particulate",
+        "not_applicable", "unspecified",
+    ] = "unspecified"
+    basis: Literal[
+        "volume", "dry_weight", "fresh_weight", "body_weight",
+        "not_applicable", "unspecified",
+    ] = "unspecified"
+    temporal_statistic: Literal[
+        "instantaneous", "peak", "mean", "time_weighted_average",
+        "annual_average", "percentile", "steady_state", "not_applicable",
+        "unspecified",
+    ] = "unspecified"
+    averaging_period_days: Optional[float] = Field(default=None, gt=0)
+    spatial_scale: Literal[
+        "local", "site", "catchment", "regional", "continental", "global",
+        "individual", "population", "not_applicable", "unspecified",
+    ] = "unspecified"
+    substance_basis: Literal[
+        "parent", "individual_transformation_product", "total_residue", "mixture",
+        "active_ingredient", "not_applicable", "unspecified",
+    ] = "unspecified"
+    label: Optional[str] = Field(default=None, max_length=250)
+
+
+class OrchestrationRequirementInput(BaseModel):
+    unit: str = Field(min_length=1, max_length=50)
+    endpoint_kind: Literal[
+        "concentration", "mass_rate", "areal_loading", "dose", "half_life",
+        "duration", "fraction", "risk_quotient", "partition_coefficient",
+    ]
+    compartment: Literal[
+        "water", "surface_water", "groundwater", "drinking_water", "porewater",
+        "wwtp_influent", "wwtp_effluent", "soil", "sediment", "sludge",
+        "biosolids", "air", "biota", "food", "worker", "consumer",
+        "not_applicable", "unspecified",
+    ]
+    phase: Literal[
+        "dissolved", "total", "porewater", "bulk", "gas", "particulate",
+        "not_applicable", "unspecified",
+    ] = "unspecified"
+    basis: Literal[
+        "volume", "dry_weight", "fresh_weight", "body_weight",
+        "not_applicable", "unspecified",
+    ] = "unspecified"
+    temporal_statistic: Literal[
+        "instantaneous", "peak", "mean", "time_weighted_average",
+        "annual_average", "percentile", "steady_state", "not_applicable",
+        "unspecified",
+    ] = "unspecified"
+    averaging_period_days: Optional[float] = Field(default=None, gt=0)
+    spatial_scale: Literal[
+        "local", "site", "catchment", "regional", "continental", "global",
+        "individual", "population", "not_applicable", "unspecified",
+    ] = "unspecified"
+    substance_basis: Literal[
+        "parent", "individual_transformation_product", "total_residue", "mixture",
+        "active_ingredient", "not_applicable", "unspecified",
+    ] = "unspecified"
+    label: Optional[str] = Field(default=None, max_length=250)
+
+
+class OrchestrationHarmoniseCreate(BaseModel):
+    quantity: OrchestrationQuantityInput
+    target_unit: Optional[str] = Field(default=None, min_length=1, max_length=50)
+
+
+class OrchestrationCompatibilityCreate(BaseModel):
+    source: OrchestrationQuantityInput
+    target: OrchestrationRequirementInput
+    allow_unspecified: bool = False
+
+
+class ModelPortCompatibilityCreate(BaseModel):
+    source_model_key: str = Field(min_length=1, max_length=100)
+    source_port_key: str = Field(min_length=1, max_length=100)
+    target_model_key: str = Field(min_length=1, max_length=100)
+    target_port_key: str = Field(min_length=1, max_length=100)
+    value: float = 1.0
+    allow_draft_contracts: bool = False
+
+
+class RiskCharacterisationCreate(BaseModel):
+    name: str = Field(min_length=1, max_length=250)
+    metric: Literal[
+        "pec_pnec_rq", "pesticide_rq_loc", "hazard_quotient",
+        "risk_characterisation_ratio", "drinking_water_ratio", "margin_of_exposure",
+    ]
+    exposure: OrchestrationQuantityInput
+    benchmark: OrchestrationQuantityInput
+    threshold: Optional[float] = Field(default=None, gt=0)
+    benchmark_type: str = Field(min_length=1, max_length=100)
+    benchmark_source: str = Field(min_length=1, max_length=500)
+    guidance_reference: str = Field(min_length=1, max_length=500)
+    model_key: Optional[str] = Field(default=None, max_length=100)
+    exposure_run_id: Optional[int] = Field(default=None, gt=0)
+    exposure_workflow_id: Optional[int] = Field(default=None, gt=0)
+    exposure_output_hash: Optional[str] = Field(
+        default=None, min_length=64, max_length=64, pattern=r"^[0-9A-Fa-f]{64}$"
+    )
+    exposure_endpoint_key: Optional[str] = Field(default=None, max_length=100)
+    benchmark_evidence_ids: list[int] = Field(default_factory=list, max_length=50)
+    critical_benchmark_evidence_id: Optional[int] = Field(default=None, gt=0)
+    benchmark_evidence_review_confirmed: bool = False
+    assessment_factor: Optional[float] = Field(default=None, ge=1, allow_inf_nan=False)
+    assessment_factor_rationale: Optional[str] = Field(default=None, max_length=4000)
+
+    @model_validator(mode="after")
+    def validate_exposure_provenance(self):
+        if self.exposure_run_id is not None and self.exposure_workflow_id is not None:
+            raise ValueError("Use either exposure_run_id or exposure_workflow_id, not both")
+        if self.benchmark_evidence_ids:
+            if self.critical_benchmark_evidence_id not in self.benchmark_evidence_ids:
+                raise ValueError("critical_benchmark_evidence_id must be included in benchmark_evidence_ids")
+            if not self.benchmark_evidence_review_confirmed:
+                raise ValueError("Benchmark evidence must be explicitly reviewed and confirmed")
+            if self.metric == "pec_pnec_rq":
+                if self.assessment_factor is None:
+                    raise ValueError("An explicit assessment factor is required for evidence-derived PNEC")
+                if not self.assessment_factor_rationale or len(self.assessment_factor_rationale.strip()) < 10:
+                    raise ValueError("Assessment-factor rationale must contain at least 10 characters")
+        return self
+
+
+class JurisdictionalQuantityInput(BaseModel):
+    jurisdiction: Literal["EU", "UK", "US", "CH"]
+    model_key: str = Field(min_length=1, max_length=100)
+    quantity: OrchestrationQuantityInput
+    scenario_reference: str = Field(min_length=1, max_length=500)
+    model_version: Optional[str] = Field(default=None, max_length=100)
+
+
+class CrossJurisdictionComparisonCreate(BaseModel):
+    left: JurisdictionalQuantityInput
+    right: JurisdictionalQuantityInput
+
+
+class OrchestrationDataGapInput(BaseModel):
+    code: str = Field(min_length=1, max_length=100)
+    description: str = Field(min_length=1, max_length=1000)
+    blocks_conclusion: bool = True
+    required_by_tier: Optional[int] = Field(default=None, ge=0, le=4)
+
+
+class OrchestrationConnectionInput(BaseModel):
+    source_model_key: str = Field(min_length=1, max_length=100)
+    source_port_key: str = Field(min_length=1, max_length=100)
+    target_model_key: str = Field(min_length=1, max_length=100)
+    target_port_key: str = Field(min_length=1, max_length=100)
+    value: float
+    allow_draft_contracts: bool = False
+
+
+class OrchestrationModelResultInput(BaseModel):
+    model_key: str = Field(min_length=1, max_length=100)
+    jurisdiction: Literal["EU", "UK", "US", "CH"]
+    tier: int = Field(ge=0, le=4)
+    execution_status: Literal[
+        "not_started", "inputs_required", "prepared", "executed", "completed",
+        "output_imported", "reviewed", "failed",
+    ]
+    alignment_claim: Literal[
+        "regulatory_accepted", "adapted_method", "research_screen", "unknown",
+    ] = "unknown"
+    guidance_reference: Optional[str] = Field(default=None, max_length=500)
+    model_version: Optional[str] = Field(default=None, max_length=100)
+    run_id: Optional[int] = None
+    workflow_id: Optional[int] = None
+    output_hash: Optional[str] = Field(
+        default=None, min_length=64, max_length=64, pattern=r"^[0-9A-Fa-f]{64}$"
+    )
+    outputs: list[OrchestrationQuantityInput] = Field(default_factory=list, max_length=100)
+
+
+class OrchestrationPlanCreate(BaseModel):
+    jurisdiction: Literal["EU", "UK", "US", "CH"]
+    contaminant_group: str = Field(min_length=1, max_length=100)
+    scenario: str = Field(min_length=1, max_length=100)
+    maximum_tier: int = Field(default=4, ge=1, le=4)
+    application_method: Optional[Literal["aerial", "ground_broadcast", "airblast_orchard", "soil_incorporated", "seed_treatment", "other"]] = None
+    use_site_category: Optional[Literal["outdoor_terrestrial", "aquatic", "enclosed_greenhouse", "indoor", "other"]] = None
+    bee_attractive: bool = False
+
+
+class OrchestratedAssessmentCreate(OrchestrationPlanCreate):
+    project_id: int
+    chemical_id: int
+    current_tier: int = Field(default=1, ge=0, le=4)
+    assessment_mode: Literal["regulatory", "comparative", "hybrid"] = "regulatory"
+    uncertainty: Literal["low", "moderate", "high", "unknown"] = "unknown"
+    data_gaps: list[OrchestrationDataGapInput] = Field(default_factory=list, max_length=200)
+    model_results: list[OrchestrationModelResultInput] = Field(default_factory=list, max_length=100)
+    risk_characterisations: list[RiskCharacterisationCreate] = Field(default_factory=list, max_length=100)
+    model_connections: list[OrchestrationConnectionInput] = Field(default_factory=list, max_length=200)
+
+    @model_validator(mode="after")
+    def validate_tier_position(self):
+        if self.current_tier > self.maximum_tier:
+            raise ValueError("current_tier cannot exceed maximum_tier")
+        return self
+
+
+class OrchestratedAssessmentFinaliseCreate(BaseModel):
+    reviewer: str = Field(min_length=2, max_length=200)
+    decision: Literal["accepted_for_stated_purpose", "needs_refinement", "rejected"]
+    rationale: str = Field(min_length=10, max_length=5000)
+    stated_purpose: str = Field(min_length=3, max_length=500)
+
+
 class DegradationObservationCreate(BaseModel):
     day: float = Field(ge=0, le=120)
     replicate_values_percent: list[float] = Field(min_length=1, max_length=20)

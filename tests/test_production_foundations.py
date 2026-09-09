@@ -23,6 +23,22 @@ def test_settings_are_validated_from_environment(monkeypatch):
     assert configured.database_backend == "sqlite"
 
 
+def test_fateintel_environment_names_override_legacy_names(monkeypatch):
+    monkeypatch.setenv("ENVIROCHEM_PORT", "9812")
+    monkeypatch.setenv("FATEINTEL_PORT", "9813")
+    configured = Settings(_env_file=None)
+    assert configured.envirochem_port == 9813
+
+
+def test_environment_still_overrides_current_name_in_env_file(tmp_path, monkeypatch):
+    env_file = tmp_path / ".env"
+    env_file.write_text("FATEINTEL_PORT=9200\n", encoding="utf-8")
+    monkeypatch.setenv("ENVIROCHEM_PORT", "9300")
+    monkeypatch.delenv("FATEINTEL_PORT", raising=False)
+    configured = Settings(_env_file=env_file)
+    assert configured.envirochem_port == 9300
+
+
 def test_invalid_log_level_is_rejected(monkeypatch):
     monkeypatch.setenv("LOG_LEVEL", "verbose-ish")
     with pytest.raises(ValidationError):
@@ -50,6 +66,7 @@ def test_health_readiness_and_request_correlation_contract():
         response = client.get("/api/health", headers={"X-Request-ID": "qa-health-219"})
         assert response.status_code == 200
         assert response.headers["X-Request-ID"] == "qa-health-219"
+        assert response.headers["X-FateIntel-Build"] == BUILD_ID
         payload = response.json()
         assert payload["status"] == "ok"
         assert payload["checks"]["database"]["status"] == "ok"
@@ -102,7 +119,7 @@ def test_json_log_formatter_is_machine_readable():
 
 
 def test_build_identifies_production_foundations_without_runtime_port_in_hash():
-    assert "v2.23" in BUILD_ID
+    assert "v2.24" in BUILD_ID
     assert "8792" not in BUILD_ID
     with TestClient(app) as client:
         payload = client.get("/api/build").json()

@@ -3,21 +3,22 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>EnviroChem Studio v2.23 — Scientific Workspace</title>
+  <title>FateIntel v2.24 — Scientific Workspace</title>
   <meta name="theme-color" content="#092f25">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <link rel="manifest" href="/static/manifest.webmanifest">
   <link rel="icon" href="/static/icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="/static/expert-styles.css?v=studio-v2.23-alpha3.4.0-applied-environmental-fate">
+  <link rel="stylesheet" href="/static/expert-styles.css?v=fateintel-studio-v2.24-alpha4.0-core-orchestration">
 </head>
 <body>
 <div aria-live="polite" class="toast-stack" id="toast-stack"></div>
 <div class="shell">
   <aside>
-    <div class="brand"><div class="mark">EC</div><div><strong>EnviroChem Studio</strong><small>V2.23 ALPHA · IDENTITY-SAFE ASSESSMENT</small></div></div>
+    <div class="brand"><div class="mark">FI</div><div><strong>FateIntel</strong><small>V2.24 ALPHA 4 · TIER ORCHESTRATION</small></div></div>
     <nav>
       <button class="nav active" data-page="project">Dashboard</button>
       <button class="nav" data-page="planner">Assessment Planner</button>
+      <button class="nav" data-page="orchestration">Tier Orchestration</button>
       <button class="nav" data-page="evidence">Evidence</button>
       <button class="nav" data-page="selection">Selection</button>
       <button class="nav" data-page="sorption">Sorption / Koc</button>
@@ -41,7 +42,7 @@
 
     <section id="page-project" class="page active">
       <div class="new-build-banner">
-        ENVIROCHEM STUDIO V2.23 · IDENTITY-SAFE EVIDENCE WORKSPACE
+        FATEINTEL V2.24 · CROSS-JURISDICTION TIER ORCHESTRATION
       </div>
       <div class="hero">
         <div><span>ONE SCIENTIFIC ENGINE · MULTIPLE AUDIENCES</span><h2>Identify → use → fate → exposure → report.</h2>
@@ -90,6 +91,89 @@
         </article>
       </div>
     </section>
+
+    <section id="page-orchestration" class="page">
+      <div class="orchestration-boundary">
+        <strong>Scientific decision support — no automatic regulatory conclusion.</strong>
+        FateIntel checks model applicability, scientific compatibility, provenance and tier triggers. A competent reviewer remains responsible for the stated use.
+      </div>
+      <div class="grid two orchestration-grid">
+        <article class="panel">
+          <div class="panel-head"><div><small>ALPHA 4 CORE</small><h3>Build the complete tier route</h3></div></div>
+          <form id="orchestration-form">
+            <div class="form-grid">
+              <div><label>Jurisdiction</label><select id="orch-jurisdiction"></select></div>
+              <div><label>Assessment mode</label><select id="orch-mode"><option value="regulatory">Single-jurisdiction regulatory route</option><option value="comparative">Cross-jurisdiction comparison</option><option value="hybrid">Research-only hybrid</option></select></div>
+              <div><label>Contaminant group</label><select id="orch-group"></select></div>
+              <div><label>Release / exposure scenario</label><select id="orch-scenario"></select></div>
+              <div><label>Current tier</label><select id="orch-current-tier"><option value="0">Tier 0</option><option value="1" selected>Tier 1</option><option value="2">Tier 2</option><option value="3">Tier 3</option><option value="4">Tier 4</option></select></div>
+              <div><label>Maximum tier</label><select id="orch-maximum-tier"><option value="1">Tier 1</option><option value="2">Tier 2</option><option value="3">Tier 3</option><option value="4" selected>Tier 4</option></select></div>
+              <div><label>Uncertainty</label><select id="orch-uncertainty"><option value="unknown">Unknown</option><option value="high">High</option><option value="moderate">Moderate</option><option value="low">Low</option></select></div>
+              <div><label>Application method (when relevant)</label><select id="orch-application"><option value="">Not specified</option><option value="aerial">Aerial</option><option value="ground_broadcast">Ground broadcast</option><option value="airblast_orchard">Airblast / orchard</option><option value="soil_incorporated">Soil incorporated</option><option value="seed_treatment">Seed treatment</option><option value="other">Other</option></select></div>
+              <div><label>Use-site category (when relevant)</label><select id="orch-use-site"><option value="">Not specified</option><option value="outdoor_terrestrial">Outdoor terrestrial</option><option value="aquatic">Aquatic</option><option value="enclosed_greenhouse">Enclosed greenhouse</option><option value="indoor">Indoor</option><option value="other">Other</option></select></div>
+              <div class="orch-check"><label><input id="orch-bee-attractive" type="checkbox"> Bee-attractive use</label></div>
+            </div>
+            <label>Known data gaps — one per line</label>
+            <textarea id="orch-data-gaps" placeholder="e.g. Chronic sediment endpoint has not been selected"></textarea>
+
+            <details class="scientific-inputs orchestration-risk-inputs">
+              <summary>Optional PEC/PNEC risk characterisation</summary>
+              <p class="field-note">An exploratory RQ can be calculated from typed values. It can control tier advancement only when the PEC matches a hashed FateIntel output endpoint and the benchmark is derived from explicitly reviewed evidence.</p>
+              <div class="form-grid">
+                <div><label>PEC</label><input id="orch-pec" type="number" min="0" step="any" placeholder="Optional"></div>
+                <div><label>PNEC / benchmark</label><input id="orch-benchmark" type="number" min="0" step="any" placeholder="Optional"></div>
+                <div><label>Unit</label><select id="orch-unit"><option value="µg/L">µg/L</option><option value="ng/L">ng/L</option><option value="mg/L">mg/L</option><option value="µg/kg">µg/kg</option><option value="mg/kg">mg/kg</option></select></div>
+                <div><label>Compartment</label><select id="orch-compartment"><option value="surface_water">Surface water</option><option value="groundwater">Groundwater</option><option value="drinking_water">Drinking water</option><option value="soil">Soil</option><option value="sediment">Sediment</option></select></div>
+                <div><label>Phase</label><select id="orch-phase"><option value="total">Total</option><option value="dissolved">Dissolved</option><option value="bulk">Bulk</option><option value="porewater">Porewater</option></select></div>
+                <div><label>Concentration basis</label><select id="orch-basis"><option value="volume">Volume</option><option value="dry_weight">Dry weight</option><option value="fresh_weight">Fresh weight</option></select></div>
+                <div><label>Temporal statistic</label><select id="orch-temporal"><option value="mean">Mean</option><option value="peak">Peak</option><option value="annual_average">Annual average</option><option value="time_weighted_average">Time-weighted average</option><option value="steady_state">Steady state</option></select></div>
+                <div><label>Averaging period (days)</label><input id="orch-period" type="number" min="0.000001" step="any" value="1"></div>
+                <div><label>Spatial scale</label><select id="orch-scale"><option value="local">Local</option><option value="site">Site</option><option value="catchment">Catchment</option><option value="regional">Regional</option></select></div>
+                <div><label>Substance basis</label><select id="orch-substance-basis"><option value="parent">Parent</option><option value="individual_transformation_product">Individual transformation product</option><option value="total_residue">Total residue</option><option value="mixture">Mixture</option><option value="active_ingredient">Active ingredient</option></select></div>
+                <div><label>Exposure model</label><select id="orch-risk-model"></select></div>
+                <div><label>Internal model-run ID</label><input id="orch-run-id" type="number" min="1" step="1" placeholder="Required for decision gating"></div>
+                <div><label>Method alignment</label><select id="orch-alignment"><option value="research_screen">Research screen</option><option value="adapted_method">Adapted method</option><option value="regulatory_accepted">Regulatory-accepted method</option><option value="unknown">Unknown</option></select></div>
+                <div><label>Exposure output key</label><input id="orch-endpoint-key" placeholder="e.g. surface_water_mean_ug_l"></div>
+                <div class="span2"><label>Critical ecotoxicity evidence</label><select id="orch-benchmark-evidence"><option value="">No evidence bound — exploratory only</option></select></div>
+                <div><label>Assessment factor</label><input id="orch-assessment-factor" type="number" min="1" step="any" placeholder="Required with evidence"></div>
+                <div class="orch-check"><label><input id="orch-evidence-reviewed" type="checkbox"> I reviewed this critical endpoint</label></div>
+                <div class="span2"><label>Assessment-factor rationale</label><input id="orch-af-rationale" placeholder="Explain why this factor is appropriate for the available dataset"></div>
+                <div class="span2"><label>Benchmark source</label><input id="orch-benchmark-source" placeholder="Study, database record or reviewed PNEC source"></div>
+                <div class="span2"><label>Guidance / decision reference</label><input id="orch-guidance" placeholder="Applicable EU, UK, US or Swiss guidance"></div>
+              </div>
+            </details>
+            <div class="orchestration-actions">
+              <button type="submit">Preview assessment</button>
+              <button id="orch-save" type="button" class="secondary">Save immutable snapshot</button>
+            </div>
+          </form>
+        </article>
+        <article id="orchestration-result" class="panel">
+          <div class="empty">Select a project and confirmed chemical, then preview a tier route.</div>
+        </article>
+      </div>
+
+      <div class="grid two orchestration-grid">
+        <article class="panel">
+          <div class="panel-head"><div><small>SEMANTIC CONTRACT CHECK</small><h3>Can one model feed another?</h3></div></div>
+          <form id="compatibility-form">
+            <label>Source model</label><select id="compat-source-model"></select>
+            <label>Source output</label><select id="compat-source-port"></select>
+            <label>Target model</label><select id="compat-target-model"></select>
+            <label>Target input</label><select id="compat-target-port"></select>
+            <label>Source value</label><input id="compat-value" type="number" step="any" value="1">
+            <label class="inline-confirm"><input id="compat-allow-draft" type="checkbox"> Allow draft contracts for manual scientific review (never automatic chaining)</label>
+            <button>Check compatibility</button>
+          </form>
+          <div id="compatibility-result"></div>
+        </article>
+        <article class="panel">
+          <div class="panel-head split"><div><small>IMMUTABLE RECORDS</small><h3>Assessment history</h3></div><button id="refresh-orchestrated-assessments" class="secondary" type="button">Refresh</button></div>
+          <div id="orchestration-history" class="empty">Select a project.</div>
+        </article>
+      </div>
+    </section>
+
 
     <section id="page-evidence" class="page">
       <article class="panel">
@@ -328,7 +412,7 @@
     <section id="page-models" class="page">
       <article class="panel">
         <div class="panel-head"><div><small>EU · UK · US · SWITZERLAND</small><h3>Environmental fate model library</h3></div></div>
-        <div class="warning">“Included” means EnviroChem manages the workflow, input manifest, execution record, raw outputs, parsed outputs, review decision and audit hashes. External executable redistribution remains subject to licence and platform constraints.</div>
+        <div class="warning">“Included” means FateIntel manages the workflow, input manifest, execution record, raw outputs, parsed outputs, review decision and audit hashes. External executable redistribution remains subject to licence and platform constraints.</div>
         <div class="model-filters">
           <select id="model-filter-region"><option value="all">All regions</option><option>EU</option><option>UK</option><option>US</option><option>CH</option></select>
           <select id="model-filter-tier"><option value="all">All tiers</option><option value="1">Tier 1</option><option value="2">Tier 2</option><option value="3">Tier 3</option><option value="4">Tier 4</option></select>
@@ -429,7 +513,7 @@
     <section id="page-homeapp" class="page">
       <div class="phone-layout">
         <article class="panel phone-card">
-          <div class="panel-head"><div><small>ENVIROCHEM HOME</small><h3>Product-use fate summary</h3></div></div>
+          <div class="panel-head"><div><small>FATEINTEL HOME</small><h3>Product-use fate summary</h3></div></div>
           <div class="home-scope-note"><strong>Qualitative screen only</strong><span>No product lookup, treatment-plant scaling, PEC, PNEC or risk quotient is inferred here.</span></div>
           <div class="home-profile-link">
             <div><small>SELECTED WORKSPACE CHEMICAL</small><strong id="home-link-state">Select a reviewed project chemical to bind trusted properties.</strong></div>
@@ -534,6 +618,6 @@
     </dialog>
   </main>
 </div>
-<script src="/static/expert-app.js?v=studio-v2.23-alpha3.4.0-applied-environmental-fate"></script>
+<script src="/static/expert-app.js?v=fateintel-studio-v2.24-alpha4.0-core-orchestration"></script>
 </body>
 </html>
