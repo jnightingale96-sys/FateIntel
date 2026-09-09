@@ -593,9 +593,14 @@ def build_assessment_plan(data: dict[str, Any]) -> dict[str, Any]:
         selected += ["ENVIROCHEM_MULTIMEDIA_FATE_SCREEN", "SIMPLEBOX"]
         required += ["emissions by compartment", "compartment-specific degradation", "intermedia transfer or fugacity inputs"]
 
-    if jurisdiction in {"EU", "UK", "CH"} and tier >= 2 and group in DISCRETE_ORGANIC_GROUPS and scenario in {
+    if tier >= 2 and group in DISCRETE_ORGANIC_GROUPS and scenario in {
         "municipal_wastewater", "surface_water_discharge", "industrial_effluent", "agricultural_spray"
     }:
+        # Native transparent research screen, not an official regulatory tool --
+        # its own registry entry declares EU/UK/US/CH applicability (see
+        # toxswa_surface_water.py's own "not the FOCUS_TOXSWA executable, not
+        # regulatory-equivalent" framing), so it must not be gated to EU/UK/CH
+        # only; a US assessment is equally entitled to this screen.
         selected.append("ENVIROCHEM_TOXSWA_PROCESS_SCREEN")
         required += ["surface-water loading basis", "waterbody geometry and flow", "water/sediment fate inputs"]
 
@@ -659,13 +664,18 @@ def build_assessment_plan(data: dict[str, Any]) -> dict[str, Any]:
             required.append("groundwater/waterbody configuration (mandatory, not optional)")
             if tier >= 3 and scenario == "agricultural_spray":
                 selected.append("PRZM")
-            if scenario == "agricultural_spray":
+            if scenario in {"agricultural_spray", "soil_incorporation"}:
                 application_method = data.get("application_method")
                 use_site_category = data.get("use_site_category")
                 bee_attractive = bool(data.get("bee_attractive"))
                 # TerrPlant/T-REX are near-universal for outdoor terrestrial pesticide
                 # use in real FIFRA reviews -- baseline-selected unless the use site
-                # has no terrestrial exposure pathway at all. AgDRIFT only applies to
+                # has no terrestrial exposure pathway at all. A soil-incorporated
+                # (e.g. granular, in-furrow) pesticide use still triggers the same
+                # terrestrial/avian/mammalian and, for systemic active ingredients,
+                # bee exposure pathways as a spray application -- it was previously
+                # gated to agricultural_spray only, which left this scenario with no
+                # ecotox risk-quotient coverage at all. AgDRIFT only applies to
                 # application methods capable of off-site drift; BeeREX only when the
                 # use site/crop is bee-attractive. See registry.MODELS for the source
                 # of truth on each model's region/group/tier eligibility.

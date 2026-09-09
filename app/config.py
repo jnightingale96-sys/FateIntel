@@ -57,7 +57,11 @@ class Settings(BaseModel):
     envirochem_macro_path: Path | None = None
     envirochem_toxswa_path: Path | None = None
     envirochem_pelmo_path: Path | None = None
+    envirochem_epi_suite_path: Path | None = None
+    envirochem_exams_path: Path | None = None
     envirochem_greater_path: Path | None = None
+    envirochem_epie_path: Path | None = None
+    envirochem_simplebox_path: Path | None = None
     envirochem_chemsteer_path: Path | None = None
     envirochem_cem_path: Path | None = None
     envirochem_efast_path: Path | None = None

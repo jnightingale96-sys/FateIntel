@@ -19,7 +19,7 @@ def model(key: str):
 
 
 def test_profiles_distinguish_spin_dependency_from_simulators():
-    assert set(MODEL_PROFILES) == {"SPIN", "MACRO", "GREATER", "PWC", "PRZM", "AGDRIFT", "TERRPLANT", "TREX", "BEEREX", "CHEMSTEER", "CEM", "EFAST", "PEARL", "SWASH", "TOXSWA", "PELMO"}
+    assert set(MODEL_PROFILES) == {"SPIN", "MACRO", "GREATER", "PWC", "PRZM", "AGDRIFT", "TERRPLANT", "TREX", "BEEREX", "CHEMSTEER", "CEM", "EFAST", "PEARL", "SWASH", "TOXSWA", "PELMO", "EPI_SUITE", "EXAMS", "EPIE", "SIMPLEBOX"}
     assert MODEL_PROFILES["SPIN"]["is_simulation_model"] is False
     assert MODEL_PROFILES["SWASH"]["is_simulation_model"] is False
     assert MODEL_PROFILES["MACRO"]["is_simulation_model"] is True
@@ -27,6 +27,10 @@ def test_profiles_distinguish_spin_dependency_from_simulators():
     assert MODEL_PROFILES["PEARL"]["is_simulation_model"] is True
     assert MODEL_PROFILES["TOXSWA"]["is_simulation_model"] is True
     assert MODEL_PROFILES["PELMO"]["is_simulation_model"] is True
+    assert MODEL_PROFILES["EPI_SUITE"]["is_simulation_model"] is True
+    assert MODEL_PROFILES["EXAMS"]["is_simulation_model"] is True
+    assert MODEL_PROFILES["EPIE"]["is_simulation_model"] is True
+    assert MODEL_PROFILES["SIMPLEBOX"]["is_simulation_model"] is True
     assert "5.5.4a" in MODEL_PROFILES["MACRO"]["official_version"]
     assert MODEL_PROFILES["GREATER"]["official_version"] == "4"
     assert "legacy" in MODEL_PROFILES["EFAST"]["official_version"].lower()
@@ -98,7 +102,7 @@ def test_external_model_profiles_are_available_over_api():
     with TestClient(app) as client:
         catalog = client.get("/api/external-model-integrations")
         assert catalog.status_code == 200
-        assert {row["key"] for row in catalog.json()} == {"SPIN", "MACRO", "GREATER", "PWC", "PRZM", "AGDRIFT", "TERRPLANT", "TREX", "BEEREX", "CHEMSTEER", "CEM", "EFAST", "PEARL", "SWASH", "TOXSWA", "PELMO"}
+        assert {row["key"] for row in catalog.json()} == {"SPIN", "MACRO", "GREATER", "PWC", "PRZM", "AGDRIFT", "TERRPLANT", "TREX", "BEEREX", "CHEMSTEER", "CEM", "EFAST", "PEARL", "SWASH", "TOXSWA", "PELMO", "EPI_SUITE", "EXAMS", "EPIE", "SIMPLEBOX"}
         macro = client.get("/api/external-model-integrations/macro")
         assert macro.status_code == 200
         assert macro.json()["key"] == "MACRO"
