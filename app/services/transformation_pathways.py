@@ -84,6 +84,25 @@ def _response_error(response: httpx.Response, action: str) -> ExternalDataSource
             "BioTransformer rate limit reached. Wait at least 30 seconds before submitting another parent.",
             details={"provider": "biotransformer", "action": action, "status_code": 429},
         )
+    if response.status_code == 406:
+        # Live-confirmed 2026-09-09: identical headers and JSON body succeed
+        # from curl but are rejected 406 "Not Acceptable" from Python's httpx
+        # client, on both HTTP/1.1 and HTTP/2, regardless of Accept/
+        # Accept-Encoding/Connection headers. biotransformer.ca sits behind
+        # Cloudflare, so this is most consistent with TLS/HTTP client
+        # fingerprinting at the edge, not a malformed request -- there is no
+        # header this adapter can send to reliably fix it, and spoofing a
+        # browser TLS fingerprint to get past that protection is out of
+        # scope here. Reported plainly so a user is not left staring at a
+        # bare "HTTP 406" with no explanation or alternative.
+        return ExternalDataSourceError(
+            "BioTransformer's live server rejected this request with HTTP 406 (Not Acceptable). "
+            "This is not a malformed request -- biotransformer.ca sits behind Cloudflare, which "
+            "appears to be blocking this server's automated HTTP client rather than the request "
+            "itself. Retrying rarely helps. Use the enviPath curated-pathway lookup as an "
+            "alternative source for known transformation products in the meantime.",
+            details={"provider": "biotransformer", "action": action, "status_code": 406},
+        )
     return ExternalDataSourceError(
         f"BioTransformer {action} failed with HTTP {response.status_code}.",
         details={"provider": "biotransformer", "action": action, "status_code": response.status_code},

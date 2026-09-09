@@ -78,6 +78,110 @@ MODEL_PROFILES: dict[str, dict[str, Any]] = {
             "When the standalone M2T tool is used, the documented output-file case requirement must be checked before generating .m2t lateral-entry files.",
         ],
     },
+    "PEARL": {
+        "name": "FOCUS PEARL",
+        "official_version": "FOCUS_PEARL_5.5.5gw_5.5.1soil",
+        "role": "One-dimensional soil-plant leaching model for FOCUS groundwater assessments",
+        "is_simulation_model": True,
+        "official_page": "https://esdac.jrc.ec.europa.eu/projects/pearl",
+        "path_environment_variable": "ENVIROCHEM_PEARL_PATH",
+        "default_path": r"C:\Program Files (x86)\Pesticide Models\PEARL",
+        "prerequisites": ["SPIN"],
+        "host_workflows": ["FOCUS groundwater"],
+        "input_template": {
+            "application_pattern": {"status": "required", "crop": None, "applications": []},
+            "soil_dt50": {"status": "required", "value_days": None, "source": None},
+            "koc_or_kd": {"status": "required", "value": None, "unit": None, "basis": None},
+            "freundlich_exponent": {"status": "required", "value": None},
+            "vapour_pressure": {"status": "required", "value_pa": None},
+            "water_solubility": {"status": "required", "value_mg_l": None},
+            "crop_and_scenario": {"status": "required", "spin_substance_key": None, "scenario_key": None, "scenario_database_version": None},
+            "weather_scenario": {"status": "required", "weather_series": None, "simulation_years": None},
+            "plant_uptake_coefficient_tscf": {"status": "required", "value": None},
+        },
+        "known_constraints": [
+            "PEARL simulates the soil-plant system in one dimension only; it does not represent macropore or dual-domain flow (that is MACRO's role).",
+            "FOCUS_PEARL_5.5.5gw_5.5.1soil (released September 2021) is the current officially approved groundwater/soil release; an older result must be re-run before it is treated as regulatory-equivalent.",
+            "SPIN must supply the substance record before a PEARL run is prepared; TSCF is edited in standalone SPIN when the PEARL-hosted field is disabled.",
+        ],
+    },
+    "SWASH": {
+        "name": "FOCUS SWASH",
+        "official_version": "FOCUS_SWASH_5.3",
+        "role": "Step 3 FOCUS surface-water shell that links MACRO/PRZM drainage or runoff entries into TOXSWA",
+        "is_simulation_model": False,
+        "official_page": "https://esdac.jrc.ec.europa.eu/projects/swash",
+        "path_environment_variable": "ENVIROCHEM_SWASH_PATH",
+        "default_path": r"C:\SWASH",
+        "prerequisites": ["SPIN"],
+        "host_workflows": ["SWASH to TOXSWA surface water"],
+        "input_template": {
+            "spin_substance_record": {"status": "required", "substance_key": None, "database_version": "4.4"},
+            "crop_and_focus_scenarios": {"status": "required", "crop": None, "waterbody_scenarios": []},
+            "application_pattern": {"status": "required", "method": None, "rate": None, "timing": []},
+            "entry_routes": {"status": "required", "drift": True, "drainage_via_macro": False, "runoff_and_erosion_via_przm": False},
+            "macro_or_przm_configuration": {"status": "required", "model": None, "run_log_reference": None},
+            "toxswa_configuration": {"status": "required", "waterbody_type": None},
+        },
+        "known_constraints": [
+            "SWASH itself is an orchestration shell, not a fate model -- it maintains the shared substance database, calculates spray-drift deposition and assembles the MACRO/PRZM-to-TOXSWA project; it produces no PEC on its own.",
+            "FOCUS_SWASH_5.3 (released 22 May 2015) is the current officially approved Step 3 shell version.",
+            "SPIN must be installed on a local drive and hold the substance record before a SWASH project is created.",
+            "TOXSWA is launched from within SWASH after the required upstream MACRO drainage or PRZM runoff/erosion run has completed.",
+        ],
+    },
+    "TOXSWA": {
+        "name": "FOCUS TOXSWA",
+        "official_version": "5.5.3",
+        "role": "Surface-water and sediment fate model for the ten official FOCUS surface-water scenarios",
+        "is_simulation_model": True,
+        "official_page": "https://esdac.jrc.ec.europa.eu/projects/toxswa",
+        "path_environment_variable": "ENVIROCHEM_TOXSWA_PATH",
+        "default_path": r"C:\SWASH\TOXSWA",
+        "prerequisites": ["SPIN", "SWASH", "MACRO or PRZM entry-route run for scenarios requiring drainage or runoff"],
+        "host_workflows": ["SWASH to TOXSWA surface water"],
+        "input_template": {
+            "contaminant_group": {"status": "required", "value": None},
+            "spin_substance_record": {"status": "required", "substance_key": None, "database_version": "4.4"},
+            "swash_surface_water_scenario": {"status": "required", "scenario_key": None, "waterbody_type": None},
+            "application_pattern": {"status": "required", "method": None, "rate": None, "timing": []},
+            "drift_deposition": {"status": "required", "percent_of_dose": None, "source": "FOCUS Drift Calculator via SWASH"},
+            "macro_m2t_or_przm_p2t_when_applicable": {"status": "required", "macro_m2t_file": None, "przm_p2t_file": None},
+            "water_and_sediment_dt50": {"status": "required", "water_dt50_days": None, "sediment_dt50_days": None},
+            "freundlich_sorption_parameters": {"status": "required", "freundlich_kfoc": None, "freundlich_exponent": None},
+            "molar_mass_vapour_pressure_solubility_diffusion": {"status": "required", "molar_mass_g_mol": None, "vapour_pressure_pa": None, "water_solubility_mg_l": None, "diffusion_coefficient_water_cm2_s": None},
+            "metabolite_scheme_if_applicable": {"status": "required", "metabolites": [], "applicable": None},
+        },
+        "known_constraints": [
+            "TOXSWA is launched from within SWASH, not run standalone -- SWASH supplies the substance database, scenario and drift/entry-route files it needs.",
+            "TOXSWA 5.5.3 (released 24 May 2018) is the current officially approved release used across the ten FOCUS surface-water scenarios.",
+            "For non-pesticide chemical groups, applying FOCUS_TOXSWA is adapted/research use unless the receiving authority explicitly accepts it; this must never be presented as an official pesticide-scenario run.",
+        ],
+    },
+    "PELMO": {
+        "name": "FOCUS PELMO",
+        "official_version": "FOCUS_PELMO_6.6.4gw_6.6.1soil",
+        "role": "Soil and groundwater leaching model for FOCUS groundwater assessments",
+        "is_simulation_model": True,
+        "official_page": "https://esdac.jrc.ec.europa.eu/projects/pelmo",
+        "path_environment_variable": "ENVIROCHEM_PELMO_PATH",
+        "default_path": r"C:\Program Files (x86)\Pesticide Models\PELMO",
+        "prerequisites": ["SPIN"],
+        "host_workflows": ["FOCUS groundwater"],
+        "input_template": {
+            "application_pattern": {"status": "required", "crop": None, "applications": []},
+            "soil_dt50": {"status": "required", "value_days": None, "source": None},
+            "koc_or_kd": {"status": "required", "value": None, "unit": None, "basis": None},
+            "crop_and_scenario": {"status": "required", "spin_substance_key": None, "scenario_key": None, "scenario_database_version": None},
+            "weather_scenario": {"status": "required", "weather_series": None, "simulation_years": None},
+            "metabolite_scheme_if_applicable": {"status": "required", "metabolites": [], "applicable": None},
+        },
+        "known_constraints": [
+            "FOCUS_PELMO_6.6.4gw_6.6.1soil (released September 2021) is the current officially approved groundwater/soil release; per EFSA (2017) guidance it also delivers Tier-3A PECsoil outputs.",
+            "PELMO and PEARL implement the same nine FOCUS groundwater scenarios independently; a discrepancy between the two for the same substance record is a review flag, not something either model resolves automatically.",
+            "SPIN must supply the substance record before a PELMO run is prepared.",
+        ],
+    },
     "GREATER": {
         "name": "GREAT-ER 4",
         "official_version": "4",
@@ -553,32 +657,41 @@ def validate_external_model_inputs(model_key: str, input_data: dict[str, Any]) -
     }
 
 
+_CURATED_RECOMMENDED_OUTPUTS: dict[str, list[str]] = {
+    "SPIN": ["substance_record_snapshot", "transformation_pathway", "spin_database_version"],
+    "MACRO": ["scenario", "model_version", "groundwater_or_drainage_endpoint", "run_log_reference"],
+    "GREATER": ["basin_id", "river_reach_concentrations", "catchment_pec_distribution", "database_version"],
+    "PWC": ["model_version", "scenario_file_version", "surface_water_concentration", "sediment_concentration", "groundwater_concentration", "raw_output_archive"],
+    "PRZM": ["model_version", "runoff_load", "erosion_load", "leaching_flux", "raw_output_archive"],
+    "AGDRIFT": ["model_version", "off_site_deposition_fraction", "downwind_deposition_curve", "raw_output_archive"],
+    "TERRPLANT": ["model_version", "terrestrial_plant_risk_quotient", "raw_output_archive"],
+    "TREX": ["model_version", "avian_dietary_concentration", "avian_risk_quotient", "mammalian_risk_quotient", "raw_output_archive"],
+    "BEEREX": ["model_version", "contact_risk_quotient", "oral_risk_quotient", "raw_output_archive"],
+    "CHEMSTEER": ["model_version", "environmental_releases", "worker_inhalation_exposure", "worker_dermal_exposure", "raw_output_archive"],
+    "CEM": ["model_version", "product_or_article_category", "consumer_inhalation_exposure", "consumer_dermal_exposure", "consumer_ingestion_exposure", "raw_output_archive"],
+    "EFAST": ["model_version", "legacy_use_justification", "release_or_use_scenario", "general_population_exposure", "raw_output_archive"],
+}
+
+
 def validate_external_model_output(model_key: str, structured_outputs: dict[str, Any]) -> dict[str, Any] | None:
     optional_outputs: list[str] = []
-    if model_key in MODEL_PROFILES:
-        recommended = {
-            "SPIN": ["substance_record_snapshot", "transformation_pathway", "spin_database_version"],
-            "MACRO": ["scenario", "model_version", "groundwater_or_drainage_endpoint", "run_log_reference"],
-            "GREATER": ["basin_id", "river_reach_concentrations", "catchment_pec_distribution", "database_version"],
-            "PWC": ["model_version", "scenario_file_version", "surface_water_concentration", "sediment_concentration", "groundwater_concentration", "raw_output_archive"],
-            "PRZM": ["model_version", "runoff_load", "erosion_load", "leaching_flux", "raw_output_archive"],
-            "AGDRIFT": ["model_version", "off_site_deposition_fraction", "downwind_deposition_curve", "raw_output_archive"],
-            "TERRPLANT": ["model_version", "terrestrial_plant_risk_quotient", "raw_output_archive"],
-            "TREX": ["model_version", "avian_dietary_concentration", "avian_risk_quotient", "mammalian_risk_quotient", "raw_output_archive"],
-            "BEEREX": ["model_version", "contact_risk_quotient", "oral_risk_quotient", "raw_output_archive"],
-            "CHEMSTEER": ["model_version", "environmental_releases", "worker_inhalation_exposure", "worker_dermal_exposure", "raw_output_archive"],
-            "CEM": ["model_version", "product_or_article_category", "consumer_inhalation_exposure", "consumer_dermal_exposure", "consumer_ingestion_exposure", "raw_output_archive"],
-            "EFAST": ["model_version", "legacy_use_justification", "release_or_use_scenario", "general_population_exposure", "raw_output_archive"],
-        }[model_key]
+    if model_key in _CURATED_RECOMMENDED_OUTPUTS:
+        recommended = _CURATED_RECOMMENDED_OUTPUTS[model_key]
     else:
         # Fallback for every genuinely externally-managed model outside the
         # hand-curated set above (PEARL, PELMO, SWASH, TOXSWA, EXAMS, EPIE,
         # SIMPLEBOX, EPI_SUITE, ...): its own adapter contract's expected_outputs
         # becomes the completeness requirement, so output-completeness is never
         # silently absent for an official model just because it lacks a
-        # hand-picked recommended list. Native EnviroChem screens (execution_mode
-        # starting with "native") compute inline and are excluded -- they never
-        # go through a genuine-execution import/review gate.
+        # hand-picked recommended list. This is keyed off the curated dict
+        # above, not MODEL_PROFILES -- a model can have a hand-curated
+        # *input* template (for the guided form) while still using its
+        # adapter contract's expected_outputs/optional_outputs for *output*
+        # completeness, which is what correctly keeps TOXSWA's conditional
+        # time_series_if_requested optional here. Native EnviroChem screens
+        # (execution_mode starting with "native") compute inline and are
+        # excluded -- they never go through a genuine-execution import/review
+        # gate.
         from .adapters import ADAPTER_CONTRACTS  # deferred: adapters.py imports MODEL_PROFILES from this module
 
         contract = ADAPTER_CONTRACTS.get(model_key)

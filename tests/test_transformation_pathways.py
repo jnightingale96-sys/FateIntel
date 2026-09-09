@@ -105,6 +105,33 @@ def test_remote_adapter_submits_envmicro_and_polls_json_result():
     assert result["query"]["provider_query_id"] == "42"
 
 
+def test_submission_406_reports_edge_blocking_not_a_bad_request():
+    # Live-confirmed 2026-09-09: an identical request succeeds via curl but is
+    # rejected 406 "Not Acceptable" when sent through this app's httpx client,
+    # consistent with Cloudflare-level client fingerprinting on
+    # biotransformer.ca rather than a malformed request. The generic
+    # "BioTransformer submission failed with HTTP 406" message left a user
+    # with no explanation or next step; this asserts the clearer message and
+    # the enviPath fallback pointer are both present.
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(406, json={"status": 406, "error": "Not Acceptable"})
+
+    client = httpx.Client(transport=httpx.MockTransport(handler))
+    configuration = Settings(
+        _env_file=None,
+        envirochem_environment="test",
+        biotransformer_base_url="https://biotransformer.example",
+    )
+    from app.exceptions import ExternalDataSourceError
+
+    with pytest.raises(ExternalDataSourceError) as excinfo:
+        predict_environmental_pathway(PARENT, configuration=configuration, client=client)
+    client.close()
+    assert "406" in str(excinfo.value)
+    assert "Cloudflare" in str(excinfo.value) or "automated HTTP client" in str(excinfo.value)
+    assert "enviPath" in str(excinfo.value)
+
+
 def test_production_gate_stops_before_external_request():
     configuration = Settings(_env_file=None, envirochem_environment="production")
     with pytest.raises(ExternalModelUnavailableError, match="commercial licence"):

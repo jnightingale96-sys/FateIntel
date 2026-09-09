@@ -56,6 +56,7 @@ class Settings(BaseModel):
     envirochem_swash_path: Path | None = None
     envirochem_macro_path: Path | None = None
     envirochem_toxswa_path: Path | None = None
+    envirochem_pelmo_path: Path | None = None
     envirochem_greater_path: Path | None = None
     envirochem_chemsteer_path: Path | None = None
     envirochem_cem_path: Path | None = None
