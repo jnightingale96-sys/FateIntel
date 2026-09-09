@@ -74,6 +74,15 @@ from .services.transformation_pathways import (
     provider_capabilities as transformation_provider_capabilities,
     predict_environmental_pathway,
 )
+from .services.envipath import (
+    provider_capabilities as envipath_provider_capabilities,
+    predict_pathway as predict_envipath_pathway,
+    search_curated_pathways as search_envipath_curated_pathways,
+)
+from .services.analytical_identification import (
+    identification_profile as build_identification_profile,
+    source_registry as analytical_source_registry,
+)
 from .services.pearl_groundwater import manifest as pearl_manifest, focus_scenario_manifest, run_pearl_groundwater_screen
 from .services.toxswa_surface_water import manifest as toxswa_manifest, route_recommendation as toxswa_route_recommendation, run_process_screen as run_toxswa_process_screen, parse_official_summary as parse_toxswa_official_summary, raw_output_hash as toxswa_raw_output_hash
 from .services.multimedia_fate import run_multimedia_fate_screen
@@ -1311,7 +1320,7 @@ def run_envirodesign_pathway(payload: EnviroDesignPathwayCreate, db: Session = D
 def get_transformation_pathway_providers():
     return {
         "default_provider": "biotransformer",
-        "providers": [transformation_provider_capabilities()],
+        "providers": [transformation_provider_capabilities(), envipath_provider_capabilities()],
         "architecture": "provider_neutral",
         "scientific_rule": (
             "Provider output proposes structures and reaction edges. Observed occurrence, formation fractions "
@@ -1320,17 +1329,35 @@ def get_transformation_pathway_providers():
     }
 
 
+@app.get("/api/transformation-pathways/search-curated")
+def search_curated_transformation_pathways(parent_smiles: str, package_ids: str | None = None):
+    package_id_list = [value for value in (package_ids or "").split(",") if value.strip()] or None
+    try:
+        return search_envipath_curated_pathways(parent_smiles, package_ids=package_id_list)
+    except ValueError as exc:
+        raise HTTPException(422, str(exc)) from exc
+
+
 @app.post("/api/transformation-pathways/predict")
 def create_transformation_pathway_prediction(
     payload: TransformationPathwayPredictCreate,
     db: Session = Depends(get_db),
 ):
+    model_key = "BIOTRANSFORMER_ENVMICRO" if payload.provider == "biotransformer" else "ENVIPATH_ENVMICRO"
     try:
-        output = predict_environmental_pathway(
-            payload.parent_smiles,
-            parent_name=payload.parent_name,
-            number_of_steps=payload.number_of_steps,
-        )
+        if payload.provider == "biotransformer":
+            output = predict_environmental_pathway(
+                payload.parent_smiles,
+                parent_name=payload.parent_name,
+                number_of_steps=payload.number_of_steps,
+            )
+        else:
+            output = predict_envipath_pathway(
+                payload.parent_smiles,
+                parent_name=payload.parent_name,
+                package_id=payload.envipath_package_id,
+                number_of_steps=payload.number_of_steps,
+            )
     except ValueError as exc:
         raise HTTPException(422, str(exc)) from exc
 
@@ -1341,7 +1368,7 @@ def create_transformation_pathway_prediction(
         row = ModelRun(
             project_id=payload.project_id,
             chemical_id=payload.chemical_id,
-            model_key="BIOTRANSFORMER_ENVMICRO",
+            model_key=model_key,
             model_version=output["model_version"],
             scenario_name=payload.scenario_name,
             status="completed",
@@ -1368,6 +1395,41 @@ def create_transformation_pathway_prediction(
         db.refresh(row)
         model_run_id = row.id
     return {"model_run_id": model_run_id, "outputs": output}
+
+
+@app.get("/api/analytical-sources")
+def get_analytical_sources():
+    return {"sources": analytical_source_registry()}
+
+
+@app.get("/api/chemicals/{chemical_id}/identification")
+def get_chemical_identification_profile(chemical_id: int, ion_mode: str | None = None, db: Session = Depends(get_db)):
+    chemical = db.get(Chemical, chemical_id)
+    if chemical is None:
+        raise HTTPException(404, "Chemical not found")
+    if not chemical.inchikey:
+        raise HTTPException(
+            422,
+            "This chemical has no recorded InChIKey; an identification profile cannot be looked up without one.",
+        )
+    try:
+        return build_identification_profile(chemical.inchikey, ion_mode=ion_mode)
+    except ValueError as exc:
+        raise HTTPException(422, str(exc)) from exc
+
+
+@app.get("/api/analytical-identification/{inchikey}")
+def get_identification_profile_by_inchikey(inchikey: str, ion_mode: str | None = None):
+    """Look up an identification profile directly by InChIKey.
+
+    A known transformation product is a real substance in its own right and may not have a
+    ``Chemical`` row of its own -- this lets the Identification screen follow parent -> TP ->
+    that TP's own profile without first requiring the TP to be imported as a project chemical.
+    """
+    try:
+        return build_identification_profile(inchikey, ion_mode=ion_mode)
+    except ValueError as exc:
+        raise HTTPException(422, str(exc)) from exc
 
 
 @app.get("/api/focus/manifest")

@@ -449,6 +449,17 @@ MODELS: list[dict[str, Any]] = [
         "outputs": ["predicted_products", "pathway_nodes", "reaction_edges", "provider_provenance"],
     },
     {
+        "key": "ENVIPATH_ENVMICRO",
+        "name": "enviPath curated-pathway search and rule-based pathway prediction",
+        "domain": "curated real-world and predicted microbial transformation products and reaction network",
+        "regions": ["EU", "UK", "US", "CH", "AU"],
+        "groups": CONTAMINANT_GROUPS,
+        "implementation": "remote_api_adapter",
+        "status": "development_evaluation_licence_gated",
+        "tiers": [0, 1, 2, 3, 4],
+        "outputs": ["curated_or_predicted_products", "pathway_nodes", "reaction_edges", "provider_provenance"],
+    },
+    {
         "key": "ENVIRODESIGN_CANDIDATE_COMPARISON",
         "name": "EnviroDesign candidate comparison",
         "domain": "counterfactual safer-by-design comparison",

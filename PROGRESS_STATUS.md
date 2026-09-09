@@ -1,4 +1,19 @@
-# EnviroChem Studio v2.23 Alpha 3.2.3 progress status
+# EnviroChem Studio v2.23 Alpha 3.3.0 progress status
+
+## Alpha 3.3.0 analytical identification
+
+- Added `app/services/analytical_identification.py`: NORMAN SusDat (predicted ESI mode/platform),
+  a live MassBank Europe connector (real measured product-ion spectra with RT/column/mobile
+  phase), and NORMAN EAWAGTPS (known, curated parent/transformation-product pairs, never
+  predicted).
+- Added `GET /api/chemicals/{id}/identification` and `GET /api/analytical-identification/{inchikey}`
+  (the latter needs no stored `Chemical` row, enabling parent -> TP -> TP's-own-profile lookups).
+- Added a new "Identification" left-nav screen wired to the two routes above.
+- NORMAN SusDat ships as an indexed JSONL file (`norman_susdat_reference.jsonl` +
+  `norman_susdat_index.json`) rather than one eagerly-loaded ~44 MB in-memory dict.
+- 14 new tests in `tests/test_analytical_identification.py`; full suite green.
+- Live-verified against the real MassBank Europe REST API and real NORMAN CSV snapshots before
+  building the parser, per the project's established live-verification discipline.
 
 ## Alpha 3.2.3 trust release patch
 

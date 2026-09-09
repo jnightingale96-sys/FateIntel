@@ -1,6 +1,26 @@
-# EnviroChem Studio v2.23.0 Alpha 3.2.3 — Trust Release Patch
+# EnviroChem Studio v2.23.0 Alpha 3.3.0 — Analytical Identification
 
-EnviroChem is an evidence-led environmental fate, exposure and regulatory modelling workspace. Alpha 3.2.3 closes four residual trust gaps found by a third independent audit of the Alpha 3.2.2 hotfix: a reviewed or rejected workflow's decision could still be changed by a second `/review` call; the JSON boolean `true` silently satisfied a numeric field's requirement; a conditional TOXSWA output blocked acceptance even when it was never requested; and the release ZIP shipped five pre-existing QA artifact files that predated the data-directory exclusion rules.
+EnviroChem is an evidence-led environmental fate, exposure and regulatory modelling workspace. Alpha 3.3.0 adds an Identification screen answering "how would a researcher actually find this chemical in a real sample": ionisation mode and platform recommendation from NORMAN SusDat, real measured MS2 product-ion spectra (retention time, column, mobile phase, ionisation) from a live MassBank Europe connector, and known (never predicted) transformation products from NORMAN EAWAGTPS, each traceable to its own source or explicitly marked absent.
+
+## v2.23 Alpha 3.3.0 analytical identification
+
+- **New `app/services/analytical_identification.py` module.** Three sources, kept deliberately
+  separate from the scalar-endpoint `evidence_sources.py` pipeline: NORMAN SusDat (OPERA-predicted
+  ESI mode, precursor `M+H+`/`M-H-`, chromatographic platform), NORMAN EAWAGTPS (curated
+  parent/transformation-product pairs), and a live MassBank Europe REST connector (real, measured
+  product-ion spectra plus their recorded retention time, column, mobile phase and ionisation
+  mode).
+- **`GET /api/chemicals/{id}/identification`** and **`GET /api/analytical-identification/{inchikey}`.**
+  The latter needs no stored `Chemical` row, so a known transformation product returned by the
+  first lookup can have its own identification profile looked up directly — the Identification
+  screen follows parent → TP → that TP's own profile in one click.
+- **NORMAN SusDat shipped as an indexed JSONL file, not one in-memory dict.** The slimmed dataset
+  still covers ~109k substances and came out to ~44 MB; a small inchikey→byte-offset index
+  (`app/data/norman_susdat_index.json`) is the only piece loaded at import time, and a lookup seeks
+  straight to its one line.
+- **`scripts/convert_norman_references.py`** is the one-off converter from the source NORMAN CSVs
+  to the shipped `app/data/*.json`/`*.jsonl` reference files.
+- Full clean-database regression result: see `RELEASE_NOTES_v2.23.0-alpha3.3.0.md`.
 
 ## v2.23 Alpha 3.2.3 trust release patch
 
@@ -133,7 +153,7 @@ Alpha 3 still is not a complete US risk assessment implementation. It executes o
 1. Extract the ZIP to a new folder.
 2. Double-click `START_ENVIROCHEM.bat`. The visible console remains open so any startup error can be read.
 3. Keep the terminal window open while EnviroChem is running.
-4. Manual URL (default): `http://127.0.0.1:8792/?build=envirochem-studio-v2.23.0-alpha3.2.3-trust-release-patch-2026-09-08`.
+4. Manual URL (default): `http://127.0.0.1:8792/?build=envirochem-studio-v2.23.0-alpha3.3.0-analytical-identification-2026-09-08`.
 
 The launcher supports folders containing spaces. If the selected port already serves
 the same EnviroChem build, a second launch reopens that instance. If another
@@ -234,6 +254,11 @@ Copy `.env.example` to `.env` only when overrides are needed. Operating-system e
 | `BIOTRANSFORMER_ENABLED` | `true` | Enable the interim pathway adapter |
 | `BIOTRANSFORMER_BASE_URL` | `https://biotransformer.ca` | Fixed HTTPS provider base URL |
 | `BIOTRANSFORMER_COMMERCIAL_LICENSE_CONFIRMED` | `false` | Operator attestation required before staging/production use |
+| `ENVIPATH_ENABLED` | `true` | Enable the enviPath curated-search/prediction adapter |
+| `ENVIPATH_BASE_URL` | `https://envipath.org` | Fixed HTTPS provider base URL |
+| `ENVIPATH_API_TOKEN` | unset | Bearer API token from your own envipath.org account (recommended auth path) |
+| `ENVIPATH_USERNAME` / `ENVIPATH_PASSWORD` | unset | Fallback session-login credentials (unverified against the current envipath.org) |
+| `ENVIPATH_COMMERCIAL_LICENSE_CONFIRMED` | `false` | Operator attestation required before staging/production use |
 
 Do not place credentials in source control, diagnostic logs or shared ZIP files. EnviroChem does not request an OpenAI API key because the current rule-based Assessment Explainer does not need one.
 

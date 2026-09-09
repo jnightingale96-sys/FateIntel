@@ -1,8 +1,8 @@
-const CACHE="envirochem-studio-v2.23-alpha3.2.3-trust-release-patch";
+const CACHE="envirochem-studio-v2.23-alpha3.3.0-analytical-identification";
 const STATIC=[
   "/",
-  "/static/styles.css?v=guided-v2.23-alpha3.2.3-trust-release-patch",
-  "/static/app.js?v=guided-v2.23-alpha3.2.3-trust-release-patch",
+  "/static/styles.css?v=guided-v2.23-alpha3.3.0-analytical-identification",
+  "/static/app.js?v=guided-v2.23-alpha3.3.0-analytical-identification",
   "/static/carbamazepine.svg",
   "/static/chemical-placeholder.svg",
   "/static/icon.svg",

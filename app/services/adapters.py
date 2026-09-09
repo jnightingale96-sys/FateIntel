@@ -548,6 +548,18 @@ ADAPTER_CONTRACTS: dict[str, dict[str, Any]] = {
         "accepted_output_formats": ["json"],
         "redistribution_note": "Interim academic/development integration. BioTransformer ENVMICRO uses enviPath/EAWAG-derived data; written commercial permission is required before production use.",
     },
+    "ENVIPATH_ENVMICRO": {
+        "execution_mode": "remote_api_development_evaluation",
+        "required_inputs": ["confirmed_parent_smiles", "parent_name", "package_or_search_scope"],
+        "expected_outputs": ["curated_or_predicted_products", "substrate_product_edges", "reaction_annotations", "provider_query_provenance"],
+        "workflow_steps": [
+            "search enviPath's curated packages for the parent, or submit it for enviPath's own rule-based prediction",
+            "normalise results into the provider-neutral pathway graph", "label curated results as database-curated and predicted results as model-predicted",
+            "scientist reviews structures and reaction edges", "fit formation and degradation kinetics separately",
+        ],
+        "accepted_output_formats": ["json"],
+        "redistribution_note": "Interim academic/development integration. envipath.org states it is free for academic and non-commercial use only; written commercial permission is required before production use.",
+    },
     "ENVIRODESIGN_CANDIDATE_COMPARISON": {
         "execution_mode": "native_user_supplied_candidates",
         "required_inputs": ["original_smiles", "candidate_smiles", "protected_substructures"],

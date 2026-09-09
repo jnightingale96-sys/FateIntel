@@ -9,7 +9,7 @@
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <link href="/static/manifest.webmanifest" rel="manifest"/>
 <link href="/static/icon.svg" rel="icon" type="image/svg+xml"/>
-<link href="/static/styles.css?v=guided-v2.23-alpha3.2.3-trust-release-patch" rel="stylesheet"/>
+<link href="/static/styles.css?v=guided-v2.23-alpha3.3.0-analytical-identification" rel="stylesheet"/>
 </head>
 <body>
 <div class="app-shell">
@@ -28,7 +28,7 @@
 
 
 
-<button class="nav-item" data-scroll="welcome"><span class="nav-icon">⌂</span><span>Overview</span></button><button class="nav-item active" data-scroll="assessment-flow"><span class="nav-icon">▣</span><span>Assessments</span></button><button class="nav-item" data-scroll="evidence-data-hub"><span class="nav-icon">▤</span><span>Evidence data</span></button><button class="nav-item" data-scroll="regulatory-pathway"><span class="nav-icon">◎</span><span>Frameworks</span></button><a class="nav-item" href="/static/expert.html#evidence"><span class="nav-icon">✓</span><span>Evidence review</span></a><a class="nav-item" href="/static/expert.html#models"><span class="nav-icon">⌘</span><span>Models</span></a><button class="nav-item" data-scroll="results"><span class="nav-icon">▥</span><span>Reports</span></button><button class="nav-item hidden" data-water-sediment-nav="1" data-scroll="toxswa-surface-water"><span class="nav-icon">≈</span><span id="toxswa-nav-label">Water–sediment</span></button><button class="nav-item" data-eu-only="1" data-scroll="pearl-groundwater"><span class="nav-icon">⇣</span><span>FOCUS PEARL</span></button><button class="nav-item" data-scroll="envirodesign"><span class="nav-icon">✦</span><span>EnviroDesign</span></button><a class="nav-item" href="/static/expert.html"><span class="nav-icon">⚙</span><span>Expert workspace</span></a></nav>
+<button class="nav-item" data-scroll="welcome"><span class="nav-icon">⌂</span><span>Overview</span></button><button class="nav-item active" data-scroll="assessment-flow"><span class="nav-icon">▣</span><span>Assessments</span></button><button class="nav-item" data-scroll="evidence-data-hub"><span class="nav-icon">▤</span><span>Evidence data</span></button><button class="nav-item" data-scroll="regulatory-pathway"><span class="nav-icon">◎</span><span>Frameworks</span></button><a class="nav-item" href="/static/expert.html#evidence"><span class="nav-icon">✓</span><span>Evidence review</span></a><a class="nav-item" href="/static/expert.html#models"><span class="nav-icon">⌘</span><span>Models</span></a><button class="nav-item" data-scroll="results"><span class="nav-icon">▥</span><span>Reports</span></button><button class="nav-item hidden" data-water-sediment-nav="1" data-scroll="toxswa-surface-water"><span class="nav-icon">≈</span><span id="toxswa-nav-label">Water–sediment</span></button><button class="nav-item" data-eu-only="1" data-scroll="pearl-groundwater"><span class="nav-icon">⇣</span><span>FOCUS PEARL</span></button><button class="nav-item" data-scroll="envirodesign"><span class="nav-icon">✦</span><span>EnviroDesign</span></button><button class="nav-item" data-scroll="analytical-identification"><span class="nav-icon">⚗</span><span>Identification</span></button><a class="nav-item" href="/static/expert.html"><span class="nav-icon">⚙</span><span>Expert workspace</span></a></nav>
 <div aria-hidden="true" class="sidebar-art">
 <div class="moon"></div>
 <div class="hill hill-a"></div><div class="hill hill-b"></div>
@@ -65,7 +65,7 @@
 <main>
 <section class="welcome-strip" id="welcome">
 <div>
-<span class="release-badge">NEW · v2.23 ALPHA 3.2.3 · TRUST RELEASE PATCH</span>
+<span class="release-badge">NEW · v2.23 ALPHA 3.3.0 · ANALYTICAL IDENTIFICATION</span>
 <h2>Start with exposure. Refine only where the evidence takes you.</h2>
 <p>Identify the chemical, define use and release, run the Tier 1–2 exposure screen, then move into jurisdiction-specific models and molecular design only when they add value.</p>
 </div>
@@ -940,19 +940,49 @@
 <div class="design-result-box" id="candidate-results"><small>No candidate comparison run.</small></div>
 </section>
 <section class="design-lab-card">
-<span class="drawer-kicker">TRANSFORMATION PATHWAYS · BIOTRANSFORMER</span>
+<span class="drawer-kicker">TRANSFORMATION PATHWAYS</span>
 <h3>Predict, review and analyse environmental transformation products</h3>
-<p>BioTransformer ENVMICRO proposes soil/water microbial reaction pathways. Every returned structure remains a prediction until supported by literature or analytical evidence.</p>
+<p>Every returned structure remains a prediction, or a result from a curated third-party package, until supported by literature or analytical evidence reviewed here.</p>
 <div class="pathway-provider-strip">
-<div><strong>BioTransformer 3.1 · ENVMICRO</strong><small>Remote provider · one parent per request · development/academic evaluation</small></div>
+<label><span>Provider</span><select id="pathway-provider"><option selected value="biotransformer">BioTransformer 3.1 · ENVMICRO</option><option value="envipath">enviPath · rule-based prediction</option></select></label>
 <label><span>Generations</span><select id="pathway-generations"><option selected value="1">1 · primary TPs</option><option value="2">2 · include secondary TPs</option><option value="3">3 · exploratory</option></select></label>
+<label id="envipath-package-field" class="hidden"><span>enviPath package id</span><input id="envipath-package-id" placeholder="e.g. the EAWAG-BBD package URL"/></label>
 <button class="primary-button" id="predict-transformation-pathway" type="button">Predict pathway</button>
 </div>
 <div class="pathway-provider-status" id="pathway-provider-status"><span>READY</span><p>The provider supplies structures and reaction hypotheses—not formation fractions, rate constants or DT50 values.</p></div>
+<div class="pathway-provider-strip">
+<div><strong>enviPath curated packages</strong><small>Search existing, human-reviewed pathways (e.g. EAWAG-BBD) for this parent — a lookup, not a prediction.</small></div>
+<button class="ghost-button" id="search-envipath-curated" type="button">Search curated pathways</button>
+</div>
 <p class="pathway-edit-label"><strong>Scientist review list</strong> · one product per line: <code>Name|SMILES|observed/predicted|matrix|source</code>. Edit, remove or relabel products before motif analysis.</p>
 <textarea id="pathway-products" placeholder="Product A|SMILES|observed|activated sludge|Study DOI" rows="6"></textarea>
 <button class="ghost-button" id="analyse-pathway-retention" type="button">Analyse motif retention</button>
-<div class="design-result-box" id="pathway-results"><small>No pathway generated. BioTransformer is the interim licensed-gate provider; the internal pathway record remains provider-neutral.</small></div>
+<div class="design-result-box" id="pathway-results"><small>No pathway generated. The internal pathway record remains provider-neutral.</small></div>
+</section>
+</div>
+</section>
+<section class="envirodesign-shell" id="analytical-identification">
+<div class="envirodesign-heading">
+<div>
+<span class="design-badge">IDENTIFICATION · analytical screen</span>
+<h2>How would a researcher actually find this chemical in a real sample?</h2>
+<p>Ionisation mode, a real reference product-ion spectrum, and known transformation products for the selected chemical — each sourced to a named database or explicitly marked absent. Nothing on this screen is fabricated or predicted unless labelled as a model prediction.</p>
+</div>
+<button class="ghost-button" id="refresh-identification" type="button">Refresh</button>
+</div>
+<div class="design-status" id="identification-status"><strong>Select a chemical to load its identification profile.</strong><small>Looks up the selected chemical's stored InChIKey against NORMAN SusDat, NORMAN EAWAGTPS and MassBank Europe.</small></div>
+<div class="design-insight-grid">
+<section class="design-panel">
+<div class="mini-heading"><span>Ionisation &amp; platform</span><small>NORMAN SusDat · OPERA-predicted ESI mode and platform</small></div>
+<div class="design-list" id="identification-ionisation"><p>No chemical selected.</p></div>
+</section>
+<section class="design-panel">
+<div class="mini-heading"><span>Known product ions</span><small>MassBank Europe · real, measured MS2 spectra</small></div>
+<div class="design-list" id="identification-product-ions"><p>No chemical selected.</p></div>
+</section>
+<section class="design-panel">
+<div class="mini-heading"><span>Known transformation products</span><small>NORMAN EAWAGTPS · curated parent→TP pairs, never predicted</small></div>
+<div class="design-list" id="identification-transformation-products"><p>No chemical selected.</p></div>
 </section>
 </div>
 </section>
@@ -965,6 +995,6 @@
 <div id="drawer-content"></div>
 </aside>
 <div class="toast hidden" id="toast"></div>
-<script src="/static/app.js?v=guided-v2.23-alpha3.2.3-trust-release-patch"></script>
+<script src="/static/app.js?v=guided-v2.23-alpha3.3.0-analytical-identification"></script>
 </body>
 </html>

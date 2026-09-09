@@ -393,6 +393,7 @@ function renderChemicalIdentity() {
   const status = $("step-identity")?.querySelector(".step-status");
   if (status) status.textContent = "✓";
   updateSummaries();
+  refreshIdentificationProfile();
 }
 
 function setProfileControlsEnabled(enabled) {
@@ -427,6 +428,96 @@ function renderNeutralWorkspace() {
   setProfileControlsEnabled(false);
   renderProjectSwitcher();
   updateSummaries();
+  resetIdentificationPanels();
+}
+
+function resetIdentificationPanels() {
+  if (!$("identification-status")) return;
+  $("identification-status").innerHTML = "<strong>Select a chemical to load its identification profile.</strong><small>Looks up the selected chemical's stored InChIKey against NORMAN SusDat, NORMAN EAWAGTPS and MassBank Europe.</small>";
+  ["identification-ionisation","identification-product-ions","identification-transformation-products"].forEach(id => {
+    if ($(id)) $(id).innerHTML = "<p>No chemical selected.</p>";
+  });
+}
+
+async function refreshIdentificationProfile() {
+  if (!$("identification-status")) return;
+  const chemical = state.chemical;
+  if (!chemical) { resetIdentificationPanels(); return; }
+  if (!chemical.inchikey) {
+    $("identification-status").innerHTML = `<strong>No InChIKey on record.</strong><small>${escapeHtml(chemical.preferred_name)} has no stored InChIKey, so an identification profile cannot be looked up.</small>`;
+    ["identification-ionisation","identification-product-ions","identification-transformation-products"].forEach(id => {
+      if ($(id)) $(id).innerHTML = "<p>Not available.</p>";
+    });
+    return;
+  }
+  await loadIdentificationProfile(`/api/chemicals/${chemical.id}/identification`, chemical.preferred_name, chemical.inchikey);
+}
+
+async function lookupIdentificationByInchikey(inchikey, name) {
+  await loadIdentificationProfile(`/api/analytical-identification/${encodeURIComponent(inchikey)}`, name || inchikey, inchikey);
+}
+
+async function loadIdentificationProfile(url, displayName, inchikey) {
+  $("identification-status").innerHTML = `<strong>Looking up ${escapeHtml(displayName)}…</strong><small>Querying NORMAN SusDat, NORMAN EAWAGTPS and MassBank Europe.</small>`;
+  ["identification-ionisation","identification-product-ions","identification-transformation-products"].forEach(id => {
+    if ($(id)) $(id).innerHTML = "<p>Loading…</p>";
+  });
+  try {
+    const profile = await api(url);
+    renderIdentificationProfile(profile, displayName);
+  } catch (error) {
+    $("identification-status").innerHTML = `<strong>Identification lookup failed.</strong><small>${escapeHtml(error.message)}</small>`;
+    ["identification-ionisation","identification-product-ions","identification-transformation-products"].forEach(id => {
+      if ($(id)) $(id).innerHTML = "<p>Lookup failed.</p>";
+    });
+  }
+}
+
+function renderIdentificationProfile(profile, displayName) {
+  const generated = profile.generated_at ? new Date(profile.generated_at).toLocaleString() : "";
+  $("identification-status").innerHTML = `<strong>${escapeHtml(displayName)} · ${escapeHtml(profile.inchikey || "")}</strong><small>Generated ${escapeHtml(generated)}</small>`;
+
+  const ip = profile.ionisation_and_platform || {};
+  $("identification-ionisation").innerHTML = ip.found ? `
+      <p><strong>Predicted ESI mode</strong> ${escapeHtml(ip.predicted_esi_mode || "—")} <em>(+ESI p=${fmt(ip.probability_positive_esi,2)}, −ESI p=${fmt(ip.probability_negative_esi,2)})</em></p>
+      <p><strong>Precursor ions</strong> [M+H]⁺ ${fmt(ip.precursor_m_plus_h_da,7)} · [M−H]⁻ ${fmt(ip.precursor_m_minus_h_da,7)}</p>
+      <p><strong>Platform recommendation</strong> ${escapeHtml(ip.preferable_platform || "—")} <em>(${escapeHtml(ip.predicted_chromatography || "—")}: RPLC p=${fmt(ip.probability_rplc,2)}, GC p=${fmt(ip.probability_gc,2)})</em></p>
+      <p class="identification-source">Source: <a href="${escapeHtml(ip.source_url || "#")}" rel="noopener" target="_blank">${escapeHtml(ip.citation || "NORMAN SusDat")}</a> · model-predicted, not a confirmed method.</p>`
+    : `<p>${escapeHtml(ip.message || "Not in the NORMAN SusDat reference set.")}</p>`;
+
+  const pi = profile.known_product_ions || {};
+  if (pi.found && Array.isArray(pi.spectra) && pi.spectra.length) {
+    const extra = (pi.match_count || 0) > (pi.returned_count || pi.spectra.length)
+      ? `<p><em>${pi.match_count - pi.returned_count} additional MassBank spectra not shown.</em></p>` : "";
+    $("identification-product-ions").innerHTML = pi.spectra.map(s => `
+      <div class="identification-spectrum-card">
+        <p><strong>${escapeHtml(s.ion_mode || "—")}</strong> · ${escapeHtml(s.precursor_type || "")} m/z ${fmt(s.precursor_mz,7)} · ${s.product_ion_count ?? 0} product ions</p>
+        <p>${escapeHtml(s.instrument_type || "")}${s.instrument ? ` · ${escapeHtml(s.instrument)}` : ""}${s.collision_energy ? ` · CE ${escapeHtml(s.collision_energy)}` : ""}</p>
+        ${s.retention_time_min != null ? `<p>RT ${fmt(s.retention_time_min,4)} min${s.column ? ` on ${escapeHtml(s.column)}` : ""}</p>` : ""}
+        ${Array.isArray(s.mobile_phase_solvents) && s.mobile_phase_solvents.length ? `<p>Mobile phase: ${s.mobile_phase_solvents.map(v => escapeHtml(v)).join("; ")}</p>` : ""}
+        ${Array.isArray(s.product_ions) && s.product_ions.length ? `<p>Top product ions (m/z): ${s.product_ions.slice(0,8).map(ion => fmt(ion.mz,6)).join(", ")}</p>` : ""}
+        <p class="identification-source">Source: <a href="${escapeHtml(s.source_url || "#")}" rel="noopener" target="_blank">MassBank ${escapeHtml(s.accession || "")}</a> · real, measured spectrum.</p>
+      </div>`).join("") + extra;
+  } else {
+    $("identification-product-ions").innerHTML = `<p>${escapeHtml(pi.message || "No reference spectrum found in MassBank Europe.")}</p>`;
+  }
+
+  const tp = profile.known_transformation_products || {};
+  if (tp.found && Array.isArray(tp.known_transformation_products) && tp.known_transformation_products.length) {
+    $("identification-transformation-products").innerHTML = tp.known_transformation_products.map((row, index) => `
+      <div class="identification-tp-card">
+        <p><strong>${escapeHtml(row.tp_name || "Unnamed transformation product")}</strong> <em>${escapeHtml(row.transformation_type || "")}</em></p>
+        <p>${escapeHtml(row.tp_formula || "—")} · mass diff ${fmt(row.mass_diff_da,4)} Da (${escapeHtml(row.formula_diff || "—")}) · ionisation ${escapeHtml(row.ionization || "—")}</p>
+        <p class="identification-source">Source: <a href="${escapeHtml(row.source_url || "#")}" rel="noopener" target="_blank">NORMAN EAWAGTPS record ${escapeHtml(String(row.source_record_id || ""))}</a> · curated pair, not predicted.</p>
+        ${row.tp_inchikey ? `<button class="text-button" data-identification-index="${index}" type="button">View this TP's own identification profile</button>` : ""}
+      </div>`).join("");
+    $$('#identification-transformation-products [data-identification-index]').forEach(button => {
+      const row = tp.known_transformation_products[Number(button.dataset.identificationIndex)];
+      button.addEventListener("click", () => lookupIdentificationByInchikey(row.tp_inchikey, row.tp_name));
+    });
+  } else {
+    $("identification-transformation-products").innerHTML = `<p>${escapeHtml(tp.message || "No known transformation products recorded.")}</p>`;
+  }
 }
 
 function nullableNumber(id) {
@@ -2612,16 +2703,18 @@ function renderTransformationPathway(out) {
   const displayNodes = nodes.slice(0,80);
   const generations = [...new Set(displayNodes.map(node => Number(node.generation) || 0))].sort((a,b)=>a-b);
   const productCount = out.summary?.unique_product_count || 0;
+  const providerLabel = (out.provider?.provider_name || "Provider").toUpperCase();
+  const resultLabel = out.products?.[0]?.status === "database_curated" ? "curated" : "predicted";
   const generationMarkup = generations.map(generation => {
     const generationNodes = displayNodes.filter(node => Number(node.generation || 0) === generation);
-    return `<section class="tp-generation"><header><span>${generation===0?"Parent":`Generation ${generation}`}</span><small>${generationNodes.length} structure${generationNodes.length===1?"":"s"}</small></header><div>${generationNodes.map(node=>`<article class="tp-node ${node.role==="parent"?"parent":"predicted"}"><strong>${escapeHtml(pathwayDisplayName(node))}</strong><code>${escapeHtml(node.smiles)}</code><small>${escapeHtml(node.formula || "Formula not returned")}${node.monoisotopic_mass_da!=null?` · ${fmt(node.monoisotopic_mass_da,7)} Da`:""}</small><em>${node.role==="parent"?"submitted parent":"model predicted"}</em></article>`).join("")}</div></section>`;
+    return `<section class="tp-generation"><header><span>${generation===0?"Parent":`Generation ${generation}`}</span><small>${generationNodes.length} structure${generationNodes.length===1?"":"s"}</small></header><div>${generationNodes.map(node=>`<article class="tp-node ${node.role==="parent"?"parent":"predicted"}"><strong>${escapeHtml(pathwayDisplayName(node))}</strong><code>${escapeHtml(node.smiles)}</code><small>${escapeHtml(node.formula || "Formula not returned")}${node.monoisotopic_mass_da!=null?` · ${fmt(node.monoisotopic_mass_da,7)} Da`:""}</small><em>${node.role==="parent"?"submitted parent":`${resultLabel === "curated" ? "database curated" : "model predicted"}`}</em></article>`).join("")}</div></section>`;
   }).join("");
   const edgeMarkup = edges.slice(0,16).map(edge => {
     const source = byId.get(edge.source);
     const target = byId.get(edge.target);
     return `<div class="tp-edge"><span>${escapeHtml(pathwayDisplayName(source,"Parent"))}</span><i>→</i><span>${escapeHtml(pathwayDisplayName(target))}</span><small>${escapeHtml(edge.reaction_type || "Environmental microbial transformation")}${edge.enzyme_or_biosystem?` · ${escapeHtml(edge.enzyme_or_biosystem)}`:""}</small></div>`;
   }).join("");
-  resultNode.innerHTML = `<div class="tp-summary"><div><span>BIOTRANSFORMER ENVMICRO</span><strong>${productCount} predicted product${productCount===1?"":"s"}</strong></div><div><small>Provider query</small><strong>${escapeHtml(out.query?.provider_query_id || "—")}</strong></div><div><small>Reaction edges</small><strong>${edges.length}</strong></div><div><small>Maximum generation</small><strong>${out.summary?.maximum_generation || 0}</strong></div></div><div class="tp-network">${generationMarkup}</div>${nodes.length>80?`<p class="tp-display-limit">Interactive diagram shows the first 80 of ${nodes.length} nodes. The saved output retains the complete normalised graph.</p>`:""}${edges.length?`<details class="tp-reactions"><summary>Review ${edges.length} predicted reaction edge${edges.length===1?"":"s"}</summary>${edgeMarkup}${edges.length>16?`<p>${edges.length-16} additional edges remain in the saved model output.</p>`:""}</details>`:""}<div class="tp-quantitative-boundary"><strong>Qualitative pathway only</strong><span>Formation fractions, rate constants and TP degradation must be fitted separately from reviewed time-series data.</span></div>`;
+  resultNode.innerHTML = `<div class="tp-summary"><div><span>${escapeHtml(providerLabel)}</span><strong>${productCount} ${resultLabel} product${productCount===1?"":"s"}</strong></div><div><small>Provider query</small><strong>${escapeHtml(out.query?.provider_query_id || "—")}</strong></div><div><small>Reaction edges</small><strong>${edges.length}</strong></div><div><small>Maximum generation</small><strong>${out.summary?.maximum_generation || 0}</strong></div></div><div class="tp-network">${generationMarkup}</div>${nodes.length>80?`<p class="tp-display-limit">Interactive diagram shows the first 80 of ${nodes.length} nodes. The saved output retains the complete normalised graph.</p>`:""}${edges.length?`<details class="tp-reactions"><summary>Review ${edges.length} ${resultLabel} reaction edge${edges.length===1?"":"s"}</summary>${edgeMarkup}${edges.length>16?`<p>${edges.length-16} additional edges remain in the saved model output.</p>`:""}</details>`:""}<div class="tp-quantitative-boundary"><strong>Qualitative pathway only</strong><span>Formation fractions, rate constants and TP degradation must be fitted separately from reviewed time-series data.</span></div>`;
 }
 
 async function predictTransformationPathway() {
@@ -2629,9 +2722,15 @@ async function predictTransformationPathway() {
   const status = $("pathway-provider-status");
   const parentSmiles = $("envirodesign-smiles").value.trim();
   if (!parentSmiles) { toast("Enter a parent SMILES before predicting the pathway."); return; }
+  const provider = $("pathway-provider")?.value || "biotransformer";
+  const envipathPackageId = $("envipath-package-id")?.value.trim();
+  if (provider === "envipath" && !envipathPackageId) {
+    toast("Enter an enviPath package id before predicting with enviPath."); return;
+  }
+  const providerLabel = provider === "envipath" ? "enviPath" : "BioTransformer ENVMICRO";
   button.disabled = true;
   status.className = "pathway-provider-status running";
-  status.innerHTML = `<span>RUNNING</span><p>Submitting one parent to BioTransformer ENVMICRO and waiting for the predicted pathway…</p>`;
+  status.innerHTML = `<span>RUNNING</span><p>Submitting one parent to ${escapeHtml(providerLabel)} and waiting for the predicted pathway…</p>`;
   $("pathway-results").innerHTML = `<small>Generating environmental microbial transformation products…</small>`;
   try {
     await ensureWorkspace();
@@ -2639,13 +2738,14 @@ async function predictTransformationPathway() {
       method:"POST",
       headers:{"Content-Type":"application/json"},
       body:JSON.stringify({
-        provider:"biotransformer",
+        provider,
         parent_smiles:parentSmiles,
         parent_name:state.chemical?.preferred_name || "Selected parent",
         number_of_steps:Number($("pathway-generations").value || 1),
+        ...(provider === "envipath" ? {envipath_package_id:envipathPackageId} : {}),
         project_id:state.project.id,
         chemical_id:state.chemical.id,
-        scenario_name:"BioTransformer ENVMICRO environmental pathway prediction",
+        scenario_name:`${providerLabel} environmental pathway prediction`,
       }),
     });
     const out = result.outputs;
@@ -2656,19 +2756,80 @@ async function predictTransformationPathway() {
       product.smiles,
       "predicted",
       product.matrix || "generic environmental microbial (soil/water)",
-      product.source || `BioTransformer ENVMICRO query ${out.query?.provider_query_id || "unknown"}`,
+      product.source || `${providerLabel} query ${out.query?.provider_query_id || "unknown"}`,
     ].join("|"));
     $("pathway-products").value = editable.join("\n");
     renderTransformationPathway(out);
     status.className = "pathway-provider-status complete";
     const importNote = availableProducts.length > editable.length ? `${editable.length} of ${availableProducts.length}` : `${editable.length}`;
     status.innerHTML = `<span>REVIEW</span><p>${importNote} predicted product(s) imported into the editable scientist-review list. Confirm structures and evidence status before downstream use.</p>`;
-    toast("BioTransformer pathway saved. Review the predicted products before motif or fate analysis.",6000);
+    toast(`${providerLabel} pathway saved. Review the predicted products before motif or fate analysis.`,6000);
   } catch(error) {
     console.error(error);
     status.className = "pathway-provider-status error";
     status.innerHTML = `<span>STOPPED</span><p>${escapeHtml(error.message)}</p>`;
     $("pathway-results").innerHTML = `<strong>Prediction stopped</strong><br>${escapeHtml(error.message)}`;
+    toast(error.message,6000);
+  } finally {
+    button.disabled = false;
+  }
+}
+
+function renderCuratedPathwaySearchResults(result) {
+  const resultNode = $("pathway-results");
+  const pathways = result.pathways || [];
+  if (!pathways.length) {
+    resultNode.innerHTML = `<small>${escapeHtml((result.warnings || [])[0] || "No curated enviPath pathway matched this compound.")}</small>`;
+    return;
+  }
+  const cards = pathways.map((pathway, index) => {
+    const products = pathway.products || [];
+    const productList = products.map(p => `<li><strong>${escapeHtml(p.name)}</strong> <code>${escapeHtml(p.smiles)}</code></li>`).join("");
+    return `<article class="tp-node predicted" style="margin-bottom:12px">
+      <strong>DATABASE CURATED · ${escapeHtml(pathway.query?.package_name || "enviPath package")}</strong>
+      <small>${products.length} product${products.length===1?"":"s"} · ${pathway.summary?.reaction_edge_count || 0} reaction edge(s)</small>
+      <ul>${productList}</ul>
+      <button class="ghost-button" data-copy-curated-pathway="${index}" type="button">Copy into review list</button>
+    </article>`;
+  }).join("");
+  resultNode.innerHTML = `<div class="tp-summary"><div><span>ENVIPATH CURATED</span><strong>${pathways.length} matching pathway${pathways.length===1?"":"s"}</strong></div></div>${cards}`;
+  resultNode.querySelectorAll("[data-copy-curated-pathway]").forEach(button => {
+    button.addEventListener("click", () => {
+      const pathway = pathways[Number(button.dataset.copyCuratedPathway)];
+      const existing = $("pathway-products").value.split("\n").filter(Boolean);
+      const additions = (pathway.products || []).map(product => [
+        String(product.name || "Transformation product").replaceAll("|","/"),
+        product.smiles,
+        "database_curated",
+        product.matrix || "enviPath package",
+        product.source || pathway.query?.package_name || "enviPath",
+      ].join("|"));
+      $("pathway-products").value = [...existing, ...additions].join("\n");
+      toast(`${additions.length} curated product(s) copied into the review list.`,5000);
+    });
+  });
+}
+
+async function searchEnvipathCuratedPathways() {
+  const button = $("search-envipath-curated");
+  const status = $("pathway-provider-status");
+  const parentSmiles = $("envirodesign-smiles").value.trim();
+  if (!parentSmiles) { toast("Enter a parent SMILES before searching enviPath."); return; }
+  button.disabled = true;
+  status.className = "pathway-provider-status running";
+  status.innerHTML = `<span>RUNNING</span><p>Searching enviPath's curated packages for this parent…</p>`;
+  $("pathway-results").innerHTML = `<small>Searching curated pathways…</small>`;
+  try {
+    const params = new URLSearchParams({parent_smiles:parentSmiles});
+    const result = await api(`/api/transformation-pathways/search-curated?${params}`);
+    renderCuratedPathwaySearchResults(result);
+    status.className = "pathway-provider-status complete";
+    status.innerHTML = `<span>REVIEW</span><p>${result.pathway_count} curated pathway(s) found. Copy any relevant products into the review list before downstream use.</p>`;
+  } catch(error) {
+    console.error(error);
+    status.className = "pathway-provider-status error";
+    status.innerHTML = `<span>STOPPED</span><p>${escapeHtml(error.message)}</p>`;
+    $("pathway-results").innerHTML = `<strong>Search stopped</strong><br>${escapeHtml(error.message)}`;
     toast(error.message,6000);
   } finally {
     button.disabled = false;
@@ -3388,6 +3549,14 @@ function setupEnviroDesign() {
   $("compare-envirodesign")?.addEventListener("click",compareEnviroDesignCandidates);
   $("predict-transformation-pathway")?.addEventListener("click",predictTransformationPathway);
   $("analyse-pathway-retention")?.addEventListener("click",analysePathwayRetention);
+  $("search-envipath-curated")?.addEventListener("click",searchEnvipathCuratedPathways);
+  $("pathway-provider")?.addEventListener("change",(event)=>{
+    $("envipath-package-field")?.classList.toggle("hidden", event.target.value !== "envipath");
+  });
+}
+
+function setupIdentification() {
+  $("refresh-identification")?.addEventListener("click", () => refreshIdentificationProfile());
 }
 
 
@@ -3593,7 +3762,7 @@ function setupPharmaInfluent() {
 
 
 async function init() {
-  setupFlowCards(); setupIdentity(); setupEvidenceHub(); setupScenarioCards(); setupPharmaInfluent(); setupModelSystem(); setupUSExposure(); setupRegulatoryProgramme(); setupTiers(); setupNavigation(); setupDrawers(); setupCopilot(); setupEnviroDesign(); setupToxswa(); setupPearl(); await Promise.all([loadVeterinaryProfiles(), loadOecdPharmaRegistry()]);
+  setupFlowCards(); setupIdentity(); setupEvidenceHub(); setupScenarioCards(); setupPharmaInfluent(); setupModelSystem(); setupUSExposure(); setupRegulatoryProgramme(); setupTiers(); setupNavigation(); setupDrawers(); setupCopilot(); setupEnviroDesign(); setupToxswa(); setupPearl(); setupIdentification(); await Promise.all([loadVeterinaryProfiles(), loadOecdPharmaRegistry()]);
   $("run-assessment").addEventListener("click",runAssessment);
   $("retry-assessment")?.addEventListener("click",runAssessment);
   $("continue-toxswa")?.addEventListener("click",()=>{syncToxswaFromScreening(); $("toxswa-surface-water")?.scrollIntoView({behavior:"smooth",block:"start"});});

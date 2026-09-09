@@ -88,6 +88,37 @@ class Settings(BaseModel):
     biotransformer_max_wait_seconds: float = Field(default=45.0, gt=0, le=300)
     biotransformer_commercial_license_confirmed: bool = False
 
+    # enviPath is a second transformation-pathway provider: its own rule-based
+    # prediction engine, plus curated/reviewed pathway packages (e.g. EAWAG-BBD)
+    # searchable by compound. envipath.org states it is "free for academic and
+    # non-commercial use only" and requires account registration -- the same
+    # shape of restriction as BioTransformer's commercial-license gate above.
+    # Credentials are optional (public packages can be searched anonymously)
+    # and are read only from the environment/.env file, never from the UI.
+    envipath_enabled: bool = True
+    envipath_base_url: str = "https://envipath.org"
+    # Live-verified 2026-09-08: envipath.org's REST API lives under /api/legacy/
+    # and returns a clean 401 {"detail": "Unauthorized"} without a token/session --
+    # no anonymous read access. An API token (Authorization: Bearer, generated
+    # from the operator's own envipath.org account settings) is the recommended,
+    # robust auth path; username/password session login is kept as a fallback
+    # for older/self-hosted enviPath instances but is untested against the
+    # current site, whose login page now sits behind a CAPTCHA-style challenge.
+    envipath_api_token: str | None = None
+    envipath_username: str | None = None
+    envipath_password: str | None = None
+    envipath_timeout_seconds: float = Field(default=20.0, gt=0, le=120)
+    envipath_commercial_license_confirmed: bool = False
+
+    # MassBank Europe is the analytical-identification feature's live connector:
+    # an open REST API returning real, measured MS2 (product-ion) spectra plus
+    # chromatography metadata (retention time, column, mobile phase, ionisation
+    # mode), searchable by InChIKey. No account/API key is required -- live-
+    # verified 2026-09-08 against https://massbank.eu/MassBank-api/records.
+    massbank_enabled: bool = True
+    massbank_base_url: str = "https://massbank.eu"
+    massbank_timeout_seconds: float = Field(default=15.0, gt=0, le=120)
+
     def __init__(
         self,
         *,
@@ -120,6 +151,22 @@ class Settings(BaseModel):
         normalised = value.strip().rstrip("/")
         if not normalised.startswith("https://"):
             raise ValueError("BIOTRANSFORMER_BASE_URL must use HTTPS")
+        return normalised
+
+    @field_validator("envipath_base_url")
+    @classmethod
+    def validate_envipath_base_url(cls, value: str) -> str:
+        normalised = value.strip().rstrip("/")
+        if not normalised.startswith("https://"):
+            raise ValueError("ENVIPATH_BASE_URL must use HTTPS")
+        return normalised
+
+    @field_validator("massbank_base_url")
+    @classmethod
+    def validate_massbank_base_url(cls, value: str) -> str:
+        normalised = value.strip().rstrip("/")
+        if not normalised.startswith("https://"):
+            raise ValueError("MASSBANK_BASE_URL must use HTTPS")
         return normalised
 
     @property

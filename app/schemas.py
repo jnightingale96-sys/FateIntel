@@ -1157,10 +1157,11 @@ class EnviroDesignPathwayCreate(BaseModel):
 
 
 class TransformationPathwayPredictCreate(BaseModel):
-    provider: Literal["biotransformer"] = "biotransformer"
+    provider: Literal["biotransformer", "envipath"] = "biotransformer"
     parent_smiles: str = Field(min_length=1, max_length=5000)
     parent_name: str = Field(default="Parent", min_length=1, max_length=200)
     number_of_steps: int = Field(default=1, ge=1, le=3)
+    envipath_package_id: Optional[str] = Field(default=None, max_length=500)
     project_id: Optional[int] = None
     chemical_id: Optional[int] = None
     scenario_name: str = Field(default="BioTransformer environmental pathway prediction", max_length=250)
@@ -1169,4 +1170,6 @@ class TransformationPathwayPredictCreate(BaseModel):
     def validate_persistence_ids(self):
         if (self.project_id is None) != (self.chemical_id is None):
             raise ValueError("Provide both project_id and chemical_id to persist the pathway prediction, or neither")
+        if self.provider == "envipath" and not self.envipath_package_id:
+            raise ValueError("envipath_package_id is required when provider is 'envipath'")
         return self
