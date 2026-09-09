@@ -105,3 +105,53 @@ def test_nonstandard_group_warns():
         "tier": 2,
     })
     assert plan["warnings"]
+
+
+def test_us_pharmaceutical_soil_scenarios_get_a_leaching_model():
+    # Previously the US branch had no soil/groundwater-leaching model at all
+    # for pharmaceutical biosolids/irrigation scenarios, while the equivalent
+    # EU scenario gets PEARL/PELMO/MACRO -- a real coverage gap, not an
+    # intentional jurisdiction difference. PRZM is EPA's real root-zone
+    # transport tool and is not a full groundwater fate model like PEARL, so
+    # its leaching-only scope must be disclosed via a warning, not presented
+    # as equivalent.
+    for scenario in ("biosolids_to_soil", "wastewater_irrigation"):
+        for group in ("human_pharmaceutical", "veterinary_pharmaceutical"):
+            plan = build_assessment_plan({
+                "jurisdiction": "US",
+                "contaminant_group": group,
+                "scenario": scenario,
+                "tier": 2,
+            })
+            applicable_keys = {x["key"] for x in plan["models"] if x["applicable"]}
+            assert "PRZM" in applicable_keys, (scenario, group)
+            assert any("not a full groundwater fate model" in w for w in plan["warnings"])
+
+
+def test_native_water_sediment_screen_is_not_gated_to_eu():
+    # ENVIROCHEM_TOXSWA_PROCESS_SCREEN declares EU/UK/US/CH applicability in
+    # its own MODELS entry; the selection logic previously excluded US anyway
+    # with no stated reason.
+    us_plan = build_assessment_plan({
+        "jurisdiction": "US",
+        "contaminant_group": "human_pharmaceutical",
+        "scenario": "municipal_wastewater",
+        "tier": 2,
+    })
+    assert "ENVIROCHEM_TOXSWA_PROCESS_SCREEN" in {x["key"] for x in us_plan["models"]}
+
+
+def test_us_soil_incorporated_pesticide_gets_terrestrial_ecotox_models():
+    # "Direct to soil" (soil_incorporation) previously selected only PWC in
+    # the US -- none of TerrPlant/T-REX, which "Agricultural spray" gets
+    # automatically, even though a soil-incorporated pesticide use triggers
+    # the same terrestrial/avian/mammalian exposure pathway.
+    plan = build_assessment_plan({
+        "jurisdiction": "US",
+        "contaminant_group": "pesticide",
+        "scenario": "soil_incorporation",
+        "tier": 2,
+        "use_site_category": "outdoor_terrestrial",
+    })
+    keys = {x["key"] for x in plan["models"]}
+    assert {"TERRPLANT", "TREX"}.issubset(keys)

@@ -229,7 +229,7 @@ MODELS: list[dict[str, Any]] = [
         "name": "PRZM",
         "domain": "runoff, erosion and root-zone transport",
         "regions": ["US", "EU", "UK", "CH"],
-        "groups": ["pesticide", "biocide", "industrial_organic", "emerging_contaminant"],
+        "groups": ["pesticide", "biocide", "industrial_organic", "emerging_contaminant", "human_pharmaceutical", "veterinary_pharmaceutical"],
         "implementation": "managed_adapter",
         "status": "adapter_planned",
         "tiers": [2, 3, 4],
@@ -656,6 +656,21 @@ def build_assessment_plan(data: dict[str, Any]) -> dict[str, Any]:
                 "waste stream, landfill/incineration/off-site treatment split",
                 "downstream release and general-population exposure basis",
             ]
+        if scenario in {"biosolids_to_soil", "wastewater_irrigation"} and group in {"human_pharmaceutical", "veterinary_pharmaceutical"}:
+            # The EU/UK/CH branch above routes the equivalent scenario to PEARL/
+            # PELMO/MACRO (dedicated groundwater-leaching models); no US
+            # equivalent was registered, leaving these scenarios with zero
+            # soil/groundwater-leaching coverage in the US. PRZM is EPA's real
+            # root-zone-transport tool and already covers non-pesticide organic
+            # groups (industrial_organic); it is not a full groundwater fate
+            # model the way PEARL is -- its own outputs are runoff/erosion/
+            # leaching_flux only, no groundwater_concentration -- so this is
+            # flagged below rather than presented as PEARL-equivalent.
+            selected.append("PRZM")
+            required += ["soil DT50", "Koc/Kd", "root-zone parameters", "runoff and erosion parameters"]
+            warnings.append(
+                "PRZM estimates a leaching flux from the root zone; it is not a full groundwater fate model like FOCUS PEARL. Treat its leaching output as a screening-level indicator, not a groundwater concentration."
+            )
         if group == "pesticide" and scenario in {
             "agricultural_spray", "soil_incorporation", "groundwater_leaching",
             "surface_water_discharge", "wastewater_irrigation",
