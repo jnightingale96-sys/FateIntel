@@ -1,10 +1,10 @@
 @echo off
 setlocal EnableExtensions
 cd /d "%~dp0"
-title EnviroChem Studio v2.23.0 Alpha 3.3.0
+title EnviroChem Studio v2.23.0 Alpha 3.4.0
 
 echo ==================================================
-echo EnviroChem Studio v2.23.0 Alpha 3.3.0 startup
+echo EnviroChem Studio v2.23.0 Alpha 3.4.0 startup
 echo ==================================================
 echo.
 echo The startup console will remain visible so that any error can be read.

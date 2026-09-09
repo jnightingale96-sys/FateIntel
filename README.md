@@ -1,6 +1,34 @@
-# EnviroChem Studio v2.23.0 Alpha 3.3.0 — Analytical Identification
+# EnviroChem Studio v2.23.0 Alpha 3.4.0 — Applied Environmental Fate
 
-EnviroChem is an evidence-led environmental fate, exposure and regulatory modelling workspace. Alpha 3.3.0 adds an Identification screen answering "how would a researcher actually find this chemical in a real sample": ionisation mode and platform recommendation from NORMAN SusDat, real measured MS2 product-ion spectra (retention time, column, mobile phase, ionisation) from a live MassBank Europe connector, and known (never predicted) transformation products from NORMAN EAWAGTPS, each traceable to its own source or explicitly marked absent.
+EnviroChem is an evidence-led environmental fate, exposure and regulatory modelling workspace. Alpha 3.4.0 adds an Applied Environmental Fate screen: SFO/FOMC/HS/DFOP degradation-kinetics fitting against raw replicate residue-decline data, a FOCUS Kinetics-style chi-square model comparison, and FOCUS/VICH GL38 metabolite significance classification -- every model equation, threshold and citation verified directly against the primary regulatory guidance documents, not secondary summaries.
+
+## v2.23 Alpha 3.4.0 applied environmental fate
+
+- **New `app/services/degradation_kinetics.py` module.** Fits SFO, FOMC, HS and DFOP to
+  parent (and transformation-product) residue-decline data via nonlinear least squares, using
+  the exact FOCUS Kinetics (2014, v1.1) chi-square goodness-of-fit formula (Eq. 6-1) and DT50/DT90
+  found by numerical root-finding against the fitted curve rather than hand-transcribed closed
+  forms. Applies the correct, *separately cited* metabolite significance rule per framework: FOCUS
+  Kinetics Section 8.5.1's 10%-of-applied-parent "major vs minor" kinetic-modelling-reliability
+  split, or VICH GL38's 10%-of-administered-dose PEC-inclusion rule (which also depends on whether
+  the metabolite forms part of a normal biochemical pathway -- a reviewer judgement, not something
+  this module determines automatically). These are two different rules that happen to share a
+  number; the module never conflates them.
+- **Formation-then-decline metabolites are handled correctly.** Fitting a monotonic-decline model
+  directly to a transformation product that rises then falls drives every model to a degenerate,
+  nonsensical result (verified: an ~745-million-day DT50). The module now detects this and refits
+  from the metabolite's own observed maximum instead, per FOCUS Kinetics Section 8.5.1's own
+  sanctioned simplified approach -- always labelled in the output as `decline_from_observed_maximum`
+  so a DT50 measured from a metabolite's peak is never mistaken for one measured from time of
+  parent application.
+- **New "Applied Environmental Fate" left-nav screen.** Day-by-replicate observation entry for the
+  parent and any number of transformation products, a live decline-curve chart, and a full
+  per-model chi-square comparison table so a reviewer can see every candidate model's fit, not just
+  the one the guidance-threshold rule selected.
+- 28 new tests (`test_degradation_kinetics.py`), including a regression test for the
+  formation-then-decline bug found and fixed this cycle; full suite green.
+- New base dependency: `scipy` (nonlinear curve fitting and the chi-square distribution) --
+  the first genuinely unavoidable addition beyond the existing numpy/fastapi/sqlalchemy core.
 
 ## v2.23 Alpha 3.3.0 analytical identification
 
@@ -153,7 +181,7 @@ Alpha 3 still is not a complete US risk assessment implementation. It executes o
 1. Extract the ZIP to a new folder.
 2. Double-click `START_ENVIROCHEM.bat`. The visible console remains open so any startup error can be read.
 3. Keep the terminal window open while EnviroChem is running.
-4. Manual URL (default): `http://127.0.0.1:8792/?build=envirochem-studio-v2.23.0-alpha3.3.0-analytical-identification-2026-09-08`.
+4. Manual URL (default): `http://127.0.0.1:8792/?build=envirochem-studio-v2.23.0-alpha3.4.0-applied-environmental-fate-2026-09-09`.
 
 The launcher supports folders containing spaces. If the selected port already serves
 the same EnviroChem build, a second launch reopens that instance. If another

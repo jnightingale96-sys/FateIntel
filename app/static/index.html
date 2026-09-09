@@ -9,7 +9,7 @@
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <link href="/static/manifest.webmanifest" rel="manifest"/>
 <link href="/static/icon.svg" rel="icon" type="image/svg+xml"/>
-<link href="/static/styles.css?v=guided-v2.23-alpha3.3.0-analytical-identification" rel="stylesheet"/>
+<link href="/static/styles.css?v=guided-v2.23-alpha3.4.0-applied-environmental-fate" rel="stylesheet"/>
 </head>
 <body>
 <div class="app-shell">
@@ -28,7 +28,7 @@
 
 
 
-<button class="nav-item" data-scroll="welcome"><span class="nav-icon">⌂</span><span>Overview</span></button><button class="nav-item active" data-scroll="assessment-flow"><span class="nav-icon">▣</span><span>Assessments</span></button><button class="nav-item" data-scroll="evidence-data-hub"><span class="nav-icon">▤</span><span>Evidence data</span></button><button class="nav-item" data-scroll="regulatory-pathway"><span class="nav-icon">◎</span><span>Frameworks</span></button><a class="nav-item" href="/static/expert.html#evidence"><span class="nav-icon">✓</span><span>Evidence review</span></a><a class="nav-item" href="/static/expert.html#models"><span class="nav-icon">⌘</span><span>Models</span></a><button class="nav-item" data-scroll="results"><span class="nav-icon">▥</span><span>Reports</span></button><button class="nav-item hidden" data-water-sediment-nav="1" data-scroll="toxswa-surface-water"><span class="nav-icon">≈</span><span id="toxswa-nav-label">Water–sediment</span></button><button class="nav-item" data-eu-only="1" data-scroll="pearl-groundwater"><span class="nav-icon">⇣</span><span>FOCUS PEARL</span></button><button class="nav-item" data-scroll="envirodesign"><span class="nav-icon">✦</span><span>EnviroDesign</span></button><button class="nav-item" data-scroll="analytical-identification"><span class="nav-icon">⚗</span><span>Identification</span></button><a class="nav-item" href="/static/expert.html"><span class="nav-icon">⚙</span><span>Expert workspace</span></a></nav>
+<button class="nav-item" data-scroll="welcome"><span class="nav-icon">⌂</span><span>Overview</span></button><button class="nav-item active" data-scroll="assessment-flow"><span class="nav-icon">▣</span><span>Assessments</span></button><button class="nav-item" data-scroll="evidence-data-hub"><span class="nav-icon">▤</span><span>Evidence data</span></button><button class="nav-item" data-scroll="regulatory-pathway"><span class="nav-icon">◎</span><span>Frameworks</span></button><a class="nav-item" href="/static/expert.html#evidence"><span class="nav-icon">✓</span><span>Evidence review</span></a><a class="nav-item" href="/static/expert.html#models"><span class="nav-icon">⌘</span><span>Models</span></a><button class="nav-item" data-scroll="results"><span class="nav-icon">▥</span><span>Reports</span></button><button class="nav-item hidden" data-water-sediment-nav="1" data-scroll="toxswa-surface-water"><span class="nav-icon">≈</span><span id="toxswa-nav-label">Water–sediment</span></button><button class="nav-item" data-eu-only="1" data-scroll="pearl-groundwater"><span class="nav-icon">⇣</span><span>FOCUS PEARL</span></button><button class="nav-item" data-scroll="envirodesign"><span class="nav-icon">✦</span><span>EnviroDesign</span></button><button class="nav-item" data-scroll="analytical-identification"><span class="nav-icon">⚗</span><span>Identification</span></button><button class="nav-item" data-scroll="degradation-kinetics"><span class="nav-icon">↘</span><span>Applied Environmental Fate</span></button><a class="nav-item" href="/static/expert.html"><span class="nav-icon">⚙</span><span>Expert workspace</span></a></nav>
 <div aria-hidden="true" class="sidebar-art">
 <div class="moon"></div>
 <div class="hill hill-a"></div><div class="hill hill-b"></div>
@@ -65,7 +65,7 @@
 <main>
 <section class="welcome-strip" id="welcome">
 <div>
-<span class="release-badge">NEW · v2.23 ALPHA 3.3.0 · ANALYTICAL IDENTIFICATION</span>
+<span class="release-badge">NEW · v2.23 ALPHA 3.4.0 · APPLIED ENVIRONMENTAL FATE</span>
 <h2>Start with exposure. Refine only where the evidence takes you.</h2>
 <p>Identify the chemical, define use and release, run the Tier 1–2 exposure screen, then move into jurisdiction-specific models and molecular design only when they add value.</p>
 </div>
@@ -986,6 +986,65 @@
 </section>
 </div>
 </section>
+<section class="envirodesign-shell" id="degradation-kinetics">
+<div class="envirodesign-heading">
+<div>
+<span class="design-badge">APPLIED ENVIRONMENTAL FATE · degradation kinetics</span>
+<h2>Fit SFO, FOMC, HS and DFOP to residue-decline data and derive DT50/DT90.</h2>
+<p>Enter day-after-treatment residue data for the parent and any transformation products, choose the regulatory framework, and get a FOCUS Kinetics-style model comparison with chi-square guidance, plus FOCUS/VICH GL38 metabolite significance classification. Every model, formula and threshold below is cited to its source document — see scientific boundaries.</p>
+</div>
+<button class="ghost-button" data-drawer="degradation-kinetics-method" type="button">Scientific boundaries</button>
+</div>
+<div class="envirodesign-grid">
+<section class="design-control-card">
+<label><span>Regulatory framework</span><select id="kinetics-framework">
+<option value="focus_pesticide_kinetics" selected>FOCUS Kinetics · pesticide soil / water-sediment studies</option>
+<option value="vich_gl38_veterinary">VICH GL38 · veterinary medicinal products (Phase II)</option>
+</select></label>
+<label><span>Matrix</span><input id="kinetics-matrix" value="soil"/></label>
+<label><span>Parent name</span><input id="kinetics-parent-name" value="Parent"/></label>
+<label class="design-smiles-field"><span>Parent observations · one line per sampling day (0–120 d): day, replicate values as % of applied</span>
+<textarea id="kinetics-parent-observations" rows="8">0, 99.1, 98.7, 99.5, 98.9, 99.0
+7, 78.2, 80.1, 77.5, 79.0, 78.8
+14, 61.0, 63.2, 60.5, 62.1, 61.8
+30, 34.0, 35.5, 33.2, 34.8, 34.1
+60, 11.0, 12.1, 10.5, 11.6, 11.3
+90, 3.4, 3.9, 3.1, 3.6, 3.5
+120, 1.1, 1.3, 0.9, 1.2, 1.0</textarea>
+</label>
+<div class="design-actions">
+<button class="primary-button" id="run-degradation-kinetics" type="button"><span>↘</span> Fit kinetic models</button>
+<span class="model-source-pill">SFO · FOMC · HS · DFOP — chi-square guidance, not a hard cut-off</span>
+</div>
+</section>
+<section class="design-structure-card">
+<div class="mini-heading"><span>Transformation products</span><span class="design-legend">Each metabolite gets its own day-by-replicate residue data</span></div>
+<div id="kinetics-metabolites"></div>
+<button class="ghost-button" id="add-kinetics-metabolite" type="button">+ Add transformation product</button>
+</section>
+</div>
+<div class="design-status" id="kinetics-status"><strong>Ready to fit.</strong><small>Fits every candidate model to the raw replicate points, then compares chi-square error against day-level means — per FOCUS Kinetics Section 6.3.1.1.</small></div>
+<div class="design-insight-grid">
+<section class="design-panel">
+<div class="mini-heading"><span>Parent decline</span><small>Selected model, DT50/DT90, chi-square comparison</small></div>
+<div class="design-list" id="kinetics-parent-results"><p>No fit run yet.</p></div>
+</section>
+<section class="design-panel">
+<div class="mini-heading"><span>Decline curve</span><small>Observed replicates (points) vs the selected fitted model (line)</small></div>
+<div class="design-structure-placeholder" id="kinetics-chart-wrap">
+<svg id="kinetics-chart" viewBox="0 0 560 280" aria-label="Parent decline curve: observed replicates and fitted model">
+<g class="kinetics-grid-lines"></g>
+<path class="kinetics-fit-line" fill="none" stroke-width="2"></path>
+<g class="kinetics-points"></g>
+</svg>
+</div>
+</section>
+<section class="design-panel">
+<div class="mini-heading"><span>Transformation products</span><small>Major/minor classification and, where fitted, DT50/DT90</small></div>
+<div class="design-list" id="kinetics-metabolite-results"><p>No fit run yet.</p></div>
+</section>
+</div>
+</section>
 </main>
 </div>
 </div>
@@ -995,6 +1054,6 @@
 <div id="drawer-content"></div>
 </aside>
 <div class="toast hidden" id="toast"></div>
-<script src="/static/app.js?v=guided-v2.23-alpha3.3.0-analytical-identification"></script>
+<script src="/static/app.js?v=guided-v2.23-alpha3.4.0-applied-environmental-fate"></script>
 </body>
 </html>

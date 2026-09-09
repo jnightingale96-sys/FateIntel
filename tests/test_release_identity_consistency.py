@@ -25,9 +25,9 @@ from pathlib import Path
 from app.version import APP_VERSION, BUILD_ID
 
 ROOT = Path(__file__).resolve().parents[1]
-CURRENT_TAG = "alpha3.3.0"  # bump alongside app/version.py at each release
-CURRENT_NUMBER = "3.3.0"  # numeric core, for the space-separated prose forms
-SUPERSEDED_TAGS = ("alpha3.1", "alpha3.2.1", "alpha3.2.2", "alpha3.2.3")  # append the previous CURRENT_TAG here at each release
+CURRENT_TAG = "alpha3.4.0"  # bump alongside app/version.py at each release
+CURRENT_NUMBER = "3.4.0"  # numeric core, for the space-separated prose forms
+SUPERSEDED_TAGS = ("alpha3.1", "alpha3.2.1", "alpha3.2.2", "alpha3.2.3", "alpha3.3.0")  # append the previous CURRENT_TAG here at each release
 
 
 def _read(relative_path: str) -> str:

@@ -2259,6 +2259,7 @@ function drawSoilSeries(series, label='Soil PEC') {
 const drawerTemplates = {
   "us-exposure-method": () => `<span class="drawer-kicker">US EXPOSURE SCIENCE BOUNDARIES</span><h2>A transparent foundation, not an EPA clone</h2><p>The native calculation tracks one chemical throughput through non-overlapping loss events, controls, environmental media and managed waste. Captured material remains a transfer until downstream fate is assessed.</p><div class="drawer-block"><h3>Occupational screen</h3><p>Measured-air mode calculates route-specific shift dose. Well-mixed mode uses a time-averaged room build-up equation and omits near-field peaks; it is a screening bound, not ChemSTEER.</p></div><div class="drawer-block"><h3>Source governance</h3><p>Only 12 published EPA ESDs are enabled by default. Forty-eight draft records require explicit opt-in and remain labelled draft. ChemSTEER, CEM and E-FAST execute externally and are never bundled or rebranded.</p></div><div class="equation">throughput = retained process mass + direct release + managed-waste transfer</div>`,
   "envirodesign-method": () => `<span class="drawer-kicker">ENVIRODESIGN SCIENCE BOUNDARIES</span><h2>What this module can and cannot claim</h2><p>The fitted layer reproduces the supplied open BIOWIN 3/4 SMARTS reconstruction. It is not EPA source code and has not yet been validated as regulatory-equivalent output.</p><div class="drawer-block"><h3>Attribution</h3><p>A matched fragment explains part of the model score. It does not prove that the fragment is the experimental cause of persistence.</p></div><div class="drawer-block"><h3>Pathways</h3><p>Observed and predicted products retain their matrix, conditions, status and provenance. Direct commercial embedding of enviPath data remains licence-gated; this build supports manual import and an adapter contract.</p></div><div class="drawer-block"><h3>Design</h3><p>Candidate changes are hypotheses. Efficacy, metabolites, toxicity, mobility, bioaccumulation and synthetic feasibility must be reassessed before a structure can be described as safer or more sustainable.</p></div>`,
+  "degradation-kinetics-method": () => `<span class="drawer-kicker">DEGRADATION KINETICS SCIENCE BOUNDARIES</span><h2>Two different "10%" rules, on purpose</h2><p>FOCUS Kinetics Section 8.5.1 (verbatim): metabolites below 10% of applied parent throughout the study are "minor" — a full formation/decline fit is not required to the same reliability standard. This is a kinetic-modelling-reliability distinction, not a toxicological or ecotoxicological relevance decision; that is governed by a separate document (the Guidance Document on Relevant Metabolites), which this module does not evaluate.</p><p>VICH GL38 (verbatim): excreted metabolites representing 10% or more of the administered dose <em>and which do not form part of biochemical pathways</em> should be added to the active substance for PEC recalculation. Whether a metabolite "forms part of biochemical pathways" is a reviewer judgement this module cannot determine automatically — it only applies the rule once you tell it.</p><div class="drawer-block"><h3>Model selection</h3><p>Every candidate model (SFO, FOMC, HS, DFOP) is fitted; the chi-square error percentage against day-level means (FOCUS Kinetics Eq. 6-1) is reported for all four, and the simplest model that passes the 15% guidance figure is pre-selected — FOCUS Kinetics' own words: "this value should only be considered as guidance and not absolute cut-off criterion." A model that passes narrowly can still be visibly worse than a bi-phasic alternative; review every model's error, not just the selected one.</p></div><div class="drawer-block"><h3>DT50/DT90</h3><p>Found by numerically solving the fitted M(t) curve rather than a hand-transcribed closed form for every model — FOCUS Kinetics itself states DFOP has no analytical solution and recommends an iterative search.</p></div><div class="equation">SFO: M(t) = M0·e^(−kt) · FOMC: M(t) = M0·(1+t/β)^(−α) · HS: piecewise first-order with a breakpoint · DFOP: M(t) = M0·(g·e^(−k1t) + (1−g)·e^(−k2t))</div><p>Source documents: FOCUS (2014) Generic guidance for Estimating Persistence and Degradation Kinetics, Version 1.1; VICH GL38 (EMA/CVMP).</p>`,
   "identity-evidence": () => state.chemical ? `<span class="drawer-kicker">IDENTITY RESOLUTION</span><h2>Why this identity was selected</h2><p>${escapeHtml(state.chemical.preferred_name)} is stored as a confirmed identity snapshot: CAS ${escapeHtml(state.chemical.cas_number || 'not assigned')}, formula ${escapeHtml(state.chemical.molecular_formula || 'not supplied')}, molecular weight ${fmt(state.chemical.molecular_weight_g_mol,8)} g/mol and InChIKey ${escapeHtml(state.chemical.inchikey || 'not supplied')}.</p><div class="drawer-block"><h3>Trust boundary</h3><p>Resolution creates a candidate first. User confirmation creates or reuses the chemical record and attaches it to a separate project-specific calculation profile. Evidence searched for another identity cannot be staged against this record.</p></div><div class="equation">Input → candidate identity → user confirmation → immutable identity snapshot → reviewed parameter profile</div>` : `<h2>No chemical selected</h2>`,
   "use-suggestion": () => `<span class="drawer-kicker">RULE-BASED USE PROMPT</span><h2>Why use still requires confirmation</h2><p>A chemical identity does not prove whether the substance is used as a human medicine, veterinary medicine, pesticide, industrial chemical or consumer ingredient. The selected use controls emission assumptions and model applicability.</p><div class="drawer-block"><h3>User control</h3><p>You can switch among the supported use categories. Veterinary mode opens VICH Phase I and the relevant animal branch.</p></div>`,
   "compartment-logic": () => `<span class="drawer-kicker">PATHWAY ENGINE</span><h2>Only the selected release pathway is activated</h2><p><strong>Wastewater</strong> ends at WWTP effluent and receiving water in the Tier 1–2 screen. <strong>Biosolids</strong> follows sludge to repeated soil application. <strong>Wastewater irrigation</strong> follows treated effluent to repeated soil loading and an optional crop screen. Groundwater is shown as a planned refinement only when a soil PEC exists.</p><div class="drawer-block"><h3>Not a blind “run everything” button</h3><p>Unselected compartments are not assigned concentrations. Roadmap scenarios remain visibly disabled until their equations and evidence requirements are implemented.</p></div>`,
@@ -3559,6 +3560,195 @@ function setupIdentification() {
   $("refresh-identification")?.addEventListener("click", () => refreshIdentificationProfile());
 }
 
+let kineticsMetaboliteCounter = 0;
+
+function setupDegradationKinetics() {
+  $("run-degradation-kinetics")?.addEventListener("click", runDegradationKinetics);
+  $("add-kinetics-metabolite")?.addEventListener("click", () => addKineticsMetaboliteBlock());
+  $("kinetics-framework")?.addEventListener("change", updateKineticsFrameworkUI);
+  updateKineticsFrameworkUI();
+}
+
+function addKineticsMetaboliteBlock() {
+  kineticsMetaboliteCounter += 1;
+  const id = kineticsMetaboliteCounter;
+  const wrap = document.createElement("div");
+  wrap.className = "kinetics-metabolite-block";
+  wrap.innerHTML = `
+    <div class="kinetics-metabolite-head">
+      <input class="kinetics-met-name" placeholder="Transformation product name" value="Metabolite ${id}"/>
+      <button class="text-button" type="button" data-remove-metabolite>Remove</button>
+    </div>
+    <input class="kinetics-met-smiles" placeholder="SMILES (optional)"/>
+    <label class="kinetics-met-biochem-row hidden"><span>Forms part of a normal biochemical pathway?</span>
+      <select class="kinetics-met-biochem">
+        <option value="unknown" selected>Unknown — flag for reviewer</option>
+        <option value="no">No</option>
+        <option value="yes">Yes</option>
+      </select>
+    </label>
+    <textarea class="kinetics-met-observations" rows="4" placeholder="day, replicate values as % of applied&#10;0, 0, 0, 0&#10;14, 3.1, 2.9, 3.4&#10;30, 8.0, 7.6, 8.4"></textarea>
+  `;
+  $("kinetics-metabolites").appendChild(wrap);
+  wrap.querySelector("[data-remove-metabolite]").addEventListener("click", () => wrap.remove());
+  updateKineticsFrameworkUI();
+}
+
+function updateKineticsFrameworkUI() {
+  const isVich = $("kinetics-framework")?.value === "vich_gl38_veterinary";
+  $$(".kinetics-met-biochem-row").forEach(row => row.classList.toggle("hidden", !isVich));
+}
+
+function parseKineticsObservations(text) {
+  const lines = text.split("\n").map(line => line.trim()).filter(Boolean);
+  if (!lines.length) throw new Error("Enter at least two sampling days, one per line: day, replicate values.");
+  return lines.map(line => {
+    const parts = line.split(",").map(part => part.trim()).filter(part => part !== "");
+    const day = Number(parts[0]);
+    const replicate_values_percent = parts.slice(1).map(Number);
+    if (!Number.isFinite(day) || day < 0 || day > 120 || !replicate_values_percent.length || replicate_values_percent.some(value => !Number.isFinite(value))) {
+      throw new Error(`Could not parse "${line}". Use: day, value1, value2, ... (day 0-120).`);
+    }
+    return { day, replicate_values_percent };
+  });
+}
+
+function collectKineticsMetabolites() {
+  return $$("#kinetics-metabolites .kinetics-metabolite-block").map(block => {
+    const name = block.querySelector(".kinetics-met-name").value.trim() || "Unnamed transformation product";
+    const smiles = block.querySelector(".kinetics-met-smiles").value.trim();
+    const biochemValue = block.querySelector(".kinetics-met-biochem")?.value;
+    const forms_part_of_biochemical_pathway = biochemValue === "yes" ? true : biochemValue === "no" ? false : null;
+    const observations = parseKineticsObservations(block.querySelector(".kinetics-met-observations").value);
+    return { name, smiles: smiles || null, forms_part_of_biochemical_pathway, observations };
+  });
+}
+
+async function runDegradationKinetics() {
+  const button = $("run-degradation-kinetics");
+  const status = $("kinetics-status");
+  let payload;
+  try {
+    payload = {
+      regulatory_framework: $("kinetics-framework").value,
+      matrix: $("kinetics-matrix").value.trim() || "soil",
+      parent_name: $("kinetics-parent-name").value.trim() || "Parent",
+      parent_observations: parseKineticsObservations($("kinetics-parent-observations").value),
+      metabolites: collectKineticsMetabolites(),
+    };
+  } catch (error) {
+    toast(error.message, 6000);
+    return;
+  }
+  if (state.project?.id && state.chemical?.id) {
+    payload.project_id = state.project.id;
+    payload.chemical_id = state.chemical.id;
+    payload.scenario_name = `${payload.regulatory_framework === "vich_gl38_veterinary" ? "VICH GL38" : "FOCUS Kinetics"} degradation kinetics for ${state.chemical.preferred_name}`;
+  }
+  if (button) button.disabled = true;
+  if (status) { status.className = "design-status running"; status.innerHTML = "<strong>Fitting SFO, FOMC, HS and DFOP…</strong><small>Nonlinear least squares against every replicate point.</small>"; }
+  try {
+    const result = await api("/api/degradation-kinetics/assess", {
+      method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify(payload),
+    });
+    renderDegradationKineticsResult(result);
+    if (status) { status.className = "design-status"; status.innerHTML = `<strong>Fit complete.</strong><small>${result.model_run_id ? `Saved as model run ${result.model_run_id}.` : "Not saved — select a project and chemical to persist a run."}</small>`; }
+  } catch (error) {
+    console.error(error);
+    if (status) { status.className = "design-status error"; status.innerHTML = `<strong>Fit failed.</strong><small>${escapeHtml(error.message)}</small>`; }
+  } finally {
+    if (button) button.disabled = false;
+  }
+}
+
+function kineticsModelLabel(key) {
+  return {SFO:"SFO · single first-order", FOMC:"FOMC · Gustafson–Holden", HS:"HS · hockey-stick", DFOP:"DFOP · bi-exponential"}[key] || key;
+}
+
+function renderKineticsFitsTable(fits, selectedModel) {
+  const rows = Object.values(fits).map(fit => {
+    if (fit.error) return `<tr><td>${kineticsModelLabel(fit.model)}</td><td colspan="4">${escapeHtml(fit.error)}</td></tr>`;
+    const cs = fit.chi_square || {};
+    const isSelected = fit.model === selectedModel;
+    return `<tr class="${isSelected ? "kinetics-selected-row" : ""}">
+      <td>${isSelected ? "★ " : ""}${kineticsModelLabel(fit.model)}</td>
+      <td>${cs.error_percent != null ? fmt(cs.error_percent,3) + "%" : "—"}</td>
+      <td>${cs.passes_guidance_threshold ? "Passes" : "Fails"} guidance</td>
+      <td>${fit.dt50_days != null ? fmt(fit.dt50_days,4) + " d" : "not reached"}</td>
+      <td>${fit.dt90_days != null ? fmt(fit.dt90_days,4) + " d" : "not reached"}</td>
+    </tr>`;
+  }).join("");
+  return `<table class="candidate-table"><thead><tr><th>Model</th><th>χ² error</th><th>Guidance (≤15%)</th><th>DT50</th><th>DT90</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+function renderDegradationKineticsResult(result) {
+  const out = result.outputs;
+  const parentFit = out.parent.kinetics;
+  $("kinetics-parent-results").innerHTML = `
+    <p><strong>${escapeHtml(out.parent.name)}</strong> · ${escapeHtml(out.matrix)} · selected <strong>${kineticsModelLabel(parentFit.selected_model)}</strong></p>
+    <p class="identification-source">${escapeHtml(parentFit.selection_reason)}</p>
+    ${renderKineticsFitsTable(parentFit.fits, parentFit.selected_model)}
+    ${(out.warnings||[]).map(w => `<p class="identification-source">${escapeHtml(w)}</p>`).join("")}
+  `;
+
+  const selectedFit = parentFit.fits[parentFit.selected_model];
+  drawKineticsChart(parentFit.day_level_observations, selectedFit, out.parent.reference_amount_percent);
+
+  if (!out.metabolites.length) {
+    $("kinetics-metabolite-results").innerHTML = "<p>No transformation products entered.</p>";
+  } else {
+    $("kinetics-metabolite-results").innerHTML = out.metabolites.map(metabolite => {
+      const sig = metabolite.significance;
+      const badge = sig.classification === "major" || sig.include_in_pec_refinement ? "Included" : "Shown in pathway only";
+      const basisNote = metabolite.kinetics?.fit_basis === "decline_from_observed_maximum"
+        ? `<p class="identification-source">DT50/DT90 measured from this metabolite's own peak on day ${fmt(metabolite.kinetics.fit_basis_detail?.peak_day,1)} (re-based to day 0), not from time of parent application — ${escapeHtml(metabolite.kinetics.fit_basis_detail?.note || "")}</p>`
+        : "";
+      const kineticsBlock = metabolite.kinetics
+        ? `<p>Selected <strong>${kineticsModelLabel(metabolite.kinetics.selected_model)}</strong> · DT50 ${fmt(metabolite.kinetics.fits[metabolite.kinetics.selected_model]?.dt50_days,4)} d${metabolite.kinetics.fit_basis === "decline_from_observed_maximum" ? " (from peak)" : ""}</p>${basisNote}`
+        : `<p class="identification-source">${escapeHtml(metabolite.kinetics_note || metabolite.kinetics_error || "Not fitted.")}</p>`;
+      return `<div class="identification-tp-card">
+        <p><strong>${escapeHtml(metabolite.name)}</strong> <em>${badge}</em></p>
+        <p>Max observed ${fmt(sig.max_observed_percent,3)}% · threshold ${fmt(sig.threshold_percent,1)}%</p>
+        ${kineticsBlock}
+        <p class="identification-source">${escapeHtml(sig.rule_text)}</p>
+      </div>`;
+    }).join("");
+  }
+}
+
+function drawKineticsChart(dayLevelObservations, selectedFit, m0Reference) {
+  const svg = $("kinetics-chart");
+  if (!svg || !selectedFit) return;
+  const pad = 40, width = 560, height = 280;
+  const maxDay = Math.max(...dayLevelObservations.map(row => row.day), 1);
+  const maxVal = Math.max(m0Reference, ...dayLevelObservations.map(row => row.mean_percent), 1);
+  const x = day => pad + (width - 2*pad) * day / maxDay;
+  const y = value => height - pad - (height - 2*pad) * Math.max(value, 0) / maxVal;
+
+  const grid = svg.querySelector(".kinetics-grid-lines");
+  if (grid) grid.innerHTML = [0,0.25,0.5,0.75,1].map(f => `<line x1="${pad}" x2="${width-pad}" y1="${pad+(height-2*pad)*f}" y2="${pad+(height-2*pad)*f}" stroke="#e2e8e5" stroke-width="1"/>`).join("");
+
+  const paramOrder = {SFO:["m0","k"], FOMC:["m0","alpha","beta"], HS:["m0","k1","k2","tb"], DFOP:["m0","g","k1","k2"]}[selectedFit.model] || [];
+  const params = selectedFit.parameters;
+  const curveFn = t => {
+    if (selectedFit.model === "SFO") return params.m0 * Math.exp(-params.k * t);
+    if (selectedFit.model === "FOMC") return params.m0 * Math.pow(1 + t/params.beta, -params.alpha);
+    if (selectedFit.model === "HS") return t <= params.tb ? params.m0*Math.exp(-params.k1*t) : params.m0*Math.exp(-params.k1*params.tb)*Math.exp(-params.k2*(t-params.tb));
+    if (selectedFit.model === "DFOP") return params.m0*(params.g*Math.exp(-params.k1*t) + (1-params.g)*Math.exp(-params.k2*t));
+    return 0;
+  };
+  const steps = 60;
+  const linePath = Array.from({length: steps+1}, (_, i) => {
+    const t = maxDay * i / steps;
+    return `${i ? "L" : "M"}${x(t).toFixed(2)} ${y(curveFn(t)).toFixed(2)}`;
+  }).join(" ");
+  const line = svg.querySelector(".kinetics-fit-line");
+  if (line) { line.setAttribute("d", linePath); line.setAttribute("stroke", "#2c9773"); }
+
+  const points = svg.querySelector(".kinetics-points");
+  if (points) points.innerHTML = dayLevelObservations.map(row => `<circle cx="${x(row.day).toFixed(2)}" cy="${y(row.mean_percent).toFixed(2)}" r="4" fill="#17382e"/>`).join("");
+}
+
 
 function escapeHtml(value) {
   return String(value ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
@@ -3762,7 +3952,7 @@ function setupPharmaInfluent() {
 
 
 async function init() {
-  setupFlowCards(); setupIdentity(); setupEvidenceHub(); setupScenarioCards(); setupPharmaInfluent(); setupModelSystem(); setupUSExposure(); setupRegulatoryProgramme(); setupTiers(); setupNavigation(); setupDrawers(); setupCopilot(); setupEnviroDesign(); setupToxswa(); setupPearl(); setupIdentification(); await Promise.all([loadVeterinaryProfiles(), loadOecdPharmaRegistry()]);
+  setupFlowCards(); setupIdentity(); setupEvidenceHub(); setupScenarioCards(); setupPharmaInfluent(); setupModelSystem(); setupUSExposure(); setupRegulatoryProgramme(); setupTiers(); setupNavigation(); setupDrawers(); setupCopilot(); setupEnviroDesign(); setupToxswa(); setupPearl(); setupIdentification(); setupDegradationKinetics(); await Promise.all([loadVeterinaryProfiles(), loadOecdPharmaRegistry()]);
   $("run-assessment").addEventListener("click",runAssessment);
   $("retry-assessment")?.addEventListener("click",runAssessment);
   $("continue-toxswa")?.addEventListener("click",()=>{syncToxswaFromScreening(); $("toxswa-surface-water")?.scrollIntoView({behavior:"smooth",block:"start"});});

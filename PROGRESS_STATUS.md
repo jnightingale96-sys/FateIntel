@@ -1,4 +1,19 @@
-# EnviroChem Studio v2.23 Alpha 3.3.0 progress status
+# EnviroChem Studio v2.23 Alpha 3.4.0 progress status
+
+## Alpha 3.4.0 applied environmental fate
+
+- Added `app/services/degradation_kinetics.py`: SFO/FOMC/HS/DFOP fitting via nonlinear least
+  squares, FOCUS Kinetics chi-square goodness-of-fit (Eq. 6-1), numerical DT50/DT90, and FOCUS
+  Section 8.5.1 / VICH GL38 metabolite significance classification (two distinct 10% rules,
+  separately cited, never conflated).
+- Found and fixed a real correctness bug during verification: fitting a monotonic-decline model
+  directly to a formation-then-decline metabolite produced a nonsensical ~745-million-day DT50.
+  Fixed by refitting from the metabolite's own observed maximum (FOCUS Kinetics' own sanctioned
+  simplified approach), always labelled `decline_from_observed_maximum` in the output.
+- New "Applied Environmental Fate" left-nav screen: day-by-replicate observation entry, a live
+  decline-curve chart, and a full per-model chi-square comparison table.
+- Added `scipy` as a base dependency (nonlinear curve fitting + chi-square distribution).
+- 28 new tests; full suite green.
 
 ## Alpha 3.3.0 analytical identification
 

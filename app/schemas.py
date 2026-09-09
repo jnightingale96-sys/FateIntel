@@ -1173,3 +1173,32 @@ class TransformationPathwayPredictCreate(BaseModel):
         if self.provider == "envipath" and not self.envipath_package_id:
             raise ValueError("envipath_package_id is required when provider is 'envipath'")
         return self
+
+
+class DegradationObservationCreate(BaseModel):
+    day: float = Field(ge=0, le=120)
+    replicate_values_percent: list[float] = Field(min_length=1, max_length=20)
+
+
+class DegradationMetaboliteCreate(BaseModel):
+    name: str = Field(min_length=1, max_length=200)
+    smiles: Optional[str] = Field(default=None, max_length=2000)
+    forms_part_of_biochemical_pathway: Optional[bool] = None
+    observations: list[DegradationObservationCreate] = Field(min_length=1, max_length=40)
+
+
+class DegradationKineticsAssessmentCreate(BaseModel):
+    regulatory_framework: Literal["focus_pesticide_kinetics", "vich_gl38_veterinary"]
+    matrix: str = Field(default="soil", max_length=100)
+    parent_name: str = Field(default="Parent", min_length=1, max_length=200)
+    parent_observations: list[DegradationObservationCreate] = Field(min_length=2, max_length=40)
+    metabolites: list[DegradationMetaboliteCreate] = Field(default_factory=list, max_length=20)
+    project_id: Optional[int] = None
+    chemical_id: Optional[int] = None
+    scenario_name: str = Field(default="Degradation kinetics assessment", max_length=250)
+
+    @model_validator(mode="after")
+    def validate_persistence_ids(self):
+        if (self.project_id is None) != (self.chemical_id is None):
+            raise ValueError("Provide both project_id and chemical_id to persist the assessment, or neither")
+        return self

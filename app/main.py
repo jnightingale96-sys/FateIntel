@@ -48,6 +48,7 @@ from .schemas import (
     MultimediaFateRunCreate, CatchmentRiverRunCreate,
     ReachPnecPreviewCreate, ReachReviewBundleCreate,
     USIndustrialExposureRunCreate, USExposureCompletenessCreate,
+    DegradationKineticsAssessmentCreate,
 )
 from .seed import seed
 from .services.selection import calculate_selection, evidence_hash
@@ -82,6 +83,10 @@ from .services.envipath import (
 from .services.analytical_identification import (
     identification_profile as build_identification_profile,
     source_registry as analytical_source_registry,
+)
+from .services.degradation_kinetics import (
+    run_degradation_kinetics_assessment,
+    KineticFitError,
 )
 from .services.pearl_groundwater import manifest as pearl_manifest, focus_scenario_manifest, run_pearl_groundwater_screen
 from .services.toxswa_surface_water import manifest as toxswa_manifest, route_recommendation as toxswa_route_recommendation, run_process_screen as run_toxswa_process_screen, parse_official_summary as parse_toxswa_official_summary, raw_output_hash as toxswa_raw_output_hash
@@ -1389,6 +1394,51 @@ def create_transformation_pathway_prediction(
                 "provider": payload.provider,
                 "provider_query_id": output["query"]["provider_query_id"],
                 "unique_product_count": output["summary"]["unique_product_count"],
+            },
+        )
+        db.commit()
+        db.refresh(row)
+        model_run_id = row.id
+    return {"model_run_id": model_run_id, "outputs": output}
+
+
+@app.post("/api/degradation-kinetics/assess")
+def run_degradation_kinetics(payload: DegradationKineticsAssessmentCreate, db: Session = Depends(get_db)):
+    try:
+        output = run_degradation_kinetics_assessment(
+            regulatory_framework=payload.regulatory_framework,
+            matrix=payload.matrix,
+            parent_name=payload.parent_name,
+            parent_observations=[row.model_dump() for row in payload.parent_observations],
+            metabolites=[row.model_dump() for row in payload.metabolites],
+        )
+    except (ValueError, KineticFitError) as exc:
+        raise HTTPException(422, str(exc)) from exc
+
+    model_run_id = None
+    if payload.project_id is not None and payload.chemical_id is not None:
+        if db.get(Project, payload.project_id) is None or db.get(Chemical, payload.chemical_id) is None:
+            raise HTTPException(404, "Project or chemical not found")
+        row = ModelRun(
+            project_id=payload.project_id,
+            chemical_id=payload.chemical_id,
+            model_key="ENVIROCHEM_DEGRADATION_KINETICS",
+            model_version="0.1.0",
+            scenario_name=payload.scenario_name,
+            status="completed",
+            input_json=json.dumps(payload.model_dump(), sort_keys=True),
+            output_json=json.dumps(output, sort_keys=True),
+            assumptions_json=json.dumps(output.get("warnings", []), sort_keys=True),
+            evidence_hash=None,
+        )
+        db.add(row)
+        db.flush()
+        audit(
+            db, payload.project_id, "model_run", row.id, "degradation_kinetics_assessed",
+            {
+                "regulatory_framework": payload.regulatory_framework,
+                "parent_selected_model": output["parent"]["kinetics"]["selected_model"],
+                "metabolite_count": len(output["metabolites"]),
             },
         )
         db.commit()
