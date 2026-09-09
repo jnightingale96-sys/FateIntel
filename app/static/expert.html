@@ -20,6 +20,7 @@
       <button class="nav" data-page="planner">Assessment Planner</button>
       <button class="nav" data-page="orchestration">Tier Orchestration</button>
       <button class="nav" data-page="evidence">Evidence</button>
+      <button class="nav" data-page="ms-evidence">MS Evidence</button>
       <button class="nav" data-page="selection">Selection</button>
       <button class="nav" data-page="sorption">Sorption / Koc</button>
       <button class="nav" data-page="emission">Emission & Metabolism</button>
@@ -206,6 +207,71 @@
             <div><label>Kinetic model</label><input id="ev-kinetic" value="SFO"></div>
           </div>
           <button>Add evidence</button>
+        </form>
+      </article>
+    </section>
+
+    <section id="page-ms-evidence" class="page">
+      <div class="ms-evidence-boundary">
+        <strong>Evidence-controlled, not automatic identification.</strong>
+        This reads exactly what the instrument already selected for MS/MS fragmentation: every MS2 event, its precursor, product-ion spectrum and an extracted-ion chromatogram from the file's own MS1 scans. It does not detect or align features across files, assign a formula or structure, or ever mark anything &ldquo;confirmed&rdquo; on its own &mdash; confirmation requires an authentic-standard match under the same method, which only a reviewer can record.
+      </div>
+      <article class="panel">
+        <div class="panel-head"><div><small>IMPORT</small><h3>Add an mzML file</h3></div></div>
+        <form id="ms-evidence-import-form">
+          <div class="form-grid">
+            <div><label>Project (optional)</label><select id="ms-evidence-project"><option value="">Not linked to a project</option></select></div>
+            <div><label>Chemical (optional)</label><select id="ms-evidence-chemical"><option value="">Not linked to a chemical</option></select></div>
+            <div class="span2"><label>mzML file</label><input id="ms-evidence-file" type="file" accept=".mzml,.mzML,application/xml" required></div>
+          </div>
+          <button type="submit">Import for review</button>
+        </form>
+        <div id="ms-evidence-import-status" class="empty">No file imported yet.</div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-head split"><div><small>IMPORTED FILES</small><h3>Raw evidence files</h3></div><button id="refresh-ms-evidence-files" class="secondary" type="button">Refresh</button></div>
+        <div id="ms-evidence-file-list" class="list empty">No files imported yet.</div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-head"><div><small>CANDIDATE FEATURES</small><h3>MS2 events in the selected file</h3></div></div>
+        <div id="ms-evidence-feature-list" class="list empty">Import or select a file above.</div>
+      </article>
+
+      <article id="ms-evidence-feature-detail" class="panel hidden">
+        <div class="panel-head"><div><small>FEATURE DETAIL</small><h3 id="ms-evidence-feature-title">&mdash;</h3></div></div>
+        <div class="grid two">
+          <div>
+            <h4>Extracted-ion chromatogram (XIC)</h4>
+            <svg id="ms-evidence-xic-chart" viewBox="0 0 540 220" class="ms-evidence-chart">
+              <g class="ms-evidence-grid"></g>
+              <path class="ms-evidence-xic-line" fill="none" stroke="#2c9773" stroke-width="2" d=""/>
+              <g class="ms-evidence-xic-points"></g>
+            </svg>
+          </div>
+          <div>
+            <h4>Product-ion spectrum (MS2)</h4>
+            <svg id="ms-evidence-spectrum-chart" viewBox="0 0 540 220" class="ms-evidence-chart">
+              <g class="ms-evidence-grid"></g>
+              <g class="ms-evidence-spectrum-bars"></g>
+            </svg>
+          </div>
+        </div>
+        <form id="ms-evidence-review-form">
+          <div class="form-grid">
+            <div><label>Confidence level (Schymanski)</label>
+              <select id="ms-evidence-confidence">
+                <option value="feature_of_interest">1 &middot; Feature of interest (accurate mass only)</option>
+                <option value="candidate_molecular_formula">2 &middot; Candidate molecular formula</option>
+                <option value="tentative_candidate">3 &middot; Tentative candidate</option>
+                <option value="probable_structure">4 &middot; Probable structure</option>
+                <option value="confirmed_structure">5 &middot; Confirmed structure (authentic standard matched)</option>
+              </select>
+            </div>
+            <div class="span2"><label>Reviewer note</label><textarea id="ms-evidence-reviewer-note" rows="3" placeholder="e.g. accurate mass matches predicted hydroxylation TP within 3 ppm; RT more polar than parent, consistent with the hypothesis"></textarea></div>
+          </div>
+          <button type="submit">Save review</button>
         </form>
       </article>
     </section>

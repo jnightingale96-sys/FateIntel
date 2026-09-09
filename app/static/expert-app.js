@@ -1,4 +1,4 @@
-let state = {projects:[], chemicals:[], project:null, chemical:null, projectChemicalIds:new Set(), profile:null, evidence:[], selection:null, emissionRuns:[], activityRuns:[], latestEmission:null, frameworks:[], groups:[], scenarios:[], models:[], contracts:{}, externalIntegrations:[], modelWorkflows:[], selectedWorkflow:null, orchestrationManifest:null, semanticContracts:null, orchestratedAssessments:[], orchestrationPreview:null};
+let state = {projects:[], chemicals:[], project:null, chemical:null, projectChemicalIds:new Set(), profile:null, evidence:[], selection:null, emissionRuns:[], activityRuns:[], latestEmission:null, frameworks:[], groups:[], scenarios:[], models:[], contracts:{}, externalIntegrations:[], modelWorkflows:[], selectedWorkflow:null, orchestrationManifest:null, semanticContracts:null, orchestratedAssessments:[], orchestrationPreview:null, msEvidenceFiles:[], msEvidenceSelectedFileId:null, msEvidenceSelectedFeatureId:null};
 const el = id => document.getElementById(id);
 const fmt = (v,d=4) => v === null || v === undefined ? "—" : Number(v).toPrecision(d);
 
@@ -24,11 +24,12 @@ function page(name){
   document.querySelectorAll(".nav").forEach(x=>x.classList.remove("active"));
   el(`page-${name}`).classList.add("active");
   document.querySelector(`[data-page="${name}"]`).classList.add("active");
-  el("title").textContent = {project:"Dashboard",planner:"Assessment Planner",orchestration:"Tier Orchestration",evidence:"Evidence",selection:"Selection",sorption:"Sorption / Koc",emission:"Emission & Metabolism",wwtp:"Activity SimpleTreat & Risk",irrigation:"Irrigation EU ↔ US",models:"Model Library",homeapp:"Home App",labsafety:"Lab Safety",reach:"REACH Review Bundle",audit:"Audit Trail"}[name];
+  el("title").textContent = {project:"Dashboard",planner:"Assessment Planner",orchestration:"Tier Orchestration",evidence:"Evidence","ms-evidence":"MS Evidence",selection:"Selection",sorption:"Sorption / Koc",emission:"Emission & Metabolism",wwtp:"Activity SimpleTreat & Risk",irrigation:"Irrigation EU ↔ US",models:"Model Library",homeapp:"Home App",labsafety:"Lab Safety",reach:"REACH Review Bundle",audit:"Audit Trail"}[name];
   if(name==="audit") loadAudit();
   if(name==="models") loadModelWorkflows();
   if(name==="reach") loadReachWorkspace().catch(error=>showToast(error.message,"error"));
   if(name==="orchestration") loadOrchestratedAssessments().catch(error=>showToast(error.message,"error"));
+  if(name==="ms-evidence") loadMSEvidenceFiles().catch(error=>showToast(error.message,"error"));
 }
 document.querySelectorAll(".nav").forEach(b=>b.onclick=()=>page(b.dataset.page));
 
@@ -46,6 +47,7 @@ async function init(){
   ]);
   initialisePlanner();
   initialiseOrchestration();
+  initialiseMSEvidence();
   initialiseModelWorkflow();
   renderModelLibrary();
   renderExternalIntegrations();
@@ -1299,6 +1301,188 @@ function safeExternalUrl(value){
 }
 
 el("refresh-model-workflows").onclick=loadModelWorkflows;
+
+
+const MS_EVIDENCE_CONFIDENCE_LABELS = {
+  feature_of_interest: "1 · Feature",
+  candidate_molecular_formula: "2 · Formula",
+  tentative_candidate: "3 · Tentative",
+  probable_structure: "4 · Probable",
+  confirmed_structure: "5 · Confirmed",
+};
+const MS_EVIDENCE_CONFIDENCE_INDEX = {feature_of_interest:1, candidate_molecular_formula:2, tentative_candidate:3, probable_structure:4, confirmed_structure:5};
+function msEvidenceConfidenceLabel(level){ return MS_EVIDENCE_CONFIDENCE_LABELS[level] || level; }
+function msEvidenceConfidenceBadgeClass(level){ return `level-${MS_EVIDENCE_CONFIDENCE_INDEX[level]||1}`; }
+
+function initialiseMSEvidence(){
+  const projectSelect=el("ms-evidence-project"), chemicalSelect=el("ms-evidence-chemical");
+  if(projectSelect) projectSelect.innerHTML=`<option value="">Not linked to a project</option>${state.projects.map(p=>`<option value="${p.id}">${escapeHtml(p.name)}</option>`).join("")}`;
+  if(chemicalSelect) chemicalSelect.innerHTML=`<option value="">Not linked to a chemical</option>${state.chemicals.map(c=>`<option value="${c.id}">${escapeHtml(c.preferred_name)}</option>`).join("")}`;
+  el("ms-evidence-import-form")?.addEventListener("submit",handleMSEvidenceImport);
+  el("refresh-ms-evidence-files")?.addEventListener("click",()=>loadMSEvidenceFiles().catch(error=>showToast(error.message,"error")));
+  el("ms-evidence-review-form")?.addEventListener("submit",handleMSEvidenceReviewSubmit);
+}
+
+async function loadMSEvidenceFiles(){
+  const projectId=el("ms-evidence-project")?.value;
+  const query=projectId?`?project_id=${encodeURIComponent(projectId)}`:"";
+  state.msEvidenceFiles=await api(`/api/ms-evidence/files${query}`);
+  renderMSEvidenceFileList();
+  const stillPresent=state.msEvidenceFiles.some(f=>f.id===state.msEvidenceSelectedFileId);
+  if(!stillPresent){
+    state.msEvidenceSelectedFileId=null;
+    state.msEvidenceSelectedFeatureId=null;
+    renderMSEvidenceFeatureList(null);
+    el("ms-evidence-feature-detail")?.classList.add("hidden");
+  }
+}
+
+function renderMSEvidenceFileList(){
+  const container=el("ms-evidence-file-list");
+  if(!container)return;
+  const files=state.msEvidenceFiles||[];
+  if(!files.length){ container.className="list empty"; container.innerHTML="No files imported yet."; return; }
+  container.className="list";
+  container.innerHTML=files.map(f=>`
+    <button type="button" class="ms-evidence-file-row ${state.msEvidenceSelectedFileId===f.id?"active":""}" data-file-id="${f.id}">
+      <span><strong>${escapeHtml(f.filename)}</strong><small>${f.ms1_scan_count} MS1 · ${f.ms2_scan_count} MS2 · ${escapeHtml(f.ionisation_mode||"ionisation unknown")} · ${new Date(f.uploaded_at).toLocaleString()}</small></span>
+      <span>${f.features.length} candidate feature(s)</span>
+    </button>`).join("");
+  container.querySelectorAll("[data-file-id]").forEach(btn=>btn.onclick=()=>selectMSEvidenceFile(Number(btn.dataset.fileId)));
+}
+
+function selectMSEvidenceFile(fileId){
+  state.msEvidenceSelectedFileId=fileId;
+  state.msEvidenceSelectedFeatureId=null;
+  const file=(state.msEvidenceFiles||[]).find(f=>f.id===fileId);
+  renderMSEvidenceFileList();
+  renderMSEvidenceFeatureList(file);
+  el("ms-evidence-feature-detail")?.classList.add("hidden");
+}
+
+function renderMSEvidenceFeatureList(file){
+  const container=el("ms-evidence-feature-list");
+  if(!container)return;
+  if(!file){ container.className="list empty"; container.innerHTML="Import or select a file above."; return; }
+  const features=file.features||[];
+  if(!features.length){ container.className="list empty"; container.innerHTML="No MS2 features (candidate precursors) were found in this file."; return; }
+  container.className="list";
+  container.innerHTML=features.map(feat=>`
+    <button type="button" class="ms-evidence-feature-row ${state.msEvidenceSelectedFeatureId===feat.id?"active":""}" data-feature-id="${feat.id}">
+      <span><strong>#${feat.feature_index+1} · precursor m/z ${fmt(feat.precursor_mz,7)}</strong><small>RT ${fmt(feat.retention_time_min,4)} min · ${feat.product_ion_count} product ion(s)${feat.precursor_charge?` · z=${feat.precursor_charge}`:""}${feat.collision_energy!=null?` · CE ${feat.collision_energy} eV`:""}</small></span>
+      <span class="ms-evidence-confidence-badge ${msEvidenceConfidenceBadgeClass(feat.confidence_level)}">${msEvidenceConfidenceLabel(feat.confidence_level)}</span>
+    </button>`).join("");
+  container.querySelectorAll("[data-feature-id]").forEach(btn=>btn.onclick=()=>selectMSEvidenceFeature(Number(btn.dataset.featureId)));
+}
+
+async function selectMSEvidenceFeature(featureId){
+  state.msEvidenceSelectedFeatureId=featureId;
+  renderMSEvidenceFeatureList((state.msEvidenceFiles||[]).find(f=>f.id===state.msEvidenceSelectedFileId));
+  try{
+    const feature=await api(`/api/ms-evidence/features/${featureId}`);
+    renderMSEvidenceFeatureDetail(feature);
+  }catch(error){ showToast(error.message,"error"); }
+}
+
+function renderMSEvidenceFeatureDetail(feature){
+  const panel=el("ms-evidence-feature-detail");
+  if(!panel)return;
+  panel.classList.remove("hidden");
+  el("ms-evidence-feature-title").textContent=`Precursor m/z ${fmt(feature.precursor_mz,7)} · RT ${fmt(feature.retention_time_min,4)} min`;
+  drawMSEvidenceXIC(feature.xic||[]);
+  drawMSEvidenceSpectrum(feature.product_ions||[]);
+  const confidenceSelect=el("ms-evidence-confidence");
+  if(confidenceSelect) confidenceSelect.value=feature.confidence_level||"feature_of_interest";
+  const noteField=el("ms-evidence-reviewer-note");
+  if(noteField) noteField.value=feature.reviewer_note||"";
+}
+
+function msEvidenceGridLines(svg,pad,width,height){
+  const grid=svg.querySelector(".ms-evidence-grid");
+  if(grid) grid.innerHTML=[0,0.25,0.5,0.75,1].map(f=>`<line x1="${pad}" x2="${width-pad}" y1="${(pad+(height-2*pad)*f).toFixed(2)}" y2="${(pad+(height-2*pad)*f).toFixed(2)}"/>`).join("");
+}
+
+function drawMSEvidenceXIC(points){
+  const svg=el("ms-evidence-xic-chart");
+  if(!svg)return;
+  const pad=40,width=540,height=220;
+  msEvidenceGridLines(svg,pad,width,height);
+  const line=svg.querySelector(".ms-evidence-xic-line"), pointsGroup=svg.querySelector(".ms-evidence-xic-points");
+  if(!points.length){ if(line)line.setAttribute("d",""); if(pointsGroup)pointsGroup.innerHTML=""; return; }
+  const rts=points.map(p=>p.retention_time_min);
+  const minRt=Math.min(...rts), maxRt=Math.max(...rts,minRt+0.001);
+  const maxIntensity=Math.max(...points.map(p=>p.intensity),1);
+  const x=rt=>pad+(width-2*pad)*(rt-minRt)/(maxRt-minRt);
+  const y=intensity=>height-pad-(height-2*pad)*Math.max(intensity,0)/maxIntensity;
+  const path=points.map((p,i)=>`${i?"L":"M"}${x(p.retention_time_min).toFixed(2)} ${y(p.intensity).toFixed(2)}`).join(" ");
+  if(line) line.setAttribute("d",path);
+  if(pointsGroup) pointsGroup.innerHTML=points.length<200?points.map(p=>`<circle cx="${x(p.retention_time_min).toFixed(2)}" cy="${y(p.intensity).toFixed(2)}" r="2.4"/>`).join(""):"";
+}
+
+function drawMSEvidenceSpectrum(ions){
+  const svg=el("ms-evidence-spectrum-chart");
+  if(!svg)return;
+  const pad=40,width=540,height=220;
+  msEvidenceGridLines(svg,pad,width,height);
+  const bars=svg.querySelector(".ms-evidence-spectrum-bars");
+  if(!bars)return;
+  if(!ions.length){ bars.innerHTML=""; return; }
+  const topIons=[...ions].slice(0,30).sort((a,b)=>a.mz-b.mz);
+  const minMz=Math.min(...topIons.map(i=>i.mz)), maxMz=Math.max(...topIons.map(i=>i.mz),minMz+1);
+  const maxIntensity=Math.max(...topIons.map(i=>i.intensity),1);
+  const x=mz=>pad+(width-2*pad)*(mz-minMz)/(maxMz-minMz);
+  const y=intensity=>height-pad-(height-2*pad)*Math.max(intensity,0)/maxIntensity;
+  bars.innerHTML=topIons.map(ion=>{
+    const barX=x(ion.mz), barY=y(ion.intensity);
+    return `<rect x="${(barX-1.5).toFixed(2)}" y="${barY.toFixed(2)}" width="3" height="${(height-pad-barY).toFixed(2)}"/><text x="${barX.toFixed(2)}" y="${(barY-4).toFixed(2)}" text-anchor="middle">${ion.mz.toFixed(3)}</text>`;
+  }).join("");
+}
+
+async function handleMSEvidenceImport(event){
+  event.preventDefault();
+  const fileInput=el("ms-evidence-file");
+  const file=fileInput?.files?.[0];
+  if(!file){ showToast("Choose an mzML file first.","error"); return; }
+  const status=el("ms-evidence-import-status");
+  if(status){ status.className="empty"; status.textContent="Importing and parsing…"; }
+  const form=new FormData();
+  form.append("mzml_file",file);
+  const projectId=el("ms-evidence-project")?.value, chemicalId=el("ms-evidence-chemical")?.value;
+  if(projectId) form.append("project_id",projectId);
+  if(chemicalId) form.append("chemical_id",chemicalId);
+  try{
+    const result=await api("/api/ms-evidence/import",{method:"POST",body:form});
+    if(status) status.textContent=`Imported ${result.filename} · ${result.ms1_scan_count} MS1 scans · ${result.ms2_scan_count} MS2 events · sha256 ${result.sha256.slice(0,12)}…`;
+    showToast("mzML file imported for review.");
+    fileInput.value="";
+    await loadMSEvidenceFiles();
+    selectMSEvidenceFile(result.id);
+  }catch(error){
+    if(status) status.textContent=`Import stopped: ${error.message}`;
+    showToast(error.message,"error",8000);
+  }
+}
+
+async function handleMSEvidenceReviewSubmit(event){
+  event.preventDefault();
+  if(!state.msEvidenceSelectedFeatureId){ showToast("Select a feature first.","error"); return; }
+  const payload={
+    confidence_level: el("ms-evidence-confidence").value,
+    reviewer_note: el("ms-evidence-reviewer-note").value||null,
+  };
+  try{
+    const updated=await api(`/api/ms-evidence/features/${state.msEvidenceSelectedFeatureId}/review`,{
+      method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload),
+    });
+    showToast("Review recorded.");
+    const file=(state.msEvidenceFiles||[]).find(f=>f.id===state.msEvidenceSelectedFileId);
+    if(file){
+      const cached=file.features.find(f=>f.id===updated.id);
+      if(cached) cached.confidence_level=updated.confidence_level;
+      renderMSEvidenceFeatureList(file);
+    }
+  }catch(error){ showToast(error.message,"error"); }
+}
 
 
 let deferredInstallPrompt=null;

@@ -346,3 +346,65 @@ def prevent_orchestrated_assessment_mutation(
             raise ValueError(
                 "Orchestrated assessment records are immutable; create a successor record"
             )
+
+
+class MSRawEvidenceFile(Base):
+    """One imported mzML file: content-hashed, parsed once at import time.
+
+    project_id/chemical_id are nullable -- a raw file may be uploaded before
+    the parent/metabolite relationship is known or confirmed. There is no
+    update route for this table: a re-import creates a new row rather than
+    editing a prior one, so the sha256 stays a stable pointer to exactly the
+    bytes that were reviewed. Reviewer input (confidence_level,
+    reviewer_note) lives on MSFeature below and is the one thing a reviewer
+    can change -- everything derived from the file itself cannot be.
+    """
+
+    __tablename__ = "ms_raw_evidence_files"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    project_id: Mapped[int | None] = mapped_column(ForeignKey("projects.id"), index=True)
+    chemical_id: Mapped[int | None] = mapped_column(ForeignKey("chemicals.id"), index=True)
+    filename: Mapped[str] = mapped_column(String(300))
+    sha256: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    format: Mapped[str] = mapped_column(String(20), default="mzml")
+    ionisation_mode: Mapped[str | None] = mapped_column(String(20))
+    ms1_scan_count: Mapped[int] = mapped_column(Integer, default=0)
+    ms2_scan_count: Mapped[int] = mapped_column(Integer, default=0)
+    tic_json: Mapped[str] = mapped_column(Text, default="[]")
+    uploaded_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    features: Mapped[list["MSFeature"]] = relationship(
+        back_populates="raw_file", cascade="all, delete-orphan"
+    )
+
+
+class MSFeature(Base):
+    """One MS2-triggered precursor event: retention time, precursor, product
+    ions and its own extracted-ion chromatogram (XIC).
+
+    This is a direct-from-instrument candidate list -- every DDA
+    fragmentation event the file already recorded -- not an aligned,
+    deduplicated feature-detection result; see ms_evidence.py's module
+    docstring for the deliberate scope boundary. confidence_level defaults
+    to "feature_of_interest" (Schymanski's own starting point: an accurate
+    mass with no structural claim yet) and a reviewer may move it forward by
+    hand via the review endpoint. This module never assigns a formula or
+    structure and never sets a level beyond what a human reviewer records --
+    there is no automatic promotion path.
+    """
+
+    __tablename__ = "ms_features"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    raw_file_id: Mapped[int] = mapped_column(ForeignKey("ms_raw_evidence_files.id"), index=True)
+    feature_index: Mapped[int] = mapped_column(Integer)
+    retention_time_min: Mapped[float] = mapped_column(Float)
+    precursor_mz: Mapped[float] = mapped_column(Float)
+    precursor_charge: Mapped[int | None] = mapped_column(Integer)
+    collision_energy: Mapped[float | None] = mapped_column(Float)
+    scan_id: Mapped[str | None] = mapped_column(String(100))
+    base_peak_mz: Mapped[float | None] = mapped_column(Float)
+    product_ion_count: Mapped[int] = mapped_column(Integer, default=0)
+    product_ions_json: Mapped[str] = mapped_column(Text, default="[]")
+    xic_json: Mapped[str] = mapped_column(Text, default="[]")
+    confidence_level: Mapped[str] = mapped_column(String(40), default="feature_of_interest")
+    reviewer_note: Mapped[str | None] = mapped_column(Text)
+    raw_file: Mapped[MSRawEvidenceFile] = relationship(back_populates="features")

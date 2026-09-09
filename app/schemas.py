@@ -1428,3 +1428,18 @@ class DegradationKineticsAssessmentCreate(BaseModel):
         if (self.project_id is None) != (self.chemical_id is None):
             raise ValueError("Provide both project_id and chemical_id to persist the assessment, or neither")
         return self
+
+
+class MSFeatureReviewUpdate(BaseModel):
+    # Schymanski et al. (2014) HRMS confidence levels, plus the pre-formula
+    # starting point this workbench actually produces on import. There is no
+    # server-side path to "confirmed_structure" other than a reviewer
+    # explicitly recording it here -- this module never assigns one itself.
+    confidence_level: Literal[
+        "feature_of_interest",
+        "candidate_molecular_formula",
+        "tentative_candidate",
+        "probable_structure",
+        "confirmed_structure",
+    ]
+    reviewer_note: Optional[str] = Field(default=None, max_length=4000)

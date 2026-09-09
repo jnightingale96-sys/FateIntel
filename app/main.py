@@ -32,7 +32,7 @@ from .models import (
     Project, Chemical, ProjectChemical, Source, EvidenceRecord,
     SelectionSet, SelectionMember, ModelRun, RiskAssessment, AuditEvent, ModelWorkflow,
     ChemicalIdentitySnapshot, ChemicalAssessmentProfile, ModelRunIdentityBinding,
-    OrchestratedAssessmentRecord,
+    OrchestratedAssessmentRecord, MSRawEvidenceFile, MSFeature,
 )
 from .schemas import (
     ProjectCreate, IdentityResolveCreate, ChemicalIdentityConfirmCreate,
@@ -51,6 +51,7 @@ from .schemas import (
     ReachPnecPreviewCreate, ReachReviewBundleCreate,
     USIndustrialExposureRunCreate, USExposureCompletenessCreate,
     DegradationKineticsAssessmentCreate,
+    MSFeatureReviewUpdate,
     OrchestrationHarmoniseCreate, OrchestrationCompatibilityCreate,
     ModelPortCompatibilityCreate, RiskCharacterisationCreate,
     CrossJurisdictionComparisonCreate, OrchestrationPlanCreate,
@@ -89,6 +90,12 @@ from .services.envipath import (
 from .services.analytical_identification import (
     identification_profile as build_identification_profile,
     source_registry as analytical_source_registry,
+)
+from .services.ms_evidence import (
+    parse_mzml,
+    sha256_of as ms_evidence_sha256,
+    workbench_capabilities as ms_evidence_capabilities,
+    MzMLParseError,
 )
 from .services.degradation_kinetics import (
     run_degradation_kinetics_assessment,
@@ -1502,6 +1509,160 @@ def get_identification_profile_by_inchikey(inchikey: str, ion_mode: str | None =
         return build_identification_profile(inchikey, ion_mode=ion_mode)
     except ValueError as exc:
         raise HTTPException(422, str(exc)) from exc
+
+
+@app.get("/api/ms-evidence/capabilities")
+def get_ms_evidence_capabilities():
+    return ms_evidence_capabilities()
+
+
+@app.post("/api/ms-evidence/import")
+async def import_ms_evidence_file(
+    mzml_file: UploadFile = File(...),
+    project_id: int | None = Form(default=None),
+    chemical_id: int | None = Form(default=None),
+    db: Session = Depends(get_db),
+):
+    if project_id is not None or chemical_id is not None:
+        if project_id is None or chemical_id is None:
+            raise HTTPException(422, "Provide both project_id and chemical_id to link this import, or neither")
+        if db.get(Project, project_id) is None or db.get(Chemical, chemical_id) is None:
+            raise HTTPException(404, "Project or chemical not found")
+
+    raw = await mzml_file.read()
+    if not raw:
+        raise HTTPException(422, "mzML file is empty")
+    digest = ms_evidence_sha256(raw)
+    existing = db.query(MSRawEvidenceFile).filter(MSRawEvidenceFile.sha256 == digest).one_or_none()
+    if existing is not None:
+        raise HTTPException(409, f"This exact file was already imported as raw evidence file #{existing.id}")
+
+    try:
+        parsed = parse_mzml(raw)
+    except MzMLParseError as exc:
+        raise HTTPException(422, str(exc)) from exc
+
+    raw_file = MSRawEvidenceFile(
+        project_id=project_id,
+        chemical_id=chemical_id,
+        filename=mzml_file.filename or "unnamed.mzML",
+        sha256=digest,
+        format="mzml",
+        ionisation_mode=parsed["ionisation_mode"],
+        ms1_scan_count=parsed["ms1_scan_count"],
+        ms2_scan_count=parsed["ms2_scan_count"],
+        tic_json=json.dumps(parsed["tic"], sort_keys=True),
+    )
+    db.add(raw_file)
+    db.flush()
+    for feature in parsed["features"]:
+        db.add(MSFeature(
+            raw_file_id=raw_file.id,
+            feature_index=feature["feature_index"],
+            retention_time_min=feature["retention_time_min"],
+            precursor_mz=feature["precursor_mz"],
+            precursor_charge=feature["precursor_charge"],
+            collision_energy=feature["collision_energy"],
+            scan_id=feature["scan_id"],
+            base_peak_mz=feature["base_peak_mz"],
+            product_ion_count=len(feature["product_ions"]),
+            product_ions_json=json.dumps(feature["product_ions"], sort_keys=True),
+            xic_json=json.dumps(feature["xic"], sort_keys=True),
+        ))
+    if project_id is not None:
+        audit(db, project_id, "ms_raw_evidence_file", raw_file.id, "ms_evidence_imported", {
+            "filename": raw_file.filename,
+            "sha256": digest,
+            "ms1_scan_count": raw_file.ms1_scan_count,
+            "ms2_scan_count": raw_file.ms2_scan_count,
+        })
+    db.commit()
+    db.refresh(raw_file)
+    return _ms_raw_file_summary(raw_file)
+
+
+def _ms_raw_file_summary(raw_file: MSRawEvidenceFile) -> dict:
+    return {
+        "id": raw_file.id,
+        "filename": raw_file.filename,
+        "sha256": raw_file.sha256,
+        "format": raw_file.format,
+        "project_id": raw_file.project_id,
+        "chemical_id": raw_file.chemical_id,
+        "ionisation_mode": raw_file.ionisation_mode,
+        "ms1_scan_count": raw_file.ms1_scan_count,
+        "ms2_scan_count": raw_file.ms2_scan_count,
+        "uploaded_at": raw_file.uploaded_at.isoformat(),
+        "tic": json.loads(raw_file.tic_json),
+        "features": [_ms_feature_summary(f) for f in raw_file.features],
+    }
+
+
+def _ms_feature_summary(feature: MSFeature) -> dict:
+    return {
+        "id": feature.id,
+        "feature_index": feature.feature_index,
+        "retention_time_min": feature.retention_time_min,
+        "precursor_mz": feature.precursor_mz,
+        "precursor_charge": feature.precursor_charge,
+        "collision_energy": feature.collision_energy,
+        "base_peak_mz": feature.base_peak_mz,
+        "product_ion_count": feature.product_ion_count,
+        "confidence_level": feature.confidence_level,
+    }
+
+
+@app.get("/api/ms-evidence/files")
+def list_ms_evidence_files(project_id: int | None = None, chemical_id: int | None = None, db: Session = Depends(get_db)):
+    query = db.query(MSRawEvidenceFile)
+    if project_id is not None:
+        query = query.filter(MSRawEvidenceFile.project_id == project_id)
+    if chemical_id is not None:
+        query = query.filter(MSRawEvidenceFile.chemical_id == chemical_id)
+    return [_ms_raw_file_summary(row) for row in query.order_by(MSRawEvidenceFile.uploaded_at.desc()).all()]
+
+
+@app.get("/api/ms-evidence/files/{file_id}")
+def get_ms_evidence_file(file_id: int, db: Session = Depends(get_db)):
+    raw_file = db.get(MSRawEvidenceFile, file_id)
+    if raw_file is None:
+        raise HTTPException(404, "Raw evidence file not found")
+    return _ms_raw_file_summary(raw_file)
+
+
+@app.get("/api/ms-evidence/features/{feature_id}")
+def get_ms_evidence_feature(feature_id: int, db: Session = Depends(get_db)):
+    feature = db.get(MSFeature, feature_id)
+    if feature is None:
+        raise HTTPException(404, "Feature not found")
+    return {
+        **_ms_feature_summary(feature),
+        "raw_file_id": feature.raw_file_id,
+        "scan_id": feature.scan_id,
+        "reviewer_note": feature.reviewer_note,
+        "product_ions": json.loads(feature.product_ions_json),
+        "xic": json.loads(feature.xic_json),
+    }
+
+
+@app.patch("/api/ms-evidence/features/{feature_id}/review")
+def review_ms_evidence_feature(feature_id: int, payload: MSFeatureReviewUpdate, db: Session = Depends(get_db)):
+    feature = db.get(MSFeature, feature_id)
+    if feature is None:
+        raise HTTPException(404, "Feature not found")
+    feature.confidence_level = payload.confidence_level
+    feature.reviewer_note = payload.reviewer_note
+    raw_file = db.get(MSRawEvidenceFile, feature.raw_file_id)
+    if raw_file is not None and raw_file.project_id is not None:
+        audit(db, raw_file.project_id, "ms_feature", feature.id, "ms_feature_reviewed", {
+            "confidence_level": payload.confidence_level,
+        })
+    db.commit()
+    db.refresh(feature)
+    return {
+        **_ms_feature_summary(feature),
+        "reviewer_note": feature.reviewer_note,
+    }
 
 
 @app.get("/api/focus/manifest")
