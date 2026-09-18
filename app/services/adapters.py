@@ -352,6 +352,25 @@ ADAPTER_CONTRACTS: dict[str, dict[str, Any]] = {
         "accepted_output_formats": ["txt", "csv"],
         "redistribution_note": "EnviroChem does not reproduce or modify BeeREX; execution occurs in an authorised external installation.",
     },
+    "ENVIROCHEM_EU_BIRDS_MAMMALS_SCREEN": {
+        "execution_mode": "native_research_screen",
+        "required_inputs": [
+            "food_intake_rate_g_day", "body_weight_g", "application_rate_kg_ha",
+            "residue_unit_dose_mg_kg", "avian_or_mammalian_toxicity_endpoint",
+        ],
+        "expected_outputs": [
+            "acute_dietary_ter", "reproductive_dietary_ter", "fish_secondary_poisoning_ter",
+        ],
+        "workflow_steps": [
+            "confirm the reviewer-supplied FIR/BW/RUD for the assessed food item(s)",
+            "compute the screening or Tier 1 daily dose", "apply fTWA for the reproductive exposure when relevant",
+            "compute acute and reproductive TER against the guidance's own thresholds",
+            "when log Kow >= 3, compute the fish-eating secondary-poisoning TER",
+            "scientist reviews the endpoint selection and any Tier 2/3 refinement",
+        ],
+        "accepted_output_formats": ["json"],
+        "redistribution_note": "Transparent native research screen implementing EFSA (2023) Journal 21(2):7790's own formulas. It is not an official EFSA calculator tool and does not embed the guidance's Annex B Generic Model Species or crop-deposition-value tables -- see eu_birds_mammals.py's own module docstring for the exact boundary.",
+    },
     "ENVIROCHEM_US_INDUSTRIAL_EXPOSURE_SCREEN": {
         "execution_mode": "native_research_screen",
         "required_inputs": [

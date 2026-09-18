@@ -302,6 +302,17 @@ MODELS: list[dict[str, Any]] = [
         "outputs": ["contact_risk_quotient", "oral_risk_quotient"],
     },
     {
+        "key": "ENVIROCHEM_EU_BIRDS_MAMMALS_SCREEN",
+        "name": "EnviroChem EU birds & mammals Tier 1 TER screen",
+        "domain": "EU plant-protection-product dietary and fish-eating secondary-poisoning risk to birds and mammals",
+        "regions": ["EU", "UK", "CH"],
+        "groups": ["pesticide"],
+        "implementation": "native_research_screen",
+        "status": "working_partial_screen",
+        "tiers": [1, 2],
+        "outputs": ["acute_dietary_ter", "reproductive_dietary_ter", "fish_secondary_poisoning_ter"],
+    },
+    {
         "key": "ENVIROCHEM_US_INDUSTRIAL_EXPOSURE_SCREEN",
         "name": "EnviroChem US industrial exposure foundation",
         "domain": "industrial source terms, release routing and worker inhalation/dermal screening",
@@ -626,6 +637,19 @@ def build_assessment_plan(data: dict[str, Any]) -> dict[str, Any]:
             # engine family can also appear in US workflows, so jurisdiction,
             # scenario database and version must remain part of provenance.
             selected.append("PRZM")
+        if group == "pesticide" and scenario in {"agricultural_spray", "soil_incorporation"}:
+            # EU equivalent of the US TERRPLANT/TREX/AGDRIFT/BEEREX ecotox
+            # suite -- previously entirely absent for EU pesticide scenarios
+            # despite EFSA requiring the equivalent bird/mammal dietary and
+            # secondary-poisoning risk assessment (Guidance on the risk
+            # assessment for birds and mammals, EFSA Journal 2023;21(2):7790).
+            # Only the acute/reproductive dietary TER and fish-eating
+            # secondary-poisoning pathways are implemented so far -- see
+            # eu_birds_mammals.py's own module docstring for the exact
+            # boundary (no Annex B Generic Model Species tables, no
+            # earthworm/benthic-invertebrate secondary poisoning yet).
+            selected.append("ENVIROCHEM_EU_BIRDS_MAMMALS_SCREEN")
+            required += ["reviewer-supplied FIR/BW/RUD/application rate per food item", "avian and mammalian toxicity endpoints (LD50, relevant reproductive endpoint)"]
 
     focus_hosts = {"PEARL", "PELMO", "MACRO", "SWASH", "TOXSWA"}
     if focus_hosts.intersection(selected):

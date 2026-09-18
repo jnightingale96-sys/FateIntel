@@ -155,3 +155,29 @@ def test_us_soil_incorporated_pesticide_gets_terrestrial_ecotox_models():
     })
     keys = {x["key"] for x in plan["models"]}
     assert {"TERRPLANT", "TREX"}.issubset(keys)
+
+
+def test_eu_pesticide_scenario_gets_birds_and_mammals_screen():
+    # EU pesticide scenarios previously had no equivalent of the US
+    # TERRPLANT/TREX/BEEREX terrestrial ecotox suite at all, despite EFSA
+    # requiring the same bird/mammal dietary risk assessment.
+    plan = build_assessment_plan({
+        "jurisdiction": "EU",
+        "contaminant_group": "pesticide",
+        "scenario": "agricultural_spray",
+        "tier": 2,
+    })
+    keys = {x["key"] for x in plan["models"]}
+    assert "ENVIROCHEM_EU_BIRDS_MAMMALS_SCREEN" in keys
+
+
+def test_us_pesticide_scenario_does_not_get_eu_birds_and_mammals_screen():
+    plan = build_assessment_plan({
+        "jurisdiction": "US",
+        "contaminant_group": "pesticide",
+        "scenario": "agricultural_spray",
+        "tier": 2,
+        "use_site_category": "outdoor_terrestrial",
+    })
+    keys = {x["key"] for x in plan["models"]}
+    assert "ENVIROCHEM_EU_BIRDS_MAMMALS_SCREEN" not in keys
