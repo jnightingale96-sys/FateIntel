@@ -626,11 +626,40 @@ def _regulatory_programme(jurisdiction: str, group: str, scenario: str) -> dict[
                 "name": "Australian APVMA pesticide pathway (partially mapped)",
                 "scope": "APVMA, not AICIS, regulates pesticides in Australia. Confirmed and implemented: terrestrial-vertebrates dietary TER (EFSA-2009-aligned, same triggers as the EU screen) and the aquatic RQ trigger (0.1 acute / 1.0 chronic). Not yet researched: spray drift, runoff, bees, soil organisms, non-target plants -- treat those as an explicit coverage gap",
             }
-        if group in {"human_pharmaceutical", "veterinary_pharmaceutical"}:
+        if group == "veterinary_pharmaceutical":
+            # PARTIALLY mapped (2026-09-18): APVMA also regulates veterinary
+            # medicines in Australia, under the SAME "Environment (Part 7)"
+            # data-guideline umbrella as pesticides (confirmed live -- the
+            # agricultural- and veterinary-data-guideline pages mirror each
+            # other) and the same general PEC/PNEC risk-quotient process
+            # (hazard -> exposure -> risk characterisation, RQ < 1
+            # acceptable). APVMA's aquatic RQ trigger (0.1 acute / 1.0
+            # chronic, au_apvma.py) is offered on that basis. The dietary
+            # bird/mammal TER screen (ENVIROCHEM_EU_BIRDS_MAMMALS_SCREEN) is
+            # NOT offered here: it models spray-residue-on-food-item
+            # exposure specific to plant-protection products, and veterinary
+            # medicines reach the terrestrial environment through a
+            # different route (manure/excreta to soil) that has not been
+            # verified to use the same model.
             return {
-                "key": "AU_TGA_APVMA_NOT_MAPPED",
-                "name": "Australian TGA/APVMA medicines pathway (not yet mapped)",
-                "scope": "TGA (human) and APVMA (veterinary) regulate medicines in Australia, not AICIS; their environmental fate methodology has not been researched -- treat as an explicit coverage gap, not a supported pathway",
+                "key": "AU_APVMA_VETERINARY_PARTIAL",
+                "name": "Australian APVMA veterinary-medicine pathway (partially mapped)",
+                "scope": "APVMA regulates veterinary medicines in Australia under the same Environment (Part 7) framework and general PEC/PNEC risk-quotient process as pesticides. Confirmed and implemented: the aquatic RQ trigger (0.1 acute / 1.0 chronic). NOT offered: the dietary bird/mammal TER screen, which models spray-residue exposure specific to pesticides, not manure/excreta-route veterinary exposure -- that pathway is still an explicit coverage gap",
+            }
+        if group == "human_pharmaceutical":
+            # CONFIRMED (2026-09-18, live search, current through the
+            # 2025-2026 TGA guideline-adoption consultation): the TGA has no
+            # environmental risk assessment requirement for human medicines
+            # at all. This is not "not yet researched" -- there is
+            # genuinely no local ERA methodology to map. Multinational
+            # pharma operating in Australia commonly uses EU/EMA-style
+            # assessment as a de facto international reference in this
+            # situation, which FateIntel's existing EU pharmaceutical
+            # pathway already substantially supports.
+            return {
+                "key": "AU_TGA_NO_ERA_REQUIREMENT",
+                "name": "Australian TGA human-medicines pathway (no ERA requirement)",
+                "scope": "TGA does not require an environmental risk assessment for human medicines in Australia -- confirmed, not a research gap. Consider FateIntel's EU/EMA-aligned pharmaceutical pathway as a voluntary international reference where a customer wants one anyway",
             }
         return {
             "key": "AU_AICIS_INDUSTRIAL",

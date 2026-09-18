@@ -219,6 +219,36 @@ def test_au_pesticide_scenario_gets_partial_apvma_pathway_not_mislabelled_as_aic
     assert not keys.intersection({"PEARL", "TOXSWA", "PWC", "PRZM"})
 
 
+def test_au_veterinary_pharmaceutical_gets_partial_apvma_pathway_without_bird_mammal_screen():
+    # APVMA also regulates veterinary medicines (same Environment Part 7
+    # framework as pesticides), so this should get its own partial-coverage
+    # key -- but the dietary bird/mammal TER screen is spray-residue-specific
+    # and must NOT be selected for a manure/excreta-route veterinary product.
+    plan = build_assessment_plan({
+        "jurisdiction": "AU",
+        "contaminant_group": "veterinary_pharmaceutical",
+        "scenario": "municipal_wastewater",
+        "tier": 2,
+    })
+    assert plan["regulatory_programme"]["key"] == "AU_APVMA_VETERINARY_PARTIAL"
+    keys = {x["key"] for x in plan["models"]}
+    assert "ENVIROCHEM_EU_BIRDS_MAMMALS_SCREEN" not in keys
+
+
+def test_au_human_pharmaceutical_has_no_tga_era_requirement():
+    # Confirmed live (2026-09-18): the TGA has no environmental risk
+    # assessment requirement for human medicines in Australia at all --
+    # this is a genuinely confirmed absence, not an unresearched gap, so it
+    # gets its own distinct key rather than reusing a "not mapped" pattern.
+    plan = build_assessment_plan({
+        "jurisdiction": "AU",
+        "contaminant_group": "human_pharmaceutical",
+        "scenario": "municipal_wastewater",
+        "tier": 2,
+    })
+    assert plan["regulatory_programme"]["key"] == "AU_TGA_NO_ERA_REQUIREMENT"
+
+
 def test_au_framework_is_registered():
     from app.services.registry import FRAMEWORKS
     keys = {f["key"] for f in FRAMEWORKS}
