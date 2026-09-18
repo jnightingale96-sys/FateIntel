@@ -181,3 +181,42 @@ def test_us_pesticide_scenario_does_not_get_eu_birds_and_mammals_screen():
     })
     keys = {x["key"] for x in plan["models"]}
     assert "ENVIROCHEM_EU_BIRDS_MAMMALS_SCREEN" not in keys
+
+
+def test_au_industrial_scenario_gets_aicis_pathway_and_native_models():
+    # AICIS has no distinct proprietary exposure model -- this should route
+    # to the same core PEC/PNEC method via native screens, not a fabricated
+    # "AICIS adapter".
+    plan = build_assessment_plan({
+        "jurisdiction": "AU",
+        "contaminant_group": "industrial_organic",
+        "scenario": "industrial_effluent",
+        "tier": 2,
+    })
+    assert plan["regulatory_programme"]["key"] == "AU_AICIS_INDUSTRIAL"
+    keys = {x["key"] for x in plan["models"]}
+    assert "SIMPLEBOX" in keys
+    assert "ENVIROCHEM_MULTIMEDIA_FATE_SCREEN" in keys
+    # Nothing EU-FOCUS-specific or US-EPA-specific should appear for AU.
+    assert not keys.intersection({"PEARL", "TOXSWA", "SWASH", "PWC", "PRZM", "TERRPLANT"})
+
+
+def test_au_pesticide_scenario_is_honestly_unmapped_not_mislabelled_as_aicis():
+    # Pesticides in Australia are regulated by APVMA, not AICIS -- this must
+    # not silently claim AICIS coverage it doesn't have.
+    plan = build_assessment_plan({
+        "jurisdiction": "AU",
+        "contaminant_group": "pesticide",
+        "scenario": "agricultural_spray",
+        "tier": 2,
+    })
+    assert plan["regulatory_programme"]["key"] == "AU_APVMA_NOT_MAPPED"
+    keys = {x["key"] for x in plan["models"]}
+    assert "ENVIROCHEM_EU_BIRDS_MAMMALS_SCREEN" not in keys
+    assert not keys.intersection({"PEARL", "TOXSWA", "PWC", "PRZM"})
+
+
+def test_au_framework_is_registered():
+    from app.services.registry import FRAMEWORKS
+    keys = {f["key"] for f in FRAMEWORKS}
+    assert "AU" in keys

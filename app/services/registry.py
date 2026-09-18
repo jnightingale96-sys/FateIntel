@@ -27,6 +27,19 @@ FRAMEWORKS: list[dict[str, Any]] = [
         "packs": ["ChemO", "ORRChem", "Biocidal Products Ordinance", "Plant protection products", "Swissmedic medicines"],
         "default_currency": "CHF",
     },
+    {
+        "key": "AU",
+        "name": "Australia",
+        # AICIS (industrial chemicals, Industrial Chemicals Act 2019) is the
+        # regulator this jurisdiction's pathway logic is actually built
+        # against -- see _regulatory_programme() for what was researched and
+        # what was not. Pesticides/veterinary medicines (APVMA) and human
+        # medicines (TGA) are named here as the correct Australian regulators
+        # for those groups, not because their own environmental fate
+        # methodology has been researched and mapped the way AICIS's has.
+        "packs": ["AICIS industrial chemicals", "APVMA pesticides (pathway not yet mapped)", "APVMA veterinary medicines (pathway not yet mapped)", "TGA human medicines (pathway not yet mapped)"],
+        "default_currency": "AUD",
+    },
 ]
 
 CONTAMINANT_GROUPS = [
@@ -74,7 +87,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "SIMPLETREAT",
         "name": "SimpleTreat",
         "domain": "municipal wastewater treatment",
-        "regions": ["EU", "UK", "CH", "US"],
+        "regions": ["EU", "UK", "CH", "US", "AU"],
         "groups": CONTAMINANT_GROUPS,
         "implementation": "native_and_adapter",
         "status": "working_preset",
@@ -85,7 +98,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "ACTIVITY_SIMPLETREAT",
         "name": "Activity SimpleTreat",
         "domain": "ionisable chemicals in wastewater treatment",
-        "regions": ["EU", "UK", "CH", "US"],
+        "regions": ["EU", "UK", "CH", "US", "AU"],
         "groups": CONTAMINANT_GROUPS,
         "implementation": "native",
         "status": "working_verified_preset",
@@ -96,7 +109,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "SIMPLEBOX",
         "name": "SimpleBox 4.0",
         "domain": "regional, continental and global multimedia environmental fate",
-        "regions": ["EU", "UK", "CH", "US"],
+        "regions": ["EU", "UK", "CH", "US", "AU"],
         "groups": DISCRETE_ORGANIC_GROUPS,
         "implementation": "managed_adapter",
         "status": "official_adapter_contract",
@@ -107,7 +120,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "ENVIROCHEM_MULTIMEDIA_FATE_SCREEN",
         "name": "EnviroChem multimedia fate screen",
         "domain": "transparent steady-state air-water-soil-sediment mass balance",
-        "regions": ["EU", "UK", "CH", "US"],
+        "regions": ["EU", "UK", "CH", "US", "AU"],
         "groups": DISCRETE_ORGANIC_GROUPS,
         "implementation": "native_research_screen",
         "status": "working_native_screen",
@@ -118,7 +131,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "EPI_SUITE",
         "name": "EPA EPI Suite 4.11",
         "domain": "property, degradation, bioaccumulation and environmental-transport estimation",
-        "regions": ["US", "EU", "UK", "CH"],
+        "regions": ["US", "EU", "UK", "CH", "AU"],
         "groups": DISCRETE_ORGANIC_GROUPS,
         "implementation": "managed_adapter",
         "status": "installable_adapter_contract",
@@ -162,7 +175,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "ENVIROCHEM_TOXSWA_PROCESS_SCREEN",
         "name": "EnviroChem water–sediment process screen",
         "domain": "surface water and sediment",
-        "regions": ["EU", "UK", "US", "CH"],
+        "regions": ["EU", "UK", "US", "CH", "AU"],
         "groups": CONTAMINANT_GROUPS,
         "implementation": "native_research_screen",
         "status": "alpha",
@@ -195,7 +208,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "ENVIROCHEM_CATCHMENT_RIVER_NETWORK",
         "name": "EnviroChem catchment river-network screen",
         "domain": "branched river routing of WWTP and industrial point-source loads",
-        "regions": ["EU", "UK", "CH", "US"],
+        "regions": ["EU", "UK", "CH", "US", "AU"],
         "groups": DISCRETE_ORGANIC_GROUPS,
         "implementation": "native_research_screen",
         "status": "working_native_screen",
@@ -374,7 +387,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "ENVIROCHEM_DUAL_WASTEWATER_IRRIGATION",
         "name": "EnviroChem EU–US wastewater irrigation comparison",
         "domain": "treated-wastewater irrigation, soil accumulation and cross-framework model routing",
-        "regions": ["EU", "UK", "US", "CH"],
+        "regions": ["EU", "UK", "US", "CH", "AU"],
         "groups": CONTAMINANT_GROUPS,
         "implementation": "native_and_adapter",
         "status": "working_native_screen",
@@ -385,7 +398,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "ENVIROCHEM_SOIL_SCREEN",
         "name": "EnviroChem soil accumulation screen",
         "domain": "soil mixing, repeat use and accumulation",
-        "regions": ["EU", "UK", "US", "CH"],
+        "regions": ["EU", "UK", "US", "CH", "AU"],
         "groups": CONTAMINANT_GROUPS,
         "implementation": "native",
         "status": "partial",
@@ -397,7 +410,7 @@ MODELS: list[dict[str, Any]] = [
     "key": "ENVIROCHEM_BIOSOLIDS_LAND_APPLICATION",
     "name": "EnviroChem biosolids land application",
     "domain": "WWTP sludge transfer, land loading and repeated soil accumulation",
-    "regions": ["EU", "UK", "US", "CH"],
+    "regions": ["EU", "UK", "US", "CH", "AU"],
     "groups": CONTAMINANT_GROUPS,
     "implementation": "native",
     "status": "working_native_screen",
@@ -419,7 +432,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "ENVIROCHEM_PLANT_UPTAKE",
         "name": "EnviroChem plant uptake",
         "domain": "root uptake and crop residues",
-        "regions": ["EU", "UK", "US", "CH"],
+        "regions": ["EU", "UK", "US", "CH", "AU"],
         "groups": ["human_pharmaceutical", "veterinary_pharmaceutical", "pesticide", "emerging_contaminant", "industrial_organic"],
         "implementation": "native",
         "status": "working_screen",
@@ -430,7 +443,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "ENVIRODESIGN_BIOWIN34_ATTRIBUTION",
         "name": "EnviroDesign structural biodegradation attribution",
         "domain": "explainable structure-to-biodegradation screening",
-        "regions": ["EU", "UK", "US", "CH"],
+        "regions": ["EU", "UK", "US", "CH", "AU"],
         "groups": CONTAMINANT_GROUPS,
         "implementation": "native",
         "status": "working_research_screen",
@@ -441,7 +454,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "ENVIRODESIGN_PATHWAY_RETENTION",
         "name": "EnviroDesign transformation-pathway retention",
         "domain": "parent-product motif retention with matrix and provenance",
-        "regions": ["EU", "UK", "US", "CH"],
+        "regions": ["EU", "UK", "US", "CH", "AU"],
         "groups": CONTAMINANT_GROUPS,
         "implementation": "native_manual_import",
         "status": "working_manual_import",
@@ -474,7 +487,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "ENVIRODESIGN_CANDIDATE_COMPARISON",
         "name": "EnviroDesign candidate comparison",
         "domain": "counterfactual safer-by-design comparison",
-        "regions": ["EU", "UK", "US", "CH"],
+        "regions": ["EU", "UK", "US", "CH", "AU"],
         "groups": CONTAMINANT_GROUPS,
         "implementation": "native",
         "status": "working_user_supplied_candidates",
@@ -531,6 +544,40 @@ def _regulatory_programme(jurisdiction: str, group: str, scenario: str) -> dict[
             "key": "US_TSCA_ENVIRONMENTAL",
             "name": "US environmental exposure pathway",
             "scope": "native screening plus applicable managed EPA workflows",
+        }
+
+    if jurisdiction == "AU":
+        # AICIS regulates industrial chemicals in Australia (Industrial
+        # Chemicals Act 2019) and does not operate a distinct proprietary
+        # exposure model the way EU FOCUS or US EPA do -- its published
+        # Environment Tier II assessments apply the same core PEC/PNEC
+        # risk-quotient method with EU-TGD-style assessment-factor banding
+        # (1000/500/100/50 depending on the trophic-level coverage of the
+        # available toxicity data), reviewer-selected the same way
+        # app/reach/pnec.py already requires. This is therefore native
+        # screening plus that reviewer-supplied assessment factor, not a
+        # managed hand-off to an AICIS-specific tool -- no such tool was
+        # found on research. Pesticides and veterinary medicines in
+        # Australia are regulated by the APVMA, not AICIS -- that pathway's
+        # own environmental fate methodology has not been researched, so it
+        # is named as an explicit gap here rather than silently mislabelled
+        # as an AICIS assessment.
+        if group == "pesticide" or scenario == "agricultural_spray":
+            return {
+                "key": "AU_APVMA_NOT_MAPPED",
+                "name": "Australian APVMA pesticide pathway (not yet mapped)",
+                "scope": "APVMA, not AICIS, regulates pesticides in Australia; its environmental fate methodology has not been researched -- treat as an explicit coverage gap, not a supported pathway",
+            }
+        if group in {"human_pharmaceutical", "veterinary_pharmaceutical"}:
+            return {
+                "key": "AU_TGA_APVMA_NOT_MAPPED",
+                "name": "Australian TGA/APVMA medicines pathway (not yet mapped)",
+                "scope": "TGA (human) and APVMA (veterinary) regulate medicines in Australia, not AICIS; their environmental fate methodology has not been researched -- treat as an explicit coverage gap, not a supported pathway",
+            }
+        return {
+            "key": "AU_AICIS_INDUSTRIAL",
+            "name": "Australian AICIS industrial-chemical environmental risk pathway",
+            "scope": "PEC/PNEC risk-quotient assessment against AICIS's own published assessment-factor banding; AICIS-specific submission and notification requirements need separate review",
         }
 
     if scenario == "agricultural_spray" or group == "pesticide":
