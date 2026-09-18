@@ -672,22 +672,48 @@ def _regulatory_programme(jurisdiction: str, group: str, scenario: str) -> dict[
         # three-factor PNEC assessment-factor method (FES x FSV x FMOA,
         # Okonski et al. 2020) implemented in canada_pnec.py -- again a
         # PEC/PNEC risk-quotient method, not a distinct proprietary exposure
-        # model. Pesticides sit with the PMRA, not ECCC -- named as an
-        # explicit gap rather than folded into the CEPA pathway. Human and
-        # veterinary pharmaceutical environmental assessment (also Health
-        # Canada, but a different programme from CEPA new substances) is
-        # likewise not yet mapped.
+        # model.
+        #
+        # PARTIALLY mapped (2026-09-18): PMRA, not ECCC, regulates
+        # pesticides in Canada, under the Pest Control Products Act. PMRA's
+        # own framework guidance (12 April 2024) confirms a general
+        # RQ = exposure/toxicity vs. a default Level of Concern (LOC) of 1
+        # for most receptor groups, with "a few validated exceptions" --
+        # implemented in pmra_pesticides.py. One exception is confirmed with
+        # citable numbers: honey bees, LOC 0.4 acute / 1.0 chronic, from a
+        # guidance document PMRA co-authored with US EPA and California DPR
+        # (a genuine tri-agency framework, not PMRA deferring to EPA's own
+        # numbers). Other receptor-specific PMRA exceptions were not found
+        # with citable values this session and are not guessed at -- see
+        # pmra_pesticides.py's own docstring. APVMA-style spray-drift,
+        # runoff, soil-organism and non-target-plant methodology is not
+        # covered here either.
         if group == "pesticide" or scenario == "agricultural_spray":
             return {
-                "key": "CA_PMRA_NOT_MAPPED",
-                "name": "Canadian PMRA pesticide pathway (not yet mapped)",
-                "scope": "The Pest Management Regulatory Agency, not ECCC, regulates pesticides in Canada; its environmental fate methodology has not been researched -- treat as an explicit coverage gap, not a supported pathway",
+                "key": "CA_PMRA_PARTIAL",
+                "name": "Canadian PMRA pesticide pathway (partially mapped)",
+                "scope": "PMRA, not ECCC, regulates pesticides in Canada. Confirmed and implemented: the general RQ vs. LOC=1 framework and the confirmed bee exception (LOC 0.4 acute / 1.0 chronic, tri-agency PMRA/EPA/CDPR guidance). Not yet researched: spray drift, runoff, soil organisms, non-target plants, and any other receptor-specific LOC exceptions beyond bees -- treat those as an explicit coverage gap",
             }
         if group in {"human_pharmaceutical", "veterinary_pharmaceutical"}:
+            # PARTIALLY mapped (2026-09-18): confirmed live that, as of this
+            # session, a NEW pharmaceutical active ingredient not already on
+            # Canada's Domestic Substances List (DSL) is reviewed under
+            # CEPA's New Substances Notification Regulations -- the SAME
+            # ECCC/CEPA pathway already implemented above for industrial
+            # chemicals (Health Canada's Environmental Assessment Unit
+            # assesses it; Environment and Climate Change Canada issues the
+            # correspondence). A dedicated Food and Drugs Act environmental
+            # risk-assessment regime was enacted in law in June 2023 but its
+            # implementing regulations are still under development (Canada
+            # Gazette Part I published Dec 2024, comment period closed
+            # March 2025) -- not yet in force. Most active pharmaceutical
+            # ingredients already on the DSL from prior use trigger no
+            # notification at all under this pathway, which is why this is
+            # named a conditional/partial pathway, not full coverage.
             return {
-                "key": "CA_HEALTH_CANADA_NOT_MAPPED",
-                "name": "Canadian human/veterinary medicines pathway (not yet mapped)",
-                "scope": "Health Canada's medicines environmental-assessment programme is distinct from CEPA new substances and has not been researched -- treat as an explicit coverage gap, not a supported pathway",
+                "key": "CA_HEALTH_CANADA_PARTIAL",
+                "name": "Canadian human/veterinary medicines pathway (partially mapped, DSL-trigger-conditional)",
+                "scope": "A pharmaceutical active ingredient not already on Canada's Domestic Substances List is assessed via the same ECCC/CEPA New Substances Notification pathway as industrial chemicals (canada_pnec.py); DSL-listed ingredients trigger no assessment under this route. A dedicated Food and Drugs Act ERA regime is enacted but its regulations are not yet in force -- revisit when they are",
             }
         return {
             "key": "CA_ECCC_CEPA_INDUSTRIAL",

@@ -269,19 +269,38 @@ def test_ca_industrial_scenario_gets_eccc_pathway_and_native_models():
     assert not keys.intersection({"PEARL", "TOXSWA", "SWASH", "PWC", "PRZM", "TERRPLANT"})
 
 
-def test_ca_pesticide_scenario_is_honestly_unmapped_not_mislabelled_as_eccc():
+def test_ca_pesticide_scenario_gets_partial_pmra_pathway_not_mislabelled_as_eccc():
     # Pesticides in Canada are regulated by the PMRA, not ECCC -- this must
-    # not silently claim ECCC/CEPA coverage it doesn't have.
+    # not silently claim ECCC/CEPA coverage it doesn't have. PMRA's own
+    # general RQ/LOC=1 framework and its confirmed bee LOC exception are
+    # implemented (pmra_pesticides.py), but as a risk-characterisation
+    # helper, not a MODELS registry entry -- no bird/mammal-style screen is
+    # auto-selected here since PMRA's own exposure model isn't reused from
+    # elsewhere the way APVMA's confirmed EFSA-2009 alignment was for AU.
     plan = build_assessment_plan({
         "jurisdiction": "CA",
         "contaminant_group": "pesticide",
         "scenario": "agricultural_spray",
         "tier": 2,
     })
-    assert plan["regulatory_programme"]["key"] == "CA_PMRA_NOT_MAPPED"
+    assert plan["regulatory_programme"]["key"] == "CA_PMRA_PARTIAL"
     keys = {x["key"] for x in plan["models"]}
     assert "ENVIROCHEM_EU_BIRDS_MAMMALS_SCREEN" not in keys
     assert not keys.intersection({"PEARL", "TOXSWA", "PWC", "PRZM"})
+
+
+def test_ca_pharmaceutical_scenario_gets_partial_dsl_conditional_pathway():
+    # A pharmaceutical active ingredient not already on Canada's Domestic
+    # Substances List is reviewed under the same ECCC/CEPA New Substances
+    # Notification pathway as industrial chemicals -- a real, if
+    # conditional, pathway, not a bare "not mapped" gap.
+    plan = build_assessment_plan({
+        "jurisdiction": "CA",
+        "contaminant_group": "human_pharmaceutical",
+        "scenario": "municipal_wastewater",
+        "tier": 2,
+    })
+    assert plan["regulatory_programme"]["key"] == "CA_HEALTH_CANADA_PARTIAL"
 
 
 def test_ca_framework_is_registered():
