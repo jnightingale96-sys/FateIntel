@@ -220,3 +220,38 @@ def test_au_framework_is_registered():
     from app.services.registry import FRAMEWORKS
     keys = {f["key"] for f in FRAMEWORKS}
     assert "AU" in keys
+
+
+def test_ca_industrial_scenario_gets_eccc_pathway_and_native_models():
+    plan = build_assessment_plan({
+        "jurisdiction": "CA",
+        "contaminant_group": "industrial_organic",
+        "scenario": "industrial_effluent",
+        "tier": 2,
+    })
+    assert plan["regulatory_programme"]["key"] == "CA_ECCC_CEPA_INDUSTRIAL"
+    keys = {x["key"] for x in plan["models"]}
+    assert "SIMPLEBOX" in keys
+    assert "ENVIROCHEM_MULTIMEDIA_FATE_SCREEN" in keys
+    assert not keys.intersection({"PEARL", "TOXSWA", "SWASH", "PWC", "PRZM", "TERRPLANT"})
+
+
+def test_ca_pesticide_scenario_is_honestly_unmapped_not_mislabelled_as_eccc():
+    # Pesticides in Canada are regulated by the PMRA, not ECCC -- this must
+    # not silently claim ECCC/CEPA coverage it doesn't have.
+    plan = build_assessment_plan({
+        "jurisdiction": "CA",
+        "contaminant_group": "pesticide",
+        "scenario": "agricultural_spray",
+        "tier": 2,
+    })
+    assert plan["regulatory_programme"]["key"] == "CA_PMRA_NOT_MAPPED"
+    keys = {x["key"] for x in plan["models"]}
+    assert "ENVIROCHEM_EU_BIRDS_MAMMALS_SCREEN" not in keys
+    assert not keys.intersection({"PEARL", "TOXSWA", "PWC", "PRZM"})
+
+
+def test_ca_framework_is_registered():
+    from app.services.registry import FRAMEWORKS
+    keys = {f["key"] for f in FRAMEWORKS}
+    assert "CA" in keys

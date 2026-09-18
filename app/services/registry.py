@@ -40,6 +40,23 @@ FRAMEWORKS: list[dict[str, Any]] = [
         "packs": ["AICIS industrial chemicals", "APVMA pesticides (pathway not yet mapped)", "APVMA veterinary medicines (pathway not yet mapped)", "TGA human medicines (pathway not yet mapped)"],
         "default_currency": "AUD",
     },
+    {
+        "key": "CA",
+        "name": "Canada",
+        # ECCC (Environment and Climate Change Canada), administering the
+        # Canadian Environmental Protection Act 1999 (CEPA) New Substances
+        # Notification regime, is the regulator this jurisdiction's pathway
+        # is built against -- its own PNEC assessment-factor method (Okonski
+        # et al., 2020) is implemented in canada_pnec.py, verified against
+        # ECCC's own published worked example. Pesticides sit with the PMRA
+        # (Pest Management Regulatory Agency, Health Canada) instead, whose
+        # own methodology has not been researched -- named as an explicit
+        # gap, not folded into the CEPA pathway. Human/veterinary
+        # pharmaceutical environmental assessment (also Health Canada) is
+        # likewise not yet mapped.
+        "packs": ["CEPA / ECCC industrial chemicals", "PMRA pesticides (pathway not yet mapped)", "Health Canada human/veterinary medicines (pathway not yet mapped)"],
+        "default_currency": "CAD",
+    },
 ]
 
 CONTAMINANT_GROUPS = [
@@ -87,7 +104,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "SIMPLETREAT",
         "name": "SimpleTreat",
         "domain": "municipal wastewater treatment",
-        "regions": ["EU", "UK", "CH", "US", "AU"],
+        "regions": ["EU", "UK", "CH", "US", "AU", "CA"],
         "groups": CONTAMINANT_GROUPS,
         "implementation": "native_and_adapter",
         "status": "working_preset",
@@ -98,7 +115,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "ACTIVITY_SIMPLETREAT",
         "name": "Activity SimpleTreat",
         "domain": "ionisable chemicals in wastewater treatment",
-        "regions": ["EU", "UK", "CH", "US", "AU"],
+        "regions": ["EU", "UK", "CH", "US", "AU", "CA"],
         "groups": CONTAMINANT_GROUPS,
         "implementation": "native",
         "status": "working_verified_preset",
@@ -109,7 +126,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "SIMPLEBOX",
         "name": "SimpleBox 4.0",
         "domain": "regional, continental and global multimedia environmental fate",
-        "regions": ["EU", "UK", "CH", "US", "AU"],
+        "regions": ["EU", "UK", "CH", "US", "AU", "CA"],
         "groups": DISCRETE_ORGANIC_GROUPS,
         "implementation": "managed_adapter",
         "status": "official_adapter_contract",
@@ -120,7 +137,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "ENVIROCHEM_MULTIMEDIA_FATE_SCREEN",
         "name": "EnviroChem multimedia fate screen",
         "domain": "transparent steady-state air-water-soil-sediment mass balance",
-        "regions": ["EU", "UK", "CH", "US", "AU"],
+        "regions": ["EU", "UK", "CH", "US", "AU", "CA"],
         "groups": DISCRETE_ORGANIC_GROUPS,
         "implementation": "native_research_screen",
         "status": "working_native_screen",
@@ -131,7 +148,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "EPI_SUITE",
         "name": "EPA EPI Suite 4.11",
         "domain": "property, degradation, bioaccumulation and environmental-transport estimation",
-        "regions": ["US", "EU", "UK", "CH", "AU"],
+        "regions": ["US", "EU", "UK", "CH", "AU", "CA"],
         "groups": DISCRETE_ORGANIC_GROUPS,
         "implementation": "managed_adapter",
         "status": "installable_adapter_contract",
@@ -175,7 +192,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "ENVIROCHEM_TOXSWA_PROCESS_SCREEN",
         "name": "EnviroChem water–sediment process screen",
         "domain": "surface water and sediment",
-        "regions": ["EU", "UK", "US", "CH", "AU"],
+        "regions": ["EU", "UK", "US", "CH", "AU", "CA"],
         "groups": CONTAMINANT_GROUPS,
         "implementation": "native_research_screen",
         "status": "alpha",
@@ -208,7 +225,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "ENVIROCHEM_CATCHMENT_RIVER_NETWORK",
         "name": "EnviroChem catchment river-network screen",
         "domain": "branched river routing of WWTP and industrial point-source loads",
-        "regions": ["EU", "UK", "CH", "US", "AU"],
+        "regions": ["EU", "UK", "CH", "US", "AU", "CA"],
         "groups": DISCRETE_ORGANIC_GROUPS,
         "implementation": "native_research_screen",
         "status": "working_native_screen",
@@ -387,7 +404,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "ENVIROCHEM_DUAL_WASTEWATER_IRRIGATION",
         "name": "EnviroChem EU–US wastewater irrigation comparison",
         "domain": "treated-wastewater irrigation, soil accumulation and cross-framework model routing",
-        "regions": ["EU", "UK", "US", "CH", "AU"],
+        "regions": ["EU", "UK", "US", "CH", "AU", "CA"],
         "groups": CONTAMINANT_GROUPS,
         "implementation": "native_and_adapter",
         "status": "working_native_screen",
@@ -398,7 +415,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "ENVIROCHEM_SOIL_SCREEN",
         "name": "EnviroChem soil accumulation screen",
         "domain": "soil mixing, repeat use and accumulation",
-        "regions": ["EU", "UK", "US", "CH", "AU"],
+        "regions": ["EU", "UK", "US", "CH", "AU", "CA"],
         "groups": CONTAMINANT_GROUPS,
         "implementation": "native",
         "status": "partial",
@@ -410,7 +427,7 @@ MODELS: list[dict[str, Any]] = [
     "key": "ENVIROCHEM_BIOSOLIDS_LAND_APPLICATION",
     "name": "EnviroChem biosolids land application",
     "domain": "WWTP sludge transfer, land loading and repeated soil accumulation",
-    "regions": ["EU", "UK", "US", "CH", "AU"],
+    "regions": ["EU", "UK", "US", "CH", "AU", "CA"],
     "groups": CONTAMINANT_GROUPS,
     "implementation": "native",
     "status": "working_native_screen",
@@ -432,7 +449,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "ENVIROCHEM_PLANT_UPTAKE",
         "name": "EnviroChem plant uptake",
         "domain": "root uptake and crop residues",
-        "regions": ["EU", "UK", "US", "CH", "AU"],
+        "regions": ["EU", "UK", "US", "CH", "AU", "CA"],
         "groups": ["human_pharmaceutical", "veterinary_pharmaceutical", "pesticide", "emerging_contaminant", "industrial_organic"],
         "implementation": "native",
         "status": "working_screen",
@@ -443,7 +460,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "ENVIRODESIGN_BIOWIN34_ATTRIBUTION",
         "name": "EnviroDesign structural biodegradation attribution",
         "domain": "explainable structure-to-biodegradation screening",
-        "regions": ["EU", "UK", "US", "CH", "AU"],
+        "regions": ["EU", "UK", "US", "CH", "AU", "CA"],
         "groups": CONTAMINANT_GROUPS,
         "implementation": "native",
         "status": "working_research_screen",
@@ -454,7 +471,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "ENVIRODESIGN_PATHWAY_RETENTION",
         "name": "EnviroDesign transformation-pathway retention",
         "domain": "parent-product motif retention with matrix and provenance",
-        "regions": ["EU", "UK", "US", "CH", "AU"],
+        "regions": ["EU", "UK", "US", "CH", "AU", "CA"],
         "groups": CONTAMINANT_GROUPS,
         "implementation": "native_manual_import",
         "status": "working_manual_import",
@@ -465,7 +482,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "BIOTRANSFORMER_ENVMICRO",
         "name": "BioTransformer environmental microbial pathway prediction",
         "domain": "predicted soil/water microbial transformation products and reaction network",
-        "regions": ["EU", "UK", "US", "CH", "AU"],
+        "regions": ["EU", "UK", "US", "CH", "AU", "CA"],
         "groups": CONTAMINANT_GROUPS,
         "implementation": "remote_api_adapter",
         "status": "development_evaluation_licence_gated",
@@ -476,7 +493,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "ENVIPATH_ENVMICRO",
         "name": "enviPath curated-pathway search and rule-based pathway prediction",
         "domain": "curated real-world and predicted microbial transformation products and reaction network",
-        "regions": ["EU", "UK", "US", "CH", "AU"],
+        "regions": ["EU", "UK", "US", "CH", "AU", "CA"],
         "groups": CONTAMINANT_GROUPS,
         "implementation": "remote_api_adapter",
         "status": "development_evaluation_licence_gated",
@@ -487,7 +504,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "ENVIRODESIGN_CANDIDATE_COMPARISON",
         "name": "EnviroDesign candidate comparison",
         "domain": "counterfactual safer-by-design comparison",
-        "regions": ["EU", "UK", "US", "CH", "AU"],
+        "regions": ["EU", "UK", "US", "CH", "AU", "CA"],
         "groups": CONTAMINANT_GROUPS,
         "implementation": "native",
         "status": "working_user_supplied_candidates",
@@ -578,6 +595,34 @@ def _regulatory_programme(jurisdiction: str, group: str, scenario: str) -> dict[
             "key": "AU_AICIS_INDUSTRIAL",
             "name": "Australian AICIS industrial-chemical environmental risk pathway",
             "scope": "PEC/PNEC risk-quotient assessment against AICIS's own published assessment-factor banding; AICIS-specific submission and notification requirements need separate review",
+        }
+
+    if jurisdiction == "CA":
+        # ECCC/CEPA (New Substances Notification) has its own published
+        # three-factor PNEC assessment-factor method (FES x FSV x FMOA,
+        # Okonski et al. 2020) implemented in canada_pnec.py -- again a
+        # PEC/PNEC risk-quotient method, not a distinct proprietary exposure
+        # model. Pesticides sit with the PMRA, not ECCC -- named as an
+        # explicit gap rather than folded into the CEPA pathway. Human and
+        # veterinary pharmaceutical environmental assessment (also Health
+        # Canada, but a different programme from CEPA new substances) is
+        # likewise not yet mapped.
+        if group == "pesticide" or scenario == "agricultural_spray":
+            return {
+                "key": "CA_PMRA_NOT_MAPPED",
+                "name": "Canadian PMRA pesticide pathway (not yet mapped)",
+                "scope": "The Pest Management Regulatory Agency, not ECCC, regulates pesticides in Canada; its environmental fate methodology has not been researched -- treat as an explicit coverage gap, not a supported pathway",
+            }
+        if group in {"human_pharmaceutical", "veterinary_pharmaceutical"}:
+            return {
+                "key": "CA_HEALTH_CANADA_NOT_MAPPED",
+                "name": "Canadian human/veterinary medicines pathway (not yet mapped)",
+                "scope": "Health Canada's medicines environmental-assessment programme is distinct from CEPA new substances and has not been researched -- treat as an explicit coverage gap, not a supported pathway",
+            }
+        return {
+            "key": "CA_ECCC_CEPA_INDUSTRIAL",
+            "name": "Canadian ECCC/CEPA industrial-chemical environmental risk pathway",
+            "scope": "PEC/PNEC risk-quotient assessment using ECCC's own FES x FSV x FMOA assessment-factor method (Okonski et al., 2020); CEPA New Substances Notification submission requirements need separate review",
         }
 
     if scenario == "agricultural_spray" or group == "pesticide":
