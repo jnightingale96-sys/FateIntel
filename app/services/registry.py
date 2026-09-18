@@ -57,6 +57,30 @@ FRAMEWORKS: list[dict[str, Any]] = [
         "packs": ["CEPA / ECCC industrial chemicals", "PMRA pesticides (pathway not yet mapped)", "Health Canada human/veterinary medicines (pathway not yet mapped)"],
         "default_currency": "CAD",
     },
+    {
+        "key": "NZ",
+        "name": "New Zealand",
+        # NZ EPA Te Mana Rauhi Taiao, under the Hazardous Substances and New
+        # Organisms (HSNO) Act 1996, is the regulator this jurisdiction's
+        # pathway is built against -- read in full this session ("Risk
+        # Assessment Methodology for Hazardous Substances", December 2022).
+        # Structurally different from AU/CA/EU: HSNO covers industrial
+        # chemicals AND agrichemicals/pesticides under the SAME Act and the
+        # SAME regulator (no APVMA/PMRA-style split) -- see
+        # _regulatory_programme() for how this is reflected. Human medicines
+        # are explicitly excluded from HSNO by the Act itself (Ministry of
+        # Health regulates them instead); the guidance document also
+        # references the separate Agricultural Compounds and Veterinary
+        # Medicines Act 1997, so veterinary medicines/agricultural compounds
+        # may sit with a different regulator too -- not confirmed, named as
+        # an open question rather than asserted either way.
+        "packs": [
+            "HSNO Act industrial chemicals and agrichemicals/pesticides",
+            "Ministry of Health human medicines (excluded from HSNO, pathway not yet mapped)",
+            "ACVM Act veterinary medicines/agricultural compounds (regulator not confirmed)",
+        ],
+        "default_currency": "NZD",
+    },
 ]
 
 CONTAMINANT_GROUPS = [
@@ -104,7 +128,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "SIMPLETREAT",
         "name": "SimpleTreat",
         "domain": "municipal wastewater treatment",
-        "regions": ["EU", "UK", "CH", "US", "AU", "CA"],
+        "regions": ["EU", "UK", "CH", "US", "AU", "CA", "NZ"],
         "groups": CONTAMINANT_GROUPS,
         "implementation": "native_and_adapter",
         "status": "working_preset",
@@ -115,7 +139,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "ACTIVITY_SIMPLETREAT",
         "name": "Activity SimpleTreat",
         "domain": "ionisable chemicals in wastewater treatment",
-        "regions": ["EU", "UK", "CH", "US", "AU", "CA"],
+        "regions": ["EU", "UK", "CH", "US", "AU", "CA", "NZ"],
         "groups": CONTAMINANT_GROUPS,
         "implementation": "native",
         "status": "working_verified_preset",
@@ -126,7 +150,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "SIMPLEBOX",
         "name": "SimpleBox 4.0",
         "domain": "regional, continental and global multimedia environmental fate",
-        "regions": ["EU", "UK", "CH", "US", "AU", "CA"],
+        "regions": ["EU", "UK", "CH", "US", "AU", "CA", "NZ"],
         "groups": DISCRETE_ORGANIC_GROUPS,
         "implementation": "managed_adapter",
         "status": "official_adapter_contract",
@@ -137,7 +161,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "ENVIROCHEM_MULTIMEDIA_FATE_SCREEN",
         "name": "EnviroChem multimedia fate screen",
         "domain": "transparent steady-state air-water-soil-sediment mass balance",
-        "regions": ["EU", "UK", "CH", "US", "AU", "CA"],
+        "regions": ["EU", "UK", "CH", "US", "AU", "CA", "NZ"],
         "groups": DISCRETE_ORGANIC_GROUPS,
         "implementation": "native_research_screen",
         "status": "working_native_screen",
@@ -148,7 +172,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "EPI_SUITE",
         "name": "EPA EPI Suite 4.11",
         "domain": "property, degradation, bioaccumulation and environmental-transport estimation",
-        "regions": ["US", "EU", "UK", "CH", "AU", "CA"],
+        "regions": ["US", "EU", "UK", "CH", "AU", "CA", "NZ"],
         "groups": DISCRETE_ORGANIC_GROUPS,
         "implementation": "managed_adapter",
         "status": "installable_adapter_contract",
@@ -192,7 +216,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "ENVIROCHEM_TOXSWA_PROCESS_SCREEN",
         "name": "EnviroChem water–sediment process screen",
         "domain": "surface water and sediment",
-        "regions": ["EU", "UK", "US", "CH", "AU", "CA"],
+        "regions": ["EU", "UK", "US", "CH", "AU", "CA", "NZ"],
         "groups": CONTAMINANT_GROUPS,
         "implementation": "native_research_screen",
         "status": "alpha",
@@ -225,7 +249,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "ENVIROCHEM_CATCHMENT_RIVER_NETWORK",
         "name": "EnviroChem catchment river-network screen",
         "domain": "branched river routing of WWTP and industrial point-source loads",
-        "regions": ["EU", "UK", "CH", "US", "AU", "CA"],
+        "regions": ["EU", "UK", "CH", "US", "AU", "CA", "NZ"],
         "groups": DISCRETE_ORGANIC_GROUPS,
         "implementation": "native_research_screen",
         "status": "working_native_screen",
@@ -404,7 +428,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "ENVIROCHEM_DUAL_WASTEWATER_IRRIGATION",
         "name": "EnviroChem EU–US wastewater irrigation comparison",
         "domain": "treated-wastewater irrigation, soil accumulation and cross-framework model routing",
-        "regions": ["EU", "UK", "US", "CH", "AU", "CA"],
+        "regions": ["EU", "UK", "US", "CH", "AU", "CA", "NZ"],
         "groups": CONTAMINANT_GROUPS,
         "implementation": "native_and_adapter",
         "status": "working_native_screen",
@@ -415,7 +439,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "ENVIROCHEM_SOIL_SCREEN",
         "name": "EnviroChem soil accumulation screen",
         "domain": "soil mixing, repeat use and accumulation",
-        "regions": ["EU", "UK", "US", "CH", "AU", "CA"],
+        "regions": ["EU", "UK", "US", "CH", "AU", "CA", "NZ"],
         "groups": CONTAMINANT_GROUPS,
         "implementation": "native",
         "status": "partial",
@@ -427,7 +451,7 @@ MODELS: list[dict[str, Any]] = [
     "key": "ENVIROCHEM_BIOSOLIDS_LAND_APPLICATION",
     "name": "EnviroChem biosolids land application",
     "domain": "WWTP sludge transfer, land loading and repeated soil accumulation",
-    "regions": ["EU", "UK", "US", "CH", "AU", "CA"],
+    "regions": ["EU", "UK", "US", "CH", "AU", "CA", "NZ"],
     "groups": CONTAMINANT_GROUPS,
     "implementation": "native",
     "status": "working_native_screen",
@@ -449,7 +473,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "ENVIROCHEM_PLANT_UPTAKE",
         "name": "EnviroChem plant uptake",
         "domain": "root uptake and crop residues",
-        "regions": ["EU", "UK", "US", "CH", "AU", "CA"],
+        "regions": ["EU", "UK", "US", "CH", "AU", "CA", "NZ"],
         "groups": ["human_pharmaceutical", "veterinary_pharmaceutical", "pesticide", "emerging_contaminant", "industrial_organic"],
         "implementation": "native",
         "status": "working_screen",
@@ -460,7 +484,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "ENVIRODESIGN_BIOWIN34_ATTRIBUTION",
         "name": "EnviroDesign structural biodegradation attribution",
         "domain": "explainable structure-to-biodegradation screening",
-        "regions": ["EU", "UK", "US", "CH", "AU", "CA"],
+        "regions": ["EU", "UK", "US", "CH", "AU", "CA", "NZ"],
         "groups": CONTAMINANT_GROUPS,
         "implementation": "native",
         "status": "working_research_screen",
@@ -471,7 +495,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "ENVIRODESIGN_PATHWAY_RETENTION",
         "name": "EnviroDesign transformation-pathway retention",
         "domain": "parent-product motif retention with matrix and provenance",
-        "regions": ["EU", "UK", "US", "CH", "AU", "CA"],
+        "regions": ["EU", "UK", "US", "CH", "AU", "CA", "NZ"],
         "groups": CONTAMINANT_GROUPS,
         "implementation": "native_manual_import",
         "status": "working_manual_import",
@@ -482,7 +506,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "BIOTRANSFORMER_ENVMICRO",
         "name": "BioTransformer environmental microbial pathway prediction",
         "domain": "predicted soil/water microbial transformation products and reaction network",
-        "regions": ["EU", "UK", "US", "CH", "AU", "CA"],
+        "regions": ["EU", "UK", "US", "CH", "AU", "CA", "NZ"],
         "groups": CONTAMINANT_GROUPS,
         "implementation": "remote_api_adapter",
         "status": "development_evaluation_licence_gated",
@@ -493,7 +517,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "ENVIPATH_ENVMICRO",
         "name": "enviPath curated-pathway search and rule-based pathway prediction",
         "domain": "curated real-world and predicted microbial transformation products and reaction network",
-        "regions": ["EU", "UK", "US", "CH", "AU", "CA"],
+        "regions": ["EU", "UK", "US", "CH", "AU", "CA", "NZ"],
         "groups": CONTAMINANT_GROUPS,
         "implementation": "remote_api_adapter",
         "status": "development_evaluation_licence_gated",
@@ -504,7 +528,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "ENVIRODESIGN_CANDIDATE_COMPARISON",
         "name": "EnviroDesign candidate comparison",
         "domain": "counterfactual safer-by-design comparison",
-        "regions": ["EU", "UK", "US", "CH", "AU", "CA"],
+        "regions": ["EU", "UK", "US", "CH", "AU", "CA", "NZ"],
         "groups": CONTAMINANT_GROUPS,
         "implementation": "native",
         "status": "working_user_supplied_candidates",
@@ -623,6 +647,39 @@ def _regulatory_programme(jurisdiction: str, group: str, scenario: str) -> dict[
             "key": "CA_ECCC_CEPA_INDUSTRIAL",
             "name": "Canadian ECCC/CEPA industrial-chemical environmental risk pathway",
             "scope": "PEC/PNEC risk-quotient assessment using ECCC's own FES x FSV x FMOA assessment-factor method (Okonski et al., 2020); CEPA New Substances Notification submission requirements need separate review",
+        }
+
+    if jurisdiction == "NZ":
+        # NZ EPA (HSNO Act 1996) is structurally different from AU/CA: it
+        # does not split industrial chemicals and pesticides across two
+        # regulators -- both sit with the same EPA under the same Act, read
+        # in full this session. Its risk-characterisation method is also
+        # different in kind from a PEC/PNEC-with-assessment-factor
+        # derivation: RQ = PEC / toxicity value is compared directly against
+        # a fixed, receptor-specific Level of Concern (LOC) from the
+        # guidance's own Table 9 -- implemented in nz_levels_of_concern.py,
+        # not folded into app/reach/pnec.py's PNEC-derivation shape because
+        # it genuinely isn't one. Human medicines are the one group HSNO
+        # itself excludes (Ministry of Health instead) -- named as an
+        # explicit gap. Veterinary medicines/agricultural compounds may sit
+        # under the separate ACVM Act 1997 -- not confirmed, so treated the
+        # same way (gap, not asserted coverage) rather than guessed at.
+        if group == "human_pharmaceutical":
+            return {
+                "key": "NZ_MOH_NOT_MAPPED",
+                "name": "New Zealand Ministry of Health medicines pathway (not yet mapped)",
+                "scope": "Human medicines are explicitly excluded from the HSNO Act and regulated by the Ministry of Health instead; that pathway's environmental fate methodology has not been researched -- treat as an explicit coverage gap, not a supported pathway",
+            }
+        if group == "veterinary_pharmaceutical":
+            return {
+                "key": "NZ_ACVM_NOT_CONFIRMED",
+                "name": "New Zealand veterinary-medicines pathway (regulator not confirmed)",
+                "scope": "The guidance references a separate Agricultural Compounds and Veterinary Medicines Act 1997; whether HSNO or ACVM governs environmental risk for this group has not been confirmed -- treat as an explicit coverage gap, not a supported pathway",
+            }
+        return {
+            "key": "NZ_EPA_HSNO",
+            "name": "New Zealand EPA HSNO environmental risk pathway",
+            "scope": "Risk quotient (RQ = PEC / toxicity value) compared against NZ EPA's own fixed Level of Concern per receptor and exposure type (Table 9), with a graded risk-level banding (Table 10) rather than a single RQ>1 trigger; covers industrial chemicals and agrichemicals/pesticides alike under one HSNO pathway",
         }
 
     if scenario == "agricultural_spray" or group == "pesticide":

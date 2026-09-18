@@ -255,3 +255,47 @@ def test_ca_framework_is_registered():
     from app.services.registry import FRAMEWORKS
     keys = {f["key"] for f in FRAMEWORKS}
     assert "CA" in keys
+
+
+def test_nz_industrial_scenario_gets_hsno_pathway_and_native_models():
+    plan = build_assessment_plan({
+        "jurisdiction": "NZ",
+        "contaminant_group": "industrial_organic",
+        "scenario": "industrial_effluent",
+        "tier": 2,
+    })
+    assert plan["regulatory_programme"]["key"] == "NZ_EPA_HSNO"
+    keys = {x["key"] for x in plan["models"]}
+    assert "SIMPLEBOX" in keys
+    assert "ENVIROCHEM_MULTIMEDIA_FATE_SCREEN" in keys
+    assert not keys.intersection({"PEARL", "TOXSWA", "SWASH", "PWC", "PRZM", "TERRPLANT"})
+
+
+def test_nz_pesticide_scenario_gets_the_same_hsno_pathway_unlike_au_and_ca():
+    # Unlike AU (AICIS/APVMA) and CA (ECCC/PMRA), NZ regulates industrial
+    # chemicals and pesticides under the SAME Act and regulator -- this
+    # must genuinely route to NZ_EPA_HSNO, not an "unmapped" placeholder.
+    plan = build_assessment_plan({
+        "jurisdiction": "NZ",
+        "contaminant_group": "pesticide",
+        "scenario": "agricultural_spray",
+        "tier": 2,
+    })
+    assert plan["regulatory_programme"]["key"] == "NZ_EPA_HSNO"
+
+
+def test_nz_human_pharmaceutical_is_honestly_unmapped():
+    # Human medicines are explicitly excluded from HSNO by the Act itself.
+    plan = build_assessment_plan({
+        "jurisdiction": "NZ",
+        "contaminant_group": "human_pharmaceutical",
+        "scenario": "municipal_wastewater",
+        "tier": 2,
+    })
+    assert plan["regulatory_programme"]["key"] == "NZ_MOH_NOT_MAPPED"
+
+
+def test_nz_framework_is_registered():
+    from app.services.registry import FRAMEWORKS
+    keys = {f["key"] for f in FRAMEWORKS}
+    assert "NZ" in keys
