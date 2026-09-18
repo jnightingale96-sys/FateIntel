@@ -359,7 +359,16 @@ MODELS: list[dict[str, Any]] = [
         "key": "ENVIROCHEM_EU_BIRDS_MAMMALS_SCREEN",
         "name": "EnviroChem EU birds & mammals Tier 1 TER screen",
         "domain": "EU plant-protection-product dietary and fish-eating secondary-poisoning risk to birds and mammals",
-        "regions": ["EU", "UK", "CH"],
+        # "AU" was added after confirming, directly from APVMA's own Risk
+        # Assessment Manual Environment (Appendix A, terrestrial
+        # vertebrates), that Australia's pesticide birds/mammals assessment
+        # is explicitly "in line with current EFSA (2009) guidance" and uses
+        # the same TER >= 10 (acute) / TER >= 5 (reproductive) triggers this
+        # module already implements -- see au_apvma.py's own docstring. This
+        # is a confirmed methodology match, not the same broad
+        # chemistry-is-universal reasoning used for the fully
+        # jurisdiction-agnostic native screens elsewhere in this registry.
+        "regions": ["EU", "UK", "CH", "AU"],
         "groups": ["pesticide"],
         "implementation": "native_research_screen",
         "status": "working_partial_screen",
@@ -604,10 +613,18 @@ def _regulatory_programme(jurisdiction: str, group: str, scenario: str) -> dict[
         # is named as an explicit gap here rather than silently mislabelled
         # as an AICIS assessment.
         if group == "pesticide" or scenario == "agricultural_spray":
+            # PARTIALLY mapped (2026-09-18): APVMA, not AICIS, regulates
+            # pesticides in Australia. Its terrestrial-vertebrates TER
+            # methodology and its aquatic risk-quotient trigger are now
+            # confirmed and implemented (ENVIROCHEM_EU_BIRDS_MAMMALS_SCREEN,
+            # au_apvma.py) -- but APVMA's spray-drift, runoff, bee,
+            # soil-organism and non-target-plant methodology is still
+            # unresearched. This is genuinely partial coverage, not full
+            # APVMA compliance.
             return {
-                "key": "AU_APVMA_NOT_MAPPED",
-                "name": "Australian APVMA pesticide pathway (not yet mapped)",
-                "scope": "APVMA, not AICIS, regulates pesticides in Australia; its environmental fate methodology has not been researched -- treat as an explicit coverage gap, not a supported pathway",
+                "key": "AU_APVMA_PARTIAL",
+                "name": "Australian APVMA pesticide pathway (partially mapped)",
+                "scope": "APVMA, not AICIS, regulates pesticides in Australia. Confirmed and implemented: terrestrial-vertebrates dietary TER (EFSA-2009-aligned, same triggers as the EU screen) and the aquatic RQ trigger (0.1 acute / 1.0 chronic). Not yet researched: spray drift, runoff, bees, soil organisms, non-target plants -- treat those as an explicit coverage gap",
             }
         if group in {"human_pharmaceutical", "veterinary_pharmaceutical"}:
             return {
@@ -797,6 +814,22 @@ def build_assessment_plan(data: dict[str, Any]) -> dict[str, Any]:
             # eu_birds_mammals.py's own module docstring for the exact
             # boundary (no Annex B Generic Model Species tables, no
             # earthworm/benthic-invertebrate secondary poisoning yet).
+            selected.append("ENVIROCHEM_EU_BIRDS_MAMMALS_SCREEN")
+            required += ["reviewer-supplied FIR/BW/RUD/application rate per food item", "avian and mammalian toxicity endpoints (LD50, relevant reproductive endpoint)"]
+
+    if jurisdiction == "AU" and group == "pesticide" and scenario in {"agricultural_spray", "soil_incorporation"}:
+        # APVMA's own guidance confirms its terrestrial-vertebrates TER
+        # methodology follows EFSA (2009) with the same acute/reproductive
+        # triggers this screen already implements -- see the "AU" note on
+        # ENVIROCHEM_EU_BIRDS_MAMMALS_SCREEN's own registry entry and
+        # au_apvma.py's module docstring. APVMA's aquatic risk-quotient
+        # trigger (0.1 acute / 1.0 chronic, au_apvma.py) is a
+        # risk-characterisation helper applied to an existing fate model's
+        # PEC, not its own registry model, the same way canada_pnec.py and
+        # nz_levels_of_concern.py are not their own registry entries either.
+        # APVMA's spray-drift/runoff/bee/soil-organism/non-target-plant
+        # methodology is NOT covered -- deliberately, see au_apvma.py.
+        if "ENVIROCHEM_EU_BIRDS_MAMMALS_SCREEN" not in selected:
             selected.append("ENVIROCHEM_EU_BIRDS_MAMMALS_SCREEN")
             required += ["reviewer-supplied FIR/BW/RUD/application rate per food item", "avian and mammalian toxicity endpoints (LD50, relevant reproductive endpoint)"]
 
