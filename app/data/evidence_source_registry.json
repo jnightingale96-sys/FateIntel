@@ -109,13 +109,13 @@
     ],
     "access_mode": "open_download_import",
     "commercial_status": "public_government_data",
-    "integration_status": "registry_and_download_staging",
-    "search_enabled": false,
+    "integration_status": "local_import_search",
+    "search_enabled": true,
     "requires_api_key": false,
     "evidence_tier": "curated_primary_literature",
     "homepage": "https://cfpub.epa.gov/ecotox/",
     "docs_url": "https://www.epa.gov/comptox-tools/ecotoxicology-ecotox-knowledgebase-resource-hub",
-    "notes": "Curated ecotoxicity records from peer-reviewed literature. Full aquatic and terrestrial data downloads can be staged for local import."
+    "notes": "Curated ecotoxicity records from peer-reviewed literature. Live-searchable once a reviewer has run scripts/import_ecotox.py against a fresh bulk download -- app/services/ecotox_local.py returns an explicit 'not_imported' status, not a silent empty result, when that hasn't been done yet. Current scope: aquatic-medium LC50/EC50/NOEC/EC10 only (~211k records / ~5,300 chemicals as of the 2026-09-15 EPA release); full terrestrial/other-endpoint coverage is not imported."
   },
   {
     "key": "ecodrug_plus",

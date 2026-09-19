@@ -647,6 +647,11 @@ def search_sources(
                     chemical_name, cas_number=cas_number, endpoint_codes=endpoint_codes,
                     limit=limit_per_source, include_open_access_full_text=include_open_access_full_text,
                 )
+            elif key == "epa_ecotox":
+                from .ecotox_local import search_ecotox_local
+                result = search_ecotox_local(
+                    chemical_name, cas_number=cas_number, endpoint_codes=endpoint_codes, limit=limit_per_source,
+                )
             else:
                 result = {"source_key": key, "status": "not_implemented", "candidates": [], "warnings": ["Adapter registered but live search implementation is not yet enabled."]}
         except (httpx.HTTPError, LookupError, ValueError, json.JSONDecodeError) as exc:

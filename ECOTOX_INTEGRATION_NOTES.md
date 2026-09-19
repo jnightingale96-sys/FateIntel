@@ -127,6 +127,60 @@ factors) also wasn't built — a reviewer with that data should currently just u
 10 new tests, full suite green (427 passed, the one failure is the pre-existing
 `test_v223_identity_isolation.py` flake, unrelated — this work touches no database/identity code).
 
+## 2026-09-19 — EPA ECOTOX bulk import (shipped)
+
+Built the full pipeline: `scripts/import_ecotox.py` (one-off/refresh importer, not a runtime
+dependency) + `app/services/ecotox_local.py` (query connector, wired into
+`evidence_sources.search_sources()`'s existing dispatch under `epa_ecotox`).
+
+**Verified against the real, live bulk download this session, not a sample or mock**: downloaded
+EPA's actual current export (`https://gaftp.epa.gov/ecotox/ecotox_ascii_09_15_2026.zip`, 137MB
+zipped / 1.26GB uncompressed), inspected every file header directly (`tests.txt`, `results.txt`,
+`validation/chemicals.txt`, `validation/species.txt`, `validation/references.txt`,
+`validation/endpoint_codes.txt`, `validation/media_type_codes.txt`) before writing any parsing
+code, then ran the importer against the real 55-file archive end-to-end.
+
+**Real output**: 211,477 aquatic-medium LC50/EC50/NOEC/EC10 records across 5,305 chemicals,
+written to `data/ecotox_reference.jsonl` + `data/ecotox_index.json` (CAS -> byte-offset index,
+same JSONL+index pattern already used for NORMAN SusDat, not a new storage technology). Spot
+-checked against a real chemical (formaldehyde, CAS 50-00-0): 263 real records, correct species
+(Daphnia magna, Scylla serrata, Macrobrachium rosenbergii), correct values/units, real citations
+with DOIs where available.
+
+**Scope decisions, both deliberate and both explained in the script's own docstring**:
+- Filtered to `results.endpoint` in {LC50, EC50, NOEC, EC10} -- matches FateIntel's existing
+  `ENDPOINT_CATALOG` codes exactly (confirmed these are ECOTOX's own literal string codes, no
+  fuzzy mapping needed).
+- Filtered to `tests.media_type` in {AQU, FW, SW} (aqueous/fresh water/salt water) -- ECOTOX's
+  LC50/EC50/NOEC/EC10 codes span BOTH aquatic and terrestrial studies; without this second
+  filter, terrestrial dietary-dose results would get mislabelled as `ECOTOX.AQUATIC.*` evidence,
+  a real correctness bug, not a simplification. Confirmed via `validation/media_type_codes.txt`
+  and a direct count against the real data (346,979 of 725,636 tests are aquatic-medium).
+- Deliberately NOT filtered by concentration unit -- a reviewer may still want to see a record in
+  ppm/uM/etc even though `app.reach.units` doesn't auto-convert it yet; unit handling stays a
+  review-time decision like every other evidence candidate in this app.
+
+**Neither `data/ecotox_reference.jsonl` nor `data/ecotox_index.json` is committed to git** (added
+to `.gitignore` alongside the existing `data/*.sqlite` pattern) -- both are build artifacts a
+reviewer regenerates by re-running the import script against a fresh quarterly EPA release, the
+same way the project already treats the runtime SQLite database. `app/services/ecotox_local.py`
+returns an explicit `"not_imported"` status (never a silent empty result) when they're absent.
+
+**Registry updated honestly**: `epa_ecotox` in `evidence_source_registry.json` flipped from
+`search_enabled: false` / `integration_status: "registry_and_download_staging"` to
+`search_enabled: true` / `integration_status: "local_import_search"`, with the notes field naming
+the exact current scope (aquatic-only, ~211k/~5.3k chemicals as of the 2026-09-15 EPA release) so
+nobody mistakes this for full ECOTOX coverage.
+
+9 new tests (fixture-based, not depending on the 137MB download being present), full suite green
+(436 passed; the one failure is the same pre-existing `test_v223_identity_isolation.py` flake,
+a *different* sub-test failed than the last time it was seen this session -- consistent with the
+documented order-dependent-DB-state characterization, not a regression from this work).
+
+**This completes the ecotox database work planned for this session** (PMRA/CTX API is still
+blocked on the pending EPA key; EFSA OpenFoodTox and batch/multi-chemical evidence gathering are
+still open, queued after the website repositioning work now underway).
+
 ## Open questions for the next session
 
 1. Which source to build a real connector for first: EPA ECOTOX bulk import (broadest, aquatic +
