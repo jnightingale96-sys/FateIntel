@@ -417,6 +417,34 @@ assessment", the "Carbamazepine-benchmark-..." and "REACH-Diclofenac-..." ones).
 "<name> - isolation QA <hex>" fixtures or "Toluene US exposure QA <hex>". Cleaning needs cascade deletes across ~15
 tables including audit events, so it needs a backup and an explicit go-ahead first.
 
+## Slice 11 (2026-09-21): commit, database cleanup (staged, blocked), website section
+
+**Committed** on `master`: `833bbdb` (research matrices and this notes file), `aa55245` (all code, tests, scripts),
+`b1ca6a5` (`data/backups/` added to .gitignore). Suite at commit time: 607 passed, 5 skipped.
+
+**Database cleanup: NOT applied.** The user chose "remove the test data". Done: a backup at
+`data/backups/envirochem.pre-cleanup.20260921-130306.sqlite` (byte copy, 24,481,792 bytes) and a dry run of
+`cleanup_db.py` (scratchpad; single transaction, rolled back, `PRAGMA foreign_key_check` = 0 problems). Keep set:
+projects 1 and 197 (the two "Protected Carbamazepine verification example" projects) with their own rows, and
+chemicals 1 (Carbamazepine) and 2 (Diclofenac, the seeded identities). Everything else is test debris, including the
+108 non-pattern-matched projects (106 "Alpha4-<uuid>" / "FateIntel orchestration QA"). All 615 evidence records and
+615 sources are QA fixtures (source titles such as "Canonical provenance QA", "Aquatic QA evidence"). The dry run
+would delete: 2,321 projects, 1,387 chemicals, 1,387 identity snapshots, 615 evidence, 615 sources, 9,078 audit
+events, 2,087 profiles, 2,087 project-chemical links, 970 model runs and bindings, 1,659 workflows, 106 orchestrated
+records, 74 risk assessments, 164 MS files and features. Result: projects 2, chemicals 2, audit events 11. The real
+apply step was refused by the auto-mode permission classifier (mass delete), so the database is UNCHANGED. Files under
+`data/model_workflows/` and `data/external_runs/` on disk were not surveyed and would not be touched by the script.
+
+**Website** (artifact QKAfz5MktxxfBNc6FK7VCH) version 17: new "Legacy contaminants & contaminated land" section
+(`#legacy`, nav label "Legacy land"): two entry points (substance / site), one-record outcomes, the app's own
+site-diagram SVG for a fictional site (UK view), four capability cards, a schematic tile map with the six regions that
+have external routes named (UK, EU, US, CA, AU, NZ) and four scoping-only regions (JP, CN, KR, IN), a route table taken
+from `EXTERNAL_ROUTES`, and a "Not built yet" box. It is labelled "In development, not part of the Alpha 4 download"
+because the Alpha 4 zip on the page does not contain this work. Also fixed in the page: pre-existing wrapped nav labels
+and a 51px mobile sideways overflow from the platform feature cards. Verified in Chromium at 1440 to 1041 px and 390 px
+(no horizontal overflow). Not verified: Firefox/WebKit rendering of the page. The page's "Verification: 278 tests"
+line in the Alpha 4 release box is about the Alpha 4 download and was left alone.
+
 ## Candidate next slices
 1. (done in slice 8: contaminant-aware pathway plausibility, for two sourced rules) Extend with further sourced
    rules, first retrieving the EU CLP mobility text through an accessible mirror or the ECHA guidance, then
