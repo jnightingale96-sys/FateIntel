@@ -162,7 +162,7 @@ function isUSIndustrialSelection(release = state.release) {
 }
 function waterSedimentWorkbenchEligible() {
   const group = regulatoryProductClass();
-  const eligibleGroup = !new Set(["pfas_persistent_mobile", "metal_inorganic", "polymer_microplastic", "nanomaterial", "uvcb_complex_substance", "mixture_formulation"]).has(group);
+  const eligibleGroup = !new Set(["pfas_persistent_mobile", "metal_inorganic", "polymer_microplastic", "nanomaterial", "uvcb_complex_substance", "mixture_formulation", "radionuclide", "contaminated_mixture"]).has(group);
   return state.modelSystem === "EU" && currentTier() >= 2 && eligibleGroup && state.use !== "veterinary" &&
     new Set(["wastewater", "surface_water", "manufacturing", "agricultural_spray"]).has(state.release);
 }

@@ -120,6 +120,36 @@ ROUTE_MATRIX: dict[str, dict[str, Any]] = {
         "regulatory_note": "Select the release route from actual use/emission evidence; the native process screen is scenario-based rather than product-class prescriptive.",
         "applicability": "adapted",
     },
+    "pah": {
+        "default_loading_mode": "continuous_point_discharge",
+        "recommended_routes": ["continuous_point_discharge", "pulse_mass", "lateral_runoff"],
+        "regulatory_note": "Koc-based partitioning is chemically valid for PAHs but strongly sediment-associated; prefer measured sediment partitioning and treat the result as a screening estimate. Bioaccumulation and sediment-benthic endpoints are not covered.",
+        "applicability": "conditional",
+    },
+    "legacy_pop_organic": {
+        "default_loading_mode": "continuous_point_discharge",
+        "recommended_routes": ["continuous_point_discharge", "pulse_mass", "lateral_runoff"],
+        "regulatory_note": "Persistent, hydrophobic and bioaccumulative: the water-column process screen omits sediment burial, resuspension and food-web transfer. Screening/comparative use only; POPs regulatory status is not assessed here.",
+        "applicability": "conditional",
+    },
+    "organotin": {
+        "default_loading_mode": "continuous_point_discharge",
+        "recommended_routes": ["continuous_point_discharge", "pulse_mass"],
+        "regulatory_note": "Organotins partition to sediment and speciate; generic Koc/first-order assumptions are uncertain. Prefer measured partitioning and transformation data.",
+        "applicability": "conditional",
+    },
+    "radionuclide": {
+        "default_loading_mode": "continuous_point_discharge",
+        "recommended_routes": [],
+        "regulatory_note": "Not a chemical-fate problem: radiological assessment is dose-based and outside this process screen. EXTERNAL MODEL REQUIRED.",
+        "applicability": "not_quantitative",
+    },
+    "contaminated_mixture": {
+        "default_loading_mode": "continuous_point_discharge",
+        "recommended_routes": [],
+        "regulatory_note": "Run each contaminant separately under its own group; concentrations are not summed and additivity is not assumed.",
+        "applicability": "component_based",
+    },
 }
 
 

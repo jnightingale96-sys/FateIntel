@@ -408,3 +408,49 @@ class MSFeature(Base):
     confidence_level: Mapped[str] = mapped_column(String(40), default="feature_of_interest")
     reviewer_note: Mapped[str | None] = mapped_column(Text)
     raw_file: Mapped[MSRawEvidenceFile] = relationship(back_populates="features")
+
+
+class SiteModelRecord(Base):
+    """A validated contaminated-land conceptual site model saved against a project.
+
+    Only models that pass conceptual_site_model.model_from_dict() are ever stored, so a saved model is
+    always structurally valid. Measured-data flags are derived at assessment time from the project's
+    MetalMeasurementRecord rows in addition to any flags stored in the model JSON itself.
+    """
+
+    __tablename__ = "site_models"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), index=True)
+    name: Mapped[str] = mapped_column(String(200))
+    jurisdiction: Mapped[str] = mapped_column(String(20))
+    model_json: Mapped[str] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow)
+
+
+class MetalMeasurementRecord(Base):
+    """One metal/metalloid concentration on its original basis, with provenance (see services/metals.py)."""
+
+    __tablename__ = "metal_measurements"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), index=True)
+    element: Mapped[str] = mapped_column(String(4))
+    value: Mapped[float] = mapped_column(Float)
+    unit: Mapped[str] = mapped_column(String(20))
+    basis: Mapped[str] = mapped_column(String(20))
+    medium: Mapped[str] = mapped_column(String(20))
+    weight_basis: Mapped[str | None] = mapped_column(String(10))
+    source: Mapped[str] = mapped_column(Text)
+    origin: Mapped[str] = mapped_column(String(20), default="measured")
+    oxidation_state: Mapped[str | None] = mapped_column(String(40))
+    species: Mapped[str | None] = mapped_column(String(100))
+    method: Mapped[str | None] = mapped_column(Text)
+    measured_date: Mapped[str | None] = mapped_column(String(40))
+    jurisdiction: Mapped[str | None] = mapped_column(String(20))
+    confidence: Mapped[str | None] = mapped_column(String(100))
+    applicability: Mapped[str | None] = mapped_column(Text)
+    assumptions_json: Mapped[str] = mapped_column(Text, default="[]")
+    # Which site-model medium this sample represents (soil, groundwater, surface_water, ...). "water" alone is
+    # ambiguous, so a measurement only feeds a site model's measured-data flags when this is set.
+    site_medium: Mapped[str | None] = mapped_column(String(20))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)

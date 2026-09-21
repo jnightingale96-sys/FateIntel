@@ -351,3 +351,52 @@ def test_nz_framework_is_registered():
     from app.services.registry import FRAMEWORKS
     keys = {f["key"] for f in FRAMEWORKS}
     assert "NZ" in keys
+
+
+def test_every_contaminant_group_has_a_taxonomy_entry():
+    from app.services.registry import CONTAMINANT_GROUPS, CONTAMINANT_TAXONOMY
+    assert set(CONTAMINANT_GROUPS) == set(CONTAMINANT_TAXONOMY)
+
+
+def test_radionuclide_and_mixture_are_hard_blocked_in_every_jurisdiction():
+    from app.services.registry import FRAMEWORKS
+    for framework in FRAMEWORKS:
+        for group in ("radionuclide", "contaminated_mixture"):
+            plan = build_assessment_plan({
+                "jurisdiction": framework["key"],
+                "contaminant_group": group,
+                "scenario": "municipal_wastewater",
+                "tier": 2,
+            })
+            assert plan["models"] == []
+            assert plan["regulatory_programme"]["key"] == "NOT_YET_IMPLEMENTED"
+            assert plan["warnings"]
+
+
+def test_radionuclide_warning_names_the_external_route():
+    plan = build_assessment_plan({
+        "jurisdiction": "UK", "contaminant_group": "radionuclide",
+        "scenario": "soil_incorporation", "tier": 1,
+    })
+    assert "EXTERNAL MODEL REQUIRED" in plan["warnings"][0]
+
+
+def test_legacy_organics_keep_native_screening_with_an_honest_scope_warning():
+    for group in ("pah", "legacy_pop_organic", "organotin"):
+        plan = build_assessment_plan({
+            "jurisdiction": "EU", "contaminant_group": group,
+            "scenario": "industrial_effluent", "tier": 2,
+        })
+        keys = [x["key"] for x in plan["models"]]
+        assert "ENVIROCHEM_MULTIMEDIA_FATE_SCREEN" in keys
+        assert any("SCREENING / COMPARATIVE USE" in w for w in plan["warnings"])
+
+
+def test_metal_is_still_kept_out_of_organic_only_models():
+    plan = build_assessment_plan({
+        "jurisdiction": "EU", "contaminant_group": "metal_inorganic",
+        "scenario": "industrial_effluent", "tier": 2,
+    })
+    keys = [x["key"] for x in plan["models"]]
+    assert "ENVIROCHEM_MULTIMEDIA_FATE_SCREEN" not in keys
+    assert "ENVIROCHEM_CATCHMENT_RIVER_NETWORK" not in keys

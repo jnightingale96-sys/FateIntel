@@ -14,6 +14,8 @@ from uuid import uuid4
 
 import httpx
 
+from typing import Any
+
 from fastapi import FastAPI, Depends, HTTPException, UploadFile, File, Form, Query, Request
 from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
@@ -33,6 +35,7 @@ from .models import (
     SelectionSet, SelectionMember, ModelRun, RiskAssessment, AuditEvent, ModelWorkflow,
     ChemicalIdentitySnapshot, ChemicalAssessmentProfile, ModelRunIdentityBinding,
     OrchestratedAssessmentRecord, MSRawEvidenceFile, MSFeature,
+    SiteModelRecord, MetalMeasurementRecord,
 )
 from .schemas import (
     ProjectCreate, IdentityResolveCreate, ChemicalIdentityConfirmCreate,
@@ -1166,6 +1169,298 @@ def list_contaminant_groups():
 @app.get("/api/scenarios")
 def list_scenarios():
     return SCENARIOS
+
+
+@app.get("/api/pops/status")
+def pops_status_lookup(cas_number: str | None = None, name: str | None = None, jurisdiction: str | None = None):
+    from .services import pops
+    if jurisdiction is not None and jurisdiction not in {f["key"] for f in FRAMEWORKS}:
+        raise HTTPException(422, "jurisdiction must be one of the registered frameworks")
+    return pops.pops_status(cas_number=cas_number, name=name, jurisdiction=jurisdiction)
+
+
+@app.get("/api/pops/reference")
+def pops_reference():
+    from .services import pops
+    return {"metadata": pops.reference_metadata(), "substance_count": len(pops._reference()["entries"])}
+
+
+@app.get("/api/chemicals/{chemical_id}/pops-status")
+def chemical_pops_status(chemical_id: int, jurisdiction: str | None = None, db: Session = Depends(get_db)):
+    from .services import pops
+    chemical = db.get(Chemical, chemical_id)
+    if chemical is None:
+        raise HTTPException(404, "Chemical not found")
+    if jurisdiction is not None and jurisdiction not in {f["key"] for f in FRAMEWORKS}:
+        raise HTTPException(422, "jurisdiction must be one of the registered frameworks")
+    return pops.pops_status(
+        cas_number=chemical.cas_number, name=chemical.preferred_name, jurisdiction=jurisdiction,
+    )
+
+
+@app.get("/api/conceptual-site-model/reference")
+def conceptual_site_model_reference():
+    from .services import conceptual_site_model as csm
+    from .services import metals, pathway_plausibility
+    from .services.registry import CONTAMINANT_TAXONOMY
+    return {
+        "source_kinds": csm.SOURCE_KINDS, "media": csm.MEDIA, "receptors": csm.RECEPTORS,
+        "pathways": {k: {"from": v["from"], "to": v["to"]} for k, v in csm.PATHWAY_RULES.items()},
+        "contaminant_groups": [
+            {"key": g, "label": CONTAMINANT_TAXONOMY[g]["label"], "letter": CONTAMINANT_TAXONOMY[g]["letter"]}
+            for g in CONTAMINANT_GROUPS
+        ],
+        "metal_elements": metals.METAL_METALLOID_ELEMENTS,
+        "property_specs": {k: label for k, (label, _) in pathway_plausibility.PROPERTY_SPECS.items()},
+        "measurement": {
+            "bases": [b for b in metals.BASES], "media": metals.MEDIA, "origins": metals.ORIGINS,
+            "water_units": list(metals._WATER_TO_UG_L), "solid_units": list(metals._SOLID_TO_MG_KG),
+        },
+    }
+
+
+def _site_model_row(db: Session, project_id: int, site_model_id: int) -> SiteModelRecord:
+    row = db.get(SiteModelRecord, site_model_id)
+    if row is None or row.project_id != project_id:
+        raise HTTPException(404, "Site model not found for this project")
+    return row
+
+
+def _site_model_summary(row: SiteModelRecord) -> dict[str, Any]:
+    return {"id": row.id, "project_id": row.project_id, "name": row.name, "jurisdiction": row.jurisdiction,
+            "created_at": row.created_at.isoformat() if row.created_at else None}
+
+
+def _merged_site_model(db: Session, row: SiteModelRecord):
+    from .services import conceptual_site_model as csm
+    from .services.site_records import merge_measured
+    model = csm.model_from_dict(json.loads(row.model_json))
+    measurements = db.query(MetalMeasurementRecord).filter(MetalMeasurementRecord.project_id == row.project_id).all()
+    return merge_measured(model, measurements)
+
+
+def _apply_measurement(row: MetalMeasurementRecord, m: Any, site_medium: str | None) -> None:
+    row.element, row.value, row.unit, row.basis, row.medium = m.element, m.value, m.unit, m.basis, m.medium
+    row.weight_basis, row.source, row.origin = m.weight_basis, m.source, m.origin
+    row.oxidation_state, row.species, row.method, row.measured_date = m.oxidation_state, m.species, m.method, m.date
+    row.jurisdiction, row.confidence, row.applicability = m.jurisdiction, m.confidence, m.applicability
+    row.assumptions_json = json.dumps(list(m.assumptions))
+    row.site_medium = site_medium
+
+
+@app.post("/api/projects/{project_id}/metal-measurements", status_code=201)
+def create_metal_measurement(project_id: int, payload: dict[str, Any], db: Session = Depends(get_db)):
+    from .services.metals import MetalDataError
+    from .services.site_records import measurement_from_payload, record_to_dict
+    if db.get(Project, project_id) is None:
+        raise HTTPException(404, "Project not found")
+    try:
+        m, site_medium = measurement_from_payload(payload)
+    except MetalDataError as exc:
+        raise HTTPException(422, str(exc))
+    row = MetalMeasurementRecord(project_id=project_id)
+    _apply_measurement(row, m, site_medium)
+    db.add(row)
+    db.flush()
+    audit(db, project_id, "metal_measurement", row.id, "created",
+          {"element": m.element, "basis": m.basis, "medium": m.medium, "source": m.source})
+    db.commit()
+    db.refresh(row)
+    return record_to_dict(row)
+
+
+@app.get("/api/projects/{project_id}/metal-measurements")
+def list_metal_measurements(project_id: int, db: Session = Depends(get_db)):
+    from .services.site_records import record_to_dict
+    if db.get(Project, project_id) is None:
+        raise HTTPException(404, "Project not found")
+    rows = db.query(MetalMeasurementRecord).filter(MetalMeasurementRecord.project_id == project_id).order_by(MetalMeasurementRecord.id).all()
+    return [record_to_dict(r) for r in rows]
+
+
+@app.put("/api/projects/{project_id}/metal-measurements/{measurement_id}")
+def update_metal_measurement(project_id: int, measurement_id: int, payload: dict[str, Any], db: Session = Depends(get_db)):
+    """Replace a measurement. Validated exactly like creation; the previous values are kept in the audit trail."""
+    from .services.metals import MetalDataError
+    from .services.site_records import measurement_from_payload, record_to_dict
+    row = db.get(MetalMeasurementRecord, measurement_id)
+    if row is None or row.project_id != project_id:
+        raise HTTPException(404, "Measurement not found for this project")
+    try:
+        m, site_medium = measurement_from_payload(payload)
+    except MetalDataError as exc:
+        raise HTTPException(422, str(exc))
+    previous = record_to_dict(row)
+    _apply_measurement(row, m, site_medium)
+    db.flush()
+    audit(db, project_id, "metal_measurement", row.id, "updated", {"previous": previous, "current": record_to_dict(row)})
+    db.commit()
+    db.refresh(row)
+    return record_to_dict(row)
+
+
+@app.delete("/api/projects/{project_id}/metal-measurements/{measurement_id}", status_code=204)
+def delete_metal_measurement(project_id: int, measurement_id: int, db: Session = Depends(get_db)):
+    row = db.get(MetalMeasurementRecord, measurement_id)
+    if row is None or row.project_id != project_id:
+        raise HTTPException(404, "Measurement not found for this project")
+    audit(db, project_id, "metal_measurement", row.id, "deleted", {"element": row.element, "source": row.source})
+    db.delete(row)
+    db.commit()
+
+
+@app.post("/api/projects/{project_id}/site-models/analyse")
+def analyse_draft_site_model(project_id: int, payload: dict[str, Any], db: Session = Depends(get_db)):
+    """Assess an unsaved draft model with this project's saved metal measurements merged in. Stores nothing."""
+    from .services import conceptual_site_model as csm
+    from .services.csm_diagram import render_svg
+    from .services.site_records import merge_measured
+    if db.get(Project, project_id) is None:
+        raise HTTPException(404, "Project not found")
+    jurisdiction = payload.get("jurisdiction")
+    if jurisdiction not in {f["key"] for f in FRAMEWORKS}:
+        raise HTTPException(422, "jurisdiction must be one of the registered frameworks")
+    try:
+        model = csm.model_from_dict({k: v for k, v in payload.items() if k not in {"name", "jurisdiction"}})
+    except csm.ConceptualSiteModelError as exc:
+        raise HTTPException(422, str(exc))
+    measurements = db.query(MetalMeasurementRecord).filter(MetalMeasurementRecord.project_id == project_id).all()
+    merged, linkage_report = merge_measured(model, measurements)
+    result = csm.assess(merged, jurisdiction)
+    return {**result, "measurement_linkage": linkage_report, "diagram_svg": render_svg(merged, jurisdiction, result)}
+
+
+@app.post("/api/projects/{project_id}/site-models", status_code=201)
+def create_site_model(project_id: int, payload: dict[str, Any], db: Session = Depends(get_db)):
+    from .services import conceptual_site_model as csm
+    if db.get(Project, project_id) is None:
+        raise HTTPException(404, "Project not found")
+    name = str(payload.get("name") or "").strip()
+    if not name:
+        raise HTTPException(422, "A site model needs a name")
+    jurisdiction = payload.get("jurisdiction")
+    if jurisdiction not in {f["key"] for f in FRAMEWORKS}:
+        raise HTTPException(422, "jurisdiction must be one of the registered frameworks")
+    model_data = {k: v for k, v in payload.items() if k not in {"name", "jurisdiction"}}
+    try:
+        csm.model_from_dict(model_data)
+    except csm.ConceptualSiteModelError as exc:
+        raise HTTPException(422, str(exc))
+    row = SiteModelRecord(project_id=project_id, name=name, jurisdiction=jurisdiction, model_json=json.dumps(model_data))
+    db.add(row)
+    db.flush()
+    audit(db, project_id, "site_model", row.id, "created", {"name": name, "jurisdiction": jurisdiction})
+    db.commit()
+    db.refresh(row)
+    return _site_model_summary(row)
+
+
+@app.get("/api/projects/{project_id}/site-models")
+def list_site_models(project_id: int, db: Session = Depends(get_db)):
+    if db.get(Project, project_id) is None:
+        raise HTTPException(404, "Project not found")
+    rows = db.query(SiteModelRecord).filter(SiteModelRecord.project_id == project_id).order_by(SiteModelRecord.id).all()
+    return [_site_model_summary(r) for r in rows]
+
+
+@app.get("/api/projects/{project_id}/site-models/{site_model_id}")
+def get_site_model(project_id: int, site_model_id: int, db: Session = Depends(get_db)):
+    row = _site_model_row(db, project_id, site_model_id)
+    return {**_site_model_summary(row), "model": json.loads(row.model_json)}
+
+
+@app.put("/api/projects/{project_id}/site-models/{site_model_id}")
+def update_site_model(project_id: int, site_model_id: int, payload: dict[str, Any], db: Session = Depends(get_db)):
+    """Replace a saved site model. Validated exactly like creation; the previous model is kept in the audit trail."""
+    from .services import conceptual_site_model as csm
+    row = _site_model_row(db, project_id, site_model_id)
+    name = str(payload.get("name") or "").strip()
+    if not name:
+        raise HTTPException(422, "A site model needs a name")
+    jurisdiction = payload.get("jurisdiction")
+    if jurisdiction not in {f["key"] for f in FRAMEWORKS}:
+        raise HTTPException(422, "jurisdiction must be one of the registered frameworks")
+    model_data = {k: v for k, v in payload.items() if k not in {"name", "jurisdiction"}}
+    try:
+        csm.model_from_dict(model_data)
+    except csm.ConceptualSiteModelError as exc:
+        raise HTTPException(422, str(exc))
+    audit(db, project_id, "site_model", row.id, "updated", {
+        "previous_name": row.name, "previous_jurisdiction": row.jurisdiction,
+        "previous_model": json.loads(row.model_json), "name": name, "jurisdiction": jurisdiction,
+    })
+    row.name, row.jurisdiction, row.model_json = name, jurisdiction, json.dumps(model_data)
+    db.commit()
+    db.refresh(row)
+    return _site_model_summary(row)
+
+
+@app.delete("/api/projects/{project_id}/site-models/{site_model_id}", status_code=204)
+def delete_site_model(project_id: int, site_model_id: int, db: Session = Depends(get_db)):
+    row = _site_model_row(db, project_id, site_model_id)
+    audit(db, project_id, "site_model", row.id, "deleted", {"name": row.name})
+    db.delete(row)
+    db.commit()
+
+
+@app.get("/api/projects/{project_id}/site-models/{site_model_id}/assessment")
+def assess_saved_site_model(project_id: int, site_model_id: int, db: Session = Depends(get_db)):
+    from .services import conceptual_site_model as csm
+    row = _site_model_row(db, project_id, site_model_id)
+    merged, linkage_report = _merged_site_model(db, row)
+    return {**csm.assess(merged, row.jurisdiction), "measurement_linkage": linkage_report}
+
+
+@app.get("/api/projects/{project_id}/site-models/{site_model_id}/diagram")
+def saved_site_model_diagram(project_id: int, site_model_id: int, db: Session = Depends(get_db)):
+    from fastapi.responses import Response
+    from .services.csm_diagram import render_svg
+    row = _site_model_row(db, project_id, site_model_id)
+    merged, _ = _merged_site_model(db, row)
+    return Response(render_svg(merged, row.jurisdiction), media_type="image/svg+xml")
+
+
+@app.post("/api/conceptual-site-model/diagram")
+def conceptual_site_model_diagram(payload: dict[str, Any]):
+    from fastapi.responses import Response
+    from .services import conceptual_site_model as csm
+    from .services.csm_diagram import render_svg
+    jurisdiction = payload.get("jurisdiction")
+    if jurisdiction not in {f["key"] for f in FRAMEWORKS}:
+        raise HTTPException(422, "jurisdiction must be one of the registered frameworks")
+    try:
+        model = csm.model_from_dict(payload)
+    except csm.ConceptualSiteModelError as exc:
+        raise HTTPException(422, str(exc))
+    return Response(render_svg(model, jurisdiction), media_type="image/svg+xml")
+
+
+@app.get("/api/conceptual-site-model/example")
+def conceptual_site_model_example():
+    from .services.csm_diagram import EXAMPLE_SITE_PAYLOAD
+    return EXAMPLE_SITE_PAYLOAD
+
+
+@app.get("/api/conceptual-site-model/diagram/example")
+def conceptual_site_model_diagram_example():
+    from fastapi.responses import Response
+    from .services import conceptual_site_model as csm
+    from .services.csm_diagram import EXAMPLE_SITE_PAYLOAD, render_svg
+    model = csm.model_from_dict(EXAMPLE_SITE_PAYLOAD)
+    return Response(render_svg(model, EXAMPLE_SITE_PAYLOAD["jurisdiction"]), media_type="image/svg+xml")
+
+
+@app.post("/api/conceptual-site-model/assess")
+def conceptual_site_model_assess(payload: dict[str, Any]):
+    from .services import conceptual_site_model as csm
+    jurisdiction = payload.get("jurisdiction")
+    if jurisdiction not in {f["key"] for f in FRAMEWORKS}:
+        raise HTTPException(422, "jurisdiction must be one of the registered frameworks")
+    try:
+        model = csm.model_from_dict(payload)
+    except csm.ConceptualSiteModelError as exc:
+        raise HTTPException(422, str(exc))
+    return csm.assess(model, jurisdiction)
 
 
 

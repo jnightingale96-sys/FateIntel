@@ -99,7 +99,59 @@ CONTAMINANT_GROUPS = [
     "uvcb_complex_substance",
     "mixture_formulation",
     "emerging_contaminant",
+    # Added 2026-09-19 for the legacy-contaminants expansion (research phase
+    # documented in LEGACY_CONTAMINANTS_MATRIX_UK/EU/US/TIER234...md at the repo
+    # root). These are chemically organic and remain in DISCRETE_ORGANIC_GROUPS
+    # below -- their gap versus a pesticide/industrial_organic chemical is
+    # missing POPs-regulatory-status and bioaccumulation/food-web/sediment
+    # coverage, not an invalid fate-model domain, so native Tier 1-2 screening
+    # still applies (see CONTAMINANT_TAXONOMY note below).
+    "pah",
+    "legacy_pop_organic",
+    "organotin",
+    # radionuclide and contaminated_mixture are NOT chemically-organic and are
+    # excluded from DISCRETE_ORGANIC_GROUPS and hard-blocked in
+    # build_assessment_plan() below -- see the taxonomy note.
+    "radionuclide",
+    "contaminated_mixture",
 ]
+
+# A working classification of every CONTAMINANT_GROUPS value against the
+# founder's requested A-I contaminant taxonomy. This is deliberately a mapping
+# of the taxonomy onto groups that already drive real routing above, not a
+# parallel system -- see LEGACY_CONTAMINANTS_MATRIX_*.md for the regulatory
+# research this rests on. Some groups genuinely span more than one letter in
+# the real world (e.g. a legacy organochlorine pesticide is both "B" and "E");
+# this picks the single most useful routing category per group rather than
+# claiming a precise, exhaustive scientific taxonomy.
+CONTAMINANT_TAXONOMY: dict[str, dict[str, str]] = {
+    "industrial_organic": {"letter": "A", "label": "Organic chemical"},
+    "pesticide": {"letter": "A", "label": "Organic chemical (current-use pesticide)"},
+    "biocide": {"letter": "A", "label": "Organic chemical"},
+    "human_pharmaceutical": {"letter": "A", "label": "Organic chemical"},
+    "veterinary_pharmaceutical": {"letter": "A", "label": "Organic chemical"},
+    "personal_care_cosmetic": {"letter": "A", "label": "Organic chemical"},
+    "detergent_cleaner": {"letter": "A", "label": "Organic chemical"},
+    "emerging_contaminant": {"letter": "A", "label": "Organic chemical"},
+    "hydrocarbon_solvent": {
+        "letter": "F",
+        "label": "Industrial legacy contaminant (petroleum hydrocarbon / chlorinated solvent)",
+    },
+    "pfas_persistent_mobile": {"letter": "G", "label": "Persistent halogenated compound"},
+    "pah": {"letter": "D", "label": "Polycyclic aromatic hydrocarbon"},
+    "legacy_pop_organic": {
+        "letter": "B",
+        "label": "Persistent organic pollutant / legacy organic (PCBs, dioxins/furans, legacy organochlorine pesticides)",
+    },
+    "organotin": {"letter": "G", "label": "Persistent halogenated compound (organotin)"},
+    "metal_inorganic": {"letter": "C", "label": "Metal or metalloid"},
+    "radionuclide": {"letter": "specialist", "label": "Radionuclide -- not a chemical-fate assessment"},
+    "contaminated_mixture": {"letter": "H", "label": "Contaminated mixture (multiple substances, not one defined chemical)"},
+    "polymer_microplastic": {"letter": "other", "label": "Polymer / microplastic"},
+    "nanomaterial": {"letter": "other", "label": "Nanomaterial"},
+    "uvcb_complex_substance": {"letter": "H", "label": "Complex/UVCB substance"},
+    "mixture_formulation": {"letter": "H", "label": "Formulated mixture"},
+}
 
 SCENARIOS = [
     "municipal_wastewater",
@@ -120,8 +172,18 @@ DISCRETE_ORGANIC_GROUPS = [
     if group not in {
         "pfas_persistent_mobile", "metal_inorganic", "polymer_microplastic",
         "nanomaterial", "uvcb_complex_substance", "mixture_formulation",
+        "radionuclide", "contaminated_mixture",
     }
 ]
+
+# Groups where NO native or external model in this registry is a valid route:
+# a radionuclide needs a dose-based radiological assessment (a separate regime in
+# the UK, Canada, EU/Euratom and IAEA guidance -- though US EPA runs radionuclides
+# through the same CERCLA risk-range framework as chemicals, see
+# LEGACY_CONTAMINANTS_MATRIX_TIER234_AND_RADIONUCLIDES.md), and a contaminated
+# mixture is not one defined substance for single-chemical fate math.
+NO_NATIVE_PATHWAY_GROUPS = {"radionuclide", "contaminated_mixture"}
+LEGACY_ORGANIC_GROUPS = {"pah", "legacy_pop_organic", "organotin"}
 
 MODELS: list[dict[str, Any]] = [
     {
@@ -800,6 +862,39 @@ def build_assessment_plan(data: dict[str, Any]) -> dict[str, Any]:
     ]
     warnings: list[str] = []
 
+    if group in NO_NATIVE_PATHWAY_GROUPS:
+        framework = next(f for f in FRAMEWORKS if f["key"] == jurisdiction)
+        if group == "radionuclide":
+            reason = (
+                "Radionuclide contamination is a dose-based radiological assessment, not a concentration-based "
+                "chemical PEC/PNEC screen. FateIntel does not model it: route to the jurisdiction's specialist "
+                "radiological framework (EXTERNAL MODEL REQUIRED)."
+            )
+        else:
+            reason = (
+                "FateIntel assesses one defined substance at a time. Assess each contaminant in the mixture "
+                "separately under its own contaminant group; concentrations are not summed and toxicity is not "
+                "assumed additive (REGULATORY APPLICABILITY NOT ESTABLISHED for the mixture as a whole)."
+            )
+        return {
+            "jurisdiction": framework,
+            "regulatory_programme": {
+                "key": "NOT_YET_IMPLEMENTED",
+                "name": f"{CONTAMINANT_TAXONOMY[group]['label']}: no native pathway",
+                "scope": reason,
+            },
+            "contaminant_group": group,
+            "scenario": scenario,
+            "tier": tier,
+            "models": [],
+            "required_inputs": ["specialist assessment scoping outside FateIntel"],
+            "warnings": [reason],
+            "plan_summary": (
+                f"No FateIntel model workflow is applicable to {group.replace('_', ' ')} under the "
+                f"{scenario.replace('_', ' ')} scenario. {reason}"
+            ),
+        }
+
     if scenario in {"municipal_wastewater", "household_use", "laboratory_use", "product_disposal"}:
         selected.append("SIMPLETREAT")
         required += ["wastewater flow", "release fraction", "biodegradation", "sorption/partitioning"]
@@ -985,6 +1080,26 @@ def build_assessment_plan(data: dict[str, Any]) -> dict[str, Any]:
     if group in {"metal_inorganic", "polymer_microplastic", "nanomaterial", "uvcb_complex_substance", "mixture_formulation"}:
         warnings.append(
             "Standard organic-chemical partitioning and degradation models may be outside their applicability domain; a group-specific ruleset is required."
+        )
+    if group == "metal_inorganic":
+        required += [
+            "element identity (and oxidation state/species where known), not SMILES/Kow",
+            "concentration basis stated for every value (total, dissolved, particulate, bioavailable): never converted silently",
+            "receiving-water chemistry for bioavailability (pH, dissolved organic carbon, calcium/hardness) where a water criterion applies",
+            "natural/regional background concentration",
+            "soil or sediment properties (organic matter, pH, clay) for partitioning",
+        ]
+        warnings.append(
+            "Metals need speciation- and bioavailability-aware assessment. FateIntel does not model bioavailability: "
+            "EXTERNAL MODEL REQUIRED (e.g. M-BAT/BLM tools) where a bioavailable criterion applies. "
+            "Do not call a metal safe because total concentration is below a generic threshold."
+        )
+    if group in LEGACY_ORGANIC_GROUPS:
+        required.append("CAS number for the POPs regulatory-status check (/api/pops/status); names alone can be ambiguous")
+        warnings.append(
+            "Native Tier 1-2 organic partitioning and degradation screening applies to this class. "
+            "Bioaccumulation/food-web, sediment-focused assessment and POPs regulatory-status flagging are not "
+            "yet implemented: SCREENING / COMPARATIVE USE only."
         )
     if group == "pfas_persistent_mobile":
         warnings.append(

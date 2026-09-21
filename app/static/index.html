@@ -10,6 +10,7 @@
 <link href="/static/manifest.webmanifest" rel="manifest"/>
 <link href="/static/icon.svg" rel="icon" type="image/svg+xml"/>
 <link href="/static/styles.css?v=fateintel-guided-v2.24-alpha4.0-core-orchestration" rel="stylesheet"/>
+<link rel="stylesheet" href="/static/contaminated-land.css?v=fateintel-guided-v2.24-alpha4.0-core-orchestration">
 </head>
 <body>
 <div class="app-shell">
@@ -28,7 +29,7 @@
 
 
 
-<button class="nav-item" data-scroll="welcome"><span class="nav-icon">⌂</span><span>Overview</span></button><button class="nav-item active" data-scroll="assessment-flow"><span class="nav-icon">▣</span><span>Assessments</span></button><button class="nav-item" data-scroll="evidence-data-hub"><span class="nav-icon">▤</span><span>Evidence data</span></button><button class="nav-item" data-scroll="regulatory-pathway"><span class="nav-icon">◎</span><span>Frameworks</span></button><a class="nav-item" href="/static/expert.html#evidence"><span class="nav-icon">✓</span><span>Evidence review</span></a><a class="nav-item" href="/static/expert.html#models"><span class="nav-icon">⌘</span><span>Models</span></a><button class="nav-item" data-scroll="results"><span class="nav-icon">▥</span><span>Reports</span></button><button class="nav-item hidden" data-water-sediment-nav="1" data-scroll="toxswa-surface-water"><span class="nav-icon">≈</span><span id="toxswa-nav-label">Water–sediment</span></button><button class="nav-item" data-eu-only="1" data-scroll="pearl-groundwater"><span class="nav-icon">⇣</span><span>FOCUS PEARL</span></button><button class="nav-item" data-scroll="envirodesign"><span class="nav-icon">✦</span><span>EnviroDesign</span></button><button class="nav-item" data-scroll="analytical-identification"><span class="nav-icon">⚗</span><span>Identification</span></button><button class="nav-item" data-scroll="degradation-kinetics"><span class="nav-icon">↘</span><span>Applied Environmental Fate</span></button><a class="nav-item" href="/static/expert.html"><span class="nav-icon">⚙</span><span>Expert workspace</span></a></nav>
+<button class="nav-item" data-scroll="welcome"><span class="nav-icon">⌂</span><span>Overview</span></button><button class="nav-item active" data-scroll="assessment-flow"><span class="nav-icon">▣</span><span>Assessments</span></button><button class="nav-item" data-scroll="evidence-data-hub"><span class="nav-icon">▤</span><span>Evidence data</span></button><button class="nav-item" data-scroll="regulatory-pathway"><span class="nav-icon">◎</span><span>Frameworks</span></button><a class="nav-item" href="/static/expert.html#evidence"><span class="nav-icon">✓</span><span>Evidence review</span></a><a class="nav-item" href="/static/expert.html#models"><span class="nav-icon">⌘</span><span>Models</span></a><button class="nav-item" data-scroll="results"><span class="nav-icon">▥</span><span>Reports</span></button><button class="nav-item hidden" data-water-sediment-nav="1" data-scroll="toxswa-surface-water"><span class="nav-icon">≈</span><span id="toxswa-nav-label">Water–sediment</span></button><button class="nav-item" data-eu-only="1" data-scroll="pearl-groundwater"><span class="nav-icon">⇣</span><span>FOCUS PEARL</span></button><button class="nav-item" data-scroll="envirodesign"><span class="nav-icon">✦</span><span>EnviroDesign</span></button><button class="nav-item" data-scroll="analytical-identification"><span class="nav-icon">⚗</span><span>Identification</span></button><button class="nav-item" data-scroll="contaminated-land"><span class="nav-icon">⛰</span><span>Contaminated land</span></button><button class="nav-item" data-scroll="degradation-kinetics"><span class="nav-icon">↘</span><span>Applied Environmental Fate</span></button><a class="nav-item" href="/static/expert.html"><span class="nav-icon">⚙</span><span>Expert workspace</span></a></nav>
 <div aria-hidden="true" class="sidebar-art">
 <div class="moon"></div>
 <div class="hill hill-a"></div><div class="hill hill-b"></div>
@@ -566,7 +567,7 @@
 <section class="toxswa-controls">
 <div class="mini-heading"><span>Assessment routing</span><small>application rate is only one possible loading basis</small></div>
 <div class="toxswa-input-grid">
-<label><span>Chemical group</span><select id="toxswa-group"><option value="human_pharmaceutical" selected>Human pharmaceutical</option><option value="veterinary_pharmaceutical">Veterinary pharmaceutical</option><option value="pesticide">Pesticide / PPP</option><option value="biocide">Biocide</option><option value="industrial_organic">Industrial organic</option><option value="personal_care_cosmetic">Personal care / cosmetic</option><option value="detergent_cleaner">Detergent / cleaner</option><option value="pfas_persistent_mobile">PFAS / persistent mobile</option><option value="hydrocarbon_solvent">Hydrocarbon / solvent</option><option value="metal_inorganic">Metal / inorganic</option><option value="polymer_microplastic">Polymer / microplastic</option><option value="nanomaterial">Nanomaterial</option><option value="uvcb_complex_substance">UVCB</option><option value="mixture_formulation">Mixture / formulation</option><option value="emerging_contaminant">Emerging contaminant</option></select></label>
+<label><span>Chemical group</span><select id="toxswa-group"><option value="human_pharmaceutical" selected>Human pharmaceutical</option><option value="veterinary_pharmaceutical">Veterinary pharmaceutical</option><option value="pesticide">Pesticide / PPP</option><option value="biocide">Biocide</option><option value="industrial_organic">Industrial organic</option><option value="personal_care_cosmetic">Personal care / cosmetic</option><option value="detergent_cleaner">Detergent / cleaner</option><option value="pfas_persistent_mobile">PFAS / persistent mobile</option><option value="hydrocarbon_solvent">Hydrocarbon / solvent</option><option value="metal_inorganic">Metal / inorganic</option><option value="polymer_microplastic">Polymer / microplastic</option><option value="nanomaterial">Nanomaterial</option><option value="uvcb_complex_substance">UVCB</option><option value="mixture_formulation">Mixture / formulation</option><option value="emerging_contaminant">Emerging contaminant</option><option value="pah">PAH</option><option value="legacy_pop_organic">Legacy POP / PCB / dioxin</option><option value="organotin">Organotin</option><option value="radionuclide">Radionuclide (specialist)</option><option value="contaminated_mixture">Contaminated mixture</option></select></label>
 <label><span>Loading route</span><select id="toxswa-loading-mode"><option value="continuous_point_discharge" selected>Continuous point discharge</option><option value="spray_drift">Spray drift</option><option value="lateral_drainage">Lateral drainage</option><option value="lateral_runoff">Lateral runoff</option><option value="continuous_distributed">Continuous distributed release</option><option value="pulse_mass">Pulse / spill</option></select></label>
 <label><span>Simulation period</span><div class="input-unit"><input id="toxswa-duration" type="number" min="1" step="1" value="120"><em>days</em></div></label>
 <label><span>Water transformation</span><select id="toxswa-transform-mode"><option value="lumped" selected>Lumped transformation</option><option value="separate_dissolved_only">Dissolved phase only</option></select></label>
@@ -986,6 +987,87 @@
 </section>
 </div>
 </section>
+<section class="envirodesign-shell cl-shell" id="contaminated-land">
+<div class="envirodesign-heading">
+<div>
+<span class="design-badge">CONTAMINATED LAND · conceptual site model</span>
+<h2>Map how a contaminant could reach a receptor, and what is still missing.</h2>
+<p>Define sources, pathways and receptors, record metal measurements on their original basis, and see the potential linkages, data gaps, POPs regulatory flags and the external assessment route for your jurisdiction. This screen maps structure only: it calculates no exposure or risk, applies no criteria, and never treats &ldquo;no linkage identified&rdquo; as &ldquo;no risk&rdquo;.</p>
+</div>
+<button class="ghost-button" id="cl-load-example" type="button">Load fictional example</button>
+</div>
+<div class="design-status" id="cl-status"><strong>Build a site model, then analyse it.</strong><small>Nothing is saved until you choose Save. Analysis runs on the server and can use measurements saved to a project.</small></div>
+<div class="cl-grid">
+<div class="cl-col">
+<section class="design-control-card cl-card" aria-labelledby="cl-h-model">
+<div class="mini-heading"><span id="cl-h-model">1 · Site model</span><small>sources → media → receptors</small></div>
+<div class="cl-row2">
+<label><span>Site model name</span><input id="cl-name" value="" placeholder="e.g. Former works, north yard" autocomplete="off"/></label>
+<label><span>Jurisdiction</span><select id="cl-jurisdiction"></select></label>
+</div>
+<h4 class="cl-sub">Sources</h4>
+<div id="cl-sources" class="cl-stack"></div>
+<button class="ghost-button" id="cl-add-source" type="button">+ Add source</button>
+<h4 class="cl-sub">Receptors</h4>
+<div id="cl-receptors" class="cl-chips" role="group" aria-label="Receptors"></div>
+<h4 class="cl-sub">Pathways</h4>
+<div class="cl-linkrow">
+<select id="cl-link-pathway" aria-label="Pathway"></select>
+<select id="cl-link-from" aria-label="From"></select>
+<span aria-hidden="true">→</span>
+<select id="cl-link-to" aria-label="To"></select>
+<button class="ghost-button" id="cl-add-link" type="button">Add</button>
+</div>
+<ul id="cl-links" class="cl-linklist"></ul>
+</section>
+</div>
+<div class="cl-col">
+<section class="design-control-card cl-card" aria-labelledby="cl-h-meas">
+<div class="mini-heading"><span id="cl-h-meas">2 · Metal measurements</span><small>saved to a project; original basis kept</small></div>
+<div class="cl-project" id="cl-project-line"></div>
+<div class="cl-row3">
+<label><span>Element</span><select id="cl-m-element"></select></label>
+<label><span>Value</span><input id="cl-m-value" type="number" min="0" step="any" inputmode="decimal"/></label>
+<label><span>Unit</span><select id="cl-m-unit"></select></label>
+</div>
+<div class="cl-row3">
+<label><span>Medium</span><select id="cl-m-medium"></select></label>
+<label><span>Basis</span><select id="cl-m-basis"></select></label>
+<label id="cl-m-weight-wrap"><span>Weight basis</span><select id="cl-m-weight"><option value="dry">dry weight</option><option value="wet">wet weight</option></select></label>
+</div>
+<div class="cl-row3">
+<label><span>Represents (site medium)</span><select id="cl-m-site"></select></label>
+<label><span>Origin</span><select id="cl-m-origin"></select></label>
+<label><span>Method (optional)</span><input id="cl-m-method" autocomplete="off"/></label>
+</div>
+<label><span>Source (required)</span><input id="cl-m-source" placeholder="e.g. Lab report ABC-12, sample BH3 0.5 m" autocomplete="off"/></label>
+<div class="cl-actions"><button class="primary-button" id="cl-add-measurement" type="button">Save measurement</button><button class="ghost-button" id="cl-m-cancel" type="button" hidden>Cancel edit</button></div>
+<div id="cl-measurements" class="cl-measurements"></div>
+</section>
+<section class="design-panel cl-card" aria-labelledby="cl-h-run">
+<div class="mini-heading"><span id="cl-h-run">3 · Analyse and save</span><small>structure only</small></div>
+<div class="cl-actions">
+<button class="primary-button" id="cl-analyse" type="button">Analyse model</button>
+<button class="ghost-button" id="cl-save" type="button">Save site model</button>
+<button class="ghost-button" id="cl-save-new" type="button" hidden>Save as new copy</button>
+<button class="ghost-button" id="cl-new" type="button">New model</button>
+</div>
+<p class="cl-editing" id="cl-editing" hidden></p>
+<div class="cl-saved"><label><span>Saved site models</span><select id="cl-saved"></select></label>
+<button class="ghost-button" id="cl-open" type="button">Open</button>
+<button class="ghost-button" id="cl-delete" type="button">Delete</button></div>
+</section>
+</div>
+</div>
+<section class="design-panel cl-card cl-wide" aria-labelledby="cl-h-dia">
+<div class="mini-heading"><span id="cl-h-dia">Diagram</span><small>green = measured data · amber = none · dashed = not connected</small><button class="ghost-button cl-fit" id="cl-fit" type="button" aria-pressed="false">Actual size</button></div>
+<div id="cl-diagram" class="cl-diagram"><p class="cl-empty">Analyse the model to draw the diagram.</p></div>
+</section>
+<section class="design-panel cl-card cl-wide" aria-labelledby="cl-h-res">
+<div class="mini-heading"><span id="cl-h-res">Potential linkages and gaps</span><small>no exposure or risk is calculated</small></div>
+<div id="cl-assessment" class="cl-assessment"><p class="cl-empty">No analysis yet.</p></div>
+</section>
+</section>
 <section class="envirodesign-shell" id="degradation-kinetics">
 <div class="envirodesign-heading">
 <div>
@@ -1055,5 +1137,6 @@
 </aside>
 <div class="toast hidden" id="toast"></div>
 <script src="/static/app.js?v=fateintel-guided-v2.24-alpha4.0-core-orchestration"></script>
+<script src="/static/contaminated-land.js?v=fateintel-guided-v2.24-alpha4.0-core-orchestration"></script>
 </body>
 </html>

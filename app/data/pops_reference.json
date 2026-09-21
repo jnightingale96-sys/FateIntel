@@ -1,0 +1,780 @@
+{
+ "_meta": {
+  "purpose": "Non-exhaustive seed list for a POPs regulatory-status FLAG. Absence from this list is NOT evidence that a substance is not a POP.",
+  "retrieved": "2026-09-20",
+  "stockholm_source": "https://chm.pops.int/TheConvention/ThePOPs/AllPOPs/tabid/2509/Default.aspx (listing table: annexes A/B/C and CAS where shown)",
+  "eu_source": "https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:32019R1021 (ORIGINAL 2019 text, Annex I Part A; later amendments NOT applied)",
+  "eu_matrix_research": "LEGACY_CONTAMINANTS_MATRIX_EU.md section 1 (consolidated text, Annex III Part A; PFOA in Annex I; MCCP/LC-PFCA/chlorpyrifos only proposed as of Sept 2026)",
+  "caveats": [
+   "Both pages were read through an automated summariser; CAS numbers were cross-checked between the two sources where both give one, and left blank where they conflict or only one source gives one.",
+   "decaBDE CAS deliberately left blank: the Stockholm page fetch showed 68631-49-2 (the hexa/hepta-BDE number) against EUR-Lex 1163-19-5; unresolved, so decaBDE matches by name only.",
+   "EU exemption text is condensed from the original 2019 Annex I and may have been changed by amendments; read the consolidated regulation before relying on it.",
+   "EU Annex IV waste concentration limits and Annex V treatment rules exist per substance but are NOT encoded here.",
+   "Only the Stockholm Convention and EU status were researched. UK, US and other national POPs regimes were not.",
+   "Metabolites and degradation products (for example DDE and DDD) are not separately listed here."
+  ]
+ },
+ "entries": [
+  {
+   "key": "ddt",
+   "name": "DDT",
+   "aliases": [
+    "ddt",
+    "dichlorodiphenyltrichloroethane"
+   ],
+   "cas": [
+    "50-29-3"
+   ],
+   "substance_class": "organochlorine_pesticide",
+   "stockholm_annexes": [
+    "B"
+   ],
+   "eu": {
+    "annex": "I",
+    "status": "CONFIRMED_ORIGINAL_2019_TEXT",
+    "exemptions": "No exemptions stated in the extracted Annex I row."
+   }
+  },
+  {
+   "key": "chlordane",
+   "name": "Chlordane",
+   "aliases": [
+    "chlordane"
+   ],
+   "cas": [
+    "57-74-9"
+   ],
+   "substance_class": "organochlorine_pesticide",
+   "stockholm_annexes": [
+    "A"
+   ],
+   "eu": {
+    "annex": "I",
+    "status": "CONFIRMED_ORIGINAL_2019_TEXT",
+    "exemptions": "No exemptions stated in the extracted Annex I row."
+   }
+  },
+  {
+   "key": "aldrin",
+   "name": "Aldrin",
+   "aliases": [
+    "aldrin"
+   ],
+   "cas": [
+    "309-00-2"
+   ],
+   "substance_class": "organochlorine_pesticide",
+   "stockholm_annexes": [
+    "A"
+   ],
+   "eu": {
+    "annex": "I",
+    "status": "CONFIRMED_ORIGINAL_2019_TEXT",
+    "exemptions": "No exemptions stated in the extracted Annex I row."
+   }
+  },
+  {
+   "key": "dieldrin",
+   "name": "Dieldrin",
+   "aliases": [
+    "dieldrin"
+   ],
+   "cas": [
+    "60-57-1"
+   ],
+   "substance_class": "organochlorine_pesticide",
+   "stockholm_annexes": [
+    "A"
+   ],
+   "eu": {
+    "annex": "I",
+    "status": "CONFIRMED_ORIGINAL_2019_TEXT",
+    "exemptions": "No exemptions stated in the extracted Annex I row."
+   }
+  },
+  {
+   "key": "endrin",
+   "name": "Endrin",
+   "aliases": [
+    "endrin"
+   ],
+   "cas": [
+    "72-20-8"
+   ],
+   "substance_class": "organochlorine_pesticide",
+   "stockholm_annexes": [
+    "A"
+   ],
+   "eu": {
+    "annex": "I",
+    "status": "CONFIRMED_ORIGINAL_2019_TEXT",
+    "exemptions": "No exemptions stated in the extracted Annex I row."
+   }
+  },
+  {
+   "key": "heptachlor",
+   "name": "Heptachlor",
+   "aliases": [
+    "heptachlor"
+   ],
+   "cas": [
+    "76-44-8"
+   ],
+   "substance_class": "organochlorine_pesticide",
+   "stockholm_annexes": [
+    "A"
+   ],
+   "eu": {
+    "annex": "I",
+    "status": "CONFIRMED_ORIGINAL_2019_TEXT",
+    "exemptions": "No exemptions stated in the extracted Annex I row."
+   }
+  },
+  {
+   "key": "mirex",
+   "name": "Mirex",
+   "aliases": [
+    "mirex"
+   ],
+   "cas": [
+    "2385-85-5"
+   ],
+   "substance_class": "organochlorine_pesticide",
+   "stockholm_annexes": [
+    "A"
+   ],
+   "eu": {
+    "annex": "I",
+    "status": "CONFIRMED_ORIGINAL_2019_TEXT",
+    "exemptions": "No exemptions stated in the extracted Annex I row."
+   }
+  },
+  {
+   "key": "toxaphene",
+   "name": "Toxaphene",
+   "aliases": [
+    "toxaphene"
+   ],
+   "cas": [
+    "8001-35-2"
+   ],
+   "substance_class": "organochlorine_pesticide",
+   "stockholm_annexes": [
+    "A"
+   ],
+   "eu": {
+    "annex": "I",
+    "status": "CONFIRMED_ORIGINAL_2019_TEXT",
+    "exemptions": "No exemptions stated in the extracted Annex I row."
+   }
+  },
+  {
+   "key": "chlordecone",
+   "name": "Chlordecone",
+   "aliases": [
+    "chlordecone"
+   ],
+   "cas": [
+    "143-50-0"
+   ],
+   "substance_class": "organochlorine_pesticide",
+   "stockholm_annexes": [
+    "A"
+   ],
+   "eu": {
+    "annex": "I",
+    "status": "CONFIRMED_ORIGINAL_2019_TEXT",
+    "exemptions": "No exemptions stated in the extracted Annex I row."
+   }
+  },
+  {
+   "key": "hch_technical",
+   "name": "Hexachlorocyclohexanes (technical HCH)",
+   "aliases": [
+    "hexachlorocyclohexane",
+    "technical hch"
+   ],
+   "cas": [
+    "608-73-1"
+   ],
+   "substance_class": "organochlorine_pesticide",
+   "stockholm_annexes": [],
+   "eu": {
+    "annex": "I",
+    "status": "CONFIRMED_ORIGINAL_2019_TEXT",
+    "exemptions": "No exemptions stated in the extracted Annex I row."
+   }
+  },
+  {
+   "key": "alpha_hch",
+   "name": "Alpha-hexachlorocyclohexane",
+   "aliases": [
+    "alpha[- ]?hch",
+    "alpha[- ]hexachlorocyclohexane"
+   ],
+   "cas": [
+    "319-84-6"
+   ],
+   "substance_class": "organochlorine_pesticide",
+   "stockholm_annexes": [
+    "A"
+   ],
+   "eu": {
+    "annex": "I",
+    "status": "CONFIRMED_ORIGINAL_2019_TEXT",
+    "exemptions": "No exemptions stated in the extracted Annex I row."
+   }
+  },
+  {
+   "key": "beta_hch",
+   "name": "Beta-hexachlorocyclohexane",
+   "aliases": [
+    "beta[- ]?hch",
+    "beta[- ]hexachlorocyclohexane"
+   ],
+   "cas": [
+    "319-85-7"
+   ],
+   "substance_class": "organochlorine_pesticide",
+   "stockholm_annexes": [
+    "A"
+   ],
+   "eu": {
+    "annex": "I",
+    "status": "CONFIRMED_ORIGINAL_2019_TEXT",
+    "exemptions": "No exemptions stated in the extracted Annex I row."
+   }
+  },
+  {
+   "key": "lindane",
+   "name": "Lindane (gamma-HCH)",
+   "aliases": [
+    "lindane",
+    "gamma[- ]?hch",
+    "gamma[- ]hexachlorocyclohexane"
+   ],
+   "cas": [
+    "58-89-9"
+   ],
+   "substance_class": "organochlorine_pesticide",
+   "stockholm_annexes": [
+    "A"
+   ],
+   "eu": {
+    "annex": "I",
+    "status": "CONFIRMED_ORIGINAL_2019_TEXT",
+    "exemptions": "No exemptions stated in the extracted Annex I row."
+   }
+  },
+  {
+   "key": "endosulfan",
+   "name": "Technical endosulfan and its related isomers",
+   "aliases": [
+    "endosulfan"
+   ],
+   "cas": [
+    "115-29-7",
+    "959-98-8",
+    "33213-65-9"
+   ],
+   "substance_class": "organochlorine_pesticide",
+   "stockholm_annexes": [
+    "A"
+   ],
+   "eu": {
+    "annex": "I",
+    "status": "CONFIRMED_ORIGINAL_2019_TEXT",
+    "exemptions": "Articles in use before 10 July 2012 permitted."
+   }
+  },
+  {
+   "key": "hcb",
+   "name": "Hexachlorobenzene (HCB)",
+   "aliases": [
+    "hexachlorobenzene",
+    "hcb"
+   ],
+   "cas": [
+    "118-74-1"
+   ],
+   "substance_class": "organochlorine_industrial",
+   "stockholm_annexes": [
+    "A",
+    "C"
+   ],
+   "eu": {
+    "annex": "I; also III Part A (unintentional release)",
+    "status": "CONFIRMED_ORIGINAL_2019_TEXT",
+    "exemptions": "No exemptions stated in the extracted Annex I row."
+   }
+  },
+  {
+   "key": "pecb",
+   "name": "Pentachlorobenzene (PeCB)",
+   "aliases": [
+    "pentachlorobenzene",
+    "pecb"
+   ],
+   "cas": [
+    "608-93-5"
+   ],
+   "substance_class": "organochlorine_industrial",
+   "stockholm_annexes": [
+    "A",
+    "C"
+   ],
+   "eu": {
+    "annex": "I",
+    "status": "CONFIRMED_ORIGINAL_2019_TEXT",
+    "exemptions": "No exemptions stated in the extracted Annex I row."
+   }
+  },
+  {
+   "key": "hcbd",
+   "name": "Hexachlorobutadiene (HCBD)",
+   "aliases": [
+    "hexachlorobutadiene",
+    "hcbd"
+   ],
+   "cas": [
+    "87-68-3"
+   ],
+   "substance_class": "organochlorine_industrial",
+   "stockholm_annexes": [
+    "A",
+    "C"
+   ],
+   "eu": {
+    "annex": "I",
+    "status": "CONFIRMED_ORIGINAL_2019_TEXT",
+    "exemptions": "Articles in use before 10 July 2012 permitted."
+   }
+  },
+  {
+   "key": "pcb",
+   "name": "Polychlorinated biphenyls (PCBs)",
+   "aliases": [
+    "polychlorinated biphenyls?",
+    "pcbs?",
+    "pcb[- ]?\\d+",
+    "aroclor"
+   ],
+   "cas": [
+    "1336-36-3"
+   ],
+   "substance_class": "pcb",
+   "stockholm_annexes": [
+    "A",
+    "C"
+   ],
+   "eu": {
+    "annex": "I; also III Part A (unintentional release)",
+    "status": "CONFIRMED_ORIGINAL_2019_TEXT",
+    "exemptions": "Articles in use at entry into force permitted; equipment containing >0.005% PCB and >0.05 dm3 to be identified and removed by 31 December 2025."
+   }
+  },
+  {
+   "key": "pcn",
+   "name": "Polychlorinated naphthalenes (PCNs)",
+   "aliases": [
+    "polychlorinated naphthalenes?",
+    "pcns?"
+   ],
+   "cas": [
+    "70776-03-3"
+   ],
+   "substance_class": "organochlorine_industrial",
+   "stockholm_annexes": [
+    "A",
+    "C"
+   ],
+   "eu": {
+    "annex": "I",
+    "status": "CONFIRMED_ORIGINAL_2019_TEXT",
+    "exemptions": "Articles in use before 10 July 2012 permitted."
+   }
+  },
+  {
+   "key": "pcdd",
+   "name": "Polychlorinated dibenzo-p-dioxins (PCDD)",
+   "aliases": [
+    "dioxins?",
+    "pcdds?",
+    "polychlorinated dibenzo-?p-?dioxins?",
+    "tcdd"
+   ],
+   "cas": [],
+   "substance_class": "dioxin_furan",
+   "stockholm_annexes": [
+    "C"
+   ],
+   "eu": {
+    "annex": "III Part A (unintentional release)",
+    "status": "CONFIRMED_VIA_EU_MATRIX_RESEARCH",
+    "exemptions": null
+   }
+  },
+  {
+   "key": "pcdf",
+   "name": "Polychlorinated dibenzofurans (PCDF)",
+   "aliases": [
+    "pcdfs?",
+    "polychlorinated dibenzofurans?",
+    "chlorinated dibenzofurans?"
+   ],
+   "cas": [],
+   "substance_class": "dioxin_furan",
+   "stockholm_annexes": [
+    "C"
+   ],
+   "eu": {
+    "annex": "III Part A (unintentional release)",
+    "status": "CONFIRMED_VIA_EU_MATRIX_RESEARCH",
+    "exemptions": null
+   }
+  },
+  {
+   "key": "pcp",
+   "name": "Pentachlorophenol and its salts and esters (PCP)",
+   "aliases": [
+    "pentachlorophenol"
+   ],
+   "cas": [
+    "87-86-5",
+    "131-52-2",
+    "27735-64-4",
+    "3772-94-9",
+    "1825-21-4"
+   ],
+   "substance_class": "organochlorine_industrial",
+   "stockholm_annexes": [
+    "A"
+   ],
+   "eu": {
+    "annex": "I",
+    "status": "CONFIRMED_ORIGINAL_2019_TEXT",
+    "exemptions": "No exemptions stated in the extracted Annex I row."
+   }
+  },
+  {
+   "key": "hbb",
+   "name": "Hexabromobiphenyl",
+   "aliases": [
+    "hexabromobiphenyl"
+   ],
+   "cas": [
+    "36355-01-8"
+   ],
+   "substance_class": "brominated_flame_retardant",
+   "stockholm_annexes": [
+    "A"
+   ],
+   "eu": {
+    "annex": "I",
+    "status": "CONFIRMED_ORIGINAL_2019_TEXT",
+    "exemptions": "No exemptions stated in the extracted Annex I row."
+   }
+  },
+  {
+   "key": "hbcdd",
+   "name": "Hexabromocyclododecane (HBCDD)",
+   "aliases": [
+    "hexabromocyclododecane",
+    "hbcdd",
+    "hbcd"
+   ],
+   "cas": [
+    "25637-99-4",
+    "3194-55-6",
+    "134237-50-6",
+    "134237-51-7",
+    "134237-52-8"
+   ],
+   "substance_class": "brominated_flame_retardant",
+   "stockholm_annexes": [
+    "A"
+   ],
+   "eu": {
+    "annex": "I",
+    "status": "CONFIRMED_ORIGINAL_2019_TEXT",
+    "exemptions": "Unintentional trace contaminant up to 100 mg/kg; expanded polystyrene in buildings placed before 21 Feb 2018 and extruded polystyrene before 23 June 2016 permitted; labelling required for expanded polystyrene placed on the market after 23 March 2016."
+   }
+  },
+  {
+   "key": "tetra_penta_bde",
+   "name": "Tetrabromodiphenyl ether and pentabromodiphenyl ether",
+   "aliases": [
+    "tetrabromodiphenyl ether",
+    "pentabromodiphenyl ether",
+    "tetrabde",
+    "pentabde"
+   ],
+   "cas": [
+    "5436-43-1",
+    "60348-60-9",
+    "40088-47-9",
+    "32534-81-9"
+   ],
+   "substance_class": "brominated_flame_retardant",
+   "stockholm_annexes": [
+    "A"
+   ],
+   "eu": {
+    "annex": "I",
+    "status": "CONFIRMED_ORIGINAL_2019_TEXT",
+    "exemptions": "Unintentional trace up to 10 mg/kg in substances; sum of tetra- to decaBDE up to 500 mg/kg in mixtures/articles; electrical/electronic equipment exemption; articles in use before 25 Aug 2010 permitted."
+   }
+  },
+  {
+   "key": "hexa_hepta_bde",
+   "name": "Hexabromodiphenyl ether and heptabromodiphenyl ether",
+   "aliases": [
+    "hexabromodiphenyl ether",
+    "heptabromodiphenyl ether",
+    "hexabde",
+    "heptabde"
+   ],
+   "cas": [
+    "68631-49-2",
+    "207122-15-4",
+    "446255-22-7",
+    "207122-16-5",
+    "36483-60-0",
+    "68928-80-3"
+   ],
+   "substance_class": "brominated_flame_retardant",
+   "stockholm_annexes": [
+    "A"
+   ],
+   "eu": {
+    "annex": "I",
+    "status": "CONFIRMED_ORIGINAL_2019_TEXT",
+    "exemptions": "Same provisions as tetra/penta-BDE as extracted."
+   }
+  },
+  {
+   "key": "decabde",
+   "name": "Decabromodiphenyl ether (decaBDE)",
+   "aliases": [
+    "decabromodiphenyl ether",
+    "decabde",
+    "bis\\(pentabromophenyl\\) ether"
+   ],
+   "cas": [],
+   "substance_class": "brominated_flame_retardant",
+   "stockholm_annexes": [
+    "A"
+   ],
+   "eu": {
+    "annex": "I",
+    "status": "CONFIRMED_ORIGINAL_2019_TEXT",
+    "exemptions": "Multiple time-limited exemptions (aircraft, motor-vehicle spare parts, electrical equipment); articles labelled."
+   }
+  },
+  {
+   "key": "pfos",
+   "name": "Perfluorooctane sulfonic acid (PFOS), its salts and PFOSF",
+   "aliases": [
+    "pfos",
+    "perfluorooctane sulfonic acid",
+    "perfluorooctane sulfonate",
+    "perfluorooctane sulfonyl fluoride"
+   ],
+   "cas": [
+    "1763-23-1",
+    "307-35-7"
+   ],
+   "substance_class": "pfas",
+   "stockholm_annexes": [
+    "B"
+   ],
+   "eu": {
+    "annex": "I",
+    "status": "CONFIRMED_ORIGINAL_2019_TEXT",
+    "exemptions": "Unintentional trace up to 10 mg/kg in substances/mixtures; up to 0.1% by weight in semi-finished products/articles or <1 ug/m2 for coated materials; articles in use before 25 Aug 2010 permitted; hard-chromium mist suppressants in closed-loop systems with derogation."
+   }
+  },
+  {
+   "key": "pfoa",
+   "name": "Perfluorooctanoic acid (PFOA), its salts and related compounds",
+   "aliases": [
+    "pfoa",
+    "perfluorooctanoic acid",
+    "perfluorooctanoate"
+   ],
+   "cas": [],
+   "substance_class": "pfas",
+   "stockholm_annexes": [
+    "A"
+   ],
+   "eu": {
+    "annex": "I",
+    "status": "LISTED_PER_EU_MATRIX_CONSOLIDATED_READ",
+    "exemptions": null
+   }
+  },
+  {
+   "key": "pfhxs",
+   "name": "Perfluorohexane sulfonic acid (PFHxS), its salts and related compounds",
+   "aliases": [
+    "pfhxs",
+    "perfluorohexane sulfonic acid",
+    "perfluorohexane sulfonate"
+   ],
+   "cas": [
+    "355-46-4"
+   ],
+   "substance_class": "pfas",
+   "stockholm_annexes": [
+    "A"
+   ],
+   "eu": {
+    "annex": null,
+    "status": "NOT_CONFIRMED",
+    "exemptions": null
+   }
+  },
+  {
+   "key": "sccp",
+   "name": "Short-chain chlorinated paraffins (SCCPs)",
+   "aliases": [
+    "short[- ]chain chlorinated paraffins?",
+    "sccps?",
+    "alkanes,? c10-?13,? chloro"
+   ],
+   "cas": [
+    "85535-84-8"
+   ],
+   "substance_class": "chlorinated_paraffin",
+   "stockholm_annexes": [
+    "A"
+   ],
+   "eu": {
+    "annex": "I",
+    "status": "CONFIRMED_ORIGINAL_2019_TEXT",
+    "exemptions": "Allowed if below 1% by weight in substances/mixtures or 0.15% in articles; specific time-limited article exemptions."
+   }
+  },
+  {
+   "key": "mccp",
+   "name": "Medium-chain chlorinated paraffins (MCCPs)",
+   "aliases": [
+    "medium[- ]chain chlorinated paraffins?",
+    "mccps?"
+   ],
+   "cas": [],
+   "substance_class": "chlorinated_paraffin",
+   "stockholm_annexes": [
+    "A"
+   ],
+   "eu": {
+    "annex": "I (proposed)",
+    "status": "PROPOSED_NOT_CONFIRMED",
+    "exemptions": null
+   }
+  },
+  {
+   "key": "lc_pfca",
+   "name": "Long-chain perfluorocarboxylic acids, their salts and related compounds",
+   "aliases": [
+    "long[- ]chain perfluorocarboxylic acids?",
+    "lc-pfcas?"
+   ],
+   "cas": [],
+   "substance_class": "pfas",
+   "stockholm_annexes": [
+    "A"
+   ],
+   "eu": {
+    "annex": "I (proposed)",
+    "status": "PROPOSED_NOT_CONFIRMED",
+    "exemptions": null
+   }
+  },
+  {
+   "key": "chlorpyrifos",
+   "name": "Chlorpyrifos",
+   "aliases": [
+    "chlorpyrifos"
+   ],
+   "cas": [],
+   "substance_class": "current_use_pesticide",
+   "stockholm_annexes": [
+    "A"
+   ],
+   "eu": {
+    "annex": "I (proposed)",
+    "status": "PROPOSED_NOT_CONFIRMED",
+    "exemptions": null
+   }
+  },
+  {
+   "key": "dicofol",
+   "name": "Dicofol",
+   "aliases": [
+    "dicofol"
+   ],
+   "cas": [],
+   "substance_class": "organochlorine_pesticide",
+   "stockholm_annexes": [
+    "A"
+   ],
+   "eu": {
+    "annex": null,
+    "status": "NOT_CONFIRMED",
+    "exemptions": null
+   }
+  },
+  {
+   "key": "methoxychlor",
+   "name": "Methoxychlor",
+   "aliases": [
+    "methoxychlor"
+   ],
+   "cas": [],
+   "substance_class": "organochlorine_pesticide",
+   "stockholm_annexes": [
+    "A"
+   ],
+   "eu": {
+    "annex": null,
+    "status": "NOT_CONFIRMED",
+    "exemptions": null
+   }
+  },
+  {
+   "key": "dechlorane_plus",
+   "name": "Dechlorane Plus",
+   "aliases": [
+    "dechlorane plus"
+   ],
+   "cas": [],
+   "substance_class": "halogenated_flame_retardant",
+   "stockholm_annexes": [
+    "A"
+   ],
+   "eu": {
+    "annex": null,
+    "status": "NOT_CONFIRMED",
+    "exemptions": null
+   }
+  },
+  {
+   "key": "uv328",
+   "name": "UV-328",
+   "aliases": [
+    "uv[- ]?328"
+   ],
+   "cas": [],
+   "substance_class": "uv_stabiliser",
+   "stockholm_annexes": [
+    "A"
+   ],
+   "eu": {
+    "annex": null,
+    "status": "NOT_CONFIRMED",
+    "exemptions": null
+   }
+  }
+ ]
+}
