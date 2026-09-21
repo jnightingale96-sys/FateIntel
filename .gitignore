@@ -8,3 +8,4 @@ data/model_workflows/
 data/ecotox_reference.jsonl
 data/ecotox_index.json
 STARTUP_LOG.txt
+data/backups/
