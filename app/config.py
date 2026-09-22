@@ -124,6 +124,14 @@ class Settings(BaseModel):
     massbank_base_url: str = "https://massbank.eu"
     massbank_timeout_seconds: float = Field(default=15.0, gt=0, le=120)
 
+    # US EPA Computational Toxicology and Exposure (CTX) APIs -- see the "epa_comptox" entry in
+    # app/data/evidence_source_registry.json. CTX data are open for commercial and non-commercial use; an
+    # individual API key is required for the limited-access endpoints (identity, physchem, environmental fate,
+    # ecotoxicity, exposure). This field only stores the credential (read from the environment/.env file, never
+    # the UI, never logged); no live connector reads it yet -- registry.search_enabled stays false until one is
+    # built and its endpoint contract is verified against the real API, the same discipline used for enviPath.
+    comptox_api_key: str | None = None
+
     def __init__(
         self,
         *,
