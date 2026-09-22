@@ -160,6 +160,30 @@ def test_japan_pesticide_route_names_its_own_pec_criterion():
     assert "Predicted Environmental Concentration" in route["detail"] and "Agricultural Chemicals" in route["detail"]
 
 
+# ---------- Japan/China industrial methods, upgraded from "agency only" in the 2026-09-22 follow-up ----------
+def test_japan_industrial_route_names_the_confirmed_cscl_structure_but_stays_partial():
+    route = stage(resolve_workflow("JP", "industrial_organic"), USE_RELEASE, "route")
+    assert route["status"] == "partial"  # real structure confirmed, but no calculable current method is offered
+    for term in ("Hazard Class", "Exposure Class", "DNEL/PNEC", "priority matrix"):
+        assert term in route["detail"], term
+    assert "2022" in route["detail"]  # honestly flags that a later revision exists and was not read
+
+
+def test_china_industrial_route_names_the_confirmed_2019_guideline_but_stays_partial():
+    route = stage(resolve_workflow("CN", "industrial_organic"), USE_RELEASE, "route")
+    assert route["status"] == "partial"
+    assert "2019" in route["detail"] and "PEC/PNEC" in route["detail"]
+    assert "uncertainty-factor values were not confirmed" in route["detail"]
+
+
+def test_korea_and_india_industrial_routes_stay_agency_only_after_the_follow_up_search():
+    # Unlike Japan and China, the follow-up search found nothing India- or Korea-specific for the industrial
+    # pathway, so these two must NOT have picked up a real-structure upgrade.
+    kr = stage(resolve_workflow("KR", "industrial_organic"), USE_RELEASE, "route")
+    ind = stage(resolve_workflow("IN", "industrial_organic"), USE_RELEASE, "route")
+    assert kr["programme_key"] == "KR_KREACH_NOT_MAPPED" and ind["programme_key"] == "IN_MSIHC_NOT_MAPPED"
+
+
 def test_korea_pesticide_route_names_the_confirmed_registering_authority():
     # 2026-09-22 follow-up: the Rural Development Administration / MAFRA attribution was confirmed after the
     # initial JP/CN/KR/IN research session, which had left it as an open question.

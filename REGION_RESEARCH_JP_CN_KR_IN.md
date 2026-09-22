@@ -17,9 +17,27 @@ Assessment" against exposure and hazard information (persistence, bioaccumulatio
 Source: METI, "Chemical Substances Control Law (CSCL)" (official overview PDF),
 <https://www.meti.go.jp/policy/chemical_management/english/cscl/files/about/01CSCL.pdf>; OECD PFAS country
 page confirms the same three-ministry structure, <https://www.oecd.org/content/dam/oecd/en/topics/policy-sub-issues/risk-management-risk-reduction-and-sustainable-chemistry2/pfas-country-information/Japan.pdf>.
-Retrieved via WebSearch summary, not the full PDF text -- the exact quantitative screening/assessment method
-(assessment factors, PEC/PNEC formula for industrial chemicals) was NOT independently verified this session and
-is marked not yet mapped, the same way AU's AICIS route only encodes what was actually read in the TGD.
+
+**Method structure, 2026-09-22 follow-up**: fetched and read (via PyMuPDF, after WebFetch's own summariser
+reported it as unreadable -- the same "the tool's summary isn't enough" pattern as the UK CLP mobility text
+earlier in this project) NITE's own technical presentation: Yusuke Hirai (Risk Analysis Division, Chemical
+Management Center, NITE), "Chemical Risk Assessment under the Chemical Substances Control Law in Japan and
+comparison with REACH," 6th SETAC World Congress / SETAC Europe 22nd Annual Meeting, Berlin, 23 May 2012,
+<https://www.nite.go.jp/data/000009696.pdf>. It describes a real, two-stage, government-run (not industry-run,
+~30 NITE/CERI staff) process: (1) ALL existing substances are screened by cross-tabulating a Hazard Class (1-4,
+scored from repeated-dose toxicity, reproductive toxicity, mutagenicity, carcinogenicity and ecotoxicity data --
+"if no data available, default class (class 2) will be applied") against an Exposure Class (1-5, set by total
+estimated national emissions in tonnes/year: Class 1 >10,000 t, down to Class 5 1-<10 t, with <1 t excluded from
+prioritisation) in a priority matrix, producing High/Medium/Low; (2) substances scoring High become "Priority
+Assessment Chemical Substances" (PACs) and get a real Risk Assessment: a modelled PEC (from notified production/
+use volume, an emission-factor table and an exposure scenario by lifecycle stage) compared against DNEL/PNEC.
+Production/import volume is separately tiered (Tier 1: 1-10 t/y, Tier 2: 10-100 t/y, Tier 3: 100-1,000 t/y,
+Tier 4: >=1,000 t/y), setting how much hazard/exposure data is required at each tier. **What this is NOT**: a
+calculable method FateIntel could run. The source is a 2012 conference slide deck, not the current official
+guideline text; a 2022 revision to the PAC screening/risk-assessment method was found in search results (CIRS
+Group, "Japan to Publish Revised Risk Assessment Methods for Priority Assessment Chemical Substances (PACs)")
+but not read, so none of the 2012 numeric class boundaries above are asserted as current. Encoded in
+`_regulatory_programme` as `JP_CSCL_PARTIAL` -- structure named, current numbers not verified.
 
 **Pesticides**: Agricultural Chemicals Regulation Act (1948, substantially revised 2018 to add post-market
 re-evaluation). Registration is refused if the residue standard under the Food Sanitation Act is exceeded, or if
@@ -62,7 +80,22 @@ revised Measures are due to enter into force 15 August 2026, superseding Order 1
 CIRS, "Breaking News! The Registration System for New Chemical Substances in China Undergoes a Major Overhaul",
 <https://www.cirs-group.com/en/chemicals/breaking-news-the-registration-system-for-new-chemical-substances-in-china-undergoes-a-major-overhaul>.
 Both are compliance-industry secondary sources (no official MEE English page for the 2026 revision was found
-this session); the underlying quantitative risk-assessment method was not verified and is not encoded.
+this session).
+
+**Method structure, 2026-09-22 follow-up**: a real, named risk-assessment guideline was found and its existence
+is confirmed, though its full text was not: the Technical Framework Guideline for Environmental Risk Assessment
+of Chemical Substances (Trial) ("Framework Guide to the Technology Methods of Environmental Risk Assessment for
+Chemical Substances (Trial)" in one translation), jointly issued by MEE and the National Health Commission (NHC)
+on 3 September 2019, described consistently across Lexology, National Law Review, ChemLinked and REACH24H as a
+"four-step" method (hazard identification, dose-response assessment, exposure assessment, risk characterisation)
+using a PEC/PNEC-style approach, with aquatic ecotoxicity testing across three trophic levels (algae, fish,
+daphnia) -- a real, PEC/PNEC-shaped method, not just an agency name. A further "Systematic Framework for
+Technical Standards on Environmental Risk Assessment and Control of Chemical Substances (2024)" was released
+16 October 2024, updating this. **Not confirmed**: one search result attributed specific PNEC uncertainty
+factors (100 for acute-only aquatic data, 10 additional for chronic data) to this guideline, but that same
+search also returned a generic, non-China-specific "How to Calculate PNEC" reference page describing the same
+common international convention -- the attribution could not be disentangled from the search summary with
+confidence, so no numeric factor is encoded. Encoded in `_regulatory_programme` as `CN_MEE_PARTIAL`.
 
 **Pesticides**: registered by the department of agriculture and rural affairs under the State Council (Ministry
 of Agriculture and Rural Affairs). The Soil Pollution law itself (below) directly requires this department to
@@ -109,7 +142,12 @@ Environmental Research (NIER) evaluates the shared dossier to determine whether 
 restricted or banned. Sources: CIRS, "K-REACH Registration", <https://www.cirs-group.com/en/chemicals/k-reach-registration>;
 REACH24H, "K-REACH 2025 Amendments", <https://en.reach24h.com/news/insights/chemical/k-reach-2025-amendment>.
 Secondary compliance-industry sources; the quantitative risk-assessment method was not verified and is not
-encoded.
+encoded. **2026-09-22 follow-up search**: no K-REACH-specific numeric method was found. One search result stated
+"a ratio of >1 triggers action... according to guidelines of the REACH program" -- reading that in context, it
+describes the EU REACH convention, not K-REACH specifically, so it is not attributed to Korea here. NIER's own
+NIER Announcement No. 2022-317 (hazard-assessment-result updates) and its 30 September 2022 "Regulation on
+Registration Application Dossier Preparation, Hazard Evaluation Methods" were both located by name but not
+fetched -- named as a lead for a future session, not encoded as a finding.
 
 **Pesticides**: Agrochemicals Control Act ("Pesticide Control Act" in some translations). **Confirmed in a
 2026-09-22 follow-up session**: the Rural Development Administration (RDA) is the operational registering
@@ -151,7 +189,11 @@ of Environment, Forest and Climate Change (MoEFCC) and enforced by the Central/S
 Confirmed still in force this session (last amendment referenced was 2000); primary text located at
 <https://www.indiacode.nic.in/ViewFileUploaded?path=AC_CEN_16_18_00011_198629_1517807327582%2Frulesindividualfile%2F&file=msihc_rules_ameded_upto_date.pdf>
 (India Code, the Government of India's official legislation portal) but not independently fetched and read this
-session -- summarised from a WebSearch result, not primary text.
+session -- summarised from a WebSearch result, not primary text. **2026-09-22 follow-up search**: no MSIHC-
+specific quantitative environmental risk-assessment method was found. Results returned generic Quantitative Risk
+Assessment guidance (accident/spillage/emergency-response risk, a different discipline from environmental fate
+PEC/PNEC) and a generic statement that "the simple quotient approach... has become the basis of environmental
+risk assessment of chemicals throughout the world" -- not India-specific, so not encoded as a finding.
 
 **Pesticides**: The Insecticides Act, 1968 (in force since 1 August 1971, with the Insecticides Rules, 1971).
 Registration is administered centrally by the Central Insecticides Board & Registration Committee (CIBRC), under
@@ -187,10 +229,16 @@ not primary-verified. <https://link.springer.com/article/10.1007/s43441-026-0103
 
 ## What is deliberately NOT built from this research
 
-- No quantitative PEC/PNEC or assessment-factor method for any of the four countries' industrial-chemical or
-  pesticide pathway -- unlike AICIS (AU) or ECCC's Okonski method (CA), nothing here was read to primary-document
-  depth on the numeric method. Each country's `_regulatory_programme()` branch names the real regime and agency
-  and says the quantitative method is not yet mapped, the same pattern already used for CA's PMRA and AU's TGA.
+- Still no CALCULABLE quantitative PEC/PNEC or assessment-factor method for any of the four countries, unlike
+  AICIS (AU) or ECCC's Okonski method (CA) -- FateIntel cannot run any of these four countries' industrial
+  methods. A 2026-09-22 follow-up did upgrade Japan's and China's industrial branches from "agency named only" to
+  "real method structure confirmed, current numeric thresholds not verified" (`JP_CSCL_PARTIAL`,
+  `CN_MEE_PARTIAL`) after fetching a NITE technical presentation and confirming China's named 2019 MEE/NHC
+  guideline. A further, dedicated search for Korea's and India's industrial quantitative methods found nothing
+  India- or Korea-specific (both searches turned up generic international risk-assessment conventions or
+  unrelated disciplines, e.g. accident/spillage QRA for India's MSIHC) -- those two remain "agency named only."
+  Every pesticide pathway across all four remains fully unmapped too, except Japan's named-but-uncalculated PEC
+  criterion.
 - No EXTERNAL_ROUTES entries for human/ecological/groundwater/surface-water receptors for any of the four --
   only the identified soil/land contamination law is encoded as a named route (`contaminated_land`-style, one
   route rather than per-receptor, since none of the four sources broke their site-level regime down by receptor

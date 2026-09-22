@@ -86,14 +86,16 @@ FRAMEWORKS: list[dict[str, Any]] = [
         "name": "Japan",
         # Researched this session (REGION_RESEARCH_JP_CN_KR_IN.md). CSCL (Chemical Substances Control Law, 1973)
         # is jointly administered by METI, MHLW and the Ministry of the Environment for new industrial chemicals
-        # -- confirmed via METI's own overview, but the quantitative screening/PEC-PNEC method was not read to
-        # primary-document depth and is not encoded. The Agricultural Chemicals Regulation Act's own criterion
-        # (a Predicted Environmental Concentration compared against MoE standards for public waters) was read
-        # from the official translation and IS named below, though its calculation method is not encoded either.
-        # MHLW's 2016 pharmaceutical environmental risk assessment guidance (PEC/PNEC ratio, 0.01 microgram/L
-        # action limit) is confirmed only via secondary academic citations, not the MHLW notification itself.
+        # -- confirmed via METI's own overview. A 2026-09-22 follow-up fetched a NITE technical presentation that
+        # confirms the method's real shape (government-run Hazard/Exposure Class screening matrix, then a PEC vs
+        # DNEL/PNEC Risk Assessment for Priority Assessment Chemical Substances) -- current numeric thresholds
+        # were not verified (a 2022 revision exists, unread). The Agricultural Chemicals Regulation Act's own
+        # criterion (a Predicted Environmental Concentration compared against MoE standards for public waters) was
+        # read from the official translation and IS named below, though its calculation method is not encoded
+        # either. MHLW's 2016 pharmaceutical environmental risk assessment guidance (PEC/PNEC ratio, 0.01
+        # microgram/L action limit) is confirmed only via secondary academic citations, not the MHLW notification.
         "packs": [
-            "CSCL industrial chemicals (METI/MHLW/MoE; quantitative method not yet mapped)",
+            "CSCL industrial chemicals (METI/MHLW/MoE; screening/PEC-DNEL/PNEC structure confirmed, current numeric criteria not verified)",
             "Agricultural Chemicals Regulation Act pesticides (PEC criterion named, calculation not yet mapped)",
             "MHLW pharmaceutical environmental risk assessment (secondary-sourced, not yet mapped)",
             "Soil Contamination Countermeasures Act (2002; contaminated land only)",
@@ -110,7 +112,7 @@ FRAMEWORKS: list[dict[str, Any]] = [
         # registration sits with the Ministry of Agriculture and Rural Affairs, and that same law requires it to
         # assess pesticide/fertiliser impact on the soil environment -- confirmed by statute, not by practice.
         "packs": [
-            "China REACH / MEE new-chemical registration (quantitative method not yet mapped)",
+            "China REACH / MEE new-chemical registration (named PEC/PNEC-style guideline confirmed, numeric factors not verified)",
             "Ministry of Agriculture and Rural Affairs pesticide registration (pathway not yet mapped)",
             "Soil Pollution Prevention and Control Law (2018/2019; contaminated land)",
             "Pharmaceutical-manufacturing discharge standards (MEE, GB 219xx series; effluent control, not a "
@@ -1021,12 +1023,29 @@ def _regulatory_programme(jurisdiction: str, group: str, scenario: str) -> dict[
                          "confirmed only via secondary academic citation of the guidance, not the MHLW notification "
                          "itself, and not encoded as a calculable method (EXTERNAL MODEL REQUIRED).",
             }
+        # 2026-09-22 follow-up research: fetched and read a NITE (Chemical Management Center) technical
+        # presentation, "Chemical Risk Assessment under the Chemical Substances Control Law in Japan and
+        # comparison with REACH" (SETAC World Congress, Berlin, 23 May 2012), the closest primary-adjacent source
+        # located for the actual CSCL method's shape. It describes a real, tiered, two-stage process: government
+        # (NITE/CERI, not industry) screens ALL existing substances by cross-tabulating a Hazard Class (1-4, based
+        # on repeated-dose toxicity, reproductive toxicity, mutagenicity, carcinogenicity and ecotoxicity data, with
+        # class 2 applied by default if no data exists) against an Exposure Class (1-5, based on total estimated
+        # national emissions in tonnes/year) in a priority matrix; substances scoring "High" become Priority
+        # Assessment Chemical Substances (PACs), which then get a real Risk Assessment (PEC, modelled from notified
+        # production/use volume and an emission-factor table, compared against DNEL/PNEC). Production/import volume
+        # is also tiered (Tier 1: 1-10 t/y, Tier 2: 10-100 t/y, Tier 3: 100-1,000 t/y, Tier 4: >=1,000 t/y),
+        # determining how much hazard/exposure data is required. This is real structure, not a calculable method:
+        # the exact 2012 numeric class boundaries may have been superseded by a 2022 CSCL PAC screening/risk-
+        # assessment revision (found in search results but not read), so nothing here is asserted as current.
         return {
-            "key": "JP_CSCL_NOT_MAPPED",
-            "name": "Japan CSCL pathway (quantitative method not yet mapped)",
-            "scope": "New chemical substances are screened and risk-assessed under the Chemical Substances Control "
-                     "Law (METI/MHLW/MoE); the quantitative screening/PEC-PNEC method has not been mapped "
-                     "(EXTERNAL MODEL REQUIRED).",
+            "key": "JP_CSCL_PARTIAL",
+            "name": "Japan CSCL pathway (structure confirmed, current numeric criteria not verified)",
+            "scope": "The Chemical Substances Control Law (METI/MHLW/MoE, government-run, not industry-run) screens "
+                     "existing substances via a Hazard Class x Exposure Class priority matrix (exposure class set "
+                     "by total national emissions, tiered by production/import volume); substances prioritised "
+                     "'High' undergo Risk Assessment comparing a modelled PEC against DNEL/PNEC. Confirmed via a "
+                     "2012 NITE technical presentation; current (post-2022-revision) numeric thresholds were not "
+                     "verified, so no calculation is offered (EXTERNAL MODEL REQUIRED).",
         }
 
     if jurisdiction == "CN":
@@ -1059,12 +1078,22 @@ def _regulatory_programme(jurisdiction: str, group: str, scenario: str) -> dict[
                          "pharmaceutical industry, GB 21906-2008 traditional Chinese medicine category) -- a "
                          "manufacturing-effluent limit, not a PEC/PNEC risk assessment (EXTERNAL MODEL REQUIRED).",
             }
+        # 2026-09-22 follow-up research: found a real, named guideline -- the Technical Framework Guideline for
+        # Environmental Risk Assessment of Chemical Substances (Trial), jointly issued by MEE and the National
+        # Health Commission on 3 September 2019 -- covering PEC/PNEC-style risk characterisation via hazard
+        # identification, dose-response assessment, exposure assessment and risk characterisation, with aquatic
+        # ecotoxicity testing across three trophic levels (algae, fish, daphnia). Some secondary sources also state
+        # specific PNEC uncertainty-factor values (100 for acute-only data, 10 additional for chronic), but that
+        # attribution could not be confirmed as specific to this guideline rather than a generic international
+        # convention appearing in the same search results -- so no numeric factor is asserted here.
         return {
-            "key": "CN_MEE_NOT_MAPPED",
-            "name": "China REACH (MEE new-chemical registration) pathway (quantitative method not yet mapped)",
+            "key": "CN_MEE_PARTIAL",
+            "name": "China REACH (MEE new-chemical registration) pathway (structure confirmed, numeric factors not verified)",
             "scope": "New chemical substances are registered with the Ministry of Ecology and Environment under "
-                     "MEE Order No. 12 (revised Measures due 15 August 2026); the quantitative risk-assessment "
-                     "method has not been mapped (EXTERNAL MODEL REQUIRED).",
+                     "MEE Order No. 12 (revised Measures due 15 August 2026). A named environmental risk-assessment "
+                     "guideline exists (MEE/NHC, 3 September 2019): a four-step PEC/PNEC-style method with "
+                     "three-trophic-level aquatic ecotoxicity testing; its specific uncertainty-factor values were "
+                     "not confirmed this session, so no calculation is offered (EXTERNAL MODEL REQUIRED).",
         }
 
     if jurisdiction == "KR":
