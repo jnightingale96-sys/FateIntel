@@ -108,24 +108,68 @@ Japan and South Korea (human only), China (human + ecological, from its own Arti
 classes — the only one of the four whose 2025 Contaminated Sites Rules names soil, groundwater, surface water and
 sediment together).
 
+## Follow-up (2026-09-22, same day): closing the open items above
+
+User: "Ok so finish those" (referring to the five open items reported at the end of the previous follow-up).
+Four of the five are now closed; the fifth (more Tier 3/4 countries) was read as a statement of fact rather than a
+commitment and was deliberately not pursued — it is a materially larger, unbounded scope (the original brief's
+list runs to Brazil, Mexico, Norway, Singapore, Taiwan, the Gulf states, South Africa, ...) and stayed open for
+the user to direct explicitly. Commits: 3dae4f4 (schemas), 71bb362 (Korea pesticide + pharma research),
+164dcc2 (Japan/China method structure). Full suite ended at 768 passed (was 706 at the start of the day).
+
+1. **The four other stale-Literal schemas — investigated and fixed, not skipped.** Checked reachability of each
+   before touching it (which front-end file calls it, with what jurisdiction values) rather than guessing at
+   scope: `ModelWorkflowCreate` and `OrchestrationPlanCreate`/`OrchestratedAssessmentCreate`/
+   `OrchestrationModelResultInput` were CONFIRMED live and reachable for every region (several `MODELS` entries
+   already list AU/CA/NZ in their own `"regions"`, reachable via the guided page's "Enter inputs & prepare"
+   button; expert.html's orchestration form populates its jurisdiction dropdown from every `/api/frameworks`
+   entry with no filtering) — both had been silently 422-ing since AU/CA/NZ were added last session.
+   `JurisdictionalQuantityInput`/`CrossJurisdictionComparisonCreate` is confirmed NOT called from any front-end
+   code today; widened anyway for consistency. All five now cover all 11 regions.
+   **Process note for next time**: while checking `ModelWorkflowCreate`'s live behaviour, a bare
+   `TestClient(app)` script run outside pytest wrote a real row to `data/envirochem.sqlite` (project id 2324,
+   "schema-check") — pytest's `conftest.py` isolation fixture only applies inside actual pytest test runs, not
+   ad-hoc `python -c` scripts that import `app.main` directly. Cleaned up immediately (the one project row and
+   its one orphaned `audit_events` row — no other tables were touched). **Any future ad-hoc verification against
+   a live FastAPI `TestClient` must either write a real pytest test function (gets the fixture automatically) or
+   point `DATABASE_URL` at a scratch file first, the way the `browser_check_*.py` scripts already do — never a
+   bare script.**
+2. **South Korea's pesticide-registration agency — confirmed.** The Rural Development Administration (RDA)
+   issues registration certificates operationally, under the Ministry of Agriculture, Food and Rural Affairs'
+   (MAFRA) statutory authority over the Agrochemicals Control Act. Corroborated across three independent sources.
+3. **Human-pharmaceutical pathways researched for China, South Korea and India.** China: no pre-market ERA
+   guideline found, but a real, different, confirmed control exists — named category-specific national discharge
+   standards for pharmaceutical-manufacturing wastewater (GB 21905/21906-2008 etc., fetched from MEE's own
+   English pages) — reported as a manufacturing-effluent limit, not a PEC/PNEC assessment, never conflated.
+   South Korea: MFDS submissions are reported to require environmental-risk information, a real requirement, no
+   named guideline found. India: a peer-reviewed comparative review states CDSCO has NO environmental risk
+   assessment requirement — a confirmed absence, not a gap, the same shape of finding as Australia's TGA. Korea's
+   and India's findings are specifically about MFDS/CDSCO (each country's human-medicines regulator) and are
+   deliberately NOT extended to `veterinary_pharmaceutical` in code; China's is kept for both, since its finding
+   is a manufacturing-category standard rather than a human/veterinary regulatory split.
+4. **Quantitative methodology — partially closed, honestly.** Japan and China each turned up a genuine, real
+   method structure this session (not a calculable one): Japan's from a NITE technical presentation describing a
+   government-run Hazard/Exposure Class screening matrix feeding into a real PEC-vs-DNEL/PNEC risk assessment for
+   Priority Assessment Chemical Substances; China's from confirming a real, named 2019 MEE/NHC guideline (a
+   four-step PEC/PNEC-style method with three-trophic-level ecotox testing). Both are reported as *structure
+   confirmed, current numeric thresholds not verified* (`JP_CSCL_PARTIAL`, `CN_MEE_PARTIAL`), never as a
+   calculable method — Japan's source is a 2012 slide deck with an unread 2022 revision; China's specific
+   uncertainty-factor numbers could not be disentangled from a generic international-convention reference page
+   that appeared in the same search. Korea and India, after a genuinely dedicated further search, turned up
+   nothing jurisdiction-specific and remain "agency named only" (`KR_KREACH_NOT_MAPPED`, `IN_MSIHC_NOT_MAPPED`).
+
 ## Not done / open
 
-- The four other stale-Literal schemas noted above (model-workflow lifecycle, cross-jurisdiction comparison,
-  orchestration) — not touched, scope not confirmed.
-- No quantitative environmental risk-assessment method for JP/CN/KR/IN's industrial chemicals or pesticides
-  (beyond Japan's named PEC criterion) — every one of those routes says "not yet mapped", honestly.
-- South Korea's Agrochemicals Control Act administering body (Ministry of Agriculture vs. Rural Development
-  Administration) was not fully confirmed — see `REGION_RESEARCH_JP_CN_KR_IN.md`.
-- Human/veterinary pharmaceutical pathways for China, South Korea and India were not researched at all (Japan's
-  was, via secondary academic sources only, not the MHLW notification itself).
-- Tier 3/4 jurisdictions beyond these four from the original brief (Switzerland is now done; Brazil, Mexico,
-  Norway, Singapore, Taiwan, the Gulf states, South Africa, ...) still have no region tab or workflow.
-- No UI test that a *saved* assessment reopens into the workflow matching its own stored `contaminant_group` —
-  only that live chooser interactions correctly retarget the screens (unchanged from the original note above).
+- Tier 3/4 jurisdictions beyond these four from the original brief (Brazil, Mexico, Norway, Singapore, Taiwan,
+  the Gulf states, South Africa, ...) still have no region tab or workflow — an explicit, deliberately unpursued
+  scope decision, not an oversight; ask the user which (if any) they want next.
+- No calculable quantitative method for any of JP/CN/KR/IN's industrial-chemical or pesticide pathway. Japan and
+  China now have real *structure* (see above); Korea and India have neither structure nor numbers.
+- Veterinary-pharmaceutical and biocide-specific pathways were not researched for any of the four.
+- No UI test that a *saved* assessment (an existing project) reopens into the workflow matching its own stored
+  `contaminant_group` — only that live chooser interactions correctly retarget the screens. If a stored project
+  has a group unset (the common case for existing pre-this-feature projects), the shell just falls back to
+  whatever group the use-card implies at that moment, same as before this feature existed.
 - The "tools" stage (EnviroDesign / Identification / Applied Environmental Fate) is offered as one stage for every
   native-organic group; it isn't itself broken down by group (e.g. Identification's MS-evidence tools might not be
   equally relevant to every organic group). Not investigated.
-- No UI test that a *saved* assessment (an existing project) reopens into the workflow matching its own stored
-  `contaminant_group` — only that live chooser interactions correctly retarget the screens. If a stored project has
-  a group unset (the common case for existing pre-this-feature projects), the shell just falls back to whatever
-  group the use-card implies at that moment, same as before this feature existed.
