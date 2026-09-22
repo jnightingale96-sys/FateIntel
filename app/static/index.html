@@ -83,6 +83,8 @@
 </div>
 <div aria-label="Regulatory region" class="model-system-tabs" role="tablist">
 <button aria-selected="true" class="active" data-model-system="EU" role="tab" type="button"><span>EU</span><strong>EU models</strong><small>REACH / FOCUS routing</small></button>
+<button aria-selected="false" data-model-system="UK" role="tab" type="button"><span>UK</span><strong>UK models</strong><small>UK REACH / FOCUS routing</small></button>
+<button aria-selected="false" data-model-system="CH" role="tab" type="button"><span>CH</span><strong>Switzerland</strong><small>ChemO / FOCUS routing</small></button>
 <button aria-selected="false" data-model-system="US" role="tab" type="button"><span>US</span><strong>US models</strong><small>TSCA / FIFRA routing</small></button>
 <button aria-selected="false" data-model-system="CA" role="tab" type="button"><span>CA</span><strong>Canada</strong><small>CEPA / PMRA routing</small></button>
 <button aria-selected="false" data-model-system="AU" role="tab" type="button"><span>AU</span><strong>Australia</strong><small>AICIS / APVMA routing</small></button>
@@ -239,7 +241,9 @@
 <label><span>Amount used</span><div class="joined"><input id="amount-value" min="0" step="any" type="number" value="10"/><select id="amount-unit"><option>kg/year</option><option>tonnes/year</option><option>kg/day</option><option>g/day</option><option>mg/day</option></select></div></label>
 <label><span>Frequency</span><select id="frequency"><option value="continuous">Continuous</option><option value="daily">Daily</option><option value="batch">Batch</option><option value="occasional">Occasional</option></select></label>
 <label><span>Active regulatory region</span><select disabled id="regions">
-<option selected="" value="EU_UK_CH">EU + UK + Switzerland</option>
+<option selected="" value="EU">European Union</option>
+<option value="UK">United Kingdom</option>
+<option value="CH">Switzerland</option>
 <option value="US">United States</option>
 <option value="CA">Canada</option>
 <option value="AU">Australia</option>

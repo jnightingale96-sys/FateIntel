@@ -182,10 +182,50 @@ def test_project_and_native_run_provenance_cannot_silently_cross_tabs():
 
 def test_regions_select_has_a_real_us_only_option():
     assert '<option value="US">United States</option>' in HTML
-    # Every non-EU region maps to its own option; nothing falls back to US or EU.
-    assert "state.modelSystem === 'EU' ? 'EU_UK_CH' : state.modelSystem" in JS
-    for region, label in (("CA", "Canada"), ("AU", "Australia"), ("NZ", "New Zealand")):
+    # Every region maps to its own option and its own tab; nothing falls back to US or EU.
+    assert "if ($('regions')) $('regions').value = state.modelSystem;" in JS
+    assert '<option selected="" value="EU">European Union</option>' in HTML  # the default region
+    for region, label in (
+        ("UK", "United Kingdom"), ("CH", "Switzerland"),
+        ("CA", "Canada"), ("AU", "Australia"), ("NZ", "New Zealand"),
+    ):
         assert f'<option value="{region}">{label}</option>' in HTML
+        assert f'data-model-system="{region}"' in HTML
+
+
+def test_every_region_tab_actually_works_against_the_plan_endpoint():
+    # Regression: AU/CA/NZ were added to the tabs and to registry._regulatory_programme() in an earlier session,
+    # but AssessmentPlanCreate's jurisdiction Literal was never updated to match, so /api/assessment-plan silently
+    # 422'd for all three -- undetected because the newer "Assessment setup" stage rail calls
+    # registry._regulatory_programme() directly and never goes through this endpoint or its schema.
+    from fastapi.testclient import TestClient
+    from app.main import app
+    with TestClient(app) as client:
+        for jurisdiction in ("EU", "UK", "CH", "US", "AU", "CA", "NZ"):
+            response = client.post("/api/assessment-plan", json={
+                "jurisdiction": jurisdiction, "contaminant_group": "industrial_organic",
+                "scenario": "municipal_wastewater", "tier": 1,
+            })
+            assert response.status_code == 200, (jurisdiction, response.json())
+
+
+def test_uk_and_switzerland_never_receive_eu_reach_wording():
+    uk = build_assessment_plan({"jurisdiction": "UK", "contaminant_group": "industrial_organic", "scenario": "industrial_effluent", "tier": 1})
+    ch = build_assessment_plan({"jurisdiction": "CH", "contaminant_group": "industrial_organic", "scenario": "industrial_effluent", "tier": 1})
+    assert uk["regulatory_programme"]["key"] == "UK_REACH_INDUSTRIAL" and "UK REACH" in uk["regulatory_programme"]["name"]
+    assert ch["regulatory_programme"]["key"] == "CH_CHEMO_INDUSTRIAL" and "REACH" not in ch["regulatory_programme"]["name"]
+    assert "EU" not in uk["regulatory_programme"]["name"] and "EU" not in ch["regulatory_programme"]["name"]
+
+
+def test_an_unmapped_jurisdiction_never_inherits_eu_wording():
+    # The tail of _regulatory_programme used to be an unguarded default that any unmatched jurisdiction fell into.
+    # A jurisdiction with no branch at all must say so plainly, not silently receive EU REACH text. Calls
+    # _regulatory_programme directly (build_assessment_plan also does an unrelated FRAMEWORKS lookup that would
+    # StopIteration for a jurisdiction that isn't registered there at all -- not what this test is about).
+    from app.services.registry import _regulatory_programme
+    programme = _regulatory_programme("JP", "industrial_organic", "industrial_effluent")
+    assert programme["key"] == "JURISDICTION_NOT_MAPPED"
+    assert "not yet mapped" in programme["name"] and "EU" not in programme["name"] and "REACH" not in programme["scope"]
 
 
 def test_laboratory_use_maps_to_a_valid_contaminant_group():

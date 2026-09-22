@@ -25,7 +25,7 @@
 
   const FS = { ref: null, group: null, track: null, workflow: null, seq: 0, syncing: false };
 
-  const regionKey = () => (state.modelSystem === "EU" ? "EU_UK_CH" : state.modelSystem);
+  const regionKey = () => state.modelSystem;
   const familyOf = (group) => FS.ref?.families.find((f) => f.groups.some((g) => g.key === group)) || null;
   const activeTrack = () => FS.workflow?.tracks.find((t) => t.id === FS.track) || null;
 

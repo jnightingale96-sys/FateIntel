@@ -69,8 +69,8 @@ def test_contaminated_land_is_offered_for_the_site_relevant_groups(group):
 
 def test_site_first_groups_open_on_the_site_track():
     for group in ("metal_inorganic", "pah", "legacy_pop_organic", "organotin", "hydrocarbon_solvent"):
-        assert resolve_workflow("EU_UK_CH", group)["default_track"] == SITE
-    assert resolve_workflow("EU_UK_CH", "pfas_persistent_mobile")["default_track"] == USE_RELEASE
+        assert resolve_workflow("EU", group)["default_track"] == SITE
+    assert resolve_workflow("EU", "pfas_persistent_mobile")["default_track"] == USE_RELEASE
 
 
 # ---------- native organic screens only where valid ----------
@@ -98,10 +98,30 @@ def test_blocked_groups_have_no_tracks_and_only_the_route_page(region, group):
 
 
 # ---------- regions differ, following what is actually built ----------
-def test_eu_flow_has_the_eu_refinement_screens_and_others_do_not():
-    eu = resolve_workflow("EU_UK_CH", "human_pharmaceutical")
-    assert {"water_sediment", "pearl"} <= set(eu["modules"]) and "us_models" not in eu["modules"]
-    assert stage(eu, USE_RELEASE, "refine")["status"] == "available"
+@pytest.mark.parametrize("region", ["EU", "UK", "CH"])
+def test_focus_regions_all_have_the_shared_refinement_screens_and_not_the_us_ones(region):
+    wf = resolve_workflow(region, "human_pharmaceutical")
+    assert {"water_sediment", "pearl"} <= set(wf["modules"]) and "us_models" not in wf["modules"]
+    assert stage(wf, USE_RELEASE, "refine")["status"] == "available"
+
+
+def test_uk_and_switzerland_each_have_their_own_tab_not_a_shared_eu_one():
+    # The three used to be one combined region ("EU, UK and Switzerland"); each now resolves separately.
+    assert {"EU", "UK", "CH"} <= set(REGIONS)
+    assert "EU_UK_CH" not in REGIONS
+    assert REGIONS["UK"]["jurisdictions"] == ["UK"] and REGIONS["CH"]["jurisdictions"] == ["CH"]
+    assert REGIONS["UK"]["label"] != REGIONS["EU"]["label"] != REGIONS["CH"]["label"]
+
+
+def test_uk_and_switzerland_get_their_own_regulatory_route_text_not_eu_reach():
+    # Before this, any jurisdiction other than US/AU/CA/NZ fell into _regulatory_programme's unguarded EU-labelled
+    # tail, so a UK or CH assessment would have silently been told it was routed through "EU REACH". Confirm that
+    # bug is gone: each names its own regime, and neither is labelled with the other's or EU's wording.
+    uk = stage(resolve_workflow("UK", "industrial_organic"), USE_RELEASE, "route")
+    ch = stage(resolve_workflow("CH", "industrial_organic"), USE_RELEASE, "route")
+    assert "UK REACH" in uk["detail"] and uk["status"] == "available"
+    assert "ChemO" in ch["detail"] and "REACH" not in ch["detail"] and ch["status"] == "available"
+    assert "UK REACH" not in ch["detail"] and "EU REACH" not in uk["detail"] and "EU REACH" not in ch["detail"]
 
 
 def test_us_flow_has_the_us_models_and_not_the_eu_screens():
@@ -127,19 +147,36 @@ def test_regulatory_route_text_comes_from_the_registry_programme():
 
 def test_partially_mapped_routes_are_marked_partial_not_available():
     assert stage(resolve_workflow("CA", "human_pharmaceutical"), USE_RELEASE, "route")["status"] == "partial"
-    assert stage(resolve_workflow("EU_UK_CH", "industrial_organic"), USE_RELEASE, "route")["status"] == "available"
+    assert stage(resolve_workflow("EU", "industrial_organic"), USE_RELEASE, "route")["status"] == "available"
 
 
 # ---------- site track methods mirror the site model's own routes ----------
-def test_site_methods_mirror_external_routes_and_mark_gaps_not_established():
-    wf = resolve_workflow("EU_UK_CH", "legacy_pop_organic")
-    methods = next(t for t in wf["tracks"] if t["id"] == SITE)["methods"]
-    assert len(methods) == 12
+def _site_methods(region, group="legacy_pop_organic"):
+    wf = resolve_workflow(region, group)
+    return next(t for t in wf["tracks"] if t["id"] == SITE)["methods"]
+
+
+@pytest.mark.parametrize("region", ["EU", "UK", "CH", "US"])
+def test_site_methods_mirror_external_routes_and_mark_gaps_not_established(region):
+    methods = _site_methods(region)
+    assert len(methods) == 4  # one jurisdiction (this region's own) x four receptor classes
+    assert all(m["jurisdiction"] == REGIONS[region]["jurisdictions"][0] for m in methods)
     for m in methods:
         found = EXTERNAL_ROUTES.get((m["jurisdiction"], m["receptor"]))
         assert m["named"] is bool(found)
         assert m["route"] == (found["route"] if found else NOT_ESTABLISHED)
-    assert all(not m["named"] for m in methods if m["jurisdiction"] == "CH")
+
+
+def test_switzerland_has_no_named_site_method_yet():
+    # Splitting UK and Switzerland out of the combined EU tab surfaces this honestly: EXTERNAL_ROUTES has no CH
+    # entries at all, so every CH receptor stays "regulatory applicability not established", never borrowed from EU.
+    assert all(not m["named"] for m in _site_methods("CH"))
+
+
+def test_uk_and_eu_site_methods_are_not_identical():
+    # UK and EU are genuinely different regimes (e.g. UK has no confirmed ecological route; EU does) -- confirms
+    # the split didn't just alias one region's methods onto the other's.
+    assert _site_methods("UK") != [dict(m, jurisdiction="EU") for m in _site_methods("EU")]
 
 
 def test_site_track_never_claims_a_calculation():

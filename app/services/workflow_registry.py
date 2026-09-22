@@ -28,9 +28,14 @@ USE_RELEASE = "use_release"
 SITE = "site"
 
 # region key -> what that region's flow contains. `refinement` names the region-specific refinement screens that exist
-# in the app today; None means no dedicated refinement screen has been built for that region.
+# in the app today; None means no dedicated refinement screen has been built for that region. EU, UK and Switzerland
+# each get their own tab and their own regulatory-route text (registry._regulatory_programme), but still share the
+# app's native FOCUS/water-sediment refinement suite (refinement: "eu") -- that sharing is a pre-existing product
+# claim (see toxswa_surface_water.py's own EU/UK/US/CH applicability note), not something split apart here.
 REGIONS: dict[str, dict[str, Any]] = {
-    "EU_UK_CH": {"label": "EU, UK and Switzerland", "jurisdictions": ["EU", "UK", "CH"], "default": "EU", "refinement": "eu"},
+    "EU": {"label": "European Union", "jurisdictions": ["EU"], "default": "EU", "refinement": "eu"},
+    "UK": {"label": "United Kingdom", "jurisdictions": ["UK"], "default": "UK", "refinement": "eu"},
+    "CH": {"label": "Switzerland", "jurisdictions": ["CH"], "default": "CH", "refinement": "eu"},
     "US": {"label": "United States", "jurisdictions": ["US"], "default": "US", "refinement": "us"},
     "CA": {"label": "Canada", "jurisdictions": ["CA"], "default": "CA", "refinement": None},
     "AU": {"label": "Australia", "jurisdictions": ["AU"], "default": "AU", "refinement": None},

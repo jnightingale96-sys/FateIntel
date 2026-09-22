@@ -816,34 +816,117 @@ def _regulatory_programme(jurisdiction: str, group: str, scenario: str) -> dict[
             "scope": "Risk quotient (RQ = PEC / toxicity value) compared against NZ EPA's own fixed Level of Concern per receptor and exposure type (Table 9), with a graded risk-level banding (Table 10) rather than a single RQ>1 trigger; covers industrial chemicals and agrichemicals/pesticides alike under one HSNO pathway",
         }
 
-    if scenario == "agricultural_spray" or group == "pesticide":
+    # Below here used to be an unguarded tail that any jurisdiction not matched above (US/AU/CA/NZ) fell into --
+    # meaning UK and Switzerland silently received "EU REACH" wording even though neither is in EU REACH. Each
+    # jurisdiction now has its own explicit branch, using the regime names FRAMEWORKS already declares for it
+    # rather than EU's. The native screen suite (FOCUS/SimpleTreat/etc.) stays shared across EU/UK/CH -- only the
+    # regulatory-programme label and scope text differ.
+    if jurisdiction == "EU":
+        if scenario == "agricultural_spray" or group == "pesticide":
+            return {
+                "key": "EU_PPP_FOCUS",
+                "name": "EU plant-protection product exposure pathway",
+                "scope": "FOCUS groundwater and surface-water scenario workflows",
+            }
+        if scenario in {"industrial_effluent", "laboratory_use"}:
+            return {
+                "key": "EU_REACH_INDUSTRIAL",
+                "name": "EU REACH industrial and professional-use pathway",
+                "scope": "environmental releases; worker exposure requires a dedicated REACH worker assessment",
+            }
+        if scenario == "household_use":
+            return {
+                "key": "EU_REACH_CONSUMER",
+                "name": "EU REACH consumer lifecycle pathway",
+                "scope": "consumer-use environmental releases; direct human exposure is a separate assessment domain",
+            }
+        if scenario == "product_disposal":
+            return {
+                "key": "EU_REACH_WASTE",
+                "name": "EU REACH waste-stage pathway",
+                "scope": "service-life and waste-stage environmental releases and fate",
+            }
         return {
-            "key": "EU_PPP_FOCUS",
-            "name": "EU plant-protection product exposure pathway",
-            "scope": "FOCUS groundwater and surface-water scenario workflows",
+            "key": "EU_ENVIRONMENTAL",
+            "name": "EU environmental exposure pathway",
+            "scope": "native screening plus applicable managed EU model workflows",
         }
-    if scenario in {"industrial_effluent", "laboratory_use"}:
+
+    # UK REACH is the UK's own retained-EU-law chemicals regime (its own dossiers and timelines, separate from EU
+    # REACH since Brexit); "GB Plant protection products" and "GB Biocides" are FRAMEWORKS's own declared UK
+    # packs, reused here rather than a more specific instrument name that has not been verified.
+    if jurisdiction == "UK":
+        if scenario == "agricultural_spray" or group == "pesticide":
+            return {
+                "key": "UK_PPP_FOCUS",
+                "name": "UK plant-protection product exposure pathway",
+                "scope": "the GB Plant Protection Products regime; FOCUS groundwater and surface-water scenario workflows remain the shared technical basis",
+            }
+        if scenario in {"industrial_effluent", "laboratory_use"}:
+            return {
+                "key": "UK_REACH_INDUSTRIAL",
+                "name": "UK REACH industrial and professional-use pathway",
+                "scope": "environmental releases under UK REACH; worker exposure requires a dedicated UK REACH worker assessment",
+            }
+        if scenario == "household_use":
+            return {
+                "key": "UK_REACH_CONSUMER",
+                "name": "UK REACH consumer lifecycle pathway",
+                "scope": "consumer-use environmental releases; direct human exposure is a separate assessment domain",
+            }
+        if scenario == "product_disposal":
+            return {
+                "key": "UK_REACH_WASTE",
+                "name": "UK REACH waste-stage pathway",
+                "scope": "service-life and waste-stage environmental releases and fate",
+            }
         return {
-            "key": "EU_REACH_INDUSTRIAL",
-            "name": "EU REACH industrial and professional-use pathway",
-            "scope": "environmental releases; worker exposure requires a dedicated REACH worker assessment",
+            "key": "UK_ENVIRONMENTAL",
+            "name": "UK environmental exposure pathway",
+            "scope": "native screening plus applicable managed UK REACH / FOCUS workflows",
         }
-    if scenario == "household_use":
+
+    # Switzerland is not an EU/EEA member and is not part of EU REACH: FRAMEWORKS's own declared CH packs
+    # (ChemO, ORRChem, Plant protection products) are its actual chemicals and plant-protection regime, not
+    # REACH -- reused here rather than a more specific instrument name that has not been verified.
+    if jurisdiction == "CH":
+        if scenario == "agricultural_spray" or group == "pesticide":
+            return {
+                "key": "CH_PPP",
+                "name": "Swiss plant-protection product exposure pathway",
+                "scope": "the Swiss Plant Protection Products regime; FOCUS groundwater and surface-water scenario workflows remain the shared technical basis",
+            }
+        if scenario in {"industrial_effluent", "laboratory_use"}:
+            return {
+                "key": "CH_CHEMO_INDUSTRIAL",
+                "name": "Swiss ChemO/ORRChem industrial and professional-use pathway",
+                "scope": "environmental releases under the Swiss Chemicals Ordinance (ChemO) and Ordinance on Reduction of Risks relating to Chemical products (ORRChem); worker exposure requires a dedicated Swiss worker assessment",
+            }
+        if scenario == "household_use":
+            return {
+                "key": "CH_CHEMO_CONSUMER",
+                "name": "Swiss ChemO consumer lifecycle pathway",
+                "scope": "consumer-use environmental releases; direct human exposure is a separate assessment domain",
+            }
+        if scenario == "product_disposal":
+            return {
+                "key": "CH_CHEMO_WASTE",
+                "name": "Swiss ChemO waste-stage pathway",
+                "scope": "service-life and waste-stage environmental releases and fate",
+            }
         return {
-            "key": "EU_REACH_CONSUMER",
-            "name": "EU REACH consumer lifecycle pathway",
-            "scope": "consumer-use environmental releases; direct human exposure is a separate assessment domain",
+            "key": "CH_ENVIRONMENTAL",
+            "name": "Swiss environmental exposure pathway",
+            "scope": "native screening plus applicable managed Swiss ChemO / FOCUS workflows",
         }
-    if scenario == "product_disposal":
-        return {
-            "key": "EU_REACH_WASTE",
-            "name": "EU REACH waste-stage pathway",
-            "scope": "service-life and waste-stage environmental releases and fate",
-        }
+
+    # A jurisdiction with no dedicated branch above never inherits another jurisdiction's regulatory-programme
+    # text -- that was the exact bug this function had before EU/UK/CH each got an explicit guard.
     return {
-        "key": "EU_ENVIRONMENTAL",
-        "name": "EU environmental exposure pathway",
-        "scope": "native screening plus applicable managed EU model workflows",
+        "key": "JURISDICTION_NOT_MAPPED",
+        "name": f"{jurisdiction} environmental exposure pathway (not yet mapped)",
+        "scope": "This jurisdiction's regulatory-programme routing has not been researched. Native screening may "
+                 "still apply where the chemical group supports it; no jurisdiction-specific regime is named or claimed.",
     }
 
 

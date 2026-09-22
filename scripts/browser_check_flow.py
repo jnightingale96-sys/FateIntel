@@ -58,7 +58,7 @@ def run(page, errors, base):
     page.wait_for_function("() => window.flowShell && window.flowShell._state.workflow !== null", timeout=15000)
 
     # ---- first load: EU, human pharmaceutical
-    check("five region tabs", page.locator("[data-model-system]").count() == 5)
+    check("seven region tabs", page.locator("[data-model-system]").count() == 7)
     check("default EU tab is selected", page.get_attribute('[data-model-system="EU"]', "aria-selected") == "true")
     check("default group is human pharmaceutical", selected(page, "flow-groups") == ["Human pharmaceutical"], str(selected(page, "flow-groups")))
     check("pharma: contaminated land screen is hidden", not visible(page, "#contaminated-land"))
@@ -112,6 +112,26 @@ def run(page, errors, base):
     choose(page, "flow-families", "Pharmaceuticals and personal care")
     choose(page, "flow-groups", "Human pharmaceutical")
     check("EU rail: refinement is ready", "Water-sediment process screen" in rail_text(page))
+
+    # UK and Switzerland are their own tabs, sharing the FOCUS refinement suite but never each other's or EU's
+    # regulatory-route wording (registry._regulatory_programme has its own branch for each).
+    page.click('[data-model-system="UK"]')
+    page.wait_for_timeout(600)
+    check("UK: status names the UK, not the EU", "United Kingdom" in page.inner_text("#model-system-status"))
+    check("UK: FOCUS PEARL still available (shared refinement)", visible(page, "#pearl-groundwater"))
+    check("UK: rail names UK REACH", "UK REACH" in rail_text(page), rail_text(page)[:200])
+    check("UK: rail never says EU REACH", "EU REACH" not in rail_text(page))
+    page.click('[data-model-system="CH"]')
+    page.wait_for_timeout(600)
+    check("CH: status names Switzerland", "Switzerland" in page.inner_text("#model-system-status"))
+    check("CH: FOCUS PEARL still available (shared refinement)", visible(page, "#pearl-groundwater"))
+    check("CH: rail names ChemO, not REACH", "ChemO" in rail_text(page) and "REACH" not in rail_text(page), rail_text(page)[:200])
+    choose(page, "flow-families", "Metals and metalloids")
+    ch_methods = page.inner_text("#flow-rail")
+    check("CH site methods: nothing named yet (honest)", "0 of" in ch_methods or "not established" in ch_methods.lower(), ch_methods[:300])
+    choose(page, "flow-families", "Pharmaceuticals and personal care")
+    choose(page, "flow-groups", "Human pharmaceutical")
+
     page.click('[data-model-system="CA"]')
     page.wait_for_timeout(700)
     status = page.inner_text("#model-system-status")
