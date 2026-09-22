@@ -210,6 +210,51 @@ def test_every_region_tab_actually_works_against_the_plan_endpoint():
             assert response.status_code == 200, (jurisdiction, response.json())
 
 
+def test_model_workflows_endpoint_accepts_every_region_its_own_models_are_registered_for():
+    # Regression: ModelWorkflowCreate.jurisdiction had the exact same stale Literal as AssessmentPlanCreate above.
+    # Several MODELS entries (e.g. SIMPLETREAT) already list AU/CA/NZ in their own "regions", so the guided page's
+    # "Enter inputs & prepare" button was silently 422-ing for those three every time it was actually clicked --
+    # undetected because no automated check had ever driven that specific button for a non-EU/US region.
+    from uuid import uuid4
+    from fastapi.testclient import TestClient
+    from app.main import app
+    with TestClient(app) as client:
+        chemical = next(row for row in client.get("/api/chemicals").json() if row["preferred_name"] == "Carbamazepine")
+        for jurisdiction in ("EU", "UK", "CH", "US", "AU", "CA", "NZ"):
+            project = client.post("/api/projects", json={"name": f"model-workflow region QA {uuid4().hex[:8]}", "jurisdiction": jurisdiction}).json()
+            response = client.post("/api/model-workflows", json={
+                "project_id": project["id"], "chemical_id": chemical["id"], "model_key": "SIMPLETREAT",
+                "jurisdiction": jurisdiction, "tier": 1, "scenario_name": "region QA", "input_data": {},
+            })
+            # SIMPLETREAT lists all seven of these in its own "regions" -- a real registration match, not just a
+            # schema pass-through -- so every one of them must reach 200, never a Pydantic literal-validation 422.
+            assert response.status_code == 200, (jurisdiction, response.json())
+        # A region SIMPLETREAT does NOT list still gets refused, but for the honest business reason (not
+        # registered for that region), never because the jurisdiction value itself was rejected by the schema.
+        project = client.post("/api/projects", json={"name": f"model-workflow region QA {uuid4().hex[:8]}", "jurisdiction": "JP"}).json()
+        response = client.post("/api/model-workflows", json={
+            "project_id": project["id"], "chemical_id": chemical["id"], "model_key": "SIMPLETREAT",
+            "jurisdiction": "JP", "tier": 1, "scenario_name": "region QA", "input_data": {},
+        })
+        assert response.status_code == 422 and "not registered for JP" in response.json()["detail"]
+
+
+def test_orchestration_endpoints_accept_every_region():
+    # Regression: expert.html's orchestration form (#orch-jurisdiction) is populated from every /api/frameworks
+    # entry with no filtering, so OrchestrationPlanCreate/OrchestratedAssessmentCreate/OrchestrationModelResultInput
+    # all carried the same stale Literal bug -- reachable for all 11 regions from that form, not just EU/UK/US/CH.
+    from fastapi.testclient import TestClient
+    from app.main import app
+    with TestClient(app) as client:
+        for jurisdiction in ("EU", "UK", "CH", "US", "AU", "CA", "NZ", "JP", "CN", "KR", "IN"):
+            response = client.post("/api/orchestration/plan", json={
+                "jurisdiction": jurisdiction, "contaminant_group": "industrial_organic",
+                "scenario": "municipal_wastewater", "maximum_tier": 1,
+            })
+            assert response.status_code == 200, (jurisdiction, response.json())
+            assert response.json()["context"]["jurisdiction"] == jurisdiction
+
+
 def test_uk_and_switzerland_never_receive_eu_reach_wording():
     uk = build_assessment_plan({"jurisdiction": "UK", "contaminant_group": "industrial_organic", "scenario": "industrial_effluent", "tier": 1})
     ch = build_assessment_plan({"jurisdiction": "CH", "contaminant_group": "industrial_organic", "scenario": "industrial_effluent", "tier": 1})
