@@ -72,16 +72,56 @@ throughout `app.js`) because nothing distinguished "not EU" from "US".
   runs: default load hides contaminated land and shows the assessment flow; choosing "Metals and metalloids" flips
   both and opens on the site track with "No exposure or risk is calculated" in the rail.
 
+## Follow-up (2026-09-22): UK/Switzerland split, Japan/China/South Korea/India added
+
+User: "Split UK and Switzerland into there own tabs, and then get to work on Japan, China, South Korea, and India."
+Both done and committed same day (git 673a9f3 UK/CH split, 3b318ad JP/CN/KR/IN). Research for the four new
+countries is in `REGION_RESEARCH_JP_CN_KR_IN.md` (sources, retrieval dates, and an explicit "what wasn't verified"
+section — read that before extending any of the four).
+
+**UK/CH split** surfaced and fixed a real, separate bug while touching this code:
+`registry._regulatory_programme()`'s tail used to be an unguarded default that any jurisdiction other than
+US/AU/CA/NZ fell into, so a UK or Switzerland assessment was silently told it was routed through "EU REACH" —
+wrong for both. Each jurisdiction now has an explicit branch (EU/UK/CH/US/AU/CA/NZ/JP/CN/KR/IN), and a jurisdiction
+with none returns an honest `JURISDICTION_NOT_MAPPED` result instead of inheriting someone else's wording.
+
+**Also found and fixed**: `AssessmentPlanCreate.jurisdiction` in `app/schemas.py` was `Literal["EU","UK","US","CH"]`
+— AU/CA/NZ were added to the tabs in an earlier session without this Literal being updated, so `/api/assessment-plan`
+(the older "regulatory plan" card) silently 422'd for all three the whole time. Undetected because the newer
+"Assessment setup" stage rail calls `_regulatory_programme()` directly, never through this endpoint. Now covers all
+eleven regions. **There are four more schemas with the exact same stale `Literal["EU","UK","US","CH"]` pattern**
+(`ModelWorkflowCreate`, `JurisdictionalQuantityInput`/`CrossJurisdictionComparisonCreate`,
+`OrchestrationModelResultInput`, `OrchestrationPlanCreate`/`OrchestratedAssessmentCreate`) — deliberately NOT
+touched this session, because unlike `AssessmentPlanCreate` these are tied to the model-workflow-lifecycle and
+Tier-orchestration features, which may be intentionally EU/UK/US/CH-scoped (the cross-jurisdiction comparison
+feature in particular reads as designed for exactly those four). Confirm intended scope before touching them.
+
+**Japan/China/South Korea/India**: each gets its own tab, its own regime name, and `refinement: None` (no
+dedicated screen suite, same as CA/AU/NZ). None of the four was researched to the quantitative
+PEC/PNEC-assessment-factor depth AU's AICIS route or CA's Okonski method were — every `_regulatory_programme`
+branch for these four honestly says so (`status: partial`, never `available`), except Japan's pesticide route,
+which does name a real mechanism (a Predicted Environmental Concentration criterion under the Agricultural
+Chemicals Regulation Act). India's industrial-chemicals branch explicitly does NOT claim the draft "India REACH"
+(CMSR, still on its fifth public draft) as an enacted regime — it routes to the currently-in-force MSIHC 1989
+instead. Contaminated-land routes (`EXTERNAL_ROUTES`) are receptor-limited to what each source actually named:
+Japan and South Korea (human only), China (human + ecological, from its own Article 1), India (all four receptor
+classes — the only one of the four whose 2025 Contaminated Sites Rules names soil, groundwater, surface water and
+sediment together).
+
 ## Not done / open
 
-- Region tabs UK, CH are still folded into "EU_UK_CH" as one tab, matching the original `modelSystem` design and
-  `REGION_SETS`. The user's brief said "differing regions should have differing tabs" — read here as EU/US/CA/AU/NZ
-  each getting their own tab (done), not necessarily UK and Switzerland splitting out of the EU tab too. If the user
-  wants UK split out, `REGIONS` in `workflow_registry.py` is where that goes (add a `"UK"` key with its own
-  `jurisdictions: ["UK"]`), but the existing `MODEL_SYSTEM_JURISDICTIONS` / `projectModelSystem()` detection and the
-  `EU_UK_CH` `REGION_SETS` entry in `app.js` would need matching changes — not attempted.
-- Tier 3/4 jurisdictions from the original brief (Japan, China, South Korea, India, ...) still have no region tab or
-  workflow at all — `REGIONS` only covers the five already-built jurisdictions.
+- The four other stale-Literal schemas noted above (model-workflow lifecycle, cross-jurisdiction comparison,
+  orchestration) — not touched, scope not confirmed.
+- No quantitative environmental risk-assessment method for JP/CN/KR/IN's industrial chemicals or pesticides
+  (beyond Japan's named PEC criterion) — every one of those routes says "not yet mapped", honestly.
+- South Korea's Agrochemicals Control Act administering body (Ministry of Agriculture vs. Rural Development
+  Administration) was not fully confirmed — see `REGION_RESEARCH_JP_CN_KR_IN.md`.
+- Human/veterinary pharmaceutical pathways for China, South Korea and India were not researched at all (Japan's
+  was, via secondary academic sources only, not the MHLW notification itself).
+- Tier 3/4 jurisdictions beyond these four from the original brief (Switzerland is now done; Brazil, Mexico,
+  Norway, Singapore, Taiwan, the Gulf states, South Africa, ...) still have no region tab or workflow.
+- No UI test that a *saved* assessment reopens into the workflow matching its own stored `contaminant_group` —
+  only that live chooser interactions correctly retarget the screens (unchanged from the original note above).
 - The "tools" stage (EnviroDesign / Identification / Applied Environmental Fate) is offered as one stage for every
   native-organic group; it isn't itself broken down by group (e.g. Identification's MS-evidence tools might not be
   equally relevant to every organic group). Not investigated.
