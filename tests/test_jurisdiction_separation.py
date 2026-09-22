@@ -129,7 +129,8 @@ def test_official_toxswa_is_tier3_pesticide_only_but_native_screen_is_tier2():
 def test_jurisdiction_specific_model_cards_are_visually_separated():
     for key in ("US_INDUSTRIAL_SCREEN", "CHEMSTEER", "PWC", "CEM", "EFAST"):
         assert f'data-model="{key}" data-us-only-model="1"' in HTML
-    assert "$$('[data-us-only-model]').forEach(node => node.classList.toggle('hidden', eu));" in JS
+    # US-only tools are shown for the US and hidden for every other region (EU, CA, AU, NZ).
+    assert "$$('[data-us-only-model]').forEach(node => node.classList.toggle('hidden', !us));" in JS
 
 
 def test_scenario_cards_are_jurisdiction_neutral_and_workflow_routed():
@@ -181,7 +182,10 @@ def test_project_and_native_run_provenance_cannot_silently_cross_tabs():
 
 def test_regions_select_has_a_real_us_only_option():
     assert '<option value="US">United States</option>' in HTML
-    assert "state.modelSystem === 'EU' ? 'EU_UK_CH' : 'US'" in JS
+    # Every non-EU region maps to its own option; nothing falls back to US or EU.
+    assert "state.modelSystem === 'EU' ? 'EU_UK_CH' : state.modelSystem" in JS
+    for region, label in (("CA", "Canada"), ("AU", "Australia"), ("NZ", "New Zealand")):
+        assert f'<option value="{region}">{label}</option>' in HTML
 
 
 def test_laboratory_use_maps_to_a_valid_contaminant_group():

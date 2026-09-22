@@ -84,6 +84,11 @@ def settle_scroll(page) -> None:
 
 
 def open_section(page) -> None:
+    # The assessment setup only offers the site screen for site-relevant chemical groups, so choose one first
+    # (a page load starts on a human pharmaceutical, for which contaminated land is deliberately hidden).
+    page.wait_for_function("() => window.flowShell && window.flowShell._state.workflow !== null", timeout=15000)
+    page.locator("#flow-families button", has_text="Metals and metalloids").click()
+    page.wait_for_selector('button.nav-item[data-scroll="contaminated-land"]:not(.flow-hidden)')
     page.click('button.nav-item[data-scroll="contaminated-land"]')
     page.wait_for_selector("#cl-sources .cl-source")
     settle_scroll(page)
@@ -352,7 +357,13 @@ def run_engine(playwright, engine: str, base: str, shots: Path):
 
     def check(name, ok, detail=""):
         results.append((name, bool(ok), detail))
-        print(("  PASS " if ok else "  FAIL ") + name + (f"  [{detail}]" if detail else ""), flush=True)
+        line = ("  PASS " if ok else "  FAIL ") + name + (f"  [{detail}]" if detail else "")
+        try:
+            print(line, flush=True)
+        except UnicodeEncodeError:
+            # The Windows console codepage (cp1252) can't render every character a failure detail may quote
+            # from the page (e.g. the "✕" remove icon). Never let a print crash hide the actual check result.
+            print(line.encode("ascii", "backslashreplace").decode("ascii"), flush=True)
 
     try:
         browser = getattr(playwright, engine).launch()

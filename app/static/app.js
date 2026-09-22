@@ -44,6 +44,7 @@ const state = {
   assessmentPlan: null,
   externalWorkflow: null,
   assessmentStage: null,
+  flowGroup: null,
 };
 
 
@@ -56,17 +57,31 @@ const REGION_SETS = {
   AU_NZ: ["AU","NZ"],
   JP_CN_KR: ["JP","CN","KR"],
   BR_MX: ["BR","MX"],
+  CA: ["CA"],
+  AU: ["AU"],
+  NZ: ["NZ"],
   GLOBAL: ["EU","UK","CH","US","CA","AU","NZ","JP","CN","KR","TW","IN","SG","MY","TH","ID","PH","VN","BR","MX","CO","CL","PE","ZA","NG","KE","GH","MA","EG","SA","AE","IL","TR","EAEU","ANDEAN","GCC","CILSS","CEMAC"],
 };
 const REGION_LABELS = {
   EU_US:"EU + US", EU_UK_CH:"EU + UK + Switzerland", US:"United States", US_CA:"United States + Canada",
   AU_NZ:"Australia + New Zealand", JP_CN_KR:"Japan + China + South Korea",
-  BR_MX:"Brazil + Mexico", GLOBAL:"Global navigator",
+  BR_MX:"Brazil + Mexico", CA:"Canada", AU:"Australia", NZ:"New Zealand", GLOBAL:"Global navigator",
 };
 const MODEL_SYSTEM_JURISDICTIONS = {
   EU: "EU + UK + Switzerland",
   US: "United States",
+  CA: "Canada",
+  AU: "Australia",
+  NZ: "New Zealand",
 };
+// Regions with a dedicated refinement screen set (EU: water-sediment and PEARL; US: EPA model workflows). Every other
+// region is shown its own regulatory route and never falls back to EU or US wording.
+function regionKind(system = state.modelSystem) {
+  return system === "EU" || system === "US" ? system : "OTHER";
+}
+function regionName(system = state.modelSystem) {
+  return MODEL_SYSTEM_JURISDICTIONS[system] || system;
+}
 
 function activeJurisdictionLabel() {
   return MODEL_SYSTEM_JURISDICTIONS[state.modelSystem];
@@ -74,6 +89,9 @@ function activeJurisdictionLabel() {
 
 function projectModelSystem(project) {
   const jurisdiction = String(project?.jurisdiction || "").toLowerCase();
+  if (jurisdiction.includes("canada")) return "CA";
+  if (jurisdiction.includes("australia")) return "AU";
+  if (jurisdiction.includes("new zealand")) return "NZ";
   if (jurisdiction.includes("united states") || /(^|\W)us(\W|$)/.test(jurisdiction)) return "US";
   if (jurisdiction.includes("eu") || jurisdiction.includes("europe") || jurisdiction.includes("uk") || jurisdiction.includes("switzerland")) return "EU";
   return null;
@@ -155,6 +173,8 @@ function selectedJurisdictions() {
 }
 function regulatoryProductClass() {
   if (state.release === "agricultural_spray") return "pesticide";
+  // The chemical group chosen in the assessment setup wins over the group implied by the use card.
+  if (state.flowGroup) return state.flowGroup;
   return USE_PRODUCT_CLASS[state.use] || "cross_cutting";
 }
 function isUSIndustrialSelection(release = state.release) {
@@ -621,11 +641,12 @@ function activateModelSystem(modelSystem, {reset = true} = {}) {
     node.classList.toggle('active', active);
     node.setAttribute('aria-selected', active ? 'true' : 'false');
   });
-  if ($('regions')) $('regions').value = state.modelSystem === 'EU' ? 'EU_UK_CH' : 'US';
+  if ($('regions')) $('regions').value = state.modelSystem === 'EU' ? 'EU_UK_CH' : state.modelSystem;
   if (reset && previous !== state.modelSystem) resetForJurisdictionSwitch();
   updateModelSystemUI();
   updateSummaries();
   refreshRegulatoryPathway();
+  if (window.flowShell) window.flowShell.refresh();
   if (previous !== state.modelSystem && state.project && !projectMatchesModelSystem()) {
     toast(projectJurisdictionMessage(), 7600);
   }
@@ -674,7 +695,8 @@ function updateScenarioJurisdictionCopy() {
   Object.entries(SCENARIO_JURISDICTION_COPY).forEach(([release, copy]) => {
     const card = document.querySelector(`#release-cards [data-release="${release}"]`);
     if (!card) return;
-    const [title, description] = copy[state.modelSystem] || copy.EU;
+    const [title, description] = copy[state.modelSystem]
+      || [copy.EU[0], `Exposure scenario → ${regionName()} regulatory route (see the plan below)`];
     if (card.querySelector('strong')) card.querySelector('strong').textContent = title;
     if (card.querySelector('small')) card.querySelector('small').textContent = description;
   });
@@ -682,20 +704,25 @@ function updateScenarioJurisdictionCopy() {
 
 function updateModelSystemUI() {
   const eu = state.modelSystem === 'EU';
+  const us = state.modelSystem === 'US';
   $('pearl-groundwater')?.classList.toggle('hidden', !eu);
   $('us-models-placeholder')?.classList.toggle('hidden', !isUSIndustrialSelection());
   // Only regulatory tools are jurisdiction-gated. Exposure scenarios remain
   // visible in both systems and are re-planned against the selected registry.
   $$('[data-eu-only]').forEach(node => node.classList.toggle('hidden', !eu));
-  $$('[data-us-only-model]').forEach(node => node.classList.toggle('hidden', eu));
+  $$('[data-us-only-model]').forEach(node => node.classList.toggle('hidden', !us));
   if ($('model-system-status')) $('model-system-status').innerHTML = eu
     ? '<strong>EU modelling selected.</strong> Shared process screens remain labelled as native; REACH and plant-protection scenarios route to EU-specific model plans and FOCUS refinements.'
-    : '<strong>US modelling selected.</strong> Shared process screens remain labelled as native; TSCA and FIFRA scenarios route to US-specific plans, while EPA tools remain managed external workflows.';
-  if ($('next-stage-region')) $('next-stage-region').textContent = eu ? 'EU models' : 'US models';
-  if ($('next-stage-model')) $('next-stage-model').textContent = eu ? 'FOCUS PEARL' : 'PWC / PRZM';
+    : us
+      ? '<strong>US modelling selected.</strong> Shared process screens remain labelled as native; TSCA and FIFRA scenarios route to US-specific plans, while EPA tools remain managed external workflows.'
+      : `<strong>${escapeHtml(regionName())} selected.</strong> Shared process screens remain labelled as native; scenarios route to this region's own regulatory route in the plan. No dedicated refinement screen is built for ${escapeHtml(regionName())} yet.`;
+  if ($('next-stage-region')) $('next-stage-region').textContent = eu ? 'EU models' : us ? 'US models' : regionName();
+  if ($('next-stage-model')) $('next-stage-model').textContent = eu ? 'FOCUS PEARL' : us ? 'PWC / PRZM' : 'Regulatory route';
   if ($('next-stage-model-copy')) $('next-stage-model-copy').textContent = eu
     ? 'Use the selected soil PEC as the starting exposure for groundwater refinement.'
-    : 'Use the native US foundation to structure inputs, then execute and review the applicable external EPA model.';
+    : us
+      ? 'Use the native US foundation to structure inputs, then execute and review the applicable external EPA model.'
+      : `No dedicated refinement screen is built for ${regionName()}. Review the regulatory route plan for the applicable method.`;
   const soilReady = Boolean(currentScreeningSoilEndpoint());
   $('continue-pearl')?.classList.toggle('hidden', !(eu && soilReady));
   if ($('toxswa-nav-label')) $('toxswa-nav-label').textContent = 'Water–sediment';
@@ -1022,6 +1049,7 @@ function programmeLabel(context = currentPlanContext()) {
     if (context.scenario === 'industrial_effluent') return 'US TSCA industrial pathway';
     return 'US environmental exposure pathway';
   }
+  if (regionKind(context.jurisdiction) === 'OTHER') return `${regionName(context.jurisdiction)} regulatory pathway`;
   if (context.scenario === 'agricultural_spray') return 'EU plant-protection product pathway';
   if (context.scenario === 'household_use') return 'EU REACH consumer lifecycle pathway';
   if (context.scenario === 'product_disposal') return 'EU REACH waste-stage pathway';
@@ -1258,6 +1286,7 @@ function setupScenarioCards() {
     $('veterinary-workflow')?.classList.toggle('hidden',!isVet);
     if($('use-ai-copy')) $('use-ai-copy').innerHTML=isVet?'<strong>Grounded suggestion:</strong> FateIntel will first run VICH Phase I, then open the applicable aquaculture, intensive, pasture or tailored companion-animal branch.':`<strong>Grounded suggestion:</strong> Confirm whether ${escapeHtml(state.chemical?.preferred_name || 'the selected substance')} is used as a human pharmaceutical. Identity alone does not establish the release scenario.`;
     if(isVet) updateVeterinaryProfile();
+    if (window.flowShell) window.flowShell.onUseCardClicked(state.use);
     updateScenarioAvailability(); updateReleaseContext(); updateCompartments(); updateModels();
     updateSummaries(); refreshRegulatoryPathway();
   }));
@@ -1860,7 +1889,7 @@ async function loadCarbamazepineDemo() {
   const jurisdiction = activeJurisdictionLabel();
   const projectName = state.modelSystem === "EU"
     ? "Carbamazepine guided fate assessment"
-    : "Carbamazepine — US guided fate assessment";
+    : `Carbamazepine — ${state.modelSystem} guided fate assessment`;
   state.project = projects.find(row => row.name === projectName && row.jurisdiction === jurisdiction) || null;
   if (!state.project) {
     state.project = await api("/api/projects", {
@@ -2141,7 +2170,9 @@ function renderResults() {
   if ($("assessment-story-title")) $("assessment-story-title").textContent = `What happens to ${chemicalName}?`;
   if ($("results-jurisdiction-banner")) $("results-jurisdiction-banner").innerHTML = modelSystem === 'EU'
     ? '<strong>EU screening result.</strong> This is a FateIntel native process calculation, not a regulatory submission result. FOCUS and other official refinements remain separate, versioned EU/UK/CH workflows.'
-    : '<strong>US screening result.</strong> This is a FateIntel native process calculation, not an EPA model result. PWC/CEM/E-FAST/ChemSTEER outputs appear only after real external execution, import and review.';
+    : modelSystem === 'US'
+      ? '<strong>US screening result.</strong> This is a FateIntel native process calculation, not an EPA model result. PWC/CEM/E-FAST/ChemSTEER outputs appear only after real external execution, import and review.'
+      : `<strong>${escapeHtml(regionName(modelSystem))} screening result.</strong> This is a FateIntel native process calculation, not a regulatory submission result. The regulator's own method is named in the regulatory route plan.`;
   const provenance = [
     ['Sorption', sorption], ['Emission', emission], ['WWTP', wwtp], ['Biosolids', biosolids], ['Irrigation', irrigation], ['Plant uptake', plant],
   ].filter(([, run]) => run);
@@ -2179,13 +2210,13 @@ function renderResults() {
   } else if (release === 'biosolids') {
     setMetricVisible('metric-card-biosolids',true); setMetricVisible('metric-card-groundwater',true);
     $('metric-biosolids').textContent=`${fmt(biosolids.outputs.final_post_application_mg_kg*1000)} µg/kg`;
-    $('metric-groundwater').textContent=state.modelSystem==='EU'?'Ready for PEARL':'PWC/PRZM not yet prepared';
+    $('metric-groundwater').textContent=state.modelSystem==='EU'?'Ready for PEARL':state.modelSystem==='US'?'PWC/PRZM not yet prepared':'Groundwater refinement not built for this region';
     $('results-subtitle').textContent=`Biosolids selected · ${fmt(biosolids.outputs.annual_chemical_loading_kg_ha,5)} kg/ha/year reaches land · ${biosolids.outputs.annual_series.length}-year soil series shown below.`;
   } else if (release === 'irrigation') {
     const i=irrigation.outputs.native_screen;
     setMetricVisible('metric-card-soil',true); setMetricVisible('metric-card-groundwater',true); setMetricVisible('metric-card-crop',Boolean(plant));
     $('metric-soil').textContent=`${fmt(i.soil_concentration_at_duration_ug_kg)} µg/kg`;
-    $('metric-groundwater').textContent=state.modelSystem==='EU'?'Ready for PEARL':'PWC/PRZM not yet prepared';
+    $('metric-groundwater').textContent=state.modelSystem==='EU'?'Ready for PEARL':state.modelSystem==='US'?'PWC/PRZM not yet prepared':'Groundwater refinement not built for this region';
     if(plant) $('metric-crop').textContent=`${fmt(plant.outputs.edible_tissue_concentration_mg_kg_fw*1000)} µg/kg`;
     $('results-subtitle').textContent=`Wastewater irrigation selected · ${fmt(i.application_mass_kg_ha_year,5)} kg/ha/year applied in reclaimed water · ${i.annual_series.length}-year soil series shown below.`;
   }
@@ -2219,7 +2250,9 @@ function renderResults() {
   $('data-gaps').innerHTML=`<span>!</span><div><strong>Data gaps detected</strong><small>Measured fate values and PNECs remain review items.${release === 'irrigation' && !plant ? ' Ionisable-chemical crop uptake requires a suitable model or reviewed BCF and was not fabricated.' : ''} Advanced external models run only after the exposure screen supplies a relevant PEC and their model-specific inputs are reviewed.</small></div>`;
   $('comparison-insight').textContent = state.modelSystem === 'EU'
     ? (soilEndpoint ? `A soil PEC is ready. Continue to FOCUS PEARL below using ${fmt(soilEndpoint.concentration_ug_kg,5)} µg/kg as the starting exposure.` : 'No soil pathway was selected, so FOCUS PEARL is not automatically invoked.')
-    : 'US modelling is selected. PWC/PRZM remain external EPA models managed through the model-workflow lifecycle; no groundwater concentration is shown here until a real workflow is prepared, its output imported and reviewed.';
+    : state.modelSystem === 'US'
+      ? 'US modelling is selected. PWC/PRZM remain external EPA models managed through the model-workflow lifecycle; no groundwater concentration is shown here until a real workflow is prepared, its output imported and reviewed.'
+      : `${regionName()} is selected. No dedicated groundwater refinement is built for this region, so no groundwater concentration is shown.`;
   updateModelSystemUI();
 
   const timeline=document.querySelector('.timeline-panel');

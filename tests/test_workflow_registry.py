@@ -1,0 +1,173 @@
+"""Workflow registry: which tracks, stages and screens apply to a region and chemical group."""
+
+from __future__ import annotations
+
+import pytest
+from fastapi.testclient import TestClient
+
+from app.main import app
+from app.services.conceptual_site_model import EXTERNAL_ROUTES, NOT_ESTABLISHED
+from app.services.registry import CONTAMINANT_GROUPS, DISCRETE_ORGANIC_GROUPS, NO_NATIVE_PATHWAY_GROUPS
+from app.services.workflow_registry import (
+    FAMILIES, GROUP_LABELS, MODULES, REGIONS, SITE, USE_RELEASE, WorkflowError, reference, resolve_workflow,
+)
+
+client = TestClient(app)
+ORGANIC_USE_GROUPS = ["human_pharmaceutical", "veterinary_pharmaceutical", "industrial_organic", "pesticide", "biocide"]
+
+
+def stage(workflow, track_id, stage_id):
+    track = next(t for t in workflow["tracks"] if t["id"] == track_id)
+    return next(s for s in track["stages"] if s["id"] == stage_id)
+
+
+# ---------- the registry is complete and consistent ----------
+def test_every_group_belongs_to_exactly_one_family_and_has_a_label():
+    seen = [g for f in FAMILIES for g in f["groups"]]
+    assert sorted(seen) == sorted(CONTAMINANT_GROUPS) and len(seen) == len(set(seen))
+    assert set(GROUP_LABELS) == set(CONTAMINANT_GROUPS)
+
+
+def test_every_family_track_is_known_and_default_is_one_of_them():
+    for family in FAMILIES:
+        assert set(family["tracks"]) <= {USE_RELEASE, SITE}
+        assert (family["default_track"] in family["tracks"]) if family["tracks"] else family["default_track"] is None
+
+
+def test_blocked_groups_are_exactly_the_families_with_no_tracks():
+    no_track = {g for f in FAMILIES if not f["tracks"] for g in f["groups"]}
+    assert no_track == set(NO_NATIVE_PATHWAY_GROUPS)
+
+
+def test_every_resolvable_pair_resolves_and_only_names_known_modules():
+    for region in REGIONS:
+        for group in CONTAMINANT_GROUPS:
+            wf = resolve_workflow(region, group)
+            assert set(wf["modules"]) <= set(MODULES)
+            assert set(wf["modules"]) | {h["module"] for h in wf["hidden_modules"]} == set(MODULES)
+            assert not set(wf["modules"]) & {h["module"] for h in wf["hidden_modules"]}
+            for track in wf["tracks"]:
+                for s in track["stages"]:
+                    assert s["module"] is None or s["module"] in wf["modules"], (region, group, s)
+
+
+# ---------- contaminated land stays out of organic chemical assessments ----------
+@pytest.mark.parametrize("region", list(REGIONS))
+@pytest.mark.parametrize("group", ORGANIC_USE_GROUPS + ["personal_care_cosmetic", "detergent_cleaner"])
+def test_contaminated_land_never_appears_for_use_based_organic_groups(region, group):
+    wf = resolve_workflow(region, group)
+    assert "contaminated_land" not in wf["modules"]
+    assert [t["id"] for t in wf["tracks"]] == [USE_RELEASE]
+
+
+@pytest.mark.parametrize("group", ["metal_inorganic", "pah", "legacy_pop_organic", "organotin", "hydrocarbon_solvent", "pfas_persistent_mobile"])
+def test_contaminated_land_is_offered_for_the_site_relevant_groups(group):
+    wf = resolve_workflow("US", group)
+    assert "contaminated_land" in wf["modules"]
+    assert SITE in [t["id"] for t in wf["tracks"]]
+
+
+def test_site_first_groups_open_on_the_site_track():
+    for group in ("metal_inorganic", "pah", "legacy_pop_organic", "organotin", "hydrocarbon_solvent"):
+        assert resolve_workflow("EU_UK_CH", group)["default_track"] == SITE
+    assert resolve_workflow("EU_UK_CH", "pfas_persistent_mobile")["default_track"] == USE_RELEASE
+
+
+# ---------- native organic screens only where valid ----------
+def test_native_screen_and_organic_tools_follow_discrete_organic_groups():
+    for group in CONTAMINANT_GROUPS:
+        if group in NO_NATIVE_PATHWAY_GROUPS:
+            continue
+        wf = resolve_workflow("US", group)
+        native = group in DISCRETE_ORGANIC_GROUPS
+        assert ("results" in wf["modules"]) == native, group
+        assert ("kinetics" in wf["modules"]) == native, group
+        screen = stage(wf, USE_RELEASE, "screen")
+        assert screen["status"] == ("available" if native else "external_required")
+        if not native:
+            assert screen["module"] is None and "external" in screen["note"]
+
+
+# ---------- blocked groups ----------
+@pytest.mark.parametrize("group", sorted(NO_NATIVE_PATHWAY_GROUPS))
+@pytest.mark.parametrize("region", list(REGIONS))
+def test_blocked_groups_have_no_tracks_and_only_the_route_page(region, group):
+    wf = resolve_workflow(region, group)
+    assert wf["blocked"] is True and wf["tracks"] == [] and wf["default_track"] is None
+    assert wf["modules"] == ["plan"] and "does not model" in wf["reason"]
+
+
+# ---------- regions differ, following what is actually built ----------
+def test_eu_flow_has_the_eu_refinement_screens_and_others_do_not():
+    eu = resolve_workflow("EU_UK_CH", "human_pharmaceutical")
+    assert {"water_sediment", "pearl"} <= set(eu["modules"]) and "us_models" not in eu["modules"]
+    assert stage(eu, USE_RELEASE, "refine")["status"] == "available"
+
+
+def test_us_flow_has_the_us_models_and_not_the_eu_screens():
+    us = resolve_workflow("US", "pesticide")
+    assert "us_models" in us["modules"] and not {"water_sediment", "pearl"} & set(us["modules"])
+    assert stage(us, USE_RELEASE, "refine")["status"] == "managed_external"
+
+
+@pytest.mark.parametrize("region", ["CA", "AU", "NZ"])
+def test_other_regions_state_that_no_dedicated_refinement_exists(region):
+    wf = resolve_workflow(region, "industrial_organic")
+    assert not {"water_sediment", "pearl", "us_models"} & set(wf["modules"])
+    refine = stage(wf, USE_RELEASE, "refine")
+    assert refine["status"] == "not_built" and refine["module"] is None
+    assert REGIONS[region]["label"] in refine["note"]
+
+
+def test_regulatory_route_text_comes_from_the_registry_programme():
+    assert "AICIS" in stage(resolve_workflow("AU", "industrial_organic"), USE_RELEASE, "route")["detail"]
+    assert "HSNO" in stage(resolve_workflow("NZ", "pesticide"), USE_RELEASE, "route")["detail"]
+    assert "Canadian" in stage(resolve_workflow("CA", "human_pharmaceutical"), USE_RELEASE, "route")["detail"]
+
+
+def test_partially_mapped_routes_are_marked_partial_not_available():
+    assert stage(resolve_workflow("CA", "human_pharmaceutical"), USE_RELEASE, "route")["status"] == "partial"
+    assert stage(resolve_workflow("EU_UK_CH", "industrial_organic"), USE_RELEASE, "route")["status"] == "available"
+
+
+# ---------- site track methods mirror the site model's own routes ----------
+def test_site_methods_mirror_external_routes_and_mark_gaps_not_established():
+    wf = resolve_workflow("EU_UK_CH", "legacy_pop_organic")
+    methods = next(t for t in wf["tracks"] if t["id"] == SITE)["methods"]
+    assert len(methods) == 12
+    for m in methods:
+        found = EXTERNAL_ROUTES.get((m["jurisdiction"], m["receptor"]))
+        assert m["named"] is bool(found)
+        assert m["route"] == (found["route"] if found else NOT_ESTABLISHED)
+    assert all(not m["named"] for m in methods if m["jurisdiction"] == "CH")
+
+
+def test_site_track_never_claims_a_calculation():
+    site = stage(resolve_workflow("US", "metal_inorganic"), SITE, "site_model")
+    assert "No exposure or risk is calculated" in site["detail"]
+
+
+# ---------- input handling and API ----------
+def test_unknown_region_or_group_is_rejected():
+    with pytest.raises(WorkflowError, match="Unknown region"):
+        resolve_workflow("XX", "pesticide")
+    with pytest.raises(WorkflowError, match="Unknown chemical group"):
+        resolve_workflow("US", "not_a_group")
+
+
+def test_reference_lists_every_group_once_with_a_label():
+    ref = reference()
+    keys = [g["key"] for f in ref["families"] for g in f["groups"]]
+    assert sorted(keys) == sorted(CONTAMINANT_GROUPS)
+    assert [r["key"] for r in ref["regions"]] == list(REGIONS)
+    assert "product decision" in ref["note"]
+
+
+def test_api_endpoints():
+    ref = client.get("/api/workflow/reference")
+    assert ref.status_code == 200 and len(ref.json()["families"]) == len(FAMILIES)
+    ok = client.get("/api/workflow", params={"region": "AU", "group": "metal_inorganic"})
+    assert ok.status_code == 200 and ok.json()["default_track"] == SITE
+    assert client.get("/api/workflow", params={"region": "AU", "group": "nope"}).status_code == 422
+    assert client.get("/api/workflow", params={"region": "ZZ", "group": "pesticide"}).status_code == 422
+    assert client.get("/api/workflow", params={"region": "AU"}).status_code == 422

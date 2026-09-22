@@ -11,6 +11,7 @@
 <link href="/static/icon.svg" rel="icon" type="image/svg+xml"/>
 <link href="/static/styles.css?v=fateintel-guided-v2.24-alpha4.0-core-orchestration" rel="stylesheet"/>
 <link rel="stylesheet" href="/static/contaminated-land.css?v=fateintel-guided-v2.24-alpha4.0-core-orchestration">
+<link rel="stylesheet" href="/static/flow-shell.css?v=fateintel-guided-v2.24-alpha4.0-core-orchestration">
 </head>
 <body>
 <div class="app-shell">
@@ -80,11 +81,25 @@
 <strong>Choose the model family before the assessment.</strong>
 <small>Exposure screening is shared where scientifically appropriate; advanced regulatory models remain jurisdiction-specific.</small>
 </div>
-<div aria-label="EU or US models" class="model-system-tabs" role="tablist">
+<div aria-label="Regulatory region" class="model-system-tabs" role="tablist">
 <button aria-selected="true" class="active" data-model-system="EU" role="tab" type="button"><span>EU</span><strong>EU models</strong><small>REACH / FOCUS routing</small></button>
 <button aria-selected="false" data-model-system="US" role="tab" type="button"><span>US</span><strong>US models</strong><small>TSCA / FIFRA routing</small></button>
+<button aria-selected="false" data-model-system="CA" role="tab" type="button"><span>CA</span><strong>Canada</strong><small>CEPA / PMRA routing</small></button>
+<button aria-selected="false" data-model-system="AU" role="tab" type="button"><span>AU</span><strong>Australia</strong><small>AICIS / APVMA routing</small></button>
+<button aria-selected="false" data-model-system="NZ" role="tab" type="button"><span>NZ</span><strong>New Zealand</strong><small>EPA HSNO routing</small></button>
 </div>
 <div class="model-system-status" id="model-system-status"><strong>EU modelling selected.</strong> Tier 1–2 screening can proceed; FOCUS PEARL is available as a later refinement.</div>
+</section><section aria-label="Assessment setup" class="flow-setup" id="flow-setup">
+<div class="flow-setup-head">
+<span class="section-kicker">WHAT ARE YOU ASSESSING?</span>
+<strong>Choose the chemical group. The workflow follows.</strong>
+<small>Only the screens that apply to this region and chemical group are shown. Everything else stays out of the way.</small>
+</div>
+<div aria-label="Chemical family" class="flow-choice-row" id="flow-families" role="tablist"></div>
+<div aria-label="Chemical group" class="flow-choice-row flow-groups hidden" id="flow-groups" role="tablist"></div>
+<div aria-label="Assessment track" class="flow-choice-row flow-tracks hidden" id="flow-tracks" role="tablist"></div>
+<ol class="flow-rail" id="flow-rail" aria-label="Assessment stages"></ol>
+<div class="flow-note" id="flow-note" aria-live="polite"></div>
 </section>
 
 
@@ -226,7 +241,10 @@
 <label><span>Active regulatory region</span><select disabled id="regions">
 <option selected="" value="EU_UK_CH">EU + UK + Switzerland</option>
 <option value="US">United States</option>
-</select><small>Controlled by the EU/US tabs above; global comparison remains in the framework navigator.</small></label>
+<option value="CA">Canada</option>
+<option value="AU">Australia</option>
+<option value="NZ">New Zealand</option>
+</select><small>Controlled by the region tabs above; global comparison remains in the framework navigator.</small></label>
 <label><span>Assessment tier</span><select id="tier-select"><option value="1">Tier 1 · Worst case</option><option selected="" value="2">Tier 2 · Standard</option><option value="3">Tier 3 · Refined</option><option value="4">Tier 4 · Monitoring-informed</option></select></label>
 </div>
 <section class="veterinary-workflow hidden" id="veterinary-workflow">
@@ -1138,5 +1156,6 @@
 <div class="toast hidden" id="toast"></div>
 <script src="/static/app.js?v=fateintel-guided-v2.24-alpha4.0-core-orchestration"></script>
 <script src="/static/contaminated-land.js?v=fateintel-guided-v2.24-alpha4.0-core-orchestration"></script>
+<script src="/static/flow-shell.js?v=fateintel-guided-v2.24-alpha4.0-core-orchestration"></script>
 </body>
 </html>

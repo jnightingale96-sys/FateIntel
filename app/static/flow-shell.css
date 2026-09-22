@@ -1,0 +1,54 @@
+/* Assessment setup: region, chemical group, track and stage rail. Also the visibility classes the shell toggles. */
+.flow-hidden{display:none !important}
+/* A blocked group (radionuclide, contaminated mixture) keeps only the identity and regulatory-route cards. */
+.flow-blocked .flow-card:not(#step-identity):not(#regulatory-pathway){display:none}
+
+/* five region tabs instead of two */
+.model-system-tabs{grid-template-columns:repeat(5,minmax(0,1fr))}
+.model-system-tabs button{min-width:0}
+@media (max-width:1180px){
+  .model-system-switch{grid-template-columns:1fr}
+  .model-system-tabs{grid-template-columns:repeat(auto-fit,minmax(120px,1fr))}
+  .model-system-tabs button{border-bottom:1px solid #cfdad7}
+}
+
+.flow-setup{margin:0 0 14px;padding:14px 16px 12px;background:#fff;border:1px solid #d6e0dd;display:grid;gap:10px}
+.flow-setup-head{display:flex;flex-direction:column;gap:3px}
+.flow-setup-head>strong{font-size:14px}
+.flow-setup-head>small{font-size:10px;color:#697b78;line-height:1.45}
+.flow-choice-row{display:flex;flex-wrap:wrap;gap:6px}
+.flow-choice-row.hidden{display:none}
+.flow-choice{border:1px solid #cfdad7;background:#fff;color:#3f5654;padding:7px 11px;font:inherit;font-size:12px;font-weight:700;cursor:pointer;text-align:left;line-height:1.3}
+.flow-choice:hover{border-color:#2c9773}
+.flow-choice[aria-selected="true"]{background:#173f40;color:#fff;border-color:#173f40}
+.flow-choice:focus-visible,.flow-stage-link:focus-visible{outline:2px solid #2c9773;outline-offset:2px}
+.flow-groups .flow-choice{font-weight:600;font-size:11.5px;background:#f6f9f8}
+.flow-groups .flow-choice[aria-selected="true"]{background:#2c7a63;border-color:#2c7a63}
+.flow-tracks .flow-choice{border-style:dashed}
+.flow-tracks .flow-choice[aria-selected="true"]{border-style:solid;background:#0f2e2f}
+
+.flow-rail{list-style:none;margin:2px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(178px,1fr));border:1px solid #dbe5e2}
+.flow-stage{padding:10px 12px;border-right:1px solid #e4ebe9;display:flex;flex-direction:column;gap:3px;min-width:0}
+.flow-stage:last-child{border-right:0}
+.flow-stage-link{background:none;border:0;padding:0;font:inherit;text-align:left;cursor:pointer;color:inherit;display:flex;flex-direction:column;gap:3px}
+.flow-stage-link[disabled]{cursor:default}
+.flow-stage strong{font-size:12px;line-height:1.3}
+.flow-stage small{font-size:10.5px;color:#61746f;line-height:1.45;overflow-wrap:anywhere}
+.flow-stage .flow-stage-note{color:#7a6335}
+.flow-pill{align-self:flex-start;font-size:9px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;padding:2px 6px;border:1px solid}
+.flow-pill.ok{color:#1f6b4f;border-color:#8fcdb2;background:#eef9f3}
+.flow-pill.ext{color:#7a5417;border-color:#e0bf8a;background:#fff8ec}
+.flow-pill.warn{color:#7a5417;border-color:#e0bf8a;background:#fff8ec}
+.flow-pill.gap{color:#5c6b69;border-color:#c6d2cf;background:#f3f6f5}
+.flow-note{font-size:11px;color:#55695f;line-height:1.55}
+.flow-note strong{color:#173334}
+.flow-note.blocked{padding:10px 12px;border:1px solid #c6d2cf;border-left:3px solid #6a8ba3;background:#f5f8fb;color:#2b4356}
+.flow-methods{margin-top:6px;font-size:11px}
+.flow-methods summary{cursor:pointer;font-weight:800;color:#2b5a4e}
+.flow-methods ul{margin:8px 0 0;padding:0;list-style:none;display:grid;gap:4px}
+.flow-methods li{padding:5px 8px;border:1px solid #e1e9e6;background:#fafcfb}
+.flow-methods li.none{color:#6b7c78;background:#f5f7f6}
+@media (max-width:720px){
+  .flow-stage{border-right:0;border-bottom:1px solid #e4ebe9}
+  .flow-stage:last-child{border-bottom:0}
+}

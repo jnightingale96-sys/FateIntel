@@ -1198,6 +1198,22 @@ def chemical_pops_status(chemical_id: int, jurisdiction: str | None = None, db: 
     )
 
 
+@app.get("/api/workflow/reference")
+def workflow_reference():
+    from .services import workflow_registry
+    return workflow_registry.reference()
+
+
+@app.get("/api/workflow")
+def workflow(region: str, group: str, scenario: str | None = None):
+    """Tracks, stages and screens for a region and chemical group. Arranges existing routes; decides nothing."""
+    from .services import workflow_registry
+    try:
+        return workflow_registry.resolve_workflow(region, group, scenario)
+    except workflow_registry.WorkflowError as exc:
+        raise HTTPException(422, str(exc)) from exc
+
+
 @app.get("/api/conceptual-site-model/reference")
 def conceptual_site_model_reference():
     from .services import conceptual_site_model as csm
