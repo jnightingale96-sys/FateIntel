@@ -113,6 +113,8 @@ FRAMEWORKS: list[dict[str, Any]] = [
             "China REACH / MEE new-chemical registration (quantitative method not yet mapped)",
             "Ministry of Agriculture and Rural Affairs pesticide registration (pathway not yet mapped)",
             "Soil Pollution Prevention and Control Law (2018/2019; contaminated land)",
+            "Pharmaceutical-manufacturing discharge standards (MEE, GB 219xx series; effluent control, not a "
+            "pre-market ERA -- no pre-market pharmaceutical ERA guideline was found)",
         ],
         "default_currency": "CNY",
     },
@@ -121,14 +123,18 @@ FRAMEWORKS: list[dict[str, Any]] = [
         "name": "South Korea",
         # Researched this session (REGION_RESEARCH_JP_CN_KR_IN.md). K-REACH (Act on the Registration and
         # Evaluation of Chemical Substances, in force 2015) is administered by the Ministry of Environment with
-        # NIER evaluating dossiers. The Agrochemicals Control Act's administering body is secondary-sourced only
-        # (attributed to the Ministry of Agriculture; whether the Rural Development Administration holds the
-        # operational registration role was not confirmed). The Soil Environment Conservation Act was summarised
-        # from a secondary source, not read in full, unlike Japan's and China's soil laws.
+        # NIER evaluating dossiers. The Agrochemicals Control Act's administering body is now confirmed
+        # (2026-09-22 follow-up): the Rural Development Administration (RDA) issues agrochemical registration
+        # certificates operationally, under the Ministry of Agriculture, Food and Rural Affairs' (MAFRA) statutory
+        # authority over the Act -- corroborated across the KLRI official translation, a USDA FAS country report
+        # and a compliance-industry secondary source. The Soil Environment Conservation Act was summarised from a
+        # secondary source, not read in full, unlike Japan's and China's soil laws.
         "packs": [
             "K-REACH new-chemical registration (MoE/NIER; quantitative method not yet mapped)",
-            "Agrochemicals Control Act pesticides (administering body not fully confirmed, pathway not yet mapped)",
+            "Agrochemicals Control Act pesticides (RDA registration under MAFRA authority; pathway not yet mapped)",
             "Soil Environment Conservation Act (contaminated land; summarised, not primary-verified)",
+            "MFDS pharmaceutical environmental-information requirement (real requirement, named guideline not "
+            "located; pathway not yet mapped)",
         ],
         "default_currency": "KRW",
     },
@@ -150,6 +156,7 @@ FRAMEWORKS: list[dict[str, Any]] = [
             "Insecticides Act 1968 pesticides, CIBRC (pathway not yet mapped)",
             "Chemicals (Management and Safety) Rules / 'India REACH' (still a draft, not enacted -- not a supported pathway)",
             "Environment Protection (Management of Contaminated Sites) Rules 2025 (contaminated land)",
+            "CDSCO pharmaceuticals (no environmental risk assessment requirement -- confirmed, not a gap)",
         ],
         "default_currency": "INR",
     },
@@ -1032,6 +1039,26 @@ def _regulatory_programme(jurisdiction: str, group: str, scenario: str) -> dict[
                          "impact on the soil environment; the quantitative method has not been mapped "
                          "(EXTERNAL MODEL REQUIRED).",
             }
+        if group in {"human_pharmaceutical", "veterinary_pharmaceutical"}:
+            # 2026-09-22 follow-up research: no pre-market pharmaceutical ERA guideline was found under the
+            # Ministry of Ecology and Environment or the NMPA. What IS confirmed, and real, is a different kind of
+            # control: named, category-specific national discharge standards for pharmaceutical-manufacturing
+            # wastewater (MEE's own English pages, e.g. GB 21905-2008 extractive pharmaceutical industry,
+            # GB 21906-2008 traditional Chinese medicine category). That is a manufacturing-effluent limit, not a
+            # PEC/PNEC risk assessment, and is reported as such rather than conflating the two. Kept for both
+            # human and veterinary pharmaceuticals because the standards are keyed to a manufacturing category
+            # (fermentation, chemical synthesis, etc.), not to a human/veterinary regulatory review split -- unlike
+            # the Korea/India pharma branches below, which are specifically about a human-drug regulator's own
+            # review requirement and are NOT extended to veterinary_pharmaceutical for exactly that reason.
+            return {
+                "key": "CN_PHARMA_DISCHARGE_STANDARDS",
+                "name": "China pharmaceutical-manufacturing discharge standards pathway",
+                "scope": "No pre-market environmental risk assessment guideline for pharmaceuticals was found. "
+                         "Manufacturing wastewater is instead controlled by category-specific national discharge "
+                         "standards under the Ministry of Ecology and Environment (e.g. GB 21905-2008 extractive "
+                         "pharmaceutical industry, GB 21906-2008 traditional Chinese medicine category) -- a "
+                         "manufacturing-effluent limit, not a PEC/PNEC risk assessment (EXTERNAL MODEL REQUIRED).",
+            }
         return {
             "key": "CN_MEE_NOT_MAPPED",
             "name": "China REACH (MEE new-chemical registration) pathway (quantitative method not yet mapped)",
@@ -1045,8 +1072,24 @@ def _regulatory_programme(jurisdiction: str, group: str, scenario: str) -> dict[
             return {
                 "key": "KR_AGROCHEM_NOT_MAPPED",
                 "name": "South Korean Agrochemicals Control Act pathway (quantitative method not yet mapped)",
-                "scope": "Pesticide registration sits under the Agrochemicals Control Act; the administering body "
-                         "and the quantitative method have not been fully confirmed (EXTERNAL MODEL REQUIRED).",
+                "scope": "Pesticides are registered by the Rural Development Administration (RDA) under the "
+                         "Agrochemicals Control Act, which falls under the Ministry of Agriculture, Food and Rural "
+                         "Affairs' statutory authority; the quantitative risk-assessment method has not been "
+                         "mapped (EXTERNAL MODEL REQUIRED).",
+            }
+        if group == "human_pharmaceutical":
+            # 2026-09-22 follow-up research: multiple secondary sources report that MFDS drug-approval submissions
+            # (New Drug Applications and biologics in particular) must include "information on potential
+            # environmental risks" as a supporting document, aligned with ICH guidelines -- a real requirement, not
+            # nothing. No named MFDS guideline document or quantitative PEC/PNEC method was located this session.
+            # MFDS is the human-medicines regulator; veterinary medicines sit with a different body in Korea (not
+            # researched this session), so this is deliberately not extended to veterinary_pharmaceutical.
+            return {
+                "key": "KR_MFDS_PHARMA_NOT_MAPPED",
+                "name": "South Korea MFDS pharmaceutical environmental-information pathway (not yet mapped)",
+                "scope": "MFDS drug-approval submissions are reported to require environmental-risk information as "
+                         "a supporting document, but no named guideline document or quantitative method was "
+                         "located this session (EXTERNAL MODEL REQUIRED).",
             }
         return {
             "key": "KR_KREACH_NOT_MAPPED",
@@ -1064,6 +1107,22 @@ def _regulatory_programme(jurisdiction: str, group: str, scenario: str) -> dict[
                 "scope": "Pesticides are registered centrally by the Central Insecticides Board & Registration "
                          "Committee under the Insecticides Act, 1968; the quantitative environmental-risk method "
                          "has not been mapped (EXTERNAL MODEL REQUIRED).",
+            }
+        if group == "human_pharmaceutical":
+            # 2026-09-22 follow-up research: a peer-reviewed comparative review (Therapeutic Innovation & Regulatory
+            # Science, EMA/FDA/CDSCO guidelines) states plainly that CDSCO has no environmental risk assessment
+            # requirement and the Drugs and Cosmetics Act does not address environmental risk -- a confirmed
+            # absence, not a research gap, the same shape of finding as Australia's TGA. Summarised from the
+            # article's abstract/search snippet only; the article itself is paywalled and was not fetched. CDSCO is
+            # the human-medicines regulator; veterinary medicines were not researched this session, so this is
+            # deliberately not extended to veterinary_pharmaceutical.
+            return {
+                "key": "IN_CDSCO_NO_ERA_REQUIREMENT",
+                "name": "India CDSCO pathway (no environmental risk assessment requirement)",
+                "scope": "CDSCO has no environmental risk assessment requirement for pharmaceuticals; the Drugs and "
+                         "Cosmetics Act does not address environmental risk -- confirmed, not a research gap. "
+                         "Manufacturing effluent instead falls under the general MoEFCC/CPCB pollution-control "
+                         "rules named above (EXTERNAL MODEL REQUIRED).",
             }
         return {
             "key": "IN_MSIHC_NOT_MAPPED",

@@ -160,9 +160,52 @@ def test_japan_pesticide_route_names_its_own_pec_criterion():
     assert "Predicted Environmental Concentration" in route["detail"] and "Agricultural Chemicals" in route["detail"]
 
 
+def test_korea_pesticide_route_names_the_confirmed_registering_authority():
+    # 2026-09-22 follow-up: the Rural Development Administration / MAFRA attribution was confirmed after the
+    # initial JP/CN/KR/IN research session, which had left it as an open question.
+    route = stage(resolve_workflow("KR", "pesticide"), USE_RELEASE, "route")
+    assert "Rural Development Administration" in route["detail"] and "Agriculture" in route["detail"]
+
+
 def test_india_cmsr_draft_is_not_claimed_as_an_enacted_regime():
     route = stage(resolve_workflow("IN", "industrial_organic"), USE_RELEASE, "route")
     assert "draft" in route["detail"].lower() and "MSIHC" in route["detail"]
+
+
+# ---------- pharma pathways added in the 2026-09-22 follow-up research ----------
+def test_china_pharma_route_names_discharge_standards_not_a_pec_pnec_claim():
+    route = stage(resolve_workflow("CN", "human_pharmaceutical"), USE_RELEASE, "route")
+    assert "discharge standard" in route["detail"].lower() and "GB 21" in route["detail"]
+    assert "No pre-market environmental risk assessment guideline" in route["detail"]
+
+
+def test_korea_pharma_route_names_a_real_but_unmapped_mfds_requirement():
+    route = stage(resolve_workflow("KR", "human_pharmaceutical"), USE_RELEASE, "route")
+    assert "MFDS" in route["detail"] and "environmental-risk information" in route["detail"]
+
+
+def test_india_pharma_route_states_a_confirmed_no_era_requirement():
+    route = stage(resolve_workflow("IN", "human_pharmaceutical"), USE_RELEASE, "route")
+    assert "no environmental risk assessment requirement" in route["detail"].lower()
+    assert "confirmed, not a research gap" in route["detail"]
+
+
+def test_korea_and_india_pharma_findings_are_not_extended_to_veterinary():
+    # MFDS and CDSCO are each that country's human-medicines regulator; veterinary medicines were not researched,
+    # so the veterinary group must fall through to the generic (industrial-style) "not yet mapped" branch instead
+    # of silently inheriting a human-medicines-specific finding.
+    kr_vet = stage(resolve_workflow("KR", "veterinary_pharmaceutical"), USE_RELEASE, "route")
+    in_vet = stage(resolve_workflow("IN", "veterinary_pharmaceutical"), USE_RELEASE, "route")
+    assert kr_vet["detail"] == stage(resolve_workflow("KR", "industrial_organic"), USE_RELEASE, "route")["detail"]
+    assert in_vet["detail"] == stage(resolve_workflow("IN", "industrial_organic"), USE_RELEASE, "route")["detail"]
+
+
+def test_china_pharma_finding_is_kept_for_veterinary_with_its_own_caveat_documented():
+    # Unlike Korea/India, China's finding is a manufacturing-category discharge standard, not a human/veterinary
+    # regulatory-review split, so it is deliberately kept for both groups (see the code comment for the caveat).
+    human = stage(resolve_workflow("CN", "human_pharmaceutical"), USE_RELEASE, "route")
+    vet = stage(resolve_workflow("CN", "veterinary_pharmaceutical"), USE_RELEASE, "route")
+    assert human["detail"] == vet["detail"]
 
 
 @pytest.mark.parametrize("region, receptors", [("JP", {"human"}), ("KR", {"human"}), ("CN", {"human", "ecological"})])

@@ -86,6 +86,18 @@ obligations per category; contaminated construction land cannot be used for resi
 purposes until remediation targets are met (Art. 61); the liable party must prepare a remediation plan and pass
 an effect assessment before the site is removed from the contamination catalogue.
 
+**Human/veterinary pharmaceuticals** (researched in a 2026-09-22 follow-up session): no pre-market environmental
+risk assessment guideline was found under the NMPA or the Ministry of Ecology and Environment -- searches
+surfaced GMP manufacturing-quality standards and academic ecotoxicology studies of Chinese rivers, not a
+regulatory ERA requirement. What IS real and confirmed: category-specific national discharge standards for
+pharmaceutical-manufacturing wastewater, issued by MEE, with official English pages fetched this session --
+"Discharge standard of water pollutants for pharmaceutical industry -- Chinese traditional medicine category"
+(GB 21906-2008), <https://english.mee.gov.cn/Resources/standards/water_environment/Discharge_standard/200811/t20081103_130775.shtml>,
+and "Water Pollutant Discharge Standard of Extractive Pharmaceutical Industry" (GB 21905-2008), plus separate
+standards for fermentation-products and chemical-synthesis-products categories. This is a manufacturing-effluent
+control, not a pre-market PEC/PNEC risk assessment for a specific drug -- the two are reported separately, not
+conflated.
+
 **Currency**: CNY.
 
 ## South Korea
@@ -99,10 +111,15 @@ REACH24H, "K-REACH 2025 Amendments", <https://en.reach24h.com/news/insights/chem
 Secondary compliance-industry sources; the quantitative risk-assessment method was not verified and is not
 encoded.
 
-**Pesticides**: Agrochemicals Control Act ("Pesticide Control Act" in some translations), administered by the
-Ministry of Agriculture (secondary-source attribution; whether Rural Development Administration holds the
-operational registration role was not confirmed this session and is left as an open question, not asserted).
-FAOLEX entry: <https://www.fao.org/faolex/results/details/en/c/LEX-FAOC136704/>.
+**Pesticides**: Agrochemicals Control Act ("Pesticide Control Act" in some translations). **Confirmed in a
+2026-09-22 follow-up session**: the Rural Development Administration (RDA) is the operational registering
+authority -- "The Administrator of the Rural Development Administration has authority to issue certificates of
+registration for agrochemical items after examination of documents and testing samples" -- while the Act itself
+falls under the Ministry of Agriculture, Food and Rural Affairs' (MAFRA) statutory/competent authority. Registration
+is valid for ten years. Corroborated across three independent sources found by WebSearch (none fetched in full):
+the Korea Legislation Research Institute's own translation portal, a USDA FAS country report, and a compliance-
+industry secondary source (agrochemical.chemlinked.com). FAOLEX entry (blocked this session, HTTP 403):
+<https://www.fao.org/faolex/results/details/en/c/LEX-FAOC136704/>.
 
 **Contaminated land**: Soil Environment Conservation Act. Official Korea Legislation Research Institute (KLRI)
 translation located this session: <https://elaw.klri.re.kr/eng_service/lawTwoView.do?hseq=14745> (not
@@ -111,6 +128,14 @@ unlike the Japan and China soil laws above). The Act classifies soil contaminati
 concern", where the relevant authority can restrict land use and order remediation, and pollution requiring
 "countermeasure", where the area is designated and managed under a countermeasure plan. Administered by the
 Ministry of Environment.
+
+**Human/veterinary pharmaceuticals** (researched in a 2026-09-22 follow-up session): a real requirement, only
+thinly sourced. Multiple secondary sources (drug-registration consultancy pages, not the MFDS itself) report that
+New Drug Application and biologics submissions to the Ministry of Food and Drug Safety (MFDS) must include
+"information on potential environmental risks associated with the product and its manufacturing process" as a
+supporting document, aligned with ICH guidelines. No named MFDS guideline document, and no quantitative
+PEC/PNEC-style method, was located this session -- treat the requirement's existence as reasonably confirmed and
+its actual content as an open gap, not treat the whole thing as absent.
 
 **Currency**: KRW.
 
@@ -149,8 +174,14 @@ gazette notification, not the notification itself, which was not located and fet
 <https://www.drishtiias.com/daily-updates/daily-news-analysis/environment-protection-management-of-contaminated-sites-rules-2025>.
 This is a genuinely new (2025), currently-in-force rule -- worth flagging to the user given how recent it is.
 
-**Human/veterinary pharmaceuticals**: not researched this session for any of the four countries below Japan (see
-above); treat as an explicit gap, not a claim of no requirement.
+**Human/veterinary pharmaceuticals** (researched in a 2026-09-22 follow-up session): a confirmed absence, not a
+research gap. A peer-reviewed comparative review -- "Environmental Risk Assessment in Pharmaceutical Regulation:
+A Comparative Review of EMA, U.S. FDA and CDSCO Guidelines", Therapeutic Innovation & Regulatory Science (Springer
+Nature) -- states that "the Indian regulator (CDSCO) has no specific ERA (Environmental Risk Assessment)
+requirement, and India's Drugs & Cosmetics Act and regulations do not address environmental risk," with pharma
+manufacturing emissions instead controlled by the environment ministry's general pollution rules. The article
+itself is paywalled and was not fetched -- summarised from the WebSearch result (the article's abstract/snippet),
+not primary-verified. <https://link.springer.com/article/10.1007/s43441-026-01035-6>.
 
 **Currency**: INR.
 
@@ -164,7 +195,13 @@ above); treat as an explicit gap, not a claim of no requirement.
   only the identified soil/land contamination law is encoded as a named route (`contaminated_land`-style, one
   route rather than per-receptor, since none of the four sources broke their site-level regime down by receptor
   the way UK/US/CA/AU/NZ's sources did).
-- China's and Korea's pesticide administering bodies are attributed with lower confidence than Japan's or
-  India's (secondary sources only, not primary text).
-- Whether any of the four has a veterinary-pharmaceutical or biocide-specific environmental pathway was not
-  researched.
+- China's pesticide administering body (Ministry of Agriculture and Rural Affairs) is attributed with lower
+  confidence than Japan's, India's or (as of the 2026-09-22 follow-up) Korea's -- secondary sources only, not
+  primary text.
+- Veterinary-pharmaceutical and biocide-specific environmental pathways were not researched for any of the four.
+  The Korea and India human-pharmaceutical findings above are deliberately NOT extended to
+  `veterinary_pharmaceutical` in code, since MFDS and CDSCO are each that country's HUMAN-medicines regulator and
+  veterinary medicines plausibly sit with a different body (not confirmed). China's finding is kept for both,
+  since it is a manufacturing-category discharge standard, not a human/veterinary regulatory-review split -- but
+  that generalisation (that veterinary-drug manufacturing in China actually falls under the same GB standards) was
+  not independently confirmed either.
