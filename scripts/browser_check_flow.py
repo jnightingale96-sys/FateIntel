@@ -58,7 +58,7 @@ def run(page, errors, base):
     page.wait_for_function("() => window.flowShell && window.flowShell._state.workflow !== null", timeout=15000)
 
     # ---- first load: EU, human pharmaceutical
-    check("seven region tabs", page.locator("[data-model-system]").count() == 7)
+    check("eleven region tabs", page.locator("[data-model-system]").count() == 11)
     check("default EU tab is selected", page.get_attribute('[data-model-system="EU"]', "aria-selected") == "true")
     check("default group is human pharmaceutical", selected(page, "flow-groups") == ["Human pharmaceutical"], str(selected(page, "flow-groups")))
     check("pharma: contaminated land screen is hidden", not visible(page, "#contaminated-land"))
@@ -141,12 +141,27 @@ def run(page, errors, base):
     check("CA: rail names a Canadian route", "Canadian" in rail_text(page), rail_text(page)[:200])
     spray = page.inner_text('#release-cards [data-release="agricultural_spray"]')
     check("CA: agricultural spray card has no EU/FOCUS wording", "FOCUS" not in spray and "EU" not in spray, spray)
-    for code, needle in (("AU", "AICIS"), ("NZ", "HSNO")):
+    for code, needle in (("AU", "AICIS"), ("NZ", "HSNO"), ("JP", "CSCL"), ("CN", "China REACH"), ("KR", "K-REACH"), ("IN", "MSIHC")):
         choose(page, "flow-families", "Industrial, detergent")
         page.click(f'[data-model-system="{code}"]')
         page.wait_for_timeout(600)
         check(f"{code}: rail names its regulator ({needle})", needle in rail_text(page), rail_text(page)[:160])
         check(f"{code}: no EU or US refinement screen", not visible(page, "#pearl-groundwater") and not visible(page, "#us-models-placeholder"))
+        check(f"{code}: no EU or UK REACH wording", "EU REACH" not in rail_text(page) and "UK REACH" not in rail_text(page))
+
+    # Japan's pesticide route names its own PEC criterion; India's site track names all four receptors (the
+    # 2025 Contaminated Sites Rules is the broadest of the four new countries' sources).
+    page.click('[data-model-system="JP"]')
+    page.wait_for_timeout(500)
+    choose(page, "flow-families", "Pesticides and biocides")
+    check("JP pesticide: names its own PEC criterion", "Predicted Environmental Concentration" in rail_text(page), rail_text(page)[:250])
+    page.click('[data-model-system="IN"]')
+    page.wait_for_timeout(500)
+    choose(page, "flow-families", "Legacy persistent organics")
+    in_methods = page.inner_text("#flow-rail")
+    check("IN site methods: all four receptors named", "4 of 4" in in_methods, in_methods[:300])
+    choose(page, "flow-families", "Pharmaceuticals and personal care")
+    choose(page, "flow-groups", "Human pharmaceutical")
     page.click('[data-model-system="US"]')
     page.wait_for_timeout(600)
     check("US rail: EPA models are the refinement", "US EPA models" in rail_text(page))

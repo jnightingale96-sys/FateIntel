@@ -130,13 +130,53 @@ def test_us_flow_has_the_us_models_and_not_the_eu_screens():
     assert stage(us, USE_RELEASE, "refine")["status"] == "managed_external"
 
 
-@pytest.mark.parametrize("region", ["CA", "AU", "NZ"])
+@pytest.mark.parametrize("region", ["CA", "AU", "NZ", "JP", "CN", "KR", "IN"])
 def test_other_regions_state_that_no_dedicated_refinement_exists(region):
     wf = resolve_workflow(region, "industrial_organic")
     assert not {"water_sediment", "pearl", "us_models"} & set(wf["modules"])
     refine = stage(wf, USE_RELEASE, "refine")
     assert refine["status"] == "not_built" and refine["module"] is None
     assert REGIONS[region]["label"] in refine["note"]
+
+
+# ---------- Japan, China, South Korea, India: named regime, honestly unmapped method, never EU/UK wording ----------
+def test_all_eleven_regions_are_present():
+    assert set(REGIONS) == {"EU", "UK", "CH", "US", "CA", "AU", "NZ", "JP", "CN", "KR", "IN"}
+
+
+@pytest.mark.parametrize("region, needle", [
+    ("JP", "CSCL"), ("CN", "China REACH"), ("KR", "K-REACH"), ("IN", "MSIHC"),
+])
+def test_jp_cn_kr_in_name_their_own_regime_and_mark_the_method_partial(region, needle):
+    route = stage(resolve_workflow(region, "industrial_organic"), USE_RELEASE, "route")
+    assert needle in route["detail"]
+    assert route["status"] == "partial"  # regime named, quantitative method not yet mapped -- never claimed available
+    for other in ("EU REACH", "UK REACH"):
+        assert other not in route["detail"]
+
+
+def test_japan_pesticide_route_names_its_own_pec_criterion():
+    route = stage(resolve_workflow("JP", "pesticide"), USE_RELEASE, "route")
+    assert "Predicted Environmental Concentration" in route["detail"] and "Agricultural Chemicals" in route["detail"]
+
+
+def test_india_cmsr_draft_is_not_claimed_as_an_enacted_regime():
+    route = stage(resolve_workflow("IN", "industrial_organic"), USE_RELEASE, "route")
+    assert "draft" in route["detail"].lower() and "MSIHC" in route["detail"]
+
+
+@pytest.mark.parametrize("region, receptors", [("JP", {"human"}), ("KR", {"human"}), ("CN", {"human", "ecological"})])
+def test_jp_cn_kr_site_methods_are_named_only_where_the_research_confirmed_them(region, receptors):
+    methods = _site_methods(region)
+    named = {m["receptor"] for m in methods if m["named"]}
+    assert named == receptors
+
+
+def test_india_is_the_only_new_region_with_all_four_receptors_named():
+    # The 2025 Contaminated Sites Rules' own scope language explicitly names soil, groundwater, surface water and
+    # sediment together -- broader than Japan, China or Korea's sources, which is a real difference, not a slip.
+    methods = _site_methods("IN")
+    assert {m["receptor"] for m in methods if m["named"]} == {"human", "ecological", "groundwater", "surface_water"}
 
 
 def test_regulatory_route_text_comes_from_the_registry_programme():

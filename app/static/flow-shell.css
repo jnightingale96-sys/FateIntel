@@ -3,13 +3,12 @@
 /* A blocked group (radionuclide, contaminated mixture) keeps only the identity and regulatory-route cards. */
 .flow-blocked .flow-card:not(#step-identity):not(#regulatory-pathway){display:none}
 
-/* seven region tabs instead of two: EU, UK, CH, US, CA, AU, NZ */
-.model-system-tabs{grid-template-columns:repeat(7,minmax(0,1fr))}
-.model-system-tabs button{min-width:0}
+/* Eleven region tabs instead of two: EU, UK, CH, US, CA, AU, NZ, JP, CN, KR, IN. Too many for a fixed column
+   count at any reasonable width, so this always wraps to fit rather than trying to force one row. */
+.model-system-tabs{grid-template-columns:repeat(auto-fit,minmax(108px,1fr));row-gap:0}
+.model-system-tabs button{min-width:0;border-bottom:1px solid #cfdad7}
 @media (max-width:1420px){
   .model-system-switch{grid-template-columns:1fr}
-  .model-system-tabs{grid-template-columns:repeat(auto-fit,minmax(110px,1fr))}
-  .model-system-tabs button{border-bottom:1px solid #cfdad7}
 }
 
 .flow-setup{margin:0 0 14px;padding:14px 16px 12px;background:#fff;border:1px solid #d6e0dd;display:grid;gap:10px}

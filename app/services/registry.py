@@ -81,6 +81,78 @@ FRAMEWORKS: list[dict[str, Any]] = [
         ],
         "default_currency": "NZD",
     },
+    {
+        "key": "JP",
+        "name": "Japan",
+        # Researched this session (REGION_RESEARCH_JP_CN_KR_IN.md). CSCL (Chemical Substances Control Law, 1973)
+        # is jointly administered by METI, MHLW and the Ministry of the Environment for new industrial chemicals
+        # -- confirmed via METI's own overview, but the quantitative screening/PEC-PNEC method was not read to
+        # primary-document depth and is not encoded. The Agricultural Chemicals Regulation Act's own criterion
+        # (a Predicted Environmental Concentration compared against MoE standards for public waters) was read
+        # from the official translation and IS named below, though its calculation method is not encoded either.
+        # MHLW's 2016 pharmaceutical environmental risk assessment guidance (PEC/PNEC ratio, 0.01 microgram/L
+        # action limit) is confirmed only via secondary academic citations, not the MHLW notification itself.
+        "packs": [
+            "CSCL industrial chemicals (METI/MHLW/MoE; quantitative method not yet mapped)",
+            "Agricultural Chemicals Regulation Act pesticides (PEC criterion named, calculation not yet mapped)",
+            "MHLW pharmaceutical environmental risk assessment (secondary-sourced, not yet mapped)",
+            "Soil Contamination Countermeasures Act (2002; contaminated land only)",
+        ],
+        "default_currency": "JPY",
+    },
+    {
+        "key": "CN",
+        "name": "China",
+        # Researched this session (REGION_RESEARCH_JP_CN_KR_IN.md). "China REACH" (MEE Order No. 12, 2020) is
+        # administered by the Ministry of Ecology and Environment; a comprehensive revision is due to replace it
+        # on 15 August 2026. The Soil Pollution Prevention and Control Law (2018/2019) was read in full this
+        # session and names both public health and the ecological environment in its own purpose clause. Pesticide
+        # registration sits with the Ministry of Agriculture and Rural Affairs, and that same law requires it to
+        # assess pesticide/fertiliser impact on the soil environment -- confirmed by statute, not by practice.
+        "packs": [
+            "China REACH / MEE new-chemical registration (quantitative method not yet mapped)",
+            "Ministry of Agriculture and Rural Affairs pesticide registration (pathway not yet mapped)",
+            "Soil Pollution Prevention and Control Law (2018/2019; contaminated land)",
+        ],
+        "default_currency": "CNY",
+    },
+    {
+        "key": "KR",
+        "name": "South Korea",
+        # Researched this session (REGION_RESEARCH_JP_CN_KR_IN.md). K-REACH (Act on the Registration and
+        # Evaluation of Chemical Substances, in force 2015) is administered by the Ministry of Environment with
+        # NIER evaluating dossiers. The Agrochemicals Control Act's administering body is secondary-sourced only
+        # (attributed to the Ministry of Agriculture; whether the Rural Development Administration holds the
+        # operational registration role was not confirmed). The Soil Environment Conservation Act was summarised
+        # from a secondary source, not read in full, unlike Japan's and China's soil laws.
+        "packs": [
+            "K-REACH new-chemical registration (MoE/NIER; quantitative method not yet mapped)",
+            "Agrochemicals Control Act pesticides (administering body not fully confirmed, pathway not yet mapped)",
+            "Soil Environment Conservation Act (contaminated land; summarised, not primary-verified)",
+        ],
+        "default_currency": "KRW",
+    },
+    {
+        "key": "IN",
+        "name": "India",
+        # Researched this session (REGION_RESEARCH_JP_CN_KR_IN.md). India has no comprehensive chemicals-
+        # registration law in force: the "Chemicals (Management and Safety) Rules" ("India REACH") remains a
+        # draft (fifth public draft), so it is NOT named as the industrial-chemicals regime here. The operative
+        # regime instead is the Manufacture, Storage and Import of Hazardous Chemicals Rules, 1989 (MSIHC), made
+        # under the Environment (Protection) Act 1986 and enforced by CPCB/State PCBs -- confirmed still in force
+        # this session but not read in full. Pesticides sit with CIBRC under the Insecticides Act, 1968,
+        # confirmed via CIBRC's own government page. The Environment Protection (Management of Contaminated
+        # Sites) Rules, 2025 (Notification S.O. 3401(E), 24 July 2025) is India's first codified contaminated-
+        # land procedure and, uniquely among this session's four new jurisdictions, its own scope language
+        # explicitly names soil, groundwater, surface water and sediment together.
+        "packs": [
+            "MSIHC 1989 hazardous industrial chemicals (CPCB/MoEFCC; quantitative method not yet mapped)",
+            "Insecticides Act 1968 pesticides, CIBRC (pathway not yet mapped)",
+            "Chemicals (Management and Safety) Rules / 'India REACH' (still a draft, not enacted -- not a supported pathway)",
+            "Environment Protection (Management of Contaminated Sites) Rules 2025 (contaminated land)",
+        ],
+        "default_currency": "INR",
+    },
 ]
 
 CONTAMINANT_GROUPS = [
@@ -918,6 +990,88 @@ def _regulatory_programme(jurisdiction: str, group: str, scenario: str) -> dict[
             "key": "CH_ENVIRONMENTAL",
             "name": "Swiss environmental exposure pathway",
             "scope": "native screening plus applicable managed Swiss ChemO / FOCUS workflows",
+        }
+
+    # Researched 2026-09-22 (REGION_RESEARCH_JP_CN_KR_IN.md). None of these four countries' quantitative
+    # risk-assessment methods were read to primary-document depth this session, so unlike AU/CA/NZ above, every
+    # branch below is an honest "regime and agency named, method not yet mapped" result -- never a calculated
+    # PEC/PNEC. Japan's pesticide PEC criterion is the one exception with a named mechanism, not just an agency.
+    if jurisdiction == "JP":
+        if scenario == "agricultural_spray" or group == "pesticide":
+            return {
+                "key": "JP_ACRA_PEC",
+                "name": "Japan Agricultural Chemicals Regulation Act pathway",
+                "scope": "Registration is refused if the Predicted Environmental Concentration (PEC) of the active "
+                         "ingredient in public waters exceeds the Ministry of the Environment's standard, alongside "
+                         "Food Sanitation Act residue limits; the PEC calculation method itself has not been mapped "
+                         "(EXTERNAL MODEL REQUIRED).",
+            }
+        if group == "human_pharmaceutical":
+            return {
+                "key": "JP_MHLW_PHARMA_ERA",
+                "name": "Japan MHLW pharmaceutical environmental risk assessment pathway",
+                "scope": "MHLW's 2016 guidance assesses a PEC/PNEC ratio against a 0.01 microgram/L action limit; "
+                         "confirmed only via secondary academic citation of the guidance, not the MHLW notification "
+                         "itself, and not encoded as a calculable method (EXTERNAL MODEL REQUIRED).",
+            }
+        return {
+            "key": "JP_CSCL_NOT_MAPPED",
+            "name": "Japan CSCL pathway (quantitative method not yet mapped)",
+            "scope": "New chemical substances are screened and risk-assessed under the Chemical Substances Control "
+                     "Law (METI/MHLW/MoE); the quantitative screening/PEC-PNEC method has not been mapped "
+                     "(EXTERNAL MODEL REQUIRED).",
+        }
+
+    if jurisdiction == "CN":
+        if scenario == "agricultural_spray" or group == "pesticide":
+            return {
+                "key": "CN_MARA_PESTICIDE_NOT_MAPPED",
+                "name": "Chinese pesticide registration pathway (quantitative method not yet mapped)",
+                "scope": "Pesticide registration sits with the Ministry of Agriculture and Rural Affairs, which the "
+                         "Soil Pollution Prevention and Control Law itself requires to assess pesticide/fertiliser "
+                         "impact on the soil environment; the quantitative method has not been mapped "
+                         "(EXTERNAL MODEL REQUIRED).",
+            }
+        return {
+            "key": "CN_MEE_NOT_MAPPED",
+            "name": "China REACH (MEE new-chemical registration) pathway (quantitative method not yet mapped)",
+            "scope": "New chemical substances are registered with the Ministry of Ecology and Environment under "
+                     "MEE Order No. 12 (revised Measures due 15 August 2026); the quantitative risk-assessment "
+                     "method has not been mapped (EXTERNAL MODEL REQUIRED).",
+        }
+
+    if jurisdiction == "KR":
+        if scenario == "agricultural_spray" or group == "pesticide":
+            return {
+                "key": "KR_AGROCHEM_NOT_MAPPED",
+                "name": "South Korean Agrochemicals Control Act pathway (quantitative method not yet mapped)",
+                "scope": "Pesticide registration sits under the Agrochemicals Control Act; the administering body "
+                         "and the quantitative method have not been fully confirmed (EXTERNAL MODEL REQUIRED).",
+            }
+        return {
+            "key": "KR_KREACH_NOT_MAPPED",
+            "name": "K-REACH pathway (quantitative method not yet mapped)",
+            "scope": "New chemical substances are registered with the Ministry of Environment, evaluated by NIER, "
+                     "under the Act on the Registration and Evaluation of Chemical Substances; the quantitative "
+                     "risk-assessment method has not been mapped (EXTERNAL MODEL REQUIRED).",
+        }
+
+    if jurisdiction == "IN":
+        if scenario == "agricultural_spray" or group == "pesticide":
+            return {
+                "key": "IN_CIBRC_NOT_MAPPED",
+                "name": "India Insecticides Act / CIBRC pathway (quantitative method not yet mapped)",
+                "scope": "Pesticides are registered centrally by the Central Insecticides Board & Registration "
+                         "Committee under the Insecticides Act, 1968; the quantitative environmental-risk method "
+                         "has not been mapped (EXTERNAL MODEL REQUIRED).",
+            }
+        return {
+            "key": "IN_MSIHC_NOT_MAPPED",
+            "name": "India MSIHC hazardous-chemicals pathway (quantitative method not yet mapped)",
+            "scope": "Hazardous industrial chemicals are regulated under the Manufacture, Storage and Import of "
+                     "Hazardous Chemicals Rules, 1989 (CPCB/MoEFCC); a comprehensive chemicals-registration regime "
+                     "('India REACH', the Chemicals Management and Safety Rules) remains a draft, not enacted, and "
+                     "is not named as a supported pathway (EXTERNAL MODEL REQUIRED).",
         }
 
     # A jurisdiction with no dedicated branch above never inherits another jurisdiction's regulatory-programme

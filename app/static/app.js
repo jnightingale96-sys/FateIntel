@@ -62,12 +62,17 @@ const REGION_SETS = {
   CA: ["CA"],
   AU: ["AU"],
   NZ: ["NZ"],
+  JP: ["JP"],
+  CN: ["CN"],
+  KR: ["KR"],
+  IN: ["IN"],
   GLOBAL: ["EU","UK","CH","US","CA","AU","NZ","JP","CN","KR","TW","IN","SG","MY","TH","ID","PH","VN","BR","MX","CO","CL","PE","ZA","NG","KE","GH","MA","EG","SA","AE","IL","TR","EAEU","ANDEAN","GCC","CILSS","CEMAC"],
 };
 const REGION_LABELS = {
   EU_US:"EU + US", EU:"European Union", UK:"United Kingdom", CH:"Switzerland", US:"United States", US_CA:"United States + Canada",
   AU_NZ:"Australia + New Zealand", JP_CN_KR:"Japan + China + South Korea",
-  BR_MX:"Brazil + Mexico", CA:"Canada", AU:"Australia", NZ:"New Zealand", GLOBAL:"Global navigator",
+  BR_MX:"Brazil + Mexico", CA:"Canada", AU:"Australia", NZ:"New Zealand",
+  JP:"Japan", CN:"China", KR:"South Korea", IN:"India", GLOBAL:"Global navigator",
 };
 const MODEL_SYSTEM_JURISDICTIONS = {
   // Kept as "EU + UK + Switzerland" deliberately, even though UK and Switzerland now have their own tab: this is
@@ -82,6 +87,10 @@ const MODEL_SYSTEM_JURISDICTIONS = {
   CA: "Canada",
   AU: "Australia",
   NZ: "New Zealand",
+  JP: "Japan",
+  CN: "China",
+  KR: "South Korea",
+  IN: "India",
 };
 // Regions that share FateIntel's native FOCUS/water-sediment refinement screens (workflow_registry.py's
 // refinement:"eu"). Only the regulatory-programme text differs per region within this set.
@@ -99,6 +108,10 @@ function projectModelSystem(project) {
   if (jurisdiction.includes("canada")) return "CA";
   if (jurisdiction.includes("australia")) return "AU";
   if (jurisdiction.includes("new zealand")) return "NZ";
+  if (jurisdiction.includes("japan")) return "JP";
+  if (jurisdiction.includes("china")) return "CN";
+  if (jurisdiction.includes("south korea") || jurisdiction.includes("korea")) return "KR";
+  if (jurisdiction.includes("india")) return "IN";
   if (jurisdiction.includes("united states") || /(^|\W)us(\W|$)/.test(jurisdiction)) return "US";
   // The combined legacy phrasing is checked before the individual UK/Switzerland checks below, or it would
   // wrongly match "uk" or "switzerland" (the combined string contains both of those too).

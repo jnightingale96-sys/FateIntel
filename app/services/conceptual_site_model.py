@@ -62,6 +62,7 @@ _UK = "LEGACY_CONTAMINANTS_MATRIX_UK.md"
 _US = "LEGACY_CONTAMINANTS_MATRIX_US.md"
 _EU = "LEGACY_CONTAMINANTS_MATRIX_EU.md"
 _T234 = "LEGACY_CONTAMINANTS_MATRIX_TIER234_AND_RADIONUCLIDES.md"
+_JCKI = "REGION_RESEARCH_JP_CN_KR_IN.md"
 EXTERNAL_ROUTES: dict[tuple[str, str], dict[str, str]] = {
     ("UK", "human"): {"route": "CLEA-type human-health methodology (external); published values are limited (C4SLs for 6 substances, legacy SGVs)", "source": _UK},
     ("UK", "groundwater"): {"route": "Remedial Targets Methodology / ConSim (external)", "source": _UK},
@@ -78,6 +79,25 @@ EXTERNAL_ROUTES: dict[tuple[str, str], dict[str, str]] = {
     ("AU", "human"): {"route": "ASC NEPM Schedule B tiered assessment (HIL/EIL) (external)", "source": _T234},
     ("AU", "ecological"): {"route": "ASC NEPM Schedule B tiered assessment (HIL/EIL) (external)", "source": _T234},
     ("NZ", "human"): {"route": "NES-CS soil contaminants standard (planning-control regime, human health only) (external)", "source": _T234},
+    # Japan: Soil Contamination Countermeasures Act (Act No. 53 of 2002), read in full this session. Purpose is
+    # explicitly "protect the health of the citizens" -- human health only, the same limited claim as NZ's NES-CS.
+    ("JP", "human"): {"route": "Soil Contamination Countermeasures Act survey/designation framework, prefectural governors with MoE oversight (external)", "source": _JCKI},
+    # China: Law on Prevention and Control of Soil Contamination (2018/2019), read in full this session. Article 1
+    # names both "the ecological environment" and "public health" -- so both receptor classes are named here,
+    # unlike Japan's human-only purpose clause.
+    ("CN", "human"): {"route": "Soil Pollution Prevention and Control Law risk-control and remediation framework, MEE with sectoral departments (external)", "source": _JCKI},
+    ("CN", "ecological"): {"route": "Soil Pollution Prevention and Control Law risk-control and remediation framework, MEE with sectoral departments (external)", "source": _JCKI},
+    # South Korea: Soil Environment Conservation Act, summarised from a secondary source only (not fetched in
+    # full this session) -- kept to the human/land-use claim actually found; ecological scope not confirmed.
+    ("KR", "human"): {"route": "Soil Environment Conservation Act two-tier ('of concern' / 'countermeasure') framework, Ministry of Environment (external)", "source": _JCKI},
+    # India: Environment Protection (Management of Contaminated Sites) Rules, 2025 (Notification S.O. 3401(E),
+    # 24 July 2025) -- the only one of these four whose own scope language explicitly names all four receptor
+    # classes ("soil, groundwater, surface water, or sediments... risk to human health or the environment"),
+    # summarised from secondary sources, not the gazette notification itself.
+    ("IN", "human"): {"route": "Environment Protection (Management of Contaminated Sites) Rules 2025 identification/assessment/remediation framework, CPCB/SPCB (external)", "source": _JCKI},
+    ("IN", "ecological"): {"route": "Environment Protection (Management of Contaminated Sites) Rules 2025 identification/assessment/remediation framework, CPCB/SPCB (external)", "source": _JCKI},
+    ("IN", "groundwater"): {"route": "Environment Protection (Management of Contaminated Sites) Rules 2025 identification/assessment/remediation framework, CPCB/SPCB (external)", "source": _JCKI},
+    ("IN", "surface_water"): {"route": "Environment Protection (Management of Contaminated Sites) Rules 2025 identification/assessment/remediation framework, CPCB/SPCB (external)", "source": _JCKI},
 }
 NOT_ESTABLISHED = "REGULATORY APPLICABILITY NOT ESTABLISHED (route not confirmed by the research for this jurisdiction and receptor)"
 

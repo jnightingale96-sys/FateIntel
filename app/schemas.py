@@ -689,7 +689,7 @@ class AssessmentPlanCreate(BaseModel):
     # front end's region tabs without this Literal being updated, so /api/assessment-plan silently 422'd for those
     # three jurisdictions (the "Assessment setup" panel's own stage rail never hit this, since it calls
     # registry._regulatory_programme() directly rather than through this endpoint).
-    jurisdiction: Literal["EU", "UK", "US", "CH", "AU", "CA", "NZ"]
+    jurisdiction: Literal["EU", "UK", "US", "CH", "AU", "CA", "NZ", "JP", "CN", "KR", "IN"]
     contaminant_group: str
     scenario: str
     tier: int = Field(default=1, ge=0, le=4)

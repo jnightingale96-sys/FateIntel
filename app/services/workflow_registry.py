@@ -40,6 +40,10 @@ REGIONS: dict[str, dict[str, Any]] = {
     "CA": {"label": "Canada", "jurisdictions": ["CA"], "default": "CA", "refinement": None},
     "AU": {"label": "Australia", "jurisdictions": ["AU"], "default": "AU", "refinement": None},
     "NZ": {"label": "New Zealand", "jurisdictions": ["NZ"], "default": "NZ", "refinement": None},
+    "JP": {"label": "Japan", "jurisdictions": ["JP"], "default": "JP", "refinement": None},
+    "CN": {"label": "China", "jurisdictions": ["CN"], "default": "CN", "refinement": None},
+    "KR": {"label": "South Korea", "jurisdictions": ["KR"], "default": "KR", "refinement": None},
+    "IN": {"label": "India", "jurisdictions": ["IN"], "default": "IN", "refinement": None},
 }
 
 GROUP_LABELS: dict[str, str] = {
