@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 from hashlib import sha256
 import json
 import re
+import time
 from typing import Any
 from urllib.parse import quote
 
@@ -154,10 +155,45 @@ def _client() -> httpx.Client:
     )
 
 
+RETRYABLE_STATUS = {429, 502, 503, 504}
+MAX_ATTEMPTS = 3
+BACKOFF_SECONDS = (0.8, 2.0)
+
+
+def _get_with_retry(client: httpx.Client, url: str, *, sleep=time.sleep) -> httpx.Response:
+    """GET with a small bounded retry for transient PubChem conditions only.
+
+    PubChem's usage policy throttles bursts with 503 "ServerBusy" (and 429); a timeout or dropped connection is
+    equally transient. Anything else (404, 400, ...) is a real answer and is returned immediately.
+    Found by a random-chemical validation run in which 18 of the first 44 lookups hit 503 with no retry.
+    """
+    for attempt in range(MAX_ATTEMPTS):
+        last = attempt == MAX_ATTEMPTS - 1
+        try:
+            response = client.get(url)
+        except (httpx.TimeoutException, httpx.TransportError):
+            if last:
+                raise
+            sleep(BACKOFF_SECONDS[attempt])
+            continue
+        if response.status_code in RETRYABLE_STATUS and not last:
+            retry_after = response.headers.get("Retry-After", "")
+            delay = float(retry_after) if retry_after.replace(".", "", 1).isdigit() else BACKOFF_SECONDS[attempt]
+            sleep(min(delay, 5.0))
+            continue
+        return response
+    raise AssertionError("unreachable")
+
+
 def _resolve_cid(client: httpx.Client, query: str, query_mode: str) -> int:
     namespace = "smiles" if query_mode == "smiles" else "name"
     url = f"{PUBCHEM_BASE}/rest/pug/compound/{namespace}/{quote(query, safe='')}/cids/JSON"
-    response = client.get(url)
+    response = _get_with_retry(client, url)
+    if response.status_code == 404:
+        # A 404 is PubChem's definitive "no such compound", not an outage. UVCB substances, mixtures and trade names
+        # (e.g. CAS 68585-34-2, 39341-15-6) have no single structure record; calling that "temporarily unavailable"
+        # would tell the user to retry something that can never succeed.
+        raise ValueError("PubChem has no single-compound record for this identifier (mixtures, UVCB substances and trade names have no unique structure)")
     response.raise_for_status()
     rows = response.json().get("IdentifierList", {}).get("CID", [])
     if not rows:
@@ -170,7 +206,7 @@ def _resolve_cid(client: httpx.Client, query: str, query_mode: str) -> int:
 def _property_row(client: httpx.Client, cid: int) -> dict[str, Any]:
     property_names = "Title,IUPACName,MolecularFormula,MolecularWeight,InChIKey,CanonicalSMILES,IsomericSMILES,XLogP"
     url = f"{PUBCHEM_BASE}/rest/pug/compound/cid/{cid}/property/{property_names}/JSON"
-    response = client.get(url)
+    response = _get_with_retry(client, url)
     response.raise_for_status()
     rows = response.json().get("PropertyTable", {}).get("Properties", [])
     if not rows:
@@ -180,7 +216,7 @@ def _property_row(client: httpx.Client, cid: int) -> dict[str, Any]:
 
 def _synonyms(client: httpx.Client, cid: int) -> list[str]:
     url = f"{PUBCHEM_BASE}/rest/pug/compound/cid/{cid}/synonyms/JSON"
-    response = client.get(url)
+    response = _get_with_retry(client, url)
     response.raise_for_status()
     blocks = response.json().get("InformationList", {}).get("Information", [])
     return [str(value).strip() for value in (blocks[0].get("Synonym", []) if blocks else []) if str(value).strip()]
