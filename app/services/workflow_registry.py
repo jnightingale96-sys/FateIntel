@@ -51,6 +51,11 @@ REGIONS: dict[str, dict[str, Any]] = {
     "NO": {"label": "Norway", "jurisdictions": ["NO"], "default": "NO", "refinement": "eu"},
     "AE": {"label": "United Arab Emirates", "jurisdictions": ["AE"], "default": "AE", "refinement": None},
     "SA": {"label": "Saudi Arabia", "jurisdictions": ["SA"], "default": "SA", "refinement": None},
+    "BR": {"label": "Brazil", "jurisdictions": ["BR"], "default": "BR", "refinement": None},
+    "MX": {"label": "Mexico", "jurisdictions": ["MX"], "default": "MX", "refinement": None},
+    "SG": {"label": "Singapore", "jurisdictions": ["SG"], "default": "SG", "refinement": None},
+    "TW": {"label": "Taiwan", "jurisdictions": ["TW"], "default": "TW", "refinement": None},
+    "ZA": {"label": "South Africa", "jurisdictions": ["ZA"], "default": "ZA", "refinement": None},
 }
 
 GROUP_LABELS: dict[str, str] = {

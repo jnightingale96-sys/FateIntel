@@ -140,8 +140,11 @@ def test_other_regions_state_that_no_dedicated_refinement_exists(region):
 
 
 # ---------- Japan, China, South Korea, India: named regime, honestly unmapped method, never EU/UK wording ----------
-def test_all_fourteen_regions_are_present():
-    assert set(REGIONS) == {"EU", "UK", "CH", "US", "CA", "AU", "NZ", "JP", "CN", "KR", "IN", "NO", "AE", "SA"}
+def test_all_nineteen_regions_are_present():
+    assert set(REGIONS) == {
+        "EU", "UK", "CH", "US", "CA", "AU", "NZ", "JP", "CN", "KR", "IN", "NO", "AE", "SA", "BR", "MX",
+        "SG", "TW", "ZA",
+    }
 
 
 @pytest.mark.parametrize("region, needle", [
@@ -216,6 +219,66 @@ def test_uae_and_saudi_pesticide_routes_name_the_shared_gcc_act_but_stay_partial
     route = stage(resolve_workflow(region, "pesticide"), USE_RELEASE, "route")
     assert needle in route["detail"]
     assert route["status"] == "partial"  # the Act itself specifies no quantitative method
+
+
+def test_brazil_pesticide_route_names_the_confirmed_ibama_ppa_ara_method_but_stays_partial():
+    # Brazil's pesticide pathway is the strongest-sourced finding of the whole country-expansion effort (a
+    # real, hosted, primary IBAMA methodology PDF) but its equations were not read to calculation depth this
+    # session, so it must stay "partial" like Japan's CSCL, not jump to "available".
+    route = stage(resolve_workflow("BR", "pesticide"), USE_RELEASE, "route")
+    assert route["status"] == "partial"
+    assert "PPA" in route["detail"] and "ARA" in route["detail"]
+    assert route["programme_key"] == "BR_IBAMA_PPA_ARA_PARTIAL"
+
+
+def test_brazil_human_pharma_route_confirms_no_era_requirement():
+    route = stage(resolve_workflow("BR", "human_pharmaceutical"), USE_RELEASE, "route")
+    assert route["status"] == "partial"
+    assert route["programme_key"] == "BR_ANVISA_NO_ERA_REQUIREMENT"
+
+
+def test_mexico_pesticide_and_veterinary_routes_are_genuinely_different_agencies():
+    # CICOPLAFEST (pesticides) and SENASICA (veterinary) are distinct agencies from COFEPRIS (human pharma) --
+    # confirm the routes don't collapse into one shared programme key.
+    pesticide = stage(resolve_workflow("MX", "pesticide"), USE_RELEASE, "route")
+    veterinary = stage(resolve_workflow("MX", "veterinary_pharmaceutical"), USE_RELEASE, "route")
+    human = stage(resolve_workflow("MX", "human_pharmaceutical"), USE_RELEASE, "route")
+    keys = {pesticide["programme_key"], veterinary["programme_key"], human["programme_key"]}
+    assert len(keys) == 3
+    assert all(route["status"] == "partial" for route in (pesticide, veterinary, human))
+
+
+def test_taiwan_industrial_route_names_the_confirmed_reach_modelled_structure_but_stays_partial():
+    route = stage(resolve_workflow("TW", "industrial_organic", scenario="industrial_effluent"), USE_RELEASE, "route")
+    assert route["status"] == "partial"
+    assert route["programme_key"] == "TW_TCCSCA_PARTIAL"
+    assert "REACH" in route["detail"]
+
+
+def test_south_africa_pesticide_and_veterinary_share_the_same_act_not_sahpra():
+    # The genuine structural finding: SA veterinary stock remedies fall under the SAME Act 36 as pesticides,
+    # administered by DALRRD -- NOT SAHPRA, which only handles human medicines.
+    pesticide = stage(resolve_workflow("ZA", "pesticide"), USE_RELEASE, "route")
+    veterinary = stage(resolve_workflow("ZA", "veterinary_pharmaceutical"), USE_RELEASE, "route")
+    human = stage(resolve_workflow("ZA", "human_pharmaceutical"), USE_RELEASE, "route")
+    assert "Act 36" in pesticide["detail"] and "Act 36" in veterinary["detail"]
+    assert "SAHPRA" not in pesticide["detail"]
+    assert "NOT regulated by SAHPRA" in veterinary["detail"]  # explicitly says what it is NOT, not silent on it
+    assert "SAHPRA" in human["detail"]
+    assert all(route["status"] == "partial" for route in (pesticide, veterinary, human))
+
+
+def test_south_africa_confirmed_absences_are_peer_reviewed_sourced():
+    pesticide = stage(resolve_workflow("ZA", "pesticide"), USE_RELEASE, "route")
+    human = stage(resolve_workflow("ZA", "human_pharmaceutical"), USE_RELEASE, "route")
+    assert pesticide["programme_key"] == "ZA_ACT36_NO_ERA_REQUIREMENT"
+    assert human["programme_key"] == "ZA_SAHPRA_NO_ERA_REQUIREMENT"
+
+
+def test_singapore_human_pharma_route_confirms_no_era_requirement_for_standard_products():
+    route = stage(resolve_workflow("SG", "human_pharmaceutical"), USE_RELEASE, "route")
+    assert route["status"] == "partial"
+    assert route["programme_key"] == "SG_HSA_NO_ERA_REQUIREMENT"
 
 
 def test_saudi_human_pharma_route_names_the_confirmed_sfda_era_requirement_but_stays_partial():

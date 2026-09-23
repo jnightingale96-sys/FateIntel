@@ -190,6 +190,8 @@ def test_regions_select_has_a_real_us_only_option():
         ("CA", "Canada"), ("AU", "Australia"), ("NZ", "New Zealand"),
         ("JP", "Japan"), ("CN", "China"), ("KR", "South Korea"), ("IN", "India"),
         ("NO", "Norway"), ("AE", "United Arab Emirates"), ("SA", "Saudi Arabia"),
+        ("BR", "Brazil"), ("MX", "Mexico"),
+        ("SG", "Singapore"), ("TW", "Taiwan"), ("ZA", "South Africa"),
     ):
         assert f'<option value="{region}">{label}</option>' in HTML
         assert f'data-model-system="{region}"' in HTML
@@ -203,7 +205,10 @@ def test_every_region_tab_actually_works_against_the_plan_endpoint():
     from fastapi.testclient import TestClient
     from app.main import app
     with TestClient(app) as client:
-        for jurisdiction in ("EU", "UK", "CH", "US", "AU", "CA", "NZ", "JP", "CN", "KR", "IN", "NO", "AE", "SA"):
+        for jurisdiction in (
+            "EU", "UK", "CH", "US", "AU", "CA", "NZ", "JP", "CN", "KR", "IN", "NO", "AE", "SA", "BR", "MX",
+            "SG", "TW", "ZA",
+        ):
             response = client.post("/api/assessment-plan", json={
                 "jurisdiction": jurisdiction, "contaminant_group": "industrial_organic",
                 "scenario": "municipal_wastewater", "tier": 1,
@@ -266,12 +271,14 @@ def test_uk_and_switzerland_never_receive_eu_reach_wording():
 
 def test_an_unmapped_jurisdiction_never_inherits_eu_wording():
     # The tail of _regulatory_programme used to be an unguarded default that any unmatched jurisdiction fell into.
-    # A jurisdiction with no branch at all must say so plainly, not silently receive EU REACH text. "BR" (Brazil)
-    # is genuinely unmapped -- unlike JP, which now has its own branch (see test_workflow_registry.py). Calls
-    # _regulatory_programme directly (build_assessment_plan also does an unrelated FRAMEWORKS lookup that would
-    # StopIteration for a jurisdiction that isn't registered there at all -- not what this test is about).
+    # A jurisdiction with no branch at all must say so plainly, not silently receive EU REACH text. "ZZ" is used
+    # here specifically because it is not a real jurisdiction this codebase will ever add a branch for -- unlike
+    # the two-letter country codes used elsewhere in this test module (BR, MX, etc.), which do get their own
+    # branches over time (see test_workflow_registry.py) and would silently stop testing this path once mapped.
+    # Calls _regulatory_programme directly (build_assessment_plan also does an unrelated FRAMEWORKS lookup that
+    # would StopIteration for a jurisdiction that isn't registered there at all -- not what this test is about).
     from app.services.registry import _regulatory_programme
-    programme = _regulatory_programme("BR", "industrial_organic", "industrial_effluent")
+    programme = _regulatory_programme("ZZ", "industrial_organic", "industrial_effluent")
     assert programme["key"] == "JURISDICTION_NOT_MAPPED"
     assert "not yet mapped" in programme["name"] and "EU" not in programme["name"] and "REACH" not in programme["scope"]
 

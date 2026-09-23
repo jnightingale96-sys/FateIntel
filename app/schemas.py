@@ -689,7 +689,7 @@ class AssessmentPlanCreate(BaseModel):
     # front end's region tabs without this Literal being updated, so /api/assessment-plan silently 422'd for those
     # three jurisdictions (the "Assessment setup" panel's own stage rail never hit this, since it calls
     # registry._regulatory_programme() directly rather than through this endpoint).
-    jurisdiction: Literal["EU", "UK", "US", "CH", "AU", "CA", "NZ", "JP", "CN", "KR", "IN", "NO", "AE", "SA"]
+    jurisdiction: Literal["EU", "UK", "US", "CH", "AU", "CA", "NZ", "JP", "CN", "KR", "IN", "NO", "AE", "SA", "BR", "MX", "SG", "TW", "ZA"]
     contaminant_group: str
     scenario: str
     tier: int = Field(default=1, ge=0, le=4)
@@ -907,7 +907,7 @@ class ModelWorkflowCreate(BaseModel):
     # own "regions", so the guided page's "Enter inputs & prepare" button (app.js's prepareRegulatoryWorkflow())
     # was silently 422-ing for those three the whole time this Literal lagged behind them, the same bug class as
     # AssessmentPlanCreate above.
-    jurisdiction: Literal["EU", "UK", "US", "CH", "AU", "CA", "NZ", "JP", "CN", "KR", "IN", "NO", "AE", "SA"]
+    jurisdiction: Literal["EU", "UK", "US", "CH", "AU", "CA", "NZ", "JP", "CN", "KR", "IN", "NO", "AE", "SA", "BR", "MX", "SG", "TW", "ZA"]
     tier: int = Field(ge=1, le=4)
     scenario_name: str = Field(min_length=2, max_length=250)
     input_data: dict[str, Any] = Field(default_factory=dict)
@@ -1329,7 +1329,7 @@ class JurisdictionalQuantityInput(BaseModel):
     # /api/orchestration/compare or /api/orchestration/harmonise, the two endpoints that use this schema) --
     # widened anyway for consistency with the other jurisdiction Literals, so it carries the same bug if it is
     # ever wired up.
-    jurisdiction: Literal["EU", "UK", "US", "CH", "AU", "CA", "NZ", "JP", "CN", "KR", "IN", "NO", "AE", "SA"]
+    jurisdiction: Literal["EU", "UK", "US", "CH", "AU", "CA", "NZ", "JP", "CN", "KR", "IN", "NO", "AE", "SA", "BR", "MX", "SG", "TW", "ZA"]
     model_key: str = Field(min_length=1, max_length=100)
     quantity: OrchestrationQuantityInput
     scenario_reference: str = Field(min_length=1, max_length=500)
@@ -1362,7 +1362,7 @@ class OrchestrationModelResultInput(BaseModel):
     # Confirmed reachable: expert.html's orchestration form (#orch-jurisdiction) is populated from every
     # /api/frameworks entry with no filtering (expert-app.js), so submitting for any of the 11 regions built a
     # payload with one of these per model result and would 422 for anything past EU/UK/US/CH.
-    jurisdiction: Literal["EU", "UK", "US", "CH", "AU", "CA", "NZ", "JP", "CN", "KR", "IN", "NO", "AE", "SA"]
+    jurisdiction: Literal["EU", "UK", "US", "CH", "AU", "CA", "NZ", "JP", "CN", "KR", "IN", "NO", "AE", "SA", "BR", "MX", "SG", "TW", "ZA"]
     tier: int = Field(ge=0, le=4)
     execution_status: Literal[
         "not_started", "inputs_required", "prepared", "executed", "completed",
@@ -1384,7 +1384,7 @@ class OrchestrationModelResultInput(BaseModel):
 class OrchestrationPlanCreate(BaseModel):
     # Same schema-vs-frontend gap as OrchestrationModelResultInput above (this is the outer payload;
     # OrchestratedAssessmentCreate, its subclass, inherits it and is the actual submit target).
-    jurisdiction: Literal["EU", "UK", "US", "CH", "AU", "CA", "NZ", "JP", "CN", "KR", "IN", "NO", "AE", "SA"]
+    jurisdiction: Literal["EU", "UK", "US", "CH", "AU", "CA", "NZ", "JP", "CN", "KR", "IN", "NO", "AE", "SA", "BR", "MX", "SG", "TW", "ZA"]
     contaminant_group: str = Field(min_length=1, max_length=100)
     scenario: str = Field(min_length=1, max_length=100)
     maximum_tier: int = Field(default=4, ge=1, le=4)

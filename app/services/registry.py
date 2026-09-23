@@ -232,6 +232,155 @@ FRAMEWORKS: list[dict[str, Any]] = [
         ],
         "default_currency": "SAR",
     },
+    {
+        "key": "BR",
+        "name": "Brazil",
+        # Researched 2026-09-23. Law 15.022/2024 created the INSQ (Inventario Nacional de Substancias
+        # Quimicas), a REACH-like registration/risk-control regime for substances above volume thresholds, in
+        # force since 15 November 2024 -- led by the Ministry of Environment and Climate Change (MMA) via its
+        # GT Regulacao de Substancias Quimicas under CONASQ. Its implementing decree (dossier format,
+        # assessment method) was still in public consultation as of the last search (May-June 2025), with full
+        # dossiers due 15 November 2026 -- no quantitative method is therefore available yet. IBAMA's CTF/APP
+        # is a separate, longstanding federal registry of potentially-polluting activities, not itself a
+        # PEC/PNEC method. Pesticides are the strongest-sourced finding of this whole expansion pass: IBAMA's
+        # own 2012 methodology document (read as a real, hosted, primary government PDF, though its equations
+        # were not read to implementation depth this session) names a two-part method -- PPA (Potencial de
+        # Periculosidade Ambiental, a hazard baseline) and ARA (Avaliacao de Risco Ambiental, which layers
+        # exposure/use conditions -- application method, dose, crop, climate -- onto that baseline, with
+        # aquatic- and soil-organism scenarios). Human pharmaceuticals: no ANVISA requirement for an
+        # environmental risk assessment was found; a secondary, peer-reviewed source states plainly that
+        # "Brazil and other Latin American regulators have not integrated ERAs into drug approval" -- a
+        # confirmed absence, but sourced secondarily, not from ANVISA's own text. Veterinary pharmaceuticals
+        # sit with MAPA, not ANVISA; Normative Instruction 26/2009 (antimicrobial veterinary products)
+        # explicitly names protecting "animals, human health, and the environment" as a regulatory concern,
+        # confirming intent, but no calculation methodology was found in the text located.
+        "packs": [
+            "INSQ chemicals registration (Law 15.022/2024, MMA/CONASQ; in force, implementing decree and quantitative method not yet finalised)",
+            "IBAMA pesticide environmental risk assessment (PPA hazard baseline + ARA exposure-layered risk assessment; real primary methodology document found, not read to calculation depth)",
+            "ANVISA human pharmaceuticals (no environmental risk assessment requirement found -- confirmed absence, secondary-sourced)",
+            "MAPA veterinary pharmaceuticals (IN 26/2009 names environmental protection as a concern; no calculation method found)",
+        ],
+        "default_currency": "BRL",
+    },
+    {
+        "key": "MX",
+        "name": "Mexico",
+        # Researched 2026-09-23. No REACH-like chemicals registration regime with a PEC/PNEC-style
+        # environmental risk assessment was found for general industrial chemicals -- COFEPRIS's "registro
+        # sanitario" is a sanitary/security control for toxic/hazardous substances and precursors, not a
+        # risk-based environmental registration, and the LGPGIR (SEMARNAT/PROFEPA) governs hazardous-waste
+        # management plans, not new-substance assessment. This is a genuine open research gap, not a confirmed
+        # absence -- the search was not exhaustive enough to rule out a mechanism under another agency.
+        # Pesticides sit with the CICOPLAFEST tripartite system (SSA/COFEPRIS health, SEMARNAT environment,
+        # SADER/formerly SAGARPA agriculture); a peer-reviewed academic source (SciELO) states explicitly that
+        # registration is based on verifying the submitted dossier is complete, not on running a
+        # Mexico-specific risk assessment against local environmental conditions and uses -- a genuine
+        # confirmed absence of a quantitative method, though sourced secondarily (a peer-reviewed article, not
+        # a primary SEMARNAT/COFEPRIS statement). Human pharmaceuticals: COFEPRIS registers drugs via a
+        # CTD-format dossier; a single non-government regulatory-consultancy source lists "Environmental Risk
+        # Assessment (if applicable)" as part of the submission package, with no method described -- this
+        # sourcing is weak (not a primary COFEPRIS guideline/NOM) and is reported as unconfirmed, not asserted.
+        # Veterinary pharmaceuticals sit with SENASICA, a distinct agency from COFEPRIS; nothing was found
+        # confirming or denying an environmental-assessment requirement there, and it is deliberately not
+        # assumed to inherit the (also unconfirmed) human-pharma pathway.
+        "packs": [
+            "Industrial chemicals (no REACH-equivalent regime found; open research gap, not confirmed absent)",
+            "CICOPLAFEST pesticide registration (SSA/COFEPRIS, SEMARNAT, SADER; confirmed absence of a quantitative environmental risk-assessment step -- dossier completeness only, secondary-sourced)",
+            "COFEPRIS human pharmaceuticals (an environmental risk assessment is reported as conditionally required by a weak, non-government secondary source only -- not confirmed)",
+            "SENASICA veterinary pharmaceuticals (distinct agency from COFEPRIS; environmental-assessment requirement neither confirmed nor denied)",
+        ],
+        "default_currency": "MXN",
+    },
+    {
+        "key": "SG",
+        "name": "Singapore",
+        # Researched 2026-09-23. No REACH-like registration or new-substance notification regime exists;
+        # instead NEA (National Environment Agency) runs a Hazardous Substances (HS) Licence system under the
+        # Environmental Protection and Management Act (EPMA) and its Hazardous Substances Regulations,
+        # licensing a specific listed (Second Schedule) set of controlled substances, not a general "all new
+        # chemicals" registration. A new mandatory chemical reporting framework for HS licence holders takes
+        # effect 1 January 2026 (chemicals meeting GHS acute toxicity Category 1/2, aquatic toxicity Category
+        # 1, or PBT criteria) -- primary-sourced (statute/regulations) for the licensing regime, secondary
+        # (trade press) for the 2026 update. No PEC/PNEC methodology was found; only "an environmental impact
+        # assessment may be required" language for select high-risk substances, with no calculation method
+        # described. Pesticides: SFA (Singapore Food Agency) registers under the Control of Plants Act, with
+        # NEA Pollution Control Department approval required first -- no quantitative method found. Human
+        # pharmaceuticals: HSA's own guidance-documents index (checked directly) lists no general
+        # environmental risk assessment / ecotoxicology requirement for standard drug registration -- a
+        # confirmed absence for standard products, from a primary source. A secondary source claims an ERA
+        # requirement specifically for cell/tissue/gene therapy products, which could not be confirmed against
+        # an HSA primary document and is not asserted here. Veterinary medicines sit with AVS (Animal &
+        # Veterinary Service, under NParks); nothing was found either confirming or denying an
+        # environmental-assessment requirement, and this is a genuine absence-of-evidence finding, not a
+        # confirmed absence.
+        "packs": [
+            "NEA Hazardous Substances Licence (EPMA; listed-substance licensing, not general new-chemical registration; no quantitative method found)",
+            "SFA pesticide registration (Control of Plants Act; NEA approval required first; quantitative method not found)",
+            "HSA human pharmaceuticals (no environmental risk assessment requirement found for standard products -- confirmed absence, primary-sourced; a cell/tissue/gene-therapy-specific claim is unconfirmed)",
+            "AVS veterinary pharmaceuticals (environmental-assessment requirement neither confirmed nor denied)",
+        ],
+        "default_currency": "SGD",
+    },
+    {
+        "key": "TW",
+        "name": "Taiwan",
+        # Researched 2026-09-23. The Toxic and Concerned Chemical Substances Control Act (TCCSCA),
+        # administered by the Chemicals Administration under the Ministry of Environment (MOENV -- Taiwan's
+        # former EPA was elevated/renamed to a ministry in 2023), is explicitly modelled on EU REACH: new
+        # substances require registration 90 days pre-manufacture/import, with Phase 1/Standard registration
+        # tiers for existing substances (Regulation on New and Existing Chemical Substances Registration, Nov
+        # 2021 revision) -- real structure, confirmed by reading the primary law text directly (law.moj.gov.tw),
+        # the same "structure confirmed, method not calculable" shape as Japan's CSCL. No PNEC/PEC calculation
+        # methodology was found; data requirements are described, not a specific risk-quotient method.
+        # Pesticides sit with the Agriculture and Food Agency (the exact current parent-agency name is not
+        # confirmed: the Council of Agriculture was reorganised into a Ministry of Agriculture in 2023, and
+        # which name is now current was not verified); registration requires "test reports on... environment"
+        # but no Taiwan-specific PEC/PNEC document was located. Human pharmaceuticals: TFDA (Ministry of
+        # Health and Welfare) uses a CTD-format dossier; an ERA requirement was claimed only by generic
+        # regulatory-consulting sources reading as CTD-module boilerplate, not confirmed against a TFDA
+        # primary document. Veterinary medicines are regulated separately under the Veterinary Drugs Control
+        # Act, jointly with the agriculture-side Animal and Plant Health Inspection Agency on some
+        # cross-cutting rules (e.g. a Feb 2024 joint rule on human drugs used in companion animals, effective
+        # July 2026) -- a genuinely distinct agency/act from the human pathway, though no environmental
+        # risk-assessment requirement was found for it either.
+        "packs": [
+            "TCCSCA chemicals registration (Chemicals Administration, MOENV; explicitly REACH-modelled, structure confirmed from primary law text, quantitative method not found)",
+            "Pesticide registration (Agriculture and Food Agency; current parent-ministry name not confirmed post-2023 reorganisation; quantitative method not found)",
+            "TFDA human pharmaceuticals (an environmental risk assessment claim exists only in generic secondary sources -- not confirmed)",
+            "Veterinary Drugs Control Act veterinary medicines (distinct act/agency from human pharma; no environmental requirement found)",
+        ],
+        "default_currency": "TWD",
+    },
+    {
+        "key": "ZA",
+        "name": "South Africa",
+        # Researched 2026-09-23. No REACH-like chemicals registration/notification regime exists -- confirmed
+        # consistently across multiple secondary sources; NEMA (National Environmental Management Act 107 of
+        # 1998) authorises the Department of Forestry, Fisheries and the Environment to prohibit/control
+        # substances, but only asbestos and PCBs are confirmed as substances actually controlled under NEMA
+        # subsidiary regulations -- a genuine confirmed absence of a general regime, not merely unresearched.
+        # Pesticides and (for food-producing animals) veterinary "stock remedies" share the SAME instrument --
+        # Act 36 of 1947 (Fertilisers, Farm Feeds, Agricultural Remedies and Stock Remedies Act), administered
+        # by DALRRD (Registrar of Act 36) -- a genuine structural finding, not an assumption: veterinarian-
+        # administered remedies are separately carved out under the Veterinary Act 16 of 1933. A peer-reviewed
+        # 2026 literature review (Environmental Monitoring and Assessment) states explicitly that Act 36 "does
+        # not include updated provisions to address contemporary environmental risks, such as mandatory
+        # environmental risk assessments" -- a confirmed absence for pesticides, from a peer-reviewed source.
+        # The same review states SAHPRA's Medicines and Related Substances Act "does not address the entry of
+        # pharmaceuticals into the environment" and that "South Africa lacks binding environmental regulations
+        # for pharmacovigilance" -- corroborated by SAHPRA's own ZACTD registration-guidance table of contents
+        # (fetched directly, partially corrupted but showing no environment/Module 1.6 entry). Whether the
+        # same absence applies to the Act 36 stock-remedies data-requirements guideline specifically was not
+        # independently verified (a primary-document fetch failed on a certificate error), so veterinary stays
+        # "not mapped" rather than a second confirmed-absence claim.
+        "packs": [
+            "Chemicals regime (no REACH-equivalent registration found -- confirmed absence, not merely unresearched; only asbestos and PCBs confirmed controlled under NEMA)",
+            "Act 36 of 1947 pesticide registration (DALRRD; confirmed absence of a mandatory environmental risk assessment -- peer-reviewed source)",
+            "SAHPRA human pharmaceuticals (confirmed absence of environmental risk assessment / pharmacovigilance regulation -- peer-reviewed source, corroborated by SAHPRA's own registration-guidance contents)",
+            "Act 36 of 1947 veterinary stock remedies (same Act/DALRRD as pesticides, NOT SAHPRA -- a genuine structural finding; ERA-specific absence not independently verified for this pathway)",
+        ],
+        "default_currency": "ZAR",
+    },
 ]
 
 CONTAMINANT_GROUPS = [
@@ -1390,6 +1539,223 @@ def _regulatory_programme(jurisdiction: str, group: str, scenario: str) -> dict[
                      "claim REACH-like adoption but no primary government text describing a quantitative "
                      "environmental risk method was found -- an open research gap, not a confirmed absence "
                      "(EXTERNAL MODEL REQUIRED).",
+        }
+
+    # Researched 2026-09-23 (Brazil/Mexico research pass). Brazil's pesticide pathway is the strongest-sourced
+    # finding of this whole country-expansion effort -- a real, hosted, primary IBAMA methodology PDF, not a
+    # secondary description -- but its equations were not read to implementation depth this session, so it
+    # stays "structure confirmed, not calculable" like Japan's CSCL rather than jumping straight to a
+    # calculator the way the earthworm/bee work did after reading ECHA/EFSA primary text directly.
+    if jurisdiction == "BR":
+        if scenario == "agricultural_spray" or group == "pesticide":
+            return {
+                "key": "BR_IBAMA_PPA_ARA_PARTIAL",
+                "name": "Brazil IBAMA pesticide environmental risk pathway (structure confirmed, method not read to calculation depth)",
+                "scope": "IBAMA administers the environmental leg of Brazil's tripartite pesticide-registration "
+                         "system (MAPA: agronomic efficacy; ANVISA: human toxicology; IBAMA: environment). "
+                         "IBAMA's own 2012 methodology document names a two-part method: PPA (Potencial de "
+                         "Periculosidade Ambiental, a hazard baseline) and ARA (Avaliacao de Risco Ambiental, "
+                         "which layers exposure and use conditions -- application method, dose, crop, climate "
+                         "-- onto that baseline, with aquatic- and soil-organism scenarios). The document was "
+                         "confirmed as a real, hosted, primary government methodology PDF, but its equations "
+                         "were not read to calculation depth this session (EXTERNAL MODEL REQUIRED).",
+            }
+        if group == "human_pharmaceutical":
+            return {
+                "key": "BR_ANVISA_NO_ERA_REQUIREMENT",
+                "name": "Brazil ANVISA human-medicines pathway (no environmental risk assessment requirement found)",
+                "scope": "No ANVISA requirement for an environmental risk assessment as a condition of drug "
+                         "approval was found. A peer-reviewed comparative-regulatory review states plainly that "
+                         "'Brazil and other Latin American regulators have not integrated ERAs into drug "
+                         "approval' -- a confirmed absence, but sourced secondarily, not from ANVISA's own text "
+                         "(EXTERNAL MODEL REQUIRED).",
+            }
+        if group == "veterinary_pharmaceutical":
+            return {
+                "key": "BR_MAPA_VETERINARY_NOT_MAPPED",
+                "name": "Brazil MAPA veterinary-medicines pathway (quantitative method not yet mapped)",
+                "scope": "Veterinary products are registered by MAPA, not ANVISA. Normative Instruction 26/2009 "
+                         "(antimicrobial veterinary products) explicitly names protecting 'animals, human "
+                         "health, and the environment' as a regulatory concern, confirming intent, but no "
+                         "calculation methodology was found in the text located (EXTERNAL MODEL REQUIRED).",
+            }
+        return {
+            "key": "BR_INSQ_NOT_MAPPED",
+            "name": "Brazil INSQ chemicals pathway (in force, quantitative method not yet finalised)",
+            "scope": "Law 15.022/2024 created the INSQ (Inventario Nacional de Substancias Quimicas), a "
+                     "REACH-like registration/risk-control regime led by the Ministry of Environment and "
+                     "Climate Change (MMA) via CONASQ, in force since 15 November 2024. Its implementing "
+                     "decree (dossier format, assessment method) was still in public consultation as of the "
+                     "last search, with full dossiers due 15 November 2026 -- no quantitative method is "
+                     "available yet. IBAMA's CTF/APP is a separate, longstanding registry of "
+                     "potentially-polluting activities, not itself a PEC/PNEC method (EXTERNAL MODEL REQUIRED).",
+        }
+
+    if jurisdiction == "MX":
+        if scenario == "agricultural_spray" or group == "pesticide":
+            return {
+                "key": "MX_CICOPLAFEST_NOT_MAPPED",
+                "name": "Mexico CICOPLAFEST pesticide pathway (confirmed absence of a quantitative risk step)",
+                "scope": "Pesticides are reviewed by the CICOPLAFEST tripartite system (SSA/COFEPRIS health, "
+                         "SEMARNAT environment, SADER agriculture); environmental-fate and ecotoxicity study "
+                         "reports are required, but a peer-reviewed academic source states explicitly that "
+                         "registration is based on verifying the submitted dossier is complete, not on running "
+                         "a Mexico-specific risk assessment against local environmental conditions and uses -- "
+                         "a confirmed absence of a quantitative method, sourced secondarily (a peer-reviewed "
+                         "article, not a primary SEMARNAT/COFEPRIS statement) (EXTERNAL MODEL REQUIRED).",
+            }
+        if group == "human_pharmaceutical":
+            return {
+                "key": "MX_COFEPRIS_PHARMA_NOT_CONFIRMED",
+                "name": "Mexico COFEPRIS human-medicines pathway (requirement not confirmed)",
+                "scope": "COFEPRIS registers drugs via a CTD-format dossier. A single non-government "
+                         "regulatory-consultancy source lists 'Environmental Risk Assessment (if applicable)' "
+                         "as part of the submission package, with no method described -- this sourcing is weak "
+                         "(not a primary COFEPRIS guideline/NOM) and is reported as unconfirmed, not asserted "
+                         "(EXTERNAL MODEL REQUIRED).",
+            }
+        if group == "veterinary_pharmaceutical":
+            return {
+                "key": "MX_SENASICA_VETERINARY_NOT_CONFIRMED",
+                "name": "Mexico SENASICA veterinary-medicines pathway (requirement not confirmed)",
+                "scope": "Veterinary products are registered by SENASICA, a distinct agency from COFEPRIS. "
+                         "Nothing was found confirming or denying an environmental-assessment requirement, and "
+                         "this is deliberately not assumed to inherit the (also unconfirmed) human-pharma "
+                         "pathway above -- a different agency entirely (EXTERNAL MODEL REQUIRED).",
+            }
+        return {
+            "key": "MX_CHEMICALS_NOT_MAPPED",
+            "name": "Mexico chemicals pathway (no REACH-equivalent regime found)",
+            "scope": "No REACH-like chemicals registration regime with a PEC/PNEC-style environmental risk "
+                     "assessment was found for general industrial chemicals -- COFEPRIS's 'registro sanitario' "
+                     "is a sanitary/security control for toxic/hazardous substances and precursors, not a "
+                     "risk-based environmental registration, and the LGPGIR (SEMARNAT/PROFEPA) governs "
+                     "hazardous-waste management plans, not new-substance assessment. An open research gap, "
+                     "not a confirmed absence (EXTERNAL MODEL REQUIRED).",
+        }
+
+    # Researched 2026-09-23 (Singapore/Taiwan/South Africa research pass, completing the country-expansion
+    # list started with Norway/UAE/Saudi Arabia and Brazil/Mexico earlier this session).
+    if jurisdiction == "SG":
+        if scenario == "agricultural_spray" or group == "pesticide":
+            return {
+                "key": "SG_SFA_PESTICIDE_NOT_MAPPED",
+                "name": "Singapore SFA pesticide pathway (quantitative method not yet mapped)",
+                "scope": "SFA (Singapore Food Agency) registers agricultural pesticides under the Control of "
+                         "Plants Act, with NEA Pollution Control Department approval required first. No "
+                         "quantitative environmental risk-assessment method was found (EXTERNAL MODEL REQUIRED).",
+            }
+        if group == "human_pharmaceutical":
+            return {
+                "key": "SG_HSA_NO_ERA_REQUIREMENT",
+                "name": "Singapore HSA human-medicines pathway (no environmental risk assessment requirement found)",
+                "scope": "HSA's own guidance-documents index (checked directly) lists no general environmental "
+                         "risk assessment or ecotoxicology requirement for standard drug registration -- a "
+                         "confirmed absence for standard products, from a primary source. A secondary source "
+                         "claims a requirement specific to cell/tissue/gene therapy products, which could not "
+                         "be confirmed against an HSA primary document and is not asserted here "
+                         "(EXTERNAL MODEL REQUIRED).",
+            }
+        if group == "veterinary_pharmaceutical":
+            return {
+                "key": "SG_AVS_VETERINARY_NOT_CONFIRMED",
+                "name": "Singapore AVS veterinary-medicines pathway (requirement not confirmed)",
+                "scope": "AVS (Animal & Veterinary Service, under NParks) registers veterinary medicines. "
+                         "Nothing was found confirming or denying an environmental-assessment requirement -- a "
+                         "genuine absence-of-evidence finding from limited search results, not a confirmed "
+                         "absence (EXTERNAL MODEL REQUIRED).",
+            }
+        return {
+            "key": "SG_NEA_HS_NOT_MAPPED",
+            "name": "Singapore NEA Hazardous Substances pathway (quantitative method not yet mapped)",
+            "scope": "NEA runs a Hazardous Substances (HS) Licence system under the Environmental Protection "
+                     "and Management Act, licensing a specific listed (Second Schedule) set of controlled "
+                     "substances -- not a general new-chemical registration regime. A mandatory chemical "
+                     "reporting framework for HS licence holders takes effect 1 January 2026 (GHS acute "
+                     "toxicity Category 1/2, aquatic toxicity Category 1, or PBT criteria). No PEC/PNEC "
+                     "methodology was found (EXTERNAL MODEL REQUIRED).",
+        }
+
+    if jurisdiction == "TW":
+        if scenario == "agricultural_spray" or group == "pesticide":
+            return {
+                "key": "TW_PESTICIDE_NOT_MAPPED",
+                "name": "Taiwan pesticide pathway (quantitative method not yet mapped)",
+                "scope": "Pesticides are registered by the Agriculture and Food Agency; the exact current "
+                         "parent-ministry name was not confirmed (the Council of Agriculture was reorganised "
+                         "into a Ministry of Agriculture in 2023). Registration requires environmental test "
+                         "reports, but no Taiwan-specific PEC/PNEC document was located (EXTERNAL MODEL REQUIRED).",
+            }
+        if group == "human_pharmaceutical":
+            return {
+                "key": "TW_TFDA_PHARMA_NOT_CONFIRMED",
+                "name": "Taiwan TFDA human-medicines pathway (requirement not confirmed)",
+                "scope": "TFDA (Ministry of Health and Welfare) uses a CTD-format dossier. An environmental "
+                         "risk assessment requirement was claimed only by generic regulatory-consulting "
+                         "sources reading as standard CTD-module boilerplate, not confirmed against a TFDA "
+                         "primary document (EXTERNAL MODEL REQUIRED).",
+            }
+        if group == "veterinary_pharmaceutical":
+            return {
+                "key": "TW_VETERINARY_NOT_MAPPED",
+                "name": "Taiwan veterinary-medicines pathway (quantitative method not yet mapped)",
+                "scope": "Veterinary medicines are regulated separately from human pharmaceuticals, under the "
+                         "Veterinary Drugs Control Act with the agriculture-side Animal and Plant Health "
+                         "Inspection Agency involved jointly with TFDA on some cross-cutting rules -- a "
+                         "genuinely distinct agency/act from the human pathway. No environmental risk-"
+                         "assessment requirement was found for it either (EXTERNAL MODEL REQUIRED).",
+            }
+        return {
+            "key": "TW_TCCSCA_PARTIAL",
+            "name": "Taiwan TCCSCA chemicals pathway (REACH-modelled structure confirmed, method not yet mapped)",
+            "scope": "The Toxic and Concerned Chemical Substances Control Act (TCCSCA), administered by the "
+                     "Chemicals Administration under the Ministry of Environment, is explicitly modelled on "
+                     "EU REACH: new substances require registration 90 days pre-manufacture/import, with "
+                     "Phase 1/Standard registration tiers for existing substances -- confirmed by reading the "
+                     "primary law text directly. No PNEC/PEC calculation methodology was found; data "
+                     "requirements are described, not a risk-quotient method (EXTERNAL MODEL REQUIRED).",
+        }
+
+    if jurisdiction == "ZA":
+        if scenario == "agricultural_spray" or group == "pesticide":
+            return {
+                "key": "ZA_ACT36_NO_ERA_REQUIREMENT",
+                "name": "South Africa Act 36 pesticide pathway (no mandatory environmental risk assessment)",
+                "scope": "DALRRD (Registrar of Act 36) administers Act 36 of 1947 (Fertilisers, Farm Feeds, "
+                         "Agricultural Remedies and Stock Remedies Act). A peer-reviewed 2026 literature "
+                         "review states explicitly that Act 36 'does not include updated provisions to "
+                         "address contemporary environmental risks, such as mandatory environmental risk "
+                         "assessments' -- a confirmed absence, peer-reviewed sourced (EXTERNAL MODEL REQUIRED).",
+            }
+        if group == "human_pharmaceutical":
+            return {
+                "key": "ZA_SAHPRA_NO_ERA_REQUIREMENT",
+                "name": "South Africa SAHPRA human-medicines pathway (no environmental risk assessment requirement)",
+                "scope": "SAHPRA registers medicines under the Medicines and Related Substances Act. The same "
+                         "peer-reviewed review states the Act 'does not address the entry of pharmaceuticals "
+                         "into the environment' and that South Africa 'lacks binding environmental regulations "
+                         "for pharmacovigilance' -- corroborated by SAHPRA's own ZACTD registration-guidance "
+                         "table of contents, which shows no environment/Module 1.6 entry (EXTERNAL MODEL REQUIRED).",
+            }
+        if group == "veterinary_pharmaceutical":
+            return {
+                "key": "ZA_ACT36_VETERINARY_NOT_MAPPED",
+                "name": "South Africa veterinary stock-remedies pathway (quantitative method not yet mapped)",
+                "scope": "Food-producing-animal 'stock remedies' are NOT regulated by SAHPRA at all -- they "
+                         "fall under the SAME Act 36 of 1947 as pesticides, administered by DALRRD (per its "
+                         "own Data Requirements Guidelines for Stock Remedies). Veterinarian-administered "
+                         "remedies are separately carved out under the Veterinary Act 16 of 1933. Whether "
+                         "Act 36's confirmed pesticide ERA absence also applies here was not independently "
+                         "verified this session (EXTERNAL MODEL REQUIRED).",
+            }
+        return {
+            "key": "ZA_NEMA_CHEMICALS_NOT_MAPPED",
+            "name": "South Africa chemicals pathway (no REACH-equivalent regime confirmed)",
+            "scope": "No REACH-like chemicals registration/notification regime exists -- confirmed consistently "
+                     "across multiple secondary sources. NEMA (National Environmental Management Act 107 of "
+                     "1998) authorises the environment department to prohibit or control substances, but only "
+                     "asbestos and PCBs are confirmed as substances actually controlled under NEMA subsidiary "
+                     "regulations -- a genuine confirmed absence of a general regime (EXTERNAL MODEL REQUIRED).",
         }
 
     # A jurisdiction with no dedicated branch above never inherits another jurisdiction's regulatory-programme

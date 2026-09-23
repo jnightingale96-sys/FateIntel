@@ -69,6 +69,11 @@ const REGION_SETS = {
   NO: ["NO"],
   AE: ["AE"],
   SA: ["SA"],
+  BR: ["BR"],
+  MX: ["MX"],
+  SG: ["SG"],
+  TW: ["TW"],
+  ZA: ["ZA"],
   GLOBAL: ["EU","UK","CH","US","CA","AU","NZ","JP","CN","KR","TW","IN","SG","MY","TH","ID","PH","VN","BR","MX","CO","CL","PE","ZA","NG","KE","GH","MA","EG","SA","AE","IL","TR","EAEU","ANDEAN","GCC","CILSS","CEMAC"],
 };
 const REGION_LABELS = {
@@ -76,7 +81,8 @@ const REGION_LABELS = {
   AU_NZ:"Australia + New Zealand", JP_CN_KR:"Japan + China + South Korea",
   BR_MX:"Brazil + Mexico", CA:"Canada", AU:"Australia", NZ:"New Zealand",
   JP:"Japan", CN:"China", KR:"South Korea", IN:"India", GLOBAL:"Global navigator",
-  NO:"Norway", AE:"United Arab Emirates", SA:"Saudi Arabia",
+  NO:"Norway", AE:"United Arab Emirates", SA:"Saudi Arabia", BR:"Brazil", MX:"Mexico",
+  SG:"Singapore", TW:"Taiwan", ZA:"South Africa",
 };
 const MODEL_SYSTEM_JURISDICTIONS = {
   // Kept as "EU + UK + Switzerland" deliberately, even though UK and Switzerland now have their own tab: this is
@@ -98,6 +104,11 @@ const MODEL_SYSTEM_JURISDICTIONS = {
   NO: "Norway",
   AE: "United Arab Emirates",
   SA: "Saudi Arabia",
+  BR: "Brazil",
+  MX: "Mexico",
+  SG: "Singapore",
+  TW: "Taiwan",
+  ZA: "South Africa",
 };
 // Regions that share FateIntel's native FOCUS/water-sediment refinement screens (workflow_registry.py's
 // refinement:"eu"). Only the regulatory-programme text differs per region within this set. "NO" (Norway) was
@@ -124,6 +135,11 @@ function projectModelSystem(project) {
   if (jurisdiction.includes("norway")) return "NO";
   if (jurisdiction.includes("united arab emirates")) return "AE";
   if (jurisdiction.includes("saudi arabia")) return "SA";
+  if (jurisdiction.includes("brazil")) return "BR";
+  if (jurisdiction.includes("mexico")) return "MX";
+  if (jurisdiction.includes("singapore")) return "SG";
+  if (jurisdiction.includes("taiwan")) return "TW";
+  if (jurisdiction.includes("south africa")) return "ZA";
   if (jurisdiction.includes("united states") || /(^|\W)us(\W|$)/.test(jurisdiction)) return "US";
   // The combined legacy phrasing is checked before the individual UK/Switzerland checks below, or it would
   // wrongly match "uk" or "switzerland" (the combined string contains both of those too).
