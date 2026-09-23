@@ -11,3 +11,5 @@ STARTUP_LOG.txt
 data/backups/
 .env
 .env.local
+
+data/validation_runs/
