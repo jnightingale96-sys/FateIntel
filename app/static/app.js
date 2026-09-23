@@ -66,6 +66,9 @@ const REGION_SETS = {
   CN: ["CN"],
   KR: ["KR"],
   IN: ["IN"],
+  NO: ["NO"],
+  AE: ["AE"],
+  SA: ["SA"],
   GLOBAL: ["EU","UK","CH","US","CA","AU","NZ","JP","CN","KR","TW","IN","SG","MY","TH","ID","PH","VN","BR","MX","CO","CL","PE","ZA","NG","KE","GH","MA","EG","SA","AE","IL","TR","EAEU","ANDEAN","GCC","CILSS","CEMAC"],
 };
 const REGION_LABELS = {
@@ -73,6 +76,7 @@ const REGION_LABELS = {
   AU_NZ:"Australia + New Zealand", JP_CN_KR:"Japan + China + South Korea",
   BR_MX:"Brazil + Mexico", CA:"Canada", AU:"Australia", NZ:"New Zealand",
   JP:"Japan", CN:"China", KR:"South Korea", IN:"India", GLOBAL:"Global navigator",
+  NO:"Norway", AE:"United Arab Emirates", SA:"Saudi Arabia",
 };
 const MODEL_SYSTEM_JURISDICTIONS = {
   // Kept as "EU + UK + Switzerland" deliberately, even though UK and Switzerland now have their own tab: this is
@@ -91,10 +95,15 @@ const MODEL_SYSTEM_JURISDICTIONS = {
   CN: "China",
   KR: "South Korea",
   IN: "India",
+  NO: "Norway",
+  AE: "United Arab Emirates",
+  SA: "Saudi Arabia",
 };
 // Regions that share FateIntel's native FOCUS/water-sediment refinement screens (workflow_registry.py's
-// refinement:"eu"). Only the regulatory-programme text differs per region within this set.
-const FOCUS_REGIONS = new Set(["EU", "UK", "CH"]);
+// refinement:"eu"). Only the regulatory-programme text differs per region within this set. "NO" (Norway) was
+// added 2026-09-23 -- confirmed, not assumed: Mattilsynet mandates FOCUS MACRO 5.5.4 and its own surface-water
+// scenario selection is drawn from FOCUS's own standard set (see registry._regulatory_programme's "NO" branch).
+const FOCUS_REGIONS = new Set(["EU", "UK", "CH", "NO"]);
 function regionName(system = state.modelSystem) {
   return MODEL_SYSTEM_JURISDICTIONS[system] || system;
 }
@@ -112,6 +121,9 @@ function projectModelSystem(project) {
   if (jurisdiction.includes("china")) return "CN";
   if (jurisdiction.includes("south korea") || jurisdiction.includes("korea")) return "KR";
   if (jurisdiction.includes("india")) return "IN";
+  if (jurisdiction.includes("norway")) return "NO";
+  if (jurisdiction.includes("united arab emirates")) return "AE";
+  if (jurisdiction.includes("saudi arabia")) return "SA";
   if (jurisdiction.includes("united states") || /(^|\W)us(\W|$)/.test(jurisdiction)) return "US";
   // The combined legacy phrasing is checked before the individual UK/Switzerland checks below, or it would
   // wrongly match "uk" or "switzerland" (the combined string contains both of those too).

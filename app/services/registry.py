@@ -162,6 +162,76 @@ FRAMEWORKS: list[dict[str, Any]] = [
         ],
         "default_currency": "INR",
     },
+    {
+        "key": "NO",
+        "name": "Norway",
+        # Researched 2026-09-23. Norway applies EU REACH directly via the EEA Agreement (Miljodirektoratet is
+        # the competent authority; confirmed on Miljodirektoratet's own REACH pages) -- the same substantive
+        # regime as EU REACH, incorporated through EEA Joint Committee decisions (which can lag behind new EU
+        # amendments -- an administrative timing gap, not a methodological one). Pesticides sit in the EU's
+        # Northern Zone under Regulation (EC) 1107/2009 with Mattilsynet as the competent authority -- FOCUS
+        # scenarios are the shared baseline, but Mattilsynet's own national-requirements page (read in full)
+        # confirms real, documented deviations: FOCUS MACRO 5.5.4 is mandated for groundwater leaching, and
+        # Mattilsynet's own six-scenario surface-water selection (as of November 2023) drops three of FOCUS's
+        # nine standard scenarios (D5, D6, R3). Human and veterinary pharmaceuticals: the EU/EEA medicines
+        # network and Regulation (EU) 2019/6 (extended to Norway by EEA Joint Committee Decision No. 371/2021)
+        # both apply as-is; no Norway-specific numeric deviation was found.
+        "packs": [
+            "REACH (via EEA incorporation; Miljodirektoratet; same substantive regime as EU REACH)",
+            "Plant protection products (Northern Zone, FOCUS baseline; Mattilsynet mandates FOCUS MACRO 5.5.4 for groundwater and a confirmed six-scenario, not nine-scenario, surface-water selection)",
+            "Human pharmaceuticals (EMA two-phase environmental risk assessment guideline, applied via the EU/EEA medicines network)",
+            "Veterinary pharmaceuticals (Regulation (EU) 2019/6, extended to Norway via EEA Joint Committee Decision No. 371/2021)",
+        ],
+        "default_currency": "NOK",
+    },
+    {
+        "key": "AE",
+        "name": "United Arab Emirates",
+        # Researched 2026-09-23. No REACH-equivalent chemicals registration regime with a PEC/PNEC-style
+        # environmental risk assessment was confirmed for the UAE -- an open research gap, not a confirmed
+        # absence. Pesticide registration recently transferred from MOCCAE to the Emirates Drug Establishment
+        # (EDE); the GCC-wide Pesticides Act (ratified as UAE domestic law, 2007, read in full via FAOLEX)
+        # requires registration to confirm a pesticide is "not harmful" to the environment (Article 2), but
+        # delegates the actual method to national executive regulations, which were not located -- the Act
+        # itself specifies no quantitative method. Human medicines: EDE (established under Federal Decree-Law
+        # No. 38 of 2024) is now the registering authority; a GCC-wide "Module 1" dossier structure is
+        # referenced regionally and Saudi Arabia's own Module 1.5 (see "SA" entry) plausibly extends here, but
+        # this was not confirmed on a UAE primary source. Veterinary medicines: a new Federal Decree-Law No. 21
+        # of 2025 on veterinary medical products was enacted; secondary reporting describes an environmental-
+        # disposal element, but the primary legislative text was not read and no quantitative method was
+        # confirmed.
+        "packs": [
+            "Chemicals registration (no REACH-equivalent environmental risk assessment regime confirmed; open gap)",
+            "Pesticides (GCC Pesticides Act, EDE administered; requires a general environmental-harm check, no quantitative method specified)",
+            "Human pharmaceuticals (EDE; GCC Module 1 structure referenced regionally, not confirmed on a UAE primary source)",
+            "Veterinary pharmaceuticals (Federal Decree-Law No. 21/2025; environmental element reported, not confirmed from primary text)",
+        ],
+        "default_currency": "AED",
+    },
+    {
+        "key": "SA",
+        "name": "Saudi Arabia",
+        # Researched 2026-09-23. No REACH-equivalent chemicals registration regime with a PEC/PNEC-style
+        # environmental risk assessment was confirmed -- SASO/SABER governs import conformity, not an
+        # environmental risk method; secondary sources claim REACH-like adoption but no primary text was found.
+        # Pesticides: the GCC Pesticides Act (ratified as Saudi domestic law, 2006), administered by the
+        # Ministry of Environment, Water and Agriculture (MEWA), requires a general environmental-harm check
+        # (Article 2) but specifies no quantitative method. Human pharmaceuticals: the SFDA's own "Data
+        # Requirements for Human Drugs Submission" (DS-REQ-002-V4.0, read in full) contains Module 1 Section
+        # 1.5 "Environmental Risk Assessment", requiring an evaluation of use/storage/disposal risk to the
+        # environment -- a real, confirmed, primary-sourced requirement -- but the document does not itself
+        # specify a quantitative PEC/PNEC method. Veterinary medicines: SFDA's Drug Sector is confirmed to
+        # regulate veterinary medicines through the same Saudi Drug Registration system, but no veterinary-
+        # specific data-requirements guideline analogous to DS-REQ-002 was located, so whether the same
+        # Section 1.5 requirement applies to veterinary dossiers is not confirmed.
+        "packs": [
+            "Chemicals registration (no REACH-equivalent environmental risk assessment regime confirmed; open gap)",
+            "Pesticides (GCC Pesticides Act, MEWA administered; requires a general environmental-harm check, no quantitative method specified)",
+            "Human pharmaceuticals (SFDA DS-REQ-002-V4.0 Module 1 Section 1.5 Environmental Risk Assessment; requirement confirmed from primary text, no quantitative method specified)",
+            "Veterinary pharmaceuticals (SFDA Saudi Drug Registration system; whether the human ERA requirement extends to veterinary dossiers not confirmed)",
+        ],
+        "default_currency": "SAR",
+    },
 ]
 
 CONTAMINANT_GROUPS = [
@@ -337,7 +407,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "PEARL",
         "name": "FOCUS PEARL",
         "domain": "soil and groundwater leaching",
-        "regions": ["EU", "UK", "CH"],
+        "regions": ["EU", "UK", "CH", "NO"],
         "groups": ["pesticide", "biocide", "veterinary_pharmaceutical", "human_pharmaceutical", "emerging_contaminant"],
         "implementation": "managed_adapter",
         "status": "installable_adapter",
@@ -348,7 +418,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "TOXSWA",
         "name": "FOCUS TOXSWA",
         "domain": "surface water and sediment",
-        "regions": ["EU", "UK", "CH"],
+        "regions": ["EU", "UK", "CH", "NO"],
         "groups": ["pesticide"],
         "implementation": "managed_adapter",
         "status": "official_adapter_and_output_parser",
@@ -403,7 +473,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "PELMO",
         "name": "FOCUS PELMO",
         "domain": "soil and groundwater leaching",
-        "regions": ["EU", "UK", "CH"],
+        "regions": ["EU", "UK", "CH", "NO"],
         "groups": ["pesticide", "biocide", "veterinary_pharmaceutical", "emerging_contaminant"],
         "implementation": "managed_adapter",
         "status": "adapter_planned",
@@ -414,7 +484,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "MACRO",
         "name": "FOCUS MACRO 5.5.4a",
         "domain": "preferential flow and drainage",
-        "regions": ["EU", "UK", "CH"],
+        "regions": ["EU", "UK", "CH", "NO"],
         "groups": ["pesticide", "biocide", "veterinary_pharmaceutical", "emerging_contaminant"],
         "implementation": "managed_adapter",
         "status": "official_adapter_contract",
@@ -425,7 +495,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "PRZM",
         "name": "PRZM",
         "domain": "runoff, erosion and root-zone transport",
-        "regions": ["US", "EU", "UK", "CH"],
+        "regions": ["US", "EU", "UK", "CH", "NO"],
         "groups": ["pesticide", "biocide", "industrial_organic", "emerging_contaminant", "human_pharmaceutical", "veterinary_pharmaceutical"],
         "implementation": "managed_adapter",
         "status": "adapter_planned",
@@ -636,7 +706,7 @@ MODELS: list[dict[str, Any]] = [
     "key": "SWASH",
     "name": "FOCUS SWASH",
     "domain": "FOCUS Step 3 surface-water workflow orchestration",
-    "regions": ["EU", "UK", "CH"],
+    "regions": ["EU", "UK", "CH", "NO"],
     "groups": ["pesticide", "biocide", "veterinary_pharmaceutical", "human_pharmaceutical", "emerging_contaminant"],
     "implementation": "managed_adapter",
     "status": "installable_orchestrator",
@@ -1184,6 +1254,144 @@ def _regulatory_programme(jurisdiction: str, group: str, scenario: str) -> dict[
                      "is not named as a supported pathway (EXTERNAL MODEL REQUIRED).",
         }
 
+    # Researched 2026-09-23 (Norway/Gulf-states research pass). Norway is the one new jurisdiction this pass
+    # confirmed shares EU REACH's actual substantive regime (via EEA incorporation), so its non-pesticide
+    # branches reuse the EU pathway's own scope wording rather than a separately-derived one -- but its own
+    # jurisdiction-specific key, since it is still a distinct national dossier/timeline, matching how UK REACH
+    # already gets its own key despite originating from the same regulation.
+    if jurisdiction == "NO":
+        if scenario == "agricultural_spray" or group == "pesticide":
+            return {
+                "key": "NO_PPP_FOCUS_NORTHERN_ZONE",
+                "name": "Norway plant-protection product exposure pathway (Northern Zone, confirmed deviations)",
+                "scope": "Mattilsynet (Norwegian Food Safety Authority) administers Regulation (EC) 1107/2009 in the "
+                         "EU's Northern Zone. FOCUS groundwater and surface-water scenario workflows are the shared "
+                         "technical basis, with two confirmed Norway-specific deviations (Mattilsynet's own national-"
+                         "requirements page): FOCUS MACRO 5.5.4 is mandated for groundwater leaching, and a six-"
+                         "scenario (not the standard nine-scenario) surface-water selection applies, dropping D5, "
+                         "D6 and R3.",
+            }
+        if scenario in {"industrial_effluent", "laboratory_use"}:
+            return {
+                "key": "NO_REACH_INDUSTRIAL",
+                "name": "Norway REACH industrial and professional-use pathway (EEA-incorporated EU REACH)",
+                "scope": "environmental releases under REACH as applied in Norway via the EEA Agreement "
+                         "(Miljodirektoratet); worker exposure requires a dedicated REACH worker assessment. EEA "
+                         "incorporation runs through Joint Committee decisions, so newly adopted EU amendments can "
+                         "lag before taking effect in Norway.",
+            }
+        if scenario == "household_use":
+            return {
+                "key": "NO_REACH_CONSUMER",
+                "name": "Norway REACH consumer lifecycle pathway (EEA-incorporated EU REACH)",
+                "scope": "consumer-use environmental releases; direct human exposure is a separate assessment domain",
+            }
+        if scenario == "product_disposal":
+            return {
+                "key": "NO_REACH_WASTE",
+                "name": "Norway REACH waste-stage pathway (EEA-incorporated EU REACH)",
+                "scope": "service-life and waste-stage environmental releases and fate",
+            }
+        if group in {"human_pharmaceutical", "veterinary_pharmaceutical"}:
+            return {
+                "key": "NO_DMP_PHARMA_EMA_ALIGNED",
+                "name": "Norway pharmaceutical environmental risk pathway (EMA-aligned)",
+                "scope": "Direktoratet for medisinske produkter (DMP) participates in the EU/EEA medicines network "
+                         "and applies the EMA two-phase environmental risk assessment guideline (Phase I exposure "
+                         "estimate against the 0.01 microgram/L surface-water action limit; Phase II fate-and-"
+                         "effects testing if exceeded) as-is; no Norway-specific numeric deviation was found. "
+                         "Veterinary medicines additionally sit under Regulation (EU) 2019/6, extended to Norway by "
+                         "EEA Joint Committee Decision No. 371/2021.",
+            }
+        return {
+            "key": "NO_ENVIRONMENTAL",
+            "name": "Norway environmental exposure pathway",
+            "scope": "native screening plus applicable managed EEA-incorporated REACH / FOCUS workflows",
+        }
+
+    # Researched 2026-09-23. UAE and Saudi Arabia share one real, confirmed, GCC-wide instrument for pesticides
+    # (the Pesticides Act of the Cooperation Council for the Arab States of the Gulf, ratified as each state's own
+    # domestic law) but otherwise have distinct national regulators and confirmed findings -- kept as separate
+    # jurisdiction branches rather than one merged "GCC" pathway, since a merged pathway would overstate the
+    # genuinely confirmed harmonisation (only pesticide registration's environmental-harm check is GCC-wide; the
+    # Act itself specifies no quantitative method in either country).
+    if jurisdiction == "AE":
+        if scenario == "agricultural_spray" or group == "pesticide":
+            return {
+                "key": "AE_GCC_PESTICIDES_ACT_NOT_MAPPED",
+                "name": "UAE pesticides pathway (GCC Pesticides Act, quantitative method not yet mapped)",
+                "scope": "Pesticide registration was recently transferred from MOCCAE to the Emirates Drug "
+                         "Establishment (EDE). The GCC-wide Pesticides Act (ratified as UAE domestic law, 2007) "
+                         "requires registration to confirm a pesticide is not harmful to the environment (Article "
+                         "2), but delegates the actual method to national executive regulations, which were not "
+                         "located -- the Act itself specifies no quantitative method (EXTERNAL MODEL REQUIRED).",
+            }
+        if group == "human_pharmaceutical":
+            return {
+                "key": "AE_EDE_PHARMA_NOT_CONFIRMED",
+                "name": "UAE human-pharmaceutical pathway (requirement not confirmed)",
+                "scope": "The Emirates Drug Establishment (EDE, est. under Federal Decree-Law No. 38 of 2024) is "
+                         "the registering authority. A GCC-wide 'Module 1' dossier structure is referenced "
+                         "regionally, and Saudi Arabia's own confirmed Module 1.5 Environmental Risk Assessment "
+                         "requirement plausibly extends here, but this was not confirmed on a UAE primary source "
+                         "(EXTERNAL MODEL REQUIRED).",
+            }
+        if group == "veterinary_pharmaceutical":
+            return {
+                "key": "AE_EDE_VETERINARY_NOT_CONFIRMED",
+                "name": "UAE veterinary-pharmaceutical pathway (requirement not confirmed)",
+                "scope": "Federal Decree-Law No. 21 of 2025 on veterinary medical products was enacted, with EDE as "
+                         "the licensing authority. Secondary reporting describes an environmental-disposal element, "
+                         "but the primary legislative text was not read and no quantitative method was confirmed "
+                         "(EXTERNAL MODEL REQUIRED).",
+            }
+        return {
+            "key": "AE_CHEMICALS_NOT_MAPPED",
+            "name": "UAE chemicals pathway (no REACH-equivalent regime confirmed)",
+            "scope": "No REACH-equivalent chemicals registration regime with a PEC/PNEC-style environmental risk "
+                     "assessment was confirmed for the UAE -- an open research gap, not a confirmed absence "
+                     "(EXTERNAL MODEL REQUIRED).",
+        }
+
+    if jurisdiction == "SA":
+        if scenario == "agricultural_spray" or group == "pesticide":
+            return {
+                "key": "SA_GCC_PESTICIDES_ACT_NOT_MAPPED",
+                "name": "Saudi Arabia pesticides pathway (GCC Pesticides Act, quantitative method not yet mapped)",
+                "scope": "The Ministry of Environment, Water and Agriculture (MEWA) administers the GCC-wide "
+                         "Pesticides Act (ratified as Saudi domestic law, 2006), which requires registration to "
+                         "confirm a pesticide is not harmful to the environment (Article 2) but specifies no "
+                         "quantitative method (EXTERNAL MODEL REQUIRED).",
+            }
+        if group == "human_pharmaceutical":
+            return {
+                "key": "SA_SFDA_PHARMA_PARTIAL",
+                "name": "Saudi Arabia human-pharmaceutical environmental risk pathway (requirement confirmed, method not specified)",
+                "scope": "The SFDA's own 'Data Requirements for Human Drugs Submission' (DS-REQ-002-V4.0), read in "
+                         "full, contains Module 1 Section 1.5 'Environmental Risk Assessment', requiring an "
+                         "evaluation of the risk to the environment from use, storage and disposal -- a real, "
+                         "confirmed, primary-sourced requirement modelled on the EU CTD structure. The document "
+                         "does not itself specify a quantitative PEC/PNEC method (EXTERNAL MODEL REQUIRED).",
+            }
+        if group == "veterinary_pharmaceutical":
+            return {
+                "key": "SA_SFDA_VETERINARY_NOT_CONFIRMED",
+                "name": "Saudi Arabia veterinary-pharmaceutical pathway (ERA applicability not confirmed)",
+                "scope": "SFDA's Drug Sector regulates veterinary medicines through the same Saudi Drug "
+                         "Registration (SDR) system as human medicines, but no veterinary-specific data-"
+                         "requirements guideline analogous to DS-REQ-002 was located, so whether the confirmed "
+                         "human Section 1.5 Environmental Risk Assessment requirement extends to veterinary "
+                         "dossiers is not confirmed (EXTERNAL MODEL REQUIRED).",
+            }
+        return {
+            "key": "SA_CHEMICALS_NOT_MAPPED",
+            "name": "Saudi Arabia chemicals pathway (no REACH-equivalent regime confirmed)",
+            "scope": "SASO/SABER governs import conformity, not an environmental risk method. Secondary sources "
+                     "claim REACH-like adoption but no primary government text describing a quantitative "
+                     "environmental risk method was found -- an open research gap, not a confirmed absence "
+                     "(EXTERNAL MODEL REQUIRED).",
+        }
+
     # A jurisdiction with no dedicated branch above never inherits another jurisdiction's regulatory-programme
     # text -- that was the exact bug this function had before EU/UK/CH each got an explicit guard.
     return {
@@ -1289,7 +1497,12 @@ def build_assessment_plan(data: dict[str, Any]) -> dict[str, Any]:
             selected.append("ENVIROCHEM_PLANT_UPTAKE")
             required += ["crop", "root-zone depth", "transpiration or uptake parameters"]
 
-    if jurisdiction in {"EU", "UK", "CH"} and tier >= 2:
+    # "NO" (Norway) joins the FOCUS-model set here -- confirmed 2026-09-23 via Mattilsynet's own national-
+    # requirements page: FOCUS MACRO 5.5.4 is mandated for groundwater leaching, and Norway's own six-scenario
+    # (not nine) surface-water selection is itself drawn from FOCUS's standard scenario set, implying the
+    # standard FOCUS surface-water tools (SWASH/TOXSWA/PRZM) apply too. This is NOT extended to the EFSA birds/
+    # mammals/bees screens below -- that methodology's applicability to Norway was not researched this session.
+    if jurisdiction in {"EU", "UK", "CH", "NO"} and tier >= 2:
         if scenario in {"groundwater_leaching", "agricultural_spray", "soil_incorporation", "biosolids_to_soil", "wastewater_irrigation"}:
             selected += ["PEARL", "PELMO"]
             if tier >= 3:
@@ -1300,7 +1513,7 @@ def build_assessment_plan(data: dict[str, Any]) -> dict[str, Any]:
             # engine family can also appear in US workflows, so jurisdiction,
             # scenario database and version must remain part of provenance.
             selected.append("PRZM")
-        if group == "pesticide" and scenario in {"agricultural_spray", "soil_incorporation"}:
+        if group == "pesticide" and scenario in {"agricultural_spray", "soil_incorporation"} and jurisdiction != "NO":
             # EU equivalent of the US TERRPLANT/TREX/AGDRIFT/BEEREX ecotox
             # suite -- previously entirely absent for EU pesticide scenarios
             # despite EFSA requiring the equivalent bird/mammal dietary and
@@ -1311,7 +1524,10 @@ def build_assessment_plan(data: dict[str, Any]) -> dict[str, Any]:
             # see eu_birds_mammals.py's own module docstring for the exact
             # boundary (no Annex B Generic Model Species tables, no
             # benthic-invertebrate secondary poisoning yet -- no primary
-            # source for that pathway's formula was found).
+            # source for that pathway's formula was found). Excluded for "NO"
+            # (Norway): EFSA birds/mammals methodology applicability to
+            # Norway's own pesticide regime was not researched this session,
+            # unlike AU's confirmed EFSA-2009 alignment (au_apvma.py).
             selected.append("ENVIROCHEM_EU_BIRDS_MAMMALS_SCREEN")
             required += ["reviewer-supplied FIR/BW/RUD/application rate per food item", "avian and mammalian toxicity endpoints (LD50, relevant reproductive endpoint)"]
             # EU equivalent of the US BEEREX gating below: honey-bee Tier 1
@@ -1467,15 +1683,15 @@ def build_assessment_plan(data: dict[str, Any]) -> dict[str, Any]:
     if tier >= 4:
         required += ["monitoring data", "site-specific hydrology", "calibration record", "uncertainty distribution"]
 
-    if jurisdiction in {"EU", "UK", "CH"} and scenario == "household_use":
+    if jurisdiction in {"EU", "UK", "CH", "NO"} and scenario == "household_use":
         warnings.append(
             "This plan currently routes environmental releases and fate. A complete REACH consumer human-exposure assessment is not implemented in the guided screen."
         )
-    if jurisdiction in {"EU", "UK", "CH"} and scenario == "product_disposal":
+    if jurisdiction in {"EU", "UK", "CH", "NO"} and scenario == "product_disposal":
         warnings.append(
             "Waste-stage routing is a planning workflow; landfill, incineration and treatment emissions require reviewed waste-specific inputs before a quantitative result."
         )
-    if jurisdiction in {"EU", "UK", "CH"} and scenario in {"industrial_effluent", "laboratory_use"}:
+    if jurisdiction in {"EU", "UK", "CH", "NO"} and scenario in {"industrial_effluent", "laboratory_use"}:
         warnings.append(
             "The current EU plan covers environmental release and fate. A dedicated REACH worker-exposure calculation is not yet implemented."
         )

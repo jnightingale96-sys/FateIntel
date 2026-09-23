@@ -222,6 +222,48 @@ def test_au_pesticide_scenario_does_not_get_eu_bee_screen_even_when_bee_attracti
     assert "ENVIROCHEM_EU_BEES_SCREEN" not in keys
 
 
+def test_norway_pesticide_scenario_gets_the_focus_model_suite_at_tier_3():
+    # Confirmed 2026-09-23 via Mattilsynet's own national-requirements page: Norway mandates FOCUS MACRO 5.5.4
+    # and draws its own surface-water scenario selection from FOCUS's standard set -- so Norway should get the
+    # same FOCUS suite as EU/UK/CH, not be left with zero calculable pesticide models the way JP/CN/KR/IN are.
+    plan = build_assessment_plan({
+        "jurisdiction": "NO",
+        "contaminant_group": "pesticide",
+        "scenario": "agricultural_spray",
+        "tier": 3,
+    })
+    keys = {x["key"] for x in plan["models"]}
+    assert {"PEARL", "PELMO", "MACRO", "SWASH", "TOXSWA", "PRZM"}.issubset(keys)
+
+
+def test_norway_does_not_get_the_efsa_birds_mammals_or_bees_screens():
+    # Deliberately excluded: EFSA birds/mammals/bees methodology applicability to Norway's own pesticide regime
+    # was not researched this session, unlike the confirmed FOCUS-model sharing above.
+    plan = build_assessment_plan({
+        "jurisdiction": "NO",
+        "contaminant_group": "pesticide",
+        "scenario": "agricultural_spray",
+        "tier": 2,
+        "bee_attractive": True,
+    })
+    keys = {x["key"] for x in plan["models"]}
+    assert not keys.intersection({"ENVIROCHEM_EU_BIRDS_MAMMALS_SCREEN", "ENVIROCHEM_EU_BEES_SCREEN"})
+
+
+def test_uae_and_saudi_pesticide_scenarios_get_no_calculable_models():
+    # Both stay at "regime named, no quantitative method confirmed" -- the GCC Pesticides Act itself specifies
+    # none, matching JP/CN/KR/IN's shape rather than Norway's.
+    for jurisdiction in ("AE", "SA"):
+        plan = build_assessment_plan({
+            "jurisdiction": jurisdiction,
+            "contaminant_group": "pesticide",
+            "scenario": "agricultural_spray",
+            "tier": 3,
+        })
+        keys = {x["key"] for x in plan["models"]}
+        assert not keys.intersection({"PEARL", "PELMO", "MACRO", "SWASH", "TOXSWA", "PRZM", "ENVIROCHEM_EU_BIRDS_MAMMALS_SCREEN"})
+
+
 def test_au_industrial_scenario_gets_aicis_pathway_and_native_models():
     # AICIS has no distinct proprietary exposure model -- this should route
     # to the same core PEC/PNEC method via native screens, not a fabricated

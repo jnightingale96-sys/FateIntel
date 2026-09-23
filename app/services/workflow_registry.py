@@ -44,6 +44,13 @@ REGIONS: dict[str, dict[str, Any]] = {
     "CN": {"label": "China", "jurisdictions": ["CN"], "default": "CN", "refinement": None},
     "KR": {"label": "South Korea", "jurisdictions": ["KR"], "default": "KR", "refinement": None},
     "IN": {"label": "India", "jurisdictions": ["IN"], "default": "IN", "refinement": None},
+    # Norway shares the FOCUS refinement suite (refinement: "eu") -- confirmed 2026-09-23, not assumed: Mattilsynet
+    # mandates FOCUS MACRO 5.5.4 for groundwater leaching and its own six-scenario surface-water selection is drawn
+    # from FOCUS's own standard set (see registry._regulatory_programme's "NO" branch and the PEARL/PELMO/MACRO/
+    # SWASH/TOXSWA/PRZM regions lists).
+    "NO": {"label": "Norway", "jurisdictions": ["NO"], "default": "NO", "refinement": "eu"},
+    "AE": {"label": "United Arab Emirates", "jurisdictions": ["AE"], "default": "AE", "refinement": None},
+    "SA": {"label": "Saudi Arabia", "jurisdictions": ["SA"], "default": "SA", "refinement": None},
 }
 
 GROUP_LABELS: dict[str, str] = {

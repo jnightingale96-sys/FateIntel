@@ -140,8 +140,8 @@ def test_other_regions_state_that_no_dedicated_refinement_exists(region):
 
 
 # ---------- Japan, China, South Korea, India: named regime, honestly unmapped method, never EU/UK wording ----------
-def test_all_eleven_regions_are_present():
-    assert set(REGIONS) == {"EU", "UK", "CH", "US", "CA", "AU", "NZ", "JP", "CN", "KR", "IN"}
+def test_all_fourteen_regions_are_present():
+    assert set(REGIONS) == {"EU", "UK", "CH", "US", "CA", "AU", "NZ", "JP", "CN", "KR", "IN", "NO", "AE", "SA"}
 
 
 @pytest.mark.parametrize("region, needle", [
@@ -182,6 +182,52 @@ def test_korea_and_india_industrial_routes_stay_agency_only_after_the_follow_up_
     kr = stage(resolve_workflow("KR", "industrial_organic"), USE_RELEASE, "route")
     ind = stage(resolve_workflow("IN", "industrial_organic"), USE_RELEASE, "route")
     assert kr["programme_key"] == "KR_KREACH_NOT_MAPPED" and ind["programme_key"] == "IN_MSIHC_NOT_MAPPED"
+
+
+# ---------- Norway: confirmed EEA-incorporated EU REACH, NOT the same shape as JP/CN/KR/IN ----------
+def test_norway_industrial_route_is_available_not_partial_confirmed_eu_reach_equivalence():
+    # Unlike JP/CN/KR/IN (regime named, method not mapped), Norway's industrial route is genuinely confirmed
+    # as the same substantive REACH regime as the EU, incorporated via the EEA Agreement -- so this must be
+    # "available", not "partial".
+    route = stage(resolve_workflow("NO", "industrial_organic", scenario="industrial_effluent"), USE_RELEASE, "route")
+    assert route["status"] == "available"
+    assert route["programme_key"] == "NO_REACH_INDUSTRIAL"
+    assert "EEA" in route["detail"]
+
+
+def test_norway_pesticide_route_names_its_own_confirmed_focus_deviations():
+    route = stage(resolve_workflow("NO", "pesticide"), USE_RELEASE, "route")
+    assert route["status"] == "available"
+    assert "MACRO" in route["detail"]
+    assert "six" in route["detail"].lower() or "nine" in route["detail"].lower()
+
+
+def test_norway_shares_the_focus_refinement_suite():
+    # Confirmed, unlike JP/CN/KR/IN which have refinement: None -- Norway's FOCUS-model sharing is a primary-
+    # sourced finding (Mattilsynet's own national-requirements page), not an assumption.
+    assert REGIONS["NO"]["refinement"] == "eu"
+
+
+# ---------- UAE and Saudi Arabia: GCC Pesticides Act shared, everything else genuinely distinct and unmapped ----------
+@pytest.mark.parametrize("region, needle", [
+    ("AE", "GCC"), ("SA", "GCC"),
+])
+def test_uae_and_saudi_pesticide_routes_name_the_shared_gcc_act_but_stay_partial(region, needle):
+    route = stage(resolve_workflow(region, "pesticide"), USE_RELEASE, "route")
+    assert needle in route["detail"]
+    assert route["status"] == "partial"  # the Act itself specifies no quantitative method
+
+
+def test_saudi_human_pharma_route_names_the_confirmed_sfda_era_requirement_but_stays_partial():
+    # Distinct from UAE: Saudi Arabia has a confirmed, primary-sourced (SFDA DS-REQ-002-V4.0) requirement,
+    # unlike UAE where the requirement itself was not confirmed -- both still stay "partial" since neither has
+    # a quantitative method, but the Saudi route should say more than the UAE one.
+    sa = stage(resolve_workflow("SA", "human_pharmaceutical"), USE_RELEASE, "route")
+    ae = stage(resolve_workflow("AE", "human_pharmaceutical"), USE_RELEASE, "route")
+    assert sa["status"] == "partial" and ae["status"] == "partial"
+    assert "SFDA" in sa["detail"] and "Environmental Risk Assessment" in sa["detail"]
+    assert sa["programme_key"] == "SA_SFDA_PHARMA_PARTIAL"
+    assert ae["programme_key"] == "AE_EDE_PHARMA_NOT_CONFIRMED"
 
 
 def test_korea_pesticide_route_names_the_confirmed_registering_authority():

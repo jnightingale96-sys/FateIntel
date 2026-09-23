@@ -189,6 +189,7 @@ def test_regions_select_has_a_real_us_only_option():
         ("UK", "United Kingdom"), ("CH", "Switzerland"),
         ("CA", "Canada"), ("AU", "Australia"), ("NZ", "New Zealand"),
         ("JP", "Japan"), ("CN", "China"), ("KR", "South Korea"), ("IN", "India"),
+        ("NO", "Norway"), ("AE", "United Arab Emirates"), ("SA", "Saudi Arabia"),
     ):
         assert f'<option value="{region}">{label}</option>' in HTML
         assert f'data-model-system="{region}"' in HTML
@@ -202,7 +203,7 @@ def test_every_region_tab_actually_works_against_the_plan_endpoint():
     from fastapi.testclient import TestClient
     from app.main import app
     with TestClient(app) as client:
-        for jurisdiction in ("EU", "UK", "CH", "US", "AU", "CA", "NZ", "JP", "CN", "KR", "IN"):
+        for jurisdiction in ("EU", "UK", "CH", "US", "AU", "CA", "NZ", "JP", "CN", "KR", "IN", "NO", "AE", "SA"):
             response = client.post("/api/assessment-plan", json={
                 "jurisdiction": jurisdiction, "contaminant_group": "industrial_organic",
                 "scenario": "municipal_wastewater", "tier": 1,
