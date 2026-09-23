@@ -32,6 +32,14 @@ QUESTIONS = "QUESTIONS_RELEVANCE"
 INCONCLUSIVE = "INCONCLUSIVE"
 MISSING = "PROPERTY_MISSING"
 
+# UK REACH Annex XIII 1.1.2/1.2.2 bioaccumulation and EU CLP (Delegated Regulation (EU) 2023/707) Annex I
+# 4.4.2.1.2/4.4.2.2.2 mobility thresholds (rule B2 and M1 below), named here so pbt_pmt_classifier.py can
+# reuse the exact same numbers rather than risk a second, subtly different copy.
+BCF_B_THRESHOLD_L_PER_KG = 2000
+BCF_VB_THRESHOLD_L_PER_KG = 5000
+LOG_KOC_M_THRESHOLD = 3
+LOG_KOC_VM_THRESHOLD = 2
+
 # key -> (label incl. unit, must be > 0)
 PROPERTY_SPECS: dict[str, tuple[str, bool]] = {
     "vapour_pressure_mm_hg": ("vapour pressure (mm Hg)", True),
@@ -302,12 +310,12 @@ def _mobility(name: str, group: str, props: SubstanceProperties | None) -> dict[
         pfas_note = (" UK Defra (June 2025) states that Koc is too simplistic to determine the potential mobility of PFAS, so treat "
                      "a log Koc for a PFAS with particular caution: a high value does not show low mobility.")
     ionisable += pfas_note
-    if koc < 2:
+    if koc < LOG_KOC_VM_THRESHOLD:
         return _result("M1", SUPPORTS,
-                       "Meets the EU CLP criterion for a very mobile substance (log Koc < 2), so dissolved transport through soil and groundwater is a supported concern." + ionisable, basis)
-    if koc < 3:
+                       f"Meets the EU CLP criterion for a very mobile substance (log Koc < {LOG_KOC_VM_THRESHOLD}), so dissolved transport through soil and groundwater is a supported concern." + ionisable, basis)
+    if koc < LOG_KOC_M_THRESHOLD:
         return _result("M1", SUPPORTS,
-                       "Meets the EU CLP criterion for a mobile substance (log Koc < 3), so dissolved transport through soil and groundwater is a supported concern." + ionisable, basis)
+                       f"Meets the EU CLP criterion for a mobile substance (log Koc < {LOG_KOC_M_THRESHOLD}), so dissolved transport through soil and groundwater is a supported concern." + ionisable, basis)
     return _result("M1", INCONCLUSIVE,
                    "Does not meet the EU CLP mobility criterion (log Koc >= 3). This does not exclude leaching: the regulation classifies by weight of "
                    "evidence with expert judgment, and if the substance is ionisable the lowest log Koc for pH 4 to 9 may be lower." + pfas_note, basis)
@@ -321,10 +329,10 @@ def _bioaccumulation_uk(name: str, group: str, props: SubstanceProperties | None
     if bcf is None:
         return _result("B2", MISSING, "No BCF supplied, so the UK REACH Annex XIII bioaccumulation criteria (B: BCF > 2,000; vB: BCF > 5,000) cannot be applied.")
     basis = [f"BCF {bcf:g} ({props.source('bcf_or_baf_aquatic')})"]
-    if bcf > 5000:
-        return _result("B2", SUPPORTS, "Meets the UK REACH Annex XIII criterion for a very bioaccumulative substance (vB: BCF > 5,000), so bioaccumulation is a supported concern.", basis)
-    if bcf > 2000:
-        return _result("B2", SUPPORTS, "Meets the UK REACH Annex XIII criterion for a bioaccumulative substance (B: BCF > 2,000), so bioaccumulation is a supported concern.", basis)
+    if bcf > BCF_VB_THRESHOLD_L_PER_KG:
+        return _result("B2", SUPPORTS, f"Meets the UK REACH Annex XIII criterion for a very bioaccumulative substance (vB: BCF > {BCF_VB_THRESHOLD_L_PER_KG:,}), so bioaccumulation is a supported concern.", basis)
+    if bcf > BCF_B_THRESHOLD_L_PER_KG:
+        return _result("B2", SUPPORTS, f"Meets the UK REACH Annex XIII criterion for a bioaccumulative substance (B: BCF > {BCF_B_THRESHOLD_L_PER_KG:,}), so bioaccumulation is a supported concern.", basis)
     return _result("B2", INCONCLUSIVE, "Does not meet the UK REACH Annex XIII bioaccumulation criterion (BCF <= 2,000). This does not exclude food-chain transfer.", basis)
 
 

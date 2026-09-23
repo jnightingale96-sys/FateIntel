@@ -153,12 +153,64 @@ gained 3 new cases for the `bee_attractive` gating (EU selects it, EU without th
 never selects it). `tests/test_adapter_contracts.py` extended to expect the new key. Full suite: 792
 passed, 5 skipped (was 775).
 
-## 3. Formal PBT/PMT/vPvM classifier — not started
+## 3. Formal PBT/PMT/vPvM classifier (git — commit pending as of this note)
 
-Existing building blocks already in the codebase: `pathway_plausibility.py`'s B2 rule (UK REACH Annex XIII
-bioaccumulation: B if BCF>2,000, vB if BCF>5,000) and M1 rule (EU CLP mobility: mobile if log Koc<3, very mobile
-if <2) are single-criterion *prompts* within the site-model plausibility system, not a formal multi-criterion
-classifier that combines P/vP + B/vB + T (or P/vP + M/vM + T) into an actual PBT/vPvB/PMT/vPvM determination
-against the real regulatory definition. A classifier would need the full REACH Annex XIII criteria set (including
-persistence — DT50 thresholds — and toxicity — NOEC/CMR criteria — neither of which exist in this codebase yet)
-research before it could be built with the same "don't invent chemistry" discipline used throughout this project.
+**What shipped**: new module `app/services/pbt_pmt_classifier.py`, with two entry points —
+`classify_pbt_and_vpvb()` (UK REACH Annex XIII, Sections 1.1/1.2) and `classify_pmt_and_vpvm()` (EU CLP
+Annex I Section 4.4, as inserted by Delegated Regulation (EU) 2023/707). Both combine persistence (P/vP,
+per-compartment DT50 half-life), bioaccumulation (B/vB, BCF) or mobility (M/vM, log Koc), and toxicity (T
+— NOEC/EC10, CMR classification, STOT RE, and for PMT only, endocrine-disruptor category 1) into an actual
+AND-combined determination, not just the single-criterion prompts `pathway_plausibility.py` already had.
+
+**Source, and how it was actually obtained**: read directly in full via the built-in browser (not
+summarised by another tool) — REACH Annex XIII from `legislation.gov.uk/eur/2006/1907/annex/XIII` (the
+same UK REACH source `pathway_plausibility.py`'s B2/M1 rules already cite) and the CLP delegated
+regulation's full Annex I Section 4.4 text via `javascript_tool` against `eur-lex.europa.eu`'s rendered
+page (a first WebFetch pass on the same URL returned a plausible-looking but tool-summarised version,
+which was not trusted — the primary page text was pulled directly instead, matching this project's
+standing discipline against relying on another tool's own summary of a primary source).
+
+**The numbers, confirmed identical where they are identical**: REACH Annex XIII 1.1.1 (P) and CLP Annex I
+4.4.2.1.1 (P) give the exact same five compartment thresholds (marine water > 60 days, fresh/estuarine
+water > 40 days, marine sediment > 180 days, fresh/estuarine sediment > 120 days, soil > 120 days) — and
+1.2.1/4.4.2.2.1 (vP) likewise match exactly (60/60/180/180/180). This was confirmed by reading both
+primary texts, not assumed, and one shared `_half_life_determination()` helper is used for both PBT-P and
+PMT-P. Toxicity differs by exactly one limb: CLP's PMT toxicity criterion (4.4.2.1.3(d)) adds "classified
+endocrine disruptor category 1 (human health or environment)", which REACH Annex XIII's PBT toxicity
+criterion (1.1.3) does not have — `classify_pbt_and_vpvb()` doesn't even expose that parameter, so it
+can't be silently applied where the regulation doesn't provide for it.
+
+**Reused, not re-typed**: the BCF (B: >2,000, vB: >5,000) and log Koc (M: <3, vM: <2) thresholds were
+already shipped in `pathway_plausibility.py`'s B2/M1 rules as inline literals — extracted into named
+constants (`BCF_B_THRESHOLD_L_PER_KG`, `BCF_VB_THRESHOLD_L_PER_KG`, `LOG_KOC_M_THRESHOLD`,
+`LOG_KOC_VM_THRESHOLD`) there and imported here, so the two modules' numbers can't quietly drift apart —
+same discipline as reusing `equilibrium_partitioning.py`'s constants for the earthworm pathway (item 1).
+
+**The one honest caveat that matters most, on every single result**: both regulations state, in their own
+text, that identification is a weight-of-evidence determination using expert judgement over *all* relevant
+and available information (REACH Annex XIII intro paragraph 2; CLP Annex I 4.4.2.3, near-identical
+wording), listing further evidence types this classifier does not evaluate (terrestrial bioaccumulation
+studies, biomagnification/trophic magnification factors, monitoring and field data, and more). This
+classifier mechanically checks only the specific numeric/hazard-classification criteria named in Sections
+1.1/1.2 (REACH) and 4.4.2.1/4.4.2.2 (CLP) — every result carries a `caveat` field saying exactly this, and
+a "not met"/"inconclusive" outcome is documented as never being a substitute for a real regulatory
+determination. Consistent with this, a BCF or log Koc that misses its numeric threshold is reported as
+`INCONCLUSIVE`, never a conclusive "not bioaccumulative"/"not mobile" — only persistence can return a
+conclusive `NOT_MET`, and only when *all five* compartments were measured and none exceed the threshold
+(persistence is an OR condition across compartments, so partial data can never conclusively rule it out).
+
+**Not wired to an API endpoint, and deliberately not added to `registry.py`'s `MODELS` list** — checked
+first: `pathway_plausibility.py`'s own `evaluate_step`/`evaluate_path`/`rules_metadata` functions aren't
+wired to any endpoint either (only its `PROPERTY_SPECS` labels are exposed, via
+`/api/conceptual-site-model/reference`), and it has no `registry.py` entry at all. This classifier is the
+same kind of substance-level hazard-classification tool, not a jurisdiction/scenario-routed exposure or
+fate model — forcing it into `registry.py`'s region/group/tier-driven `MODELS` list (the pattern used for
+the new bee screen, item 2) would be a worse fit than following `pathway_plausibility.py`'s own precedent.
+
+**Tests**: `tests/test_pbt_pmt_classifier.py`, 14 new cases — PBT met when all three criteria are met,
+vPvB met on persistence+bioaccumulation alone (no toxicity needed, per Annex XIII 1.2), a genuine
+conclusive `NOT_MET` when every persistence compartment is measured and none exceed, partial persistence
+data correctly staying `INCONCLUSIVE` rather than `NOT_MET`, bioaccumulation below threshold staying
+`INCONCLUSIVE`, each CMR/STOT-RE flag recognised independently, a drift guard cross-checking the reused
+`pathway_plausibility.py` thresholds, PMT's endocrine-disruptor limb, and input validation. Full suite:
+806 passed, 5 skipped (was 792).
