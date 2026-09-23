@@ -1,0 +1,161 @@
+{
+  "engine": "PEPPER soil GPR (PaDEL 2D)",
+  "version": "pepper-soil-gpr-padel-1.0.0+fateintel.20260923",
+  "citation": "Hafner J, Cordero J, et al., Fenner K (2026) Confidently Uncertain: Probabilistic Machine Learning to Predict Soil Biotransformation Half-Lives. Environ Sci Technol 60(14):11077. Data: Latino et al. (2017) Eawag-Soil in enviPath, Environ Sci Process Impacts 19:449.",
+  "code_licence": "pepper-lab MIT (FennerLabs); FateIntel wrapper - yours",
+  "trained_on": {
+    "n_compounds": 864,
+    "n_half_lives": 6252,
+    "source": "EAWAG-SOIL package (enviPath), OECD 307 aerobic lab soil studies, EU pesticides + TPs",
+    "target": "Bayesian-inferred mean log10 DT50 (days) across soils",
+    "incubation_temperature_median_C": 20
+  },
+  "features": {
+    "type": "PaDEL-Descriptor 2D",
+    "n_after_preprocessing": 291
+  },
+  "regressor": {
+    "type": "GaussianProcessRegressor",
+    "kernel_fitted": "1.12**2 * Matern(length_scale=4.18, nu=0.5)",
+    "noise": "per-compound alpha = (between-soil log sd)^2"
+  },
+  "cross_validation": {
+    "scheme": "5x repeated 5-fold, random splits by compound",
+    "overall": {
+      "n": 864,
+      "RMSE_log": 0.8,
+      "MAE_log": 0.592,
+      "R2": 0.307,
+      "spearman": 0.573,
+      "within_factor_3": 0.531,
+      "within_factor_10": 0.835,
+      "coverage_90CI_of_mean": 0.869
+    },
+    "by_predicted_sd_tertile": {
+      "sd<=q33": {
+        "n": 285,
+        "RMSE_log": 0.728,
+        "MAE_log": 0.531,
+        "R2": 0.34,
+        "spearman": 0.593,
+        "within_factor_3": 0.586,
+        "within_factor_10": 0.865,
+        "coverage_90CI_of_mean": 0.863
+      },
+      "q33<sd<=q66": {
+        "n": 285,
+        "RMSE_log": 0.828,
+        "MAE_log": 0.619,
+        "R2": 0.274,
+        "spearman": 0.54,
+        "within_factor_3": 0.505,
+        "within_factor_10": 0.826,
+        "coverage_90CI_of_mean": 0.865
+      },
+      "sd>q66": {
+        "n": 293,
+        "RMSE_log": 0.839,
+        "MAE_log": 0.625,
+        "R2": 0.305,
+        "spearman": 0.582,
+        "within_factor_3": 0.503,
+        "within_factor_10": 0.813,
+        "coverage_90CI_of_mean": 0.88
+      }
+    },
+    "by_confidence_class": {
+      "high": {
+        "n": 259,
+        "RMSE_log": 0.644,
+        "MAE_log": 0.48,
+        "R2": 0.37,
+        "spearman": 0.547,
+        "within_factor_3": 0.636,
+        "within_factor_10": 0.881,
+        "coverage_90CI_of_mean": 0.891,
+        "share_of_predictions": 0.3
+      },
+      "medium": {
+        "n": 455,
+        "RMSE_log": 0.849,
+        "MAE_log": 0.635,
+        "R2": 0.29,
+        "spearman": 0.57,
+        "within_factor_3": 0.486,
+        "within_factor_10": 0.823,
+        "coverage_90CI_of_mean": 0.853,
+        "share_of_predictions": 0.527
+      },
+      "low": {
+        "n": 149,
+        "RMSE_log": 0.886,
+        "MAE_log": 0.656,
+        "R2": 0.257,
+        "spearman": 0.561,
+        "within_factor_3": 0.488,
+        "within_factor_10": 0.788,
+        "coverage_90CI_of_mean": 0.881,
+        "share_of_predictions": 0.173
+      }
+    },
+    "persistence_classification_REACH_120d": {
+      "observed_P_share": 0.166,
+      "central_sensitivity": 0.131,
+      "central_specificity": 0.989,
+      "precautionary_upper95_sensitivity": 0.987,
+      "precautionary_upper95_specificity": 0.189,
+      "screening_by_p_P": {
+        "0.05": {
+          "sensitivity": 0.958,
+          "specificity": 0.317,
+          "share_flagged": 0.728
+        },
+        "0.1": {
+          "sensitivity": 0.876,
+          "specificity": 0.509,
+          "share_flagged": 0.555
+        },
+        "0.2": {
+          "sensitivity": 0.649,
+          "specificity": 0.768,
+          "share_flagged": 0.301
+        },
+        "0.3": {
+          "sensitivity": 0.436,
+          "specificity": 0.898,
+          "share_flagged": 0.157
+        },
+        "0.5": {
+          "sensitivity": 0.131,
+          "specificity": 0.989,
+          "share_flagged": 0.031
+        }
+      }
+    }
+  },
+  "confidence_rule": {
+    "high": "sd_of_mean <= 0.6 or max Tanimoto >= 0.75",
+    "low": "(not high) and (sd_of_mean > 0.74 or max Tanimoto < 0.35)",
+    "medium": "otherwise"
+  },
+  "persistence_screening_flag": {
+    "rule": "p_P >= 0.1",
+    "purpose": "prioritise for OECD 307 testing; tuned for high sensitivity",
+    "sensitivity": 0.876,
+    "specificity": 0.509,
+    "share_flagged": 0.555
+  },
+  "fidelity_vs_pepper_lab": {
+    "pepper_n_features": 291,
+    "ours_n_features": 291,
+    "same_feature_set": true,
+    "max_abs_diff_mean": 0.0,
+    "max_abs_diff_sd": 0.0
+  },
+  "applicability_domain": [
+    "single-component organic molecules, MW < 1200 Da",
+    "best for pesticide-like chemistry; industrial chemicals, pharmaceuticals, PFAS, surfactants and ionic/permanently charged species are sparsely represented",
+    "primary (parent) disappearance, not mineralisation; aerobic only"
+  ],
+  "built": "2026-09-23T21:14:14"
+}

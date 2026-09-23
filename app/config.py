@@ -115,6 +115,12 @@ class Settings(BaseModel):
     envipath_timeout_seconds: float = Field(default=20.0, gt=0, le=120)
     envipath_commercial_license_confirmed: bool = False
 
+    # Soil DT50 provider (PEPPER GPR, Fenner Lab). Same restriction shape as enviPath above: the shipped model artifact
+    # embeds the EAWAG-SOIL training data, whose commercial terms are unconfirmed, so staging/production stay closed
+    # until an operator sets the confirmation flag.
+    soil_dt50_enabled: bool = True
+    soil_dt50_commercial_license_confirmed: bool = False
+
     # MassBank Europe is the analytical-identification feature's live connector:
     # an open REST API returning real, measured MS2 (product-ion) spectra plus
     # chromatography metadata (retention time, column, mobile phase, ionisation

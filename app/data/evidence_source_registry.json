@@ -417,8 +417,18 @@
     "key": "epa_exposure_factors_handbook",
     "name": "US EPA Exposure Factors Handbook",
     "owner": "US Environmental Protection Agency",
-    "scope": ["human_exposure", "consumer_exposure", "general_population"],
-    "endpoint_families": ["body_weight", "inhalation_rate", "ingestion_rate", "activity_patterns", "life_stage_factors"],
+    "scope": [
+      "human_exposure",
+      "consumer_exposure",
+      "general_population"
+    ],
+    "endpoint_families": [
+      "body_weight",
+      "inhalation_rate",
+      "ingestion_rate",
+      "activity_patterns",
+      "life_stage_factors"
+    ],
     "access_mode": "versioned_manual_selection",
     "commercial_status": "public_government_reference",
     "integration_status": "catalogued_parameter_provenance",
@@ -433,8 +443,16 @@
     "key": "epa_chemsteer",
     "name": "US EPA ChemSTEER",
     "owner": "US Environmental Protection Agency",
-    "scope": ["industrial_chemicals", "occupational_exposure", "environmental_releases"],
-    "endpoint_families": ["industrial_release", "worker_inhalation", "worker_dermal"],
+    "scope": [
+      "industrial_chemicals",
+      "occupational_exposure",
+      "environmental_releases"
+    ],
+    "endpoint_families": [
+      "industrial_release",
+      "worker_inhalation",
+      "worker_dermal"
+    ],
     "access_mode": "external_desktop_adapter",
     "commercial_status": "external_tool_terms_apply_no_derivatives",
     "integration_status": "managed_adapter_contract",
@@ -449,8 +467,16 @@
     "key": "epa_cem",
     "name": "US EPA Consumer Exposure Model",
     "owner": "US Environmental Protection Agency",
-    "scope": ["consumer_products", "articles", "human_exposure"],
-    "endpoint_families": ["consumer_inhalation", "consumer_ingestion", "consumer_dermal"],
+    "scope": [
+      "consumer_products",
+      "articles",
+      "human_exposure"
+    ],
+    "endpoint_families": [
+      "consumer_inhalation",
+      "consumer_ingestion",
+      "consumer_dermal"
+    ],
     "access_mode": "external_desktop_adapter",
     "commercial_status": "external_tool_terms_apply_no_derivatives",
     "integration_status": "managed_adapter_contract",
@@ -465,8 +491,19 @@
     "key": "epa_efast",
     "name": "US EPA E-FAST 2014",
     "owner": "US Environmental Protection Agency",
-    "scope": ["legacy_tsca", "environmental_fate", "consumer_exposure", "general_population"],
-    "endpoint_families": ["air", "surface_water", "landfill", "consumer", "general_population"],
+    "scope": [
+      "legacy_tsca",
+      "environmental_fate",
+      "consumer_exposure",
+      "general_population"
+    ],
+    "endpoint_families": [
+      "air",
+      "surface_water",
+      "landfill",
+      "consumer",
+      "general_population"
+    ],
     "access_mode": "external_legacy_adapter",
     "commercial_status": "external_tool_terms_apply_no_derivatives",
     "integration_status": "managed_legacy_adapter_contract",
@@ -481,8 +518,15 @@
     "key": "envipath_eawag_bbd",
     "name": "enviPath / EAWAG-BBD and PPS",
     "owner": "Eawag and contributing organisations",
-    "scope": ["organic_chemicals", "microbial_biotransformation"],
-    "endpoint_families": ["observed_pathways", "transformation_products", "biotransformation_rules"],
+    "scope": [
+      "organic_chemicals",
+      "microbial_biotransformation"
+    ],
+    "endpoint_families": [
+      "observed_pathways",
+      "transformation_products",
+      "biotransformation_rules"
+    ],
     "access_mode": "collaboration_or_permission_gated",
     "commercial_status": "hosted_data_rights_to_confirm",
     "integration_status": "provider_neutral_contract_only",
@@ -497,8 +541,15 @@
     "key": "kegg_xenobiotics",
     "name": "KEGG Xenobiotics Biodegradation and Metabolism",
     "owner": "Kanehisa Laboratories / KEGG",
-    "scope": ["xenobiotic_pathways", "biotransformation"],
-    "endpoint_families": ["pathway_context", "enzymes", "metabolites"],
+    "scope": [
+      "xenobiotic_pathways",
+      "biotransformation"
+    ],
+    "endpoint_families": [
+      "pathway_context",
+      "enzymes",
+      "metabolites"
+    ],
     "access_mode": "licensed_linkout",
     "commercial_status": "commercial_licence_required",
     "integration_status": "linkout_only",
@@ -508,5 +559,26 @@
     "homepage": "https://www.genome.jp/kegg/pathway.html#xenobiotics",
     "docs_url": "https://www.kegg.jp/kegg/legal.html",
     "notes": "Do not ingest or redistribute KEGG pathway data in the paid product without an appropriate commercial licence. API availability does not remove that requirement."
+  },
+  {
+    "key": "pepper_soil_dt50",
+    "name": "PEPPER soil DT50 model (Eawag/UZH) via FateIntel provider",
+    "owner": "Fenner Lab (Eawag/UZH); FateIntel wrapper",
+    "scope": [
+      "organic_chemicals",
+      "pesticides_and_transformation_products"
+    ],
+    "endpoint_families": [
+      "soil_degradation"
+    ],
+    "access_mode": "local_model_provider",
+    "commercial_status": "eawag_soil_training_data_licence_to_confirm",
+    "integration_status": "provider_api_licence_gated",
+    "search_enabled": false,
+    "requires_api_key": false,
+    "evidence_tier": "peer_reviewed_model_not_oecd_accepted_qsar",
+    "homepage": "https://github.com/FennerLabs/pepper",
+    "docs_url": "/api/providers/soil-dt50/capabilities",
+    "notes": "Probabilistic Gaussian-process model (Hafner et al., ES&T 2026) trained on EAWAG-SOIL (Latino et al., 2017). Returns the measured EAWAG-SOIL mean when the compound is in the training set, otherwise a labelled prediction with confidence and applicability domain. Peer-reviewed, moderate performance, but no QMRF and not an OECD-accepted QSAR; trained on EU pesticides and transformation products, so pharmaceuticals, industrial chemicals and PFAS are sparse. Runs only in local/test evaluation until an operator confirms the training-data licence."
   }
 ]

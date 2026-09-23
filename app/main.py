@@ -173,6 +173,10 @@ app = FastAPI(
 )
 app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 
+from .services.soil_dt50.api import router as soil_dt50_router  # noqa: E402  (imports no heavy dependency)
+
+app.include_router(soil_dt50_router, prefix="/api/providers")
+
 
 @app.exception_handler(EnviroChemError)
 async def envirochem_exception_handler(request: Request, exc: EnviroChemError):

@@ -1,0 +1,8 @@
+# Optional: soil DT50 provider (PEPPER GPR). Needs a Java runtime (JRE 8+) for PaDEL.
+# The shipped model was pickled with scikit-learn 1.6.1 and reproduces identically on 1.9.1 (checked, max diff 0.0),
+# so no exact pin; tests/test_soil_dt50_provider.py guards fidelity against a stored reference output.
+scikit-learn>=1.6
+rdkit>=2024.3
+padelpy>=0.1.16
+pandas>=2.0
+joblib>=1.3
