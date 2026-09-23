@@ -6,8 +6,10 @@ it has never been tuned on?
 
 **Scope, stated plainly.** This is code-versus-independent-calculation and app-versus-external-data. It is *not* the
 plan's gate 1 as written ("compare against an independent expert's manual workflow") — no human expert was involved.
-The three gold-case doses and WWTP fractions are illustrative test inputs (typical labelled maxima recalled from memory,
-not verified against a current SmPC; removal fractions that are not measured plant data). What was verified is the
+The three gold-case maximum daily doses now come from UK eMC SmPCs (carbamazepine 1600 mg, diclofenac 150 mg,
+ibuprofen 2400 mg; read from search-result extracts, not full-page reads — the first pass had used 1200 mg for
+carbamazepine, which was not the labelled ceiling). Excretion fractions, WWTP removal fractions and PNECs remain
+illustrative, not measured data. What was verified is the
 calculation chain, not a regulatory conclusion.
 
 ## 1. Independent recalculation (now permanent: `tests/test_scientific_invariants.py`, 27 tests)
@@ -82,11 +84,12 @@ about +0.4.
 
 ## 4. Not fixed — recommendations
 
-- **Molar → mass conversion for ECOTOX candidates** (14% arrive in mM/µM; the identity record supplies the MW). Real
-  usability gap; a feature, not a bug fix, so left for your call.
+- **Molar → mass conversion for ECOTOX candidates: built** (`molecular_weight_g_mol` on the evidence-search request; the
+  mg/L equivalent is added to each molar candidate's notes, original value and unit never replaced).
 - **DFOP DT50 recovery** missed the 10% band in 3/60 noisy trials — expected (DFOP is weakly identifiable), not a defect.
-- **Gold-standard gate 1** still needs an independent expert's manual workflow and SmPC-verified inputs for the three
-  cases; carbamazepine's workbook fixture is the only externally sourced benchmark in the code today.
+- **Gold-standard gate 1** still needs an independent expert's manual workflow (a human step) and measured excretion/
+  removal/PNEC inputs; doses are now label-sourced. Carbamazepine's workbook fixture remains the only externally
+  sourced benchmark in the code.
 - The 12 unresolved lookups and the CompTox data-quality issues are external-source limits; the app now handles them
   honestly rather than silently.
 

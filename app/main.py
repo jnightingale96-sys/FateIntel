@@ -1040,6 +1040,7 @@ def search_evidence_source_data(payload: EvidenceSourceSearchCreate):
         endpoint_codes=payload.endpoint_codes,
         limit_per_source=payload.limit_per_source,
         include_open_access_full_text=payload.include_open_access_full_text,
+        molecular_weight_g_mol=payload.molecular_weight_g_mol,
     )
 
 

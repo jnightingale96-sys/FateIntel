@@ -628,6 +628,7 @@ def search_sources(
     endpoint_codes: Iterable[str] | None = None,
     limit_per_source: int = 20,
     include_open_access_full_text: bool = True,
+    molecular_weight_g_mol: float | None = None,
 ) -> dict[str, Any]:
     results: list[dict[str, Any]] = []
     all_candidates: list[dict[str, Any]] = []
@@ -651,6 +652,7 @@ def search_sources(
                 from .ecotox_local import search_ecotox_local
                 result = search_ecotox_local(
                     chemical_name, cas_number=cas_number, endpoint_codes=endpoint_codes, limit=limit_per_source,
+                    molecular_weight_g_mol=molecular_weight_g_mol,
                 )
             elif key == "epa_comptox":
                 from .epa_comptox import search_epa_comptox

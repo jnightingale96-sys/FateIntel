@@ -63,6 +63,25 @@ def unit_advisory(unit: str | None) -> str | None:
     )
 
 
+_MOLAR_TO_MOL_PER_L = {"nM": 1e-9, "uM": 1e-6, "mM": 1e-3, "M": 1.0, "nmol/L": 1e-9, "umol/L": 1e-6, "mmol/L": 1e-3, "mol/L": 1.0}
+
+
+def molar_to_mg_per_l(value: float | None, unit: str | None, molecular_weight_g_mol: float | None) -> float | None:
+    """mg/L equivalent of a molar aqueous concentration, or None when it cannot be computed honestly.
+
+    Needs a reported value, a recognised molar unit and a positive molecular weight. The original value and unit
+    are never replaced; the conversion is only ever offered alongside them.
+    """
+
+    if value is None or unit is None or not molecular_weight_g_mol or molecular_weight_g_mol <= 0:
+        return None
+    bare = str(unit).strip()
+    if bare.startswith("AI "):
+        bare = bare[3:].strip()
+    factor = _MOLAR_TO_MOL_PER_L.get(bare)
+    return None if factor is None else float(value) * factor * float(molecular_weight_g_mol) * 1000.0
+
+
 def is_imported(index_path: Path = DEFAULT_INDEX_PATH, jsonl_path: Path = DEFAULT_JSONL_PATH) -> bool:
     return index_path.exists() and jsonl_path.exists()
 
@@ -71,7 +90,7 @@ def _load_index(index_path: Path) -> dict[str, Any]:
     return json.loads(index_path.read_text(encoding="utf-8"))
 
 
-def _record_to_candidate(record: dict[str, Any], *, chemical_name: str) -> EvidenceCandidate | None:
+def _record_to_candidate(record: dict[str, Any], *, chemical_name: str, molecular_weight_g_mol: float | None = None) -> EvidenceCandidate | None:
     property_code = _ENDPOINT_TO_PROPERTY_CODE.get(record.get("endpoint") or "")
     if property_code is None:
         return None
@@ -122,6 +141,7 @@ def _record_to_candidate(record: dict[str, Any], *, chemical_name: str) -> Evide
         snippet=snippet,
         notes=(
             (f"{advisory} " if (advisory := unit_advisory(record.get("conc1_unit"))) else "")
+            + (f"Equivalent mass concentration ~ {mg_l:.6g} mg/L (converted from {record.get('conc1_mean')} {record.get('conc1_unit')} using MW {molecular_weight_g_mol:g} g/mol; the reported value and unit above are unchanged). " if (mg_l := molar_to_mg_per_l(record.get("conc1_mean"), record.get("conc1_unit"), molecular_weight_g_mol)) is not None else "")
             + f"species: {record.get('species_latin_name') or 'not reported'}; "
             f"ecotox group: {record.get('species_ecotox_group') or 'not reported'}; "
             f"exposure_type: {record.get('exposure_type') or 'not reported'}; "
@@ -136,6 +156,7 @@ def search_ecotox_local(
     cas_number: str | None,
     endpoint_codes: Iterable[str] | None = None,
     limit: int = 20,
+    molecular_weight_g_mol: float | None = None,
     jsonl_path: Path = DEFAULT_JSONL_PATH,
     index_path: Path = DEFAULT_INDEX_PATH,
 ) -> dict[str, Any]:
@@ -175,7 +196,7 @@ def search_ecotox_local(
                 break
             handle.seek(offset)
             record = json.loads(handle.readline())
-            candidate = _record_to_candidate(record, chemical_name=chemical_name)
+            candidate = _record_to_candidate(record, chemical_name=chemical_name, molecular_weight_g_mol=molecular_weight_g_mol)
             if candidate is None:
                 continue
             if wanted_codes is not None and candidate.property_code not in wanted_codes:

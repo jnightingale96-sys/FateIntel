@@ -183,3 +183,45 @@ def test_candidate_with_an_aqueous_unit_has_no_advisory_prefix(tmp_path):
     jsonl_path, index_path = _write_fixture(tmp_path, [record])
     result = search_ecotox_local("Formaldehyde", cas_number="50-00-0", jsonl_path=jsonl_path, index_path=index_path)
     assert result["candidates"][0]["notes"].startswith("species:")
+
+
+# ---- molar -> mass concentration, offered alongside (never replacing) the reported value ----
+from app.services.ecotox_local import molar_to_mg_per_l
+
+
+@pytest.mark.parametrize("value, unit, mw, expected", [
+    (1.0, "mM", 100.0, 100.0),          # 1 mmol/L x 100 g/mol = 100 mg/L
+    (2.0, "mmol/L", 50.0, 100.0),
+    (10.0, "uM", 200.0, 2.0),           # 10 umol/L x 200 g/mol = 2 mg/L
+    (0.001, "M", 60.0, 60.0),
+    (5.0, "AI mM", 10.0, 50.0),
+    (1000.0, "nM", 300.0, 0.3),
+])
+def test_molar_conversion_matches_hand_arithmetic(value, unit, mw, expected):
+    assert molar_to_mg_per_l(value, unit, mw) == pytest.approx(expected, rel=1e-12)
+
+
+@pytest.mark.parametrize("value, unit, mw", [(1.0, "mg/L", 100.0), (1.0, "mM", None), (1.0, "mM", 0), (None, "mM", 100.0), (1.0, "g/kg diet", 100.0)])
+def test_molar_conversion_declines_rather_than_guessing(value, unit, mw):
+    assert molar_to_mg_per_l(value, unit, mw) is None
+
+
+def test_search_adds_the_mass_equivalent_note_only_when_a_molecular_weight_is_supplied(tmp_path):
+    record = dict(_SAMPLE_RECORD, conc1_unit="mM", conc1_mean=2.0)
+    jsonl_path, index_path = _write_fixture(tmp_path, [record])
+    with_mw = search_ecotox_local("Formaldehyde", cas_number="50-00-0", jsonl_path=jsonl_path, index_path=index_path, molecular_weight_g_mol=30.03)
+    without = search_ecotox_local("Formaldehyde", cas_number="50-00-0", jsonl_path=jsonl_path, index_path=index_path)
+    candidate = with_mw["candidates"][0]
+    assert "60.06 mg/L" in candidate["notes"] and "unchanged" in candidate["notes"]
+    assert (candidate["value"], candidate["unit"]) == (2.0, "mM")  # original never replaced
+    assert "Equivalent mass concentration" not in without["candidates"][0]["notes"]
+    assert "MOLAR UNIT" in without["candidates"][0]["notes"]
+
+
+def test_evidence_search_endpoint_accepts_and_validates_molecular_weight():
+    from fastapi.testclient import TestClient
+    from app.main import app
+    with TestClient(app) as client:
+        ok = client.post("/api/evidence-sources/search", json={"chemical_name": "x", "source_keys": ["epa_ecotox"], "molecular_weight_g_mol": 30.03})
+        bad = client.post("/api/evidence-sources/search", json={"chemical_name": "x", "source_keys": ["epa_ecotox"], "molecular_weight_g_mol": -1})
+    assert ok.status_code == 200 and bad.status_code == 422

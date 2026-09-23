@@ -4,10 +4,11 @@ Every check compares the app against a SEPARATELY written hand formula, a closed
 method (scipy ODE integration / root finding) or a published literature value -- never the module against itself.
 Random inputs use fixed seeds so failures are reproducible. No network, no database.
 
-Origin: the "check the science" pass of the 90-day validation plan (2026-09-23). The gold-case doses and
-excretion/removal fractions below are ILLUSTRATIVE test inputs (typical labelled maxima recalled from memory, NOT
-verified against a current SmPC, and removal fractions that are not measured plant data); what is being verified is
-the calculation chain, not the regulatory conclusion.
+Origin: the "check the science" pass of the 90-day validation plan (2026-09-23). The gold-case MAXIMUM DAILY DOSES
+come from UK eMC SmPCs (carbamazepine 1600 mg "should generally not be exceeded": medicines.org.uk/emc/product/1041;
+diclofenac 150 mg: .../product/4333; ibuprofen 2400 mg in acute/severe conditions: .../product/11166) -- taken from
+search-result extracts of those pages, not a full-page read. Excretion fractions, WWTP removal fractions and PNECs are
+ILLUSTRATIVE test inputs, not measured data; what is verified is the calculation chain, not a regulatory conclusion.
 """
 
 from __future__ import annotations
@@ -54,7 +55,7 @@ def _ema_payload(name: str, mw: float, dose_mg: float, mode: str = "ema_phase_i"
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.parametrize("name, mw, dose", [("Carbamazepine", 236.27, 1200.0), ("Diclofenac", 296.15, 150.0), ("Ibuprofen", 206.28, 2400.0)])
+@pytest.mark.parametrize("name, mw, dose", [("Carbamazepine", 236.27, 1600.0), ("Diclofenac", 296.15, 150.0), ("Ibuprofen", 206.28, 2400.0)])
 def test_ema_phase_i_matches_the_published_equation_by_hand(name, mw, dose):
     result = run_pharmaceutical_emission(_ema_payload(name, mw, dose))
     hand_ug_l = dose * 0.01 / (200.0 * 10.0) * 1000.0  # PECsw = DOSEai x Fpen / (WASTEWinhab x DILUTION)
@@ -109,7 +110,7 @@ def test_emission_molar_accounting_never_creates_mass_and_matches_the_hand_split
 
 _GOLD_CASES = [
     # name, MW, illustrative max daily dose mg, urinary parent, faecal parent, WWTP fractions (None = workbook 9-box preset), illustrative PNEC ug/L
-    ("Carbamazepine", 236.27, 1200.0, 0.02, 0.28, None, 0.5),
+    ("Carbamazepine", 236.27, 1600.0, 0.02, 0.28, None, 0.5),
     ("Diclofenac", 296.15, 150.0, 0.05, 0.0, {"air": 0.0, "bio": 0.35, "prim": 0.04, "sec": 0.03}, 0.05),
     ("Ibuprofen", 206.28, 2400.0, 0.01, 0.0, {"air": 0.0, "bio": 0.90, "prim": 0.02, "sec": 0.02}, 1.0),
 ]
