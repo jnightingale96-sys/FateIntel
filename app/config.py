@@ -128,8 +128,9 @@ class Settings(BaseModel):
     # app/data/evidence_source_registry.json. CTX data are open for commercial and non-commercial use; an
     # individual API key is required for the limited-access endpoints (identity, physchem, environmental fate,
     # ecotoxicity, exposure). This field only stores the credential (read from the environment/.env file, never
-    # the UI, never logged); no live connector reads it yet -- registry.search_enabled stays false until one is
-    # built and its endpoint contract is verified against the real API, the same discipline used for enviPath.
+    # the UI, never logged). Read by app/services/epa_comptox.py, verified live against the real API
+    # 2026-09-23 -- see that module's docstring for the endpoint contract and an important finding: the
+    # Hazard API's ToxValDB endpoint has not been observed to return non-mammalian ecotoxicity records.
     comptox_api_key: str | None = None
 
     def __init__(

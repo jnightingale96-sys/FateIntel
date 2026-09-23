@@ -15,13 +15,13 @@
     ],
     "access_mode": "open_live_api",
     "commercial_status": "commercial_use_allowed",
-    "integration_status": "api_key_ready",
-    "search_enabled": false,
+    "integration_status": "live",
+    "search_enabled": true,
     "requires_api_key": true,
     "evidence_tier": "authoritative_aggregator",
     "homepage": "https://comptox.epa.gov/dashboard/",
     "docs_url": "https://comptox.epa.gov/ctx-api/docs/",
-    "notes": "EPA CTX data are open for commercial and non-commercial use. An individual API key is required for limited-access APIs. Preserve original source/context because the Dashboard aggregates data from many sources."
+    "notes": "EPA CTX data are open for commercial and non-commercial use. An individual API key is required for limited-access APIs. Preserve original source/context because the Dashboard aggregates data from many sources. Live-tested 2026-09-23 (app/services/epa_comptox.py): the Hazard API's ToxValDB by-dtxsid endpoint returned zero humanEco=='eco' records across seven real chemicals (1,832 total records, all human-health/mammalian) -- it is wired up and correctly filters for eco records, but should not be relied on for aquatic/avian ecotoxicity coverage today; epa_ecotox's local bulk import remains comprehensive for that."
   },
   {
     "key": "pubchem",

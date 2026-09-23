@@ -652,6 +652,12 @@ def search_sources(
                 result = search_ecotox_local(
                     chemical_name, cas_number=cas_number, endpoint_codes=endpoint_codes, limit=limit_per_source,
                 )
+            elif key == "epa_comptox":
+                from .epa_comptox import search_epa_comptox
+                result = search_epa_comptox(
+                    chemical_name, cas_number=cas_number, endpoint_codes=list(endpoint_codes) if endpoint_codes else None,
+                    limit=limit_per_source,
+                )
             else:
                 result = {"source_key": key, "status": "not_implemented", "candidates": [], "warnings": ["Adapter registered but live search implementation is not yet enabled."]}
         except (httpx.HTTPError, LookupError, ValueError, json.JSONDecodeError) as exc:

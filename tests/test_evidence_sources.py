@@ -37,6 +37,7 @@ def test_registry_contains_live_open_and_rights_gated_sources():
         assert key in rows
     assert rows["pubchem"]["search_enabled"] is True
     assert rows["europe_pmc"]["search_enabled"] is True
+    assert rows["epa_comptox"]["search_enabled"] is True
     assert rows["sci_bot"]["access_mode"] == "blocked"
     assert rows["aeru_vsdb"]["commercial_status"] == "commercial_licence_required"
     assert rows["premier"]["commercial_status"] == "formal_letter_of_access_required"
