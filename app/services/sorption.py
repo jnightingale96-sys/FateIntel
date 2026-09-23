@@ -69,9 +69,36 @@ def infer_ionisation_class(
     return "neutral"
 
 
+# Sanity bounds for a data-entry check, NOT a claim about any regression's calibration range. A random-chemical
+# validation run (2026-09-23) pulled "experimental" log Kow values from EPA CompTox for real chemicals and found
+# entries such as 65.0 (recorded beside a second value of 2.68 for the same compound, 2'-acetonaphthone) and a lone
+# 10.0 for a salicylanilide; passed through unchecked, the median 33.84 produced log Koc = 26.8. No real organic
+# compound has a log Kow anywhere near that, so such an input is an entry/unit/source error, not chemistry.
+LOG_KOW_PLAUSIBLE_MIN = -10.0
+LOG_KOW_PLAUSIBLE_MAX = 20.0
+LOG_KOW_EXTRAPOLATION_WARNING = 8.0
+
+
+def _log_kow_advisories(log_kow: float) -> list[str]:
+    if log_kow > LOG_KOW_EXTRAPOLATION_WARNING:
+        return [
+            f"log Kow {log_kow:g} is above {LOG_KOW_EXTRAPOLATION_WARNING:g}: measured values this high are rarely reliable and "
+            "the regression is being extrapolated. In an external check against 223 experimental Koc values "
+            "(EPA CompTox/OPERA), neutral compounds with log Kow >= 4 were over-predicted by about +0.4 log units "
+            "on average; verify the log Kow source and prefer a measured Koc."
+        ]
+    return []
+
+
 def _validate_common(log_kow: float, foc: float, soil_ph: float, ionic_strength: float) -> None:
     if not math.isfinite(log_kow):
         raise ValueError("logKow/logP must be finite")
+    if not LOG_KOW_PLAUSIBLE_MIN <= log_kow <= LOG_KOW_PLAUSIBLE_MAX:
+        raise ValueError(
+            f"log Kow {log_kow:g} is outside the physically plausible range {LOG_KOW_PLAUSIBLE_MIN:g} to "
+            f"{LOG_KOW_PLAUSIBLE_MAX:g}; this is almost certainly a data-entry, unit or source error "
+            "(aggregated experimental databases contain such values). Check the source, or supply a measured Koc directly."
+        )
     if foc <= 0 or foc > 1:
         raise ValueError("Organic carbon fraction must be >0 and <=1 (g/g)")
     if not 0 <= soil_ph <= 14:
@@ -211,7 +238,7 @@ def franco_trapp(
             "The workbook's activity-adjusted neutral and ionic terms are reproduced exactly.",
             "The pKa membrane correction and logKow of the ion are not used in the workbook Koc calculation.",
         ],
-        "warnings": [],
+        "warnings": _log_kow_advisories(log_kow),
     }
 
 
@@ -240,7 +267,7 @@ def li_neutral(
     kd = 10 ** log_kd
     koc = kd / organic_carbon_fraction
 
-    warnings = []
+    warnings = _log_kow_advisories(log_kow)
     if log_kow <= 0.85:
         warnings.append("Published neutral-model applicability states logKow > 0.85.")
     if variant == "workbook_literal":
@@ -297,6 +324,10 @@ def ecetoc_base_workbook(
         ],
         "warnings": [
             "ECETOC is retained as a rapid comparison; it does not represent the clay-CEC contribution included by Droge–Goss.",
+            "Measured performance: against 223 experimental Koc values (EPA CompTox/OPERA, random sample, 2026-09-23) this "
+            "regression over-predicted log Koc by about +1.0 log units on average (only 17% of chemicals within 0.5 log "
+            "units), for neutrals and bases alike. Treat it as an upper-sorption comparison, not a best estimate.",
+            *_log_kow_advisories(log_kow),
         ],
     }
 

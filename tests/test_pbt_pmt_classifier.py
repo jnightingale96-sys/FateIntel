@@ -169,3 +169,30 @@ def test_every_result_carries_its_source_and_the_weight_of_evidence_caveat():
     assert "weight-of-evidence" in pbt_result["caveat"]
     assert "2023/707" in pmt_result["source"]
     assert "weight-of-evidence" in pmt_result["caveat"]
+
+
+# ---- organic-substances-only scope (found when aluminium's experimental BCF of 73,300 came back "vB") ----
+from app.services.pbt_pmt_classifier import NOT_APPLICABLE
+
+
+@pytest.mark.parametrize("group", ["metal_inorganic", "radionuclide"])
+def test_pbt_and_vpvb_are_not_applicable_to_non_organic_groups_whatever_the_data_say(group):
+    result = classify_pbt_and_vpvb(
+        bcf_l_per_kg=73300, half_life_days={"soil": 1000}, noec_or_ec10_mg_l=0.001, substance_group=group,
+    )
+    assert result["pbt"] == NOT_APPLICABLE and result["vpvb"] == NOT_APPLICABLE
+    assert result["bioaccumulation"]["outcome"] == NOT_APPLICABLE
+    assert "organic" in result["scope_note"] and "weight-of-evidence" in result["caveat"]
+
+
+@pytest.mark.parametrize("group", ["metal_inorganic", "radionuclide"])
+def test_pmt_and_vpvm_are_not_applicable_to_non_organic_groups(group):
+    result = classify_pmt_and_vpvm(log_koc=0.5, half_life_days={"soil": 1000}, substance_group=group)
+    assert result["pmt"] == NOT_APPLICABLE and result["vpvm"] == NOT_APPLICABLE
+    assert result["mobility"]["outcome"] == NOT_APPLICABLE
+
+
+@pytest.mark.parametrize("group", [None, "industrial_organic", "pesticide", "organotin", "pfas_persistent_mobile"])
+def test_organic_and_organometal_groups_are_still_classified(group):
+    result = classify_pbt_and_vpvb(bcf_l_per_kg=6000, substance_group=group)
+    assert result["very_bioaccumulation"]["outcome"] == MET

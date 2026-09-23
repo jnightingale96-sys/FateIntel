@@ -141,3 +141,45 @@ def test_search_respects_limit(tmp_path):
     )
     assert len(result["candidates"]) == 2
     assert result["total_available"] == 5
+
+
+# ---- unit basis advisory (found by a random-chemical validation run over 3,140 real ECOTOX candidates) ----
+from app.services.ecotox_local import unit_advisory
+
+
+@pytest.mark.parametrize("unit", ["ug/L", "mg/L", "ng/L", "g/L", "ppm", "ppb", "ug/ml", "AI ug/L", "AI mg/L"])
+def test_aqueous_mass_concentration_units_carry_no_advisory(unit):
+    assert unit_advisory(unit) is None
+
+
+@pytest.mark.parametrize("unit", ["mM", "uM", "mmol/L", "M", "AI mM"])
+def test_molar_units_say_they_need_a_molecular_weight(unit):
+    text = unit_advisory(unit)
+    assert text is not None and "MOLAR" in text and "molecular weight" in text
+
+
+@pytest.mark.parametrize("unit", ["mg/kg bdwt", "g/kg diet", "neq/g", "%", "ug/cell", "mg/kg", "lb/acre", "ml/L"])
+def test_non_aqueous_units_are_flagged_as_not_a_pnec_input(unit):
+    text = unit_advisory(unit)
+    assert text is not None and "NOT AN AQUEOUS CONCENTRATION" in text and "PNEC" in text
+
+
+def test_missing_unit_is_flagged():
+    assert "UNIT NOT REPORTED" in unit_advisory(None)
+    assert "UNIT NOT REPORTED" in unit_advisory("  ")
+
+
+def test_candidate_notes_carry_the_unit_advisory_and_keep_the_record(tmp_path):
+    record = dict(_SAMPLE_RECORD, conc1_unit="g/kg diet", conc1_mean=12.0)
+    jsonl_path, index_path = _write_fixture(tmp_path, [record])
+    result = search_ecotox_local("Formaldehyde", cas_number="50-00-0", jsonl_path=jsonl_path, index_path=index_path)
+    assert len(result["candidates"]) == 1  # never dropped
+    notes = result["candidates"][0]["notes"]
+    assert notes.startswith("NOT AN AQUEOUS CONCENTRATION") and "species:" in notes
+
+
+def test_candidate_with_an_aqueous_unit_has_no_advisory_prefix(tmp_path):
+    record = dict(_SAMPLE_RECORD, conc1_unit="mg/L")
+    jsonl_path, index_path = _write_fixture(tmp_path, [record])
+    result = search_ecotox_local("Formaldehyde", cas_number="50-00-0", jsonl_path=jsonl_path, index_path=index_path)
+    assert result["candidates"][0]["notes"].startswith("species:")

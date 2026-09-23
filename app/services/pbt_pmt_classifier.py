@@ -48,6 +48,13 @@ MET = "CRITERION_MET"
 NOT_MET = "CRITERION_NOT_MET"
 INCONCLUSIVE = "INCONCLUSIVE"
 MISSING = "DATA_MISSING"
+NOT_APPLICABLE = "NOT_APPLICABLE_TO_SUBSTANCE_GROUP"
+
+# Both regimes apply to ORGANIC substances, including organo-metals (REACH Annex XIII introductory text; CLP Annex I
+# 4.4.2.3). A random-chemical validation run fed aluminium's experimental BCF (73,300 from EPA CompTox) through this
+# classifier and got "very bioaccumulative" -- a meaningless answer, since a BCF of that kind is not the organic-
+# substance B criterion at all. Callers that know the substance group must say so.
+NON_ORGANIC_GROUPS = frozenset({"metal_inorganic", "radionuclide"})
 
 REACH_ANNEX_XIII_SOURCE = (
     "Regulation (EC) No 1907/2006 (REACH) as it applies in Great Britain (UK REACH), Annex XIII, "
@@ -198,6 +205,18 @@ def _toxicity_determination(
     }
 
 
+def _not_applicable(group: str, source: str, source_url: str, keys: tuple[str, ...], headline: tuple[str, ...]) -> dict[str, Any]:
+    reason = (
+        f"The substance group '{group}' is not an organic substance, and this regime applies only to organic "
+        "substances including organo-metals; use element- and form-specific evidence instead."
+    )
+    block = {"outcome": NOT_APPLICABLE, "basis": [], "note": reason}
+    result: dict[str, Any] = {key: dict(block) for key in keys}
+    result.update({name: NOT_APPLICABLE for name in headline})
+    result.update({"source": source, "source_url": source_url, "caveat": WEIGHT_OF_EVIDENCE_CAVEAT, "scope_note": reason})
+    return result
+
+
 def _combine(*determinations: dict[str, Any]) -> str:
     # All named criteria are AND-combined (PBT needs P and B and T; PMT needs P and M and T; the vP/vB and
     # vP/vM pairs likewise). One conclusive NOT_MET therefore settles the whole determination regardless of
@@ -221,6 +240,7 @@ def classify_pbt_and_vpvb(
     germ_cell_mutagen_category_1a_1b: bool = False,
     reproductive_toxicant_category_1a_1b_2: bool = False,
     stot_re_category_1_2: bool = False,
+    substance_group: str | None = None,
 ) -> dict[str, Any]:
     """UK REACH Annex XIII Sections 1.1 (PBT) and 1.2 (vPvB) -- organic substances, including organo-metals only.
 
@@ -231,6 +251,11 @@ def classify_pbt_and_vpvb(
     the ``vpvb`` determination.
     """
 
+    if substance_group in NON_ORGANIC_GROUPS:
+        return _not_applicable(
+            substance_group, REACH_ANNEX_XIII_SOURCE, REACH_ANNEX_XIII_URL,
+            ("persistence", "very_persistence", "bioaccumulation", "very_bioaccumulation", "toxicity"), ("pbt", "vpvb"),
+        )
     p = _half_life_determination(half_life_days, P_HALF_LIFE_THRESHOLD_DAYS, label="P (persistent)")
     vp = _half_life_determination(half_life_days, VP_HALF_LIFE_THRESHOLD_DAYS, label="vP (very persistent)")
     b_result = _bioaccumulation_determination(bcf_l_per_kg)
@@ -266,6 +291,7 @@ def classify_pmt_and_vpvm(
     reproductive_toxicant_category_1a_1b_2: bool = False,
     stot_re_category_1_2: bool = False,
     endocrine_disruptor_category_1: bool = False,
+    substance_group: str | None = None,
 ) -> dict[str, Any]:
     """EU CLP (Delegated Regulation (EU) 2023/707), Annex I Sections 4.4.2.1 (PMT) and 4.4.2.2 (vPvM).
 
@@ -276,6 +302,11 @@ def classify_pmt_and_vpvm(
     have. vPvM does not require a toxicity criterion (CLP Annex I 4.4.2.2), matching vPvB.
     """
 
+    if substance_group in NON_ORGANIC_GROUPS:
+        return _not_applicable(
+            substance_group, CLP_PMT_SOURCE, CLP_PMT_URL,
+            ("persistence", "very_persistence", "mobility", "very_mobility", "toxicity"), ("pmt", "vpvm"),
+        )
     p = _half_life_determination(half_life_days, P_HALF_LIFE_THRESHOLD_DAYS, label="P (persistent)")
     vp = _half_life_determination(half_life_days, VP_HALF_LIFE_THRESHOLD_DAYS, label="vP (very persistent)")
     m_result = _mobility_determination(log_koc)

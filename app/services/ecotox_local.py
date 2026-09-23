@@ -32,6 +32,37 @@ _ENDPOINT_TO_PROPERTY_CODE = {
 }
 
 
+# ECOTOX's "aquatic" media filter (see scripts/import_ecotox.py) selects tests by MEDIUM, not by how the dose was
+# expressed. A random-chemical validation run over 3,140 candidates (2026-09-23) found the reported unit is an
+# aqueous mass concentration for 79%, a molar concentration for 14%, and something else entirely for 7% (dietary
+# g/kg diet, body-weight mg/kg bdwt, injected ug/cell, neq/g, %, ...) -- values that carry an "Aquatic LC50" label but
+# are not aqueous concentrations and must never feed an aquatic PNEC. Candidates are kept (nothing is dropped) but
+# the unit basis is now stated on each one.
+_MASS_CONCENTRATION_UNITS = {"ng/L", "ug/L", "mg/L", "g/L", "ppt", "ppb", "ppm", "ng/ml", "ug/ml", "mg/ml"}
+_MOLAR_UNITS = {"nM", "uM", "mM", "M", "nmol/L", "umol/L", "mmol/L", "mol/L"}
+
+
+def unit_advisory(unit: str | None) -> str | None:
+    """None for an aqueous mass concentration; otherwise a plain statement of what the unit basis is."""
+
+    if unit is None or not str(unit).strip():
+        return "UNIT NOT REPORTED: the value cannot be interpreted as a concentration."
+    bare = str(unit).strip()
+    if bare.startswith("AI "):
+        bare = bare[3:].strip()
+    if bare in _MASS_CONCENTRATION_UNITS:
+        return None
+    if bare in _MOLAR_UNITS:
+        return (
+            f"MOLAR UNIT ({unit}): convert to a mass concentration with the substance's molecular weight before "
+            "use; it is not directly usable as a mass-based (mg/L) endpoint."
+        )
+    return (
+        f"NOT AN AQUEOUS CONCENTRATION (unit '{unit}' is a dietary, body-weight, percent or other basis): kept for "
+        "completeness, but do not use as an aquatic PNEC input."
+    )
+
+
 def is_imported(index_path: Path = DEFAULT_INDEX_PATH, jsonl_path: Path = DEFAULT_JSONL_PATH) -> bool:
     return index_path.exists() and jsonl_path.exists()
 
@@ -90,7 +121,8 @@ def _record_to_candidate(record: dict[str, Any], *, chemical_name: str) -> Evide
         extraction_status="structured_database_field",
         snippet=snippet,
         notes=(
-            f"species: {record.get('species_latin_name') or 'not reported'}; "
+            (f"{advisory} " if (advisory := unit_advisory(record.get("conc1_unit"))) else "")
+            + f"species: {record.get('species_latin_name') or 'not reported'}; "
             f"ecotox group: {record.get('species_ecotox_group') or 'not reported'}; "
             f"exposure_type: {record.get('exposure_type') or 'not reported'}; "
             f"test_location: {record.get('test_location') or 'not reported'}"
