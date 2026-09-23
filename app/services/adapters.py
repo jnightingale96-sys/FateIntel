@@ -359,17 +359,36 @@ ADAPTER_CONTRACTS: dict[str, dict[str, Any]] = {
             "residue_unit_dose_mg_kg", "avian_or_mammalian_toxicity_endpoint",
         ],
         "expected_outputs": [
-            "acute_dietary_ter", "reproductive_dietary_ter", "fish_secondary_poisoning_ter",
+            "acute_dietary_ter", "reproductive_dietary_ter", "fish_secondary_poisoning_ter", "earthworm_secondary_poisoning_ter",
         ],
         "workflow_steps": [
             "confirm the reviewer-supplied FIR/BW/RUD for the assessed food item(s)",
             "compute the screening or Tier 1 daily dose", "apply fTWA for the reproductive exposure when relevant",
             "compute acute and reproductive TER against the guidance's own thresholds",
             "when log Kow >= 3, compute the fish-eating secondary-poisoning TER",
+            "when a soil concentration and Koc are available, compute the earthworm-eating secondary-poisoning TER",
             "scientist reviews the endpoint selection and any Tier 2/3 refinement",
         ],
         "accepted_output_formats": ["json"],
-        "redistribution_note": "Transparent native research screen implementing EFSA (2023) Journal 21(2):7790's own formulas. It is not an official EFSA calculator tool and does not embed the guidance's Annex B Generic Model Species or crop-deposition-value tables -- see eu_birds_mammals.py's own module docstring for the exact boundary.",
+        "redistribution_note": "Transparent native research screen implementing EFSA (2023) Journal 21(2):7790's own dietary/fish-eating formulas. The earthworm-eating pathway is sourced to ECHA's REACH Guidance Chapter R.16 (2012), not the EFSA (2023) text itself, which was never obtained -- see eu_birds_mammals.py's own module docstring for the exact boundary. It is not an official EFSA calculator tool and does not embed the guidance's Annex B Generic Model Species or crop-deposition-value tables, and benthic-invertebrate secondary poisoning is not implemented.",
+    },
+    "ENVIROCHEM_EU_BEES_SCREEN": {
+        "execution_mode": "native_research_screen",
+        "required_inputs": [
+            "application_rate_g_ha", "spray_direction", "ld50_contact_ug_bee", "ld50_oral_ug_bee",
+            "lc50_oral_ug_bee_per_day", "noec_larvae_ug_per_developmental_period",
+        ],
+        "expected_outputs": [
+            "hq_contact", "etr_acute_adult_oral", "etr_chronic_adult_oral", "etr_larvae", "etr_hpg",
+        ],
+        "workflow_steps": [
+            "confirm the spray direction (downwards ground/boom vs. sideward/upwards air-assisted/orchard) so the correct trigger and SV shortcut values apply",
+            "compute the contact HQ and the acute/chronic adult oral and larval ETRs against the guidance's own Tier 1 triggers",
+            "when the adult chronic toxicity study showed a hypopharyngeal-gland effect, also supply the HPG NOEC and compute the HPG ETR",
+            "scientist reviews the endpoint selection and any higher-tier refinement",
+        ],
+        "accepted_output_formats": ["json"],
+        "redistribution_note": "Transparent native research screen implementing the EFSA (2013) Journal 11(7):3295 bee guidance's own Section 3.1.2 Tier 1 spray-screening formulas. It is not an official EFSA calculator tool. Spray applications to honey bees only -- granular/seed-treatment routes and bumble bee/solitary bee assessments are not implemented. A 2023 revision of this guidance exists with a different contact-exposure formulation and updated trigger values that were not confirmed this session and are not what this screen implements -- see eu_bees.py's own module docstring.",
     },
     "ENVIROCHEM_US_INDUSTRIAL_EXPOSURE_SCREEN": {
         "execution_mode": "native_research_screen",

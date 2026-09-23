@@ -79,7 +79,79 @@ intermediate value against the R.16 equations, the validated-range report at bot
 an internal-consistency guard against `equilibrium_partitioning.py`'s own constants drifting, input validation).
 Full suite: 775 passed, 5 skipped.
 
-## 2. Native bee exposure model — not started
+## 2. Native bee exposure model (git — commit pending as of this note)
+
+**What shipped**: new module `app/services/eu_bees.py`, implementing the EU honey-bee Tier 1 spray
+screening step (five ratios: `HQcontact`, `ETRacute adult oral`, `ETRchronic adult oral`, `ETRlarvae`,
+`ETRhpg`) plus a `honey_bee_tier1_screen()` convenience function that runs all five in one call and
+reports every one independently (never gates on the first breach).
+
+**Source, and how it was actually obtained**: efsa.onlinelibrary.wiley.com is Cloudflare-blocked (same
+situation as item 1) — not bypassed. The complete 266-page primary document, **EFSA Journal
+2013;11(7):3295, "Guidance Document on the risk assessment of plant protection products on bees (Apis
+mellifera, Bombus spp. and solitary bees)"**, was fetched from an open mirror
+(`apiservices.biz/documents/articles-en/EFSA_risk_assesment_July_2013.pdf`) and read in full via
+PyMuPDF. Section 3.1.2 "Risk assessment for applications applied as sprays for honey bees" (pp. 15-17)
+gives the complete Tier 1 screening procedure directly in its own text — not a compound-specific worked
+example, and no need for the larger Appendix J lookup tables:
+
+- `HQcontact = AR / LD50contact` (AR g a.s./ha, LD50contact µg a.s./bee). Trigger: > 42 (downwards
+  spray) or > 85 (sideward/upwards spray).
+- `ETRacute adult oral = AR x SV / LD50oral` (AR kg a.s./ha; SV = 7.55 downwards, 10.6
+  sideward/upwards). Trigger: > 0.2.
+- `ETRchronic adult oral = AR x SV / LC50oral` (same SV pair; LC50oral µg a.s./bee/day). Trigger: > 0.03.
+- `ETRlarvae = AR x SV / NOEClarvae` (SV = 4.4 downwards, 6.1 sideward/upwards). Trigger: > 0.2.
+- `ETRhpg = AR x SV / NOEChpg` (same SV pair as adult oral; only relevant if the adult chronic study
+  showed a hypopharyngeal-gland effect). Trigger: > 1.
+
+"Downwards spray" vs. "sideward/upwards spray" confirmed from the guidance's own text (p. 15 area,
+matched at line ~9569 of the extracted text): sideward/upwards is explicitly the guidance's own example
+of "sideward/upwards (SUW) spray applications (e.g. air assisted orchard sprayer)" — i.e. an
+air-assisted/orchard-type sprayer; "downwards" is the standard ground/boom application by elimination
+(the guidance's own two-category split, not an inference from outside the text).
+
+**Scope boundary, stated plainly (matches the same discipline as `eu_birds_mammals.py`)**: honey bees
+only (bumble bees and solitary bees have different trigger values elsewhere in the guidance, not
+implemented); spray applications only (granular and seed-treatment routes have their own different
+first-tier schemes, sections not read this session, not implemented).
+
+**The one honest caveat that matters most**: a REVISED version of this guidance was adopted in 2023
+(EFSA Journal 2023;21(5):7989) — not obtained this session either (also Wiley-hosted). Partial text
+was read from an open PMC mirror (`pmc.ncbi.nlm.nih.gov/articles/PMC10173852/`) via WebFetch (which,
+unlike the built-in browser, was NOT blocked by Cloudflare on this specific host — confirmed by direct
+comparison). That partial reading shows the 2023 revision keeps the same overall PEQ/HQ/ETR shape but
+with a different contact-exposure formulation (`PEQcontact = AR x EFcontact x BSF`) and, per its own
+newer specific protection goal (10% maximum colony-size reduction), different trigger values — neither
+of which were confirmed or extracted in full. This module implements the 2013 guidance's own Tier 1
+screen only, labelled as such throughout (module docstring, `GUIDANCE_REFERENCE` constant, every
+result's `guidance_reference` field) — it is not represented as the current 2023 EU trigger set.
+
+**Not wired to an API endpoint or UI screen** — same established precedent as item 1 and the
+pre-existing fish/earthworm pathways.
+
+**Registry visibility**: unlike item 1 (which extended an already-registered module), this is a brand
+new module, so — matching how `ENVIROCHEM_EU_BIRDS_MAMMALS_SCREEN` was itself originally registered —
+a new `ENVIROCHEM_EU_BEES_SCREEN` entry was added to `registry.py`'s `MODELS` list and
+`adapters.py`'s `ADAPTER_CONTRACTS`, selected for EU/UK/CH pesticide agricultural_spray/
+soil_incorporation scenarios when `bee_attractive` is set (mirroring the existing US `BEEREX` gating on
+the same flag). AU is deliberately excluded from this new entry even though AU inherits
+`ENVIROCHEM_EU_BIRDS_MAMMALS_SCREEN` — APVMA's own bee methodology is an explicitly named, confirmed
+research gap in `au_apvma.py`, unlike the birds/mammals screen, which is a confirmed EFSA-2009-aligned
+methodology match. This still does not add any calculation endpoint — the registry entry only makes the
+model "planned" and visible in the assessment plan, exactly as `ENVIROCHEM_EU_BIRDS_MAMMALS_SCREEN` has
+been since before this session.
+
+Also fixed in passing: `ENVIROCHEM_EU_BIRDS_MAMMALS_SCREEN`'s registry/adapter `expected_outputs` and
+workflow steps were stale (listed only `fish_secondary_poisoning_ter`, missing the earthworm pathway
+added earlier in this same session under item 1) — updated to include
+`earthworm_secondary_poisoning_ter` and its own workflow step.
+
+**Tests**: `tests/test_eu_bees.py`, 14 new cases (every one of the five ratios cross-checked by hand
+for both spray directions, the full `honey_bee_tier1_screen()` convenience function including the
+HPG-optional behaviour and unit-conversion correctness, input validation). `tests/test_registry.py`
+gained 3 new cases for the `bee_attractive` gating (EU selects it, EU without the flag does not, AU
+never selects it). `tests/test_adapter_contracts.py` extended to expect the new key. Full suite: 792
+passed, 5 skipped (was 775).
 
 ## 3. Formal PBT/PMT/vPvM classifier — not started
 

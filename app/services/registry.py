@@ -516,7 +516,29 @@ MODELS: list[dict[str, Any]] = [
         "implementation": "native_research_screen",
         "status": "working_partial_screen",
         "tiers": [1, 2],
-        "outputs": ["acute_dietary_ter", "reproductive_dietary_ter", "fish_secondary_poisoning_ter"],
+        "outputs": ["acute_dietary_ter", "reproductive_dietary_ter", "fish_secondary_poisoning_ter", "earthworm_secondary_poisoning_ter"],
+    },
+    {
+        "key": "ENVIROCHEM_EU_BEES_SCREEN",
+        "name": "EnviroChem EU honey-bee Tier 1 spray screen",
+        "domain": "EU plant-protection-product Tier 1 contact/oral/larval/HPG risk screening for honey bees (spray applications only)",
+        # Sourced to the EFSA (2013) bee guidance (EFSA Journal 2013;11(7):3295,
+        # Section 3.1.2), read in full via an open mirror after
+        # efsa.onlinelibrary.wiley.com's Cloudflare bot-detection was not
+        # bypassed -- see eu_bees.py's own module docstring. A 2023 revision
+        # exists (EFSA Journal 2023;21(5):7989) with a different PEQ-based
+        # contact-exposure formulation and updated trigger values tied to a
+        # newer specific protection goal; that revision's exact numbers were
+        # not confirmed this session and are NOT what this screen implements.
+        # Spray applications to honey bees only -- granular and seed-treatment
+        # routes, and bumble bee/solitary bee assessments (different trigger
+        # values in the same guidance), are NOT implemented.
+        "regions": ["EU", "UK", "CH"],
+        "groups": ["pesticide"],
+        "implementation": "native_research_screen",
+        "status": "working_partial_screen",
+        "tiers": [1, 2],
+        "outputs": ["hq_contact", "etr_acute_adult_oral", "etr_chronic_adult_oral", "etr_larvae", "etr_hpg"],
     },
     {
         "key": "ENVIROCHEM_US_INDUSTRIAL_EXPOSURE_SCREEN",
@@ -1284,13 +1306,25 @@ def build_assessment_plan(data: dict[str, Any]) -> dict[str, Any]:
             # despite EFSA requiring the equivalent bird/mammal dietary and
             # secondary-poisoning risk assessment (Guidance on the risk
             # assessment for birds and mammals, EFSA Journal 2023;21(2):7790).
-            # Only the acute/reproductive dietary TER and fish-eating
-            # secondary-poisoning pathways are implemented so far -- see
-            # eu_birds_mammals.py's own module docstring for the exact
+            # Acute/reproductive dietary TER and fish-eating AND
+            # earthworm-eating secondary-poisoning pathways are implemented --
+            # see eu_birds_mammals.py's own module docstring for the exact
             # boundary (no Annex B Generic Model Species tables, no
-            # earthworm/benthic-invertebrate secondary poisoning yet).
+            # benthic-invertebrate secondary poisoning yet -- no primary
+            # source for that pathway's formula was found).
             selected.append("ENVIROCHEM_EU_BIRDS_MAMMALS_SCREEN")
             required += ["reviewer-supplied FIR/BW/RUD/application rate per food item", "avian and mammalian toxicity endpoints (LD50, relevant reproductive endpoint)"]
+            # EU equivalent of the US BEEREX gating below: honey-bee Tier 1
+            # spray screening only applies when the use site/crop is
+            # bee-attractive, mirroring how the US branch reads the same
+            # `bee_attractive` flag. AU is deliberately excluded here even
+            # though it shares ENVIROCHEM_EU_BIRDS_MAMMALS_SCREEN above --
+            # APVMA's own bee methodology has not been researched (see the
+            # "AU" block below, which explicitly names bee coverage as an
+            # unresearched gap), so it must not inherit this EU-sourced screen.
+            if bool(data.get("bee_attractive")):
+                selected.append("ENVIROCHEM_EU_BEES_SCREEN")
+                required += ["contact and oral/larval/HPG bee toxicity endpoints", "spray direction (downwards vs. sideward/upwards)", "crop bee-attractiveness basis"]
 
     if jurisdiction == "AU" and group == "pesticide" and scenario in {"agricultural_spray", "soil_incorporation"}:
         # APVMA's own guidance confirms its terrestrial-vertebrates TER

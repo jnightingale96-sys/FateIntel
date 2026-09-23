@@ -183,6 +183,45 @@ def test_us_pesticide_scenario_does_not_get_eu_birds_and_mammals_screen():
     assert "ENVIROCHEM_EU_BIRDS_MAMMALS_SCREEN" not in keys
 
 
+def test_eu_pesticide_bee_attractive_scenario_gets_bee_screen():
+    plan = build_assessment_plan({
+        "jurisdiction": "EU",
+        "contaminant_group": "pesticide",
+        "scenario": "agricultural_spray",
+        "tier": 2,
+        "bee_attractive": True,
+    })
+    keys = {x["key"] for x in plan["models"]}
+    assert "ENVIROCHEM_EU_BEES_SCREEN" in keys
+
+
+def test_eu_pesticide_non_bee_attractive_scenario_does_not_get_bee_screen():
+    plan = build_assessment_plan({
+        "jurisdiction": "EU",
+        "contaminant_group": "pesticide",
+        "scenario": "agricultural_spray",
+        "tier": 2,
+        "bee_attractive": False,
+    })
+    keys = {x["key"] for x in plan["models"]}
+    assert "ENVIROCHEM_EU_BEES_SCREEN" not in keys
+
+
+def test_au_pesticide_scenario_does_not_get_eu_bee_screen_even_when_bee_attractive():
+    # APVMA's own bee methodology has not been researched -- AU must not
+    # inherit the EU-sourced bee screen the way it inherits the birds/mammals
+    # screen (which is a confirmed EFSA-2009-aligned methodology match).
+    plan = build_assessment_plan({
+        "jurisdiction": "AU",
+        "contaminant_group": "pesticide",
+        "scenario": "agricultural_spray",
+        "tier": 2,
+        "bee_attractive": True,
+    })
+    keys = {x["key"] for x in plan["models"]}
+    assert "ENVIROCHEM_EU_BEES_SCREEN" not in keys
+
+
 def test_au_industrial_scenario_gets_aicis_pathway_and_native_models():
     # AICIS has no distinct proprietary exposure model -- this should route
     # to the same core PEC/PNEC method via native screens, not a fabricated
