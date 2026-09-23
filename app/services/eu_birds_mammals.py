@@ -25,13 +25,38 @@ What IS fully specified by the guidance and reproduced here as given: the
 TER formulas and their trigger thresholds, the fTWA time-weighted-average
 formula, the Tier 1 dietary dose-density formula, and the fish-eating
 secondary-poisoning pathway (its own eBMF/BCF lookup table and log Kow
-trigger are given in full, unlike the crop-specific exposure tables). The
-earthworm-eating and benthic-invertebrate-eating secondary-poisoning
-pathways are deliberately NOT implemented: their eBCF formulas depend on
-fixed constants (F_water, F_lipids, rho_earthworm / rho_aq-worm, f_oc) that
-the guidance states are provided in the document but were not legible in
-the source consulted when this module was written -- adding those requires
-reading the primary guidance PDF directly, not guessing plausible values.
+trigger are given in full, unlike the crop-specific exposure tables).
+
+Earthworm-eating secondary poisoning (2026-09-23 follow-up): the fixed
+constants this module's docstring used to say were "not legible in the
+source consulted" have now been read directly from a primary source --
+ECHA, "Guidance on Information Requirements and Chemical Safety Assessment,
+Chapter R.16: Environmental Exposure Estimation", Version 2.1 (October
+2012), Section R.16.6.7.2 (pp. 90-91, equations R.16-71 to R.16-76) and
+Table R.16-9 (p. 49). This is NOT the EFSA (2023) birds-and-mammals
+guidance text itself (still not obtained -- efsa.onlinelibrary.wiley.com
+is behind Cloudflare bot-detection that was not bypassed, consistent with
+this project's rule against defeating bot-detection). Multiple secondary
+sources (HSE, Sagentia, ADAS/CEA) independently and consistently describe
+EFSA (2023)'s own earthworm approach as "the 'pore water' approach" with a
+7-day TWA soil concentration -- language that matches this exact ECHA R.16
+mechanism (bioconcentration as hydrophobic partitioning between soil pore
+water and worm tissue, per Jager, T. (1998), "Mechanistic approach for
+estimating bioconcentration of organic chemicals in earthworms",
+Environmental Toxicology and Chemistry), which is the standard, widely
+cross-referenced EU method for this exposure route -- but the exact
+numeric constants (0.84, 0.012, gut-loading fraction 0.1) have NOT been
+independently confirmed as reproduced verbatim in the EFSA (2023) text
+itself, only in ECHA R.16. Reported honestly as such wherever this
+function's results are surfaced.
+
+Benthic-invertebrate-eating secondary poisoning remains NOT implemented.
+This looks to be a genuinely new addition in EFSA (2023) rather than
+carried over from the 2012-era REACH guidance: ECHA R.16 (checked directly,
+2026-09-23) has no equivalent sediment-organism bioaccumulation formula,
+and a secondary source (Sagentia, 2025) describes "the introduction of
+benthic invertebrate-eating species" as one of the guidance's own changes
+from 2009. No primary source for its formula was found this session.
 """
 
 from __future__ import annotations
@@ -39,6 +64,8 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation
+
+from .equilibrium_partitioning import FOC_SOIL_DEFAULT, RHO_SOIL_DEFAULT, RHO_SOLID_DEFAULT
 
 
 GUIDANCE_REFERENCE = "EFSA Journal 2023;21(2):7790 — Guidance on the risk assessment for birds and mammals"
@@ -253,4 +280,117 @@ def fish_secondary_poisoning_ter(
         "trigger": float(SECONDARY_POISONING_TER_TRIGGER),
         "low_risk": bool(ter >= SECONDARY_POISONING_TER_TRIGGER) if triggered else None,
         "guidance_reference": GUIDANCE_REFERENCE,
+    }
+
+
+# ---------------------------------------------------------------------------------------------------------------
+# Earthworm-eating secondary poisoning. Source: ECHA Guidance on Information Requirements and Chemical Safety
+# Assessment, Chapter R.16 (Environmental Exposure Estimation), Version 2.1, October 2012 -- see the module
+# docstring for the full provenance note and its caveats relative to the EFSA (2023) birds/mammals text itself.
+EARTHWORM_GUIDANCE_REFERENCE = (
+    "ECHA Guidance on Information Requirements and Chemical Safety Assessment, Chapter R.16: Environmental "
+    "Exposure Estimation, Version 2.1 (October 2012), Section R.16.6.7.2 and Table R.16-9"
+)
+
+# Jager (1998) earthworm BCF equation constants -- ECHA R.16 equation R.16-76.
+_EARTHWORM_JAGER_INTERCEPT = Decimal("0.84")
+_EARTHWORM_JAGER_SLOPE = Decimal("0.012")
+EARTHWORM_RHO_DEFAULT = Decimal("1")  # kg wet weight / L -- R.16-76's own default for RHOearthworm
+
+# Jager (1998)'s own stated application range for the BCF equation (soil-exposure data covered log Kow 3-8;
+# water-only data covered 1-6; the guidance advises an application range of 1-8 and says extrapolating below 1 is
+# "reasonable"). This is the model's OWN validity domain, not a "should this pathway be assessed at all" trigger
+# like the fish pathway's log Kow >= 3 -- the two are different kinds of flags and are not conflated here.
+EARTHWORM_BCF_VALIDATED_LOG_KOW_RANGE = (Decimal("1"), Decimal("8"))
+
+# Table R.16-9 / Section R.16.6.7.2 defaults.
+EARTHWORM_GUT_LOADING_FRACTION_DEFAULT = Decimal("0.1")  # Fgut, kg dwt gut / kg wwt worm -- R.16.6.7.2, p. 91
+
+
+def earthworm_bioconcentration_factor(*, log_kow: float, rho_earthworm_kg_wwt_per_l: float | None = None) -> Decimal:
+    """BCFearthworm = (0.84 + 0.012 x Kow) / RHOearthworm -- ECHA R.16 equation R.16-76, Jager (1998).
+
+    Bioconcentration as hydrophobic partitioning between soil pore water and the worm's own tissue phases.
+    ``rho_earthworm_kg_wwt_per_l`` defaults to the guidance's own default of 1 (kg wet weight/L) if not supplied.
+    Callers should check the result against :data:`EARTHWORM_BCF_VALIDATED_LOG_KOW_RANGE` themselves, or use
+    :func:`earthworm_secondary_poisoning_ter`, which reports that check automatically.
+    """
+
+    log_kow_dec = _decimal(log_kow, name="log_kow")
+    kow = Decimal(str(10 ** float(log_kow_dec)))
+    rho = _decimal(rho_earthworm_kg_wwt_per_l, name="rho_earthworm_kg_wwt_per_l") if rho_earthworm_kg_wwt_per_l is not None else EARTHWORM_RHO_DEFAULT
+    return (_EARTHWORM_JAGER_INTERCEPT + _EARTHWORM_JAGER_SLOPE * kow) / rho
+
+
+def earthworm_secondary_poisoning_ter(
+    *,
+    log_kow: float,
+    koc_l_per_kg: float,
+    soil_concentration_mg_kg_wwt: float,
+    relevant_endpoint_mg_kg_bw_day: float,
+    food_intake_rate_g_day: float,
+    body_weight_g: float,
+    measured_bcf_earthworm_l_per_kg: float | None = None,
+    gut_loading_fraction: float = float(EARTHWORM_GUT_LOADING_FRACTION_DEFAULT),
+) -> dict[str, object]:
+    """Tier 1 secondary poisoning via earthworm-eating birds/mammals (ECHA R.16, Section R.16.6.7.2).
+
+    Cearthworm = [BCFearthworm x Cporewater + Csoil x Fgut x CONVsoil] / [1 + Fgut x CONVsoil]   (eq. R.16-72/73/75)
+    Cporewater = (Csoil x RHOsoil) / (1000 x Ksoil-water), Ksoil-water = Focsoil x Koc            (eq. R.16-6/R.16-57)
+    CONVsoil = RHOsoil / RHOsolid                                                                  (eq. R.16-74)
+    PECoral,predator = Cearthworm                                                                  (eq. R.16-71)
+
+    The soil-to-porewater step reuses the exact FOC_SOIL_DEFAULT/RHO_SOIL_DEFAULT constants already shipped in
+    ``equilibrium_partitioning.py`` (both trace to the same EU soil-partitioning convention -- Focsoil=0.02,
+    RHOsoil=1700 kg/m3), so this app has one soil-porewater relationship, not two subtly different ones.
+
+    ``soil_concentration_mg_kg_wwt`` is a reviewer-supplied TWA soil concentration (secondary sources describe
+    EFSA (2023)'s own earthworm approach as using a 7-day TWA soil concentration; this function does not derive
+    the TWA itself). ``measured_bcf_earthworm_l_per_kg`` is the guidance's own Tier 2 refinement option (as for
+    the fish pathway): if supplied, it replaces the Jager-model estimate entirely.
+
+    No secondary-poisoning-relevance trigger (of the kind the fish pathway has, log Kow >= 3) was found sourced
+    to this pathway specifically -- ``within_bcf_validated_range`` instead reports whether log Kow falls inside
+    the Jager model's own stated application domain (1-8), which is a model-validity check, not a relevance
+    trigger, and is reported rather than silently applied as a gate.
+    """
+
+    log_kow_dec = _decimal(log_kow, name="log_kow")
+    koc = _decimal(koc_l_per_kg, name="koc_l_per_kg")
+    csoil = _decimal(soil_concentration_mg_kg_wwt, name="soil_concentration_mg_kg_wwt")
+    fir = _decimal(food_intake_rate_g_day, name="food_intake_rate_g_day")
+    bw = _decimal(body_weight_g, name="body_weight_g")
+    fgut = _decimal(gut_loading_fraction, name="gut_loading_fraction")
+    endpoint = _decimal(relevant_endpoint_mg_kg_bw_day, name="relevant_endpoint_mg_kg_bw_day")
+
+    lower, upper = EARTHWORM_BCF_VALIDATED_LOG_KOW_RANGE
+    within_range = lower <= log_kow_dec <= upper
+
+    if measured_bcf_earthworm_l_per_kg is not None:
+        bcf = _decimal(measured_bcf_earthworm_l_per_kg, name="measured_bcf_earthworm_l_per_kg")
+        bcf_source = "measured"
+    else:
+        bcf = earthworm_bioconcentration_factor(log_kow=log_kow)
+        bcf_source = "Jager (1998) model estimate (ECHA R.16 eq. R.16-76)"
+
+    ksoil_water = FOC_SOIL_DEFAULT * koc
+    c_porewater = (csoil * RHO_SOIL_DEFAULT) / (Decimal("1000") * ksoil_water)
+    conv_soil = RHO_SOIL_DEFAULT / RHO_SOLID_DEFAULT
+    c_earthworm = (bcf * c_porewater + csoil * fgut * conv_soil) / (Decimal("1") + fgut * conv_soil)
+
+    daily_dose_earthworm = (fir / bw) * c_earthworm
+    ter = endpoint / daily_dose_earthworm
+
+    return {
+        "log_kow": float(log_kow_dec),
+        "within_bcf_validated_range": within_range,
+        "bcf_earthworm_l_kg": float(bcf),
+        "bcf_source": bcf_source,
+        "porewater_concentration_mg_l": float(c_porewater),
+        "earthworm_concentration_mg_kg_wwt": float(c_earthworm),
+        "daily_dose_pec_earthworm_mg_kg_bw_day": float(daily_dose_earthworm),
+        "ter": float(ter),
+        "trigger": float(SECONDARY_POISONING_TER_TRIGGER),
+        "low_risk": bool(ter >= SECONDARY_POISONING_TER_TRIGGER),
+        "guidance_reference": EARTHWORM_GUIDANCE_REFERENCE,
     }
