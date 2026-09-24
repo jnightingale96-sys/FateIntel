@@ -82,6 +82,7 @@ def test_native_screen_and_organic_tools_follow_discrete_organic_groups():
         native = group in DISCRETE_ORGANIC_GROUPS
         assert ("results" in wf["modules"]) == native, group
         assert ("kinetics" in wf["modules"]) == native, group
+        assert ("tp_soil_fate" in wf["modules"]) == native, group  # soil transformation-product screen follows the kinetics tools
         screen = stage(wf, USE_RELEASE, "screen")
         assert screen["status"] == ("available" if native else "external_required")
         if not native:

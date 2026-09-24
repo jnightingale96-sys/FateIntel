@@ -121,6 +121,7 @@ MODULES: dict[str, dict[str, str]] = {
     "envirodesign": {"section": "envirodesign", "label": "EnviroDesign"},
     "identification": {"section": "analytical-identification", "label": "Identification"},
     "kinetics": {"section": "degradation-kinetics", "label": "Applied Environmental Fate"},
+    "tp_soil_fate": {"section": "tp-soil-fate", "label": "Soil transformation products"},
     "contaminated_land": {"section": "contaminated-land", "label": "Contaminated land"},
 }
 
@@ -200,8 +201,8 @@ def _use_release_track(region: dict[str, Any], group: str, scenario: str | None)
         stages.append({"id": "refine", "label": "Refine", "module": None, "status": "not_built", "detail": None,
                        "note": f"No dedicated refinement screen is built for {region['label']}."})
     if native:
-        modules |= {"envirodesign", "identification", "kinetics"}
-        stages.append({"id": "tools", "label": "Structure, identification and kinetics tools", "module": "envirodesign",
+        modules |= {"envirodesign", "identification", "kinetics", "tp_soil_fate"}
+        stages.append({"id": "tools", "label": "Structure, identification, kinetics and soil transformation-product tools", "module": "envirodesign",
                        "status": "available", "detail": None, "note": None})
     stages.append({"id": "review", "label": "Review and report", "module": "results" if native else "plan",
                    "status": "available", "detail": None, "note": None})
