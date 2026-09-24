@@ -67,10 +67,12 @@ data from outside the training set (non-pesticides, warm-climate soils; the user
 
 ## Not done / open
 
-- **BIOWIN4 → water DT50.** The user wrote "10^BIOWIN4 value − 6, gives approximate DT50 in hours, I believe". I did not
-  implement it: I cannot reproduce it from a source (the BIOWIN4 primary-survey score is a 1-5 scale where a higher
-  score means faster degradation, so an increasing 10^x form looks the wrong way round, and the reading 10^(x−6) vs
-  10^x − 6 is ambiguous). Needs the source equation before any code.
+- **BIOWIN4 → water DT50: implemented as a labelled screen** (`app/services/biowin_dt50.py`, `POST /api/providers/biowin-dt50/estimate`).
+  Owner-supplied relation, read as DT50 [days] = 10^(5 − BIOWIN4) (5→1 d … 1→10,000 d; direction and survey-scale labels
+  agree). **No literature source is attached** and it is never presented as published. Input is meant to be the EPI Suite
+  BIOWIN4 score (`score_source="epi_suite"`); the app's own BIOWIN4 is an approximate reconstruction and is flagged. BIOWIN carries
+  no stated temperature, so the output is recorded as temperature-unspecified; a stated temperature is only normalised to
+  20 °C when supplied. Emits a reviewable `FATE.WATER_DT50` model-prediction candidate; measured DT50 always preferred.
 - **OPERA biodegradation via CompTox** (`/chemical/fate/search/by-dtxsid/{dtxsid}`): predicted half-life and ready
   biodegradability with applicability-domain verdicts exist, and 160 chemicals have OPERA/SRC 98-008 survey values.
   These are *not* soil DT50s (atrazine: 4.9 d, flagged outside the training domain). Not wired in — the user is working on

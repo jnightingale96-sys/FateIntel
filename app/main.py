@@ -177,6 +177,10 @@ from .services.soil_dt50.api import router as soil_dt50_router  # noqa: E402  (i
 
 app.include_router(soil_dt50_router, prefix="/api/providers")
 
+from .services.biowin_dt50 import router as biowin_dt50_router  # noqa: E402
+
+app.include_router(biowin_dt50_router, prefix="/api/providers")
+
 
 @app.exception_handler(EnviroChemError)
 async def envirochem_exception_handler(request: Request, exc: EnviroChemError):
