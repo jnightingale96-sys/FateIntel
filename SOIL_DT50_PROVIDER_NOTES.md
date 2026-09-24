@@ -67,12 +67,14 @@ data from outside the training set (non-pesticides, warm-climate soils; the user
 
 ## Not done / open
 
-- **BIOWIN4 → water DT50: implemented as a labelled screen** (`app/services/biowin_dt50.py`, `POST /api/providers/biowin-dt50/estimate`).
-  Owner-supplied relation, read as DT50 [days] = 10^(5 − BIOWIN4) (5→1 d … 1→10,000 d; direction and survey-scale labels
-  agree). **No literature source is attached** and it is never presented as published. Input is meant to be the EPI Suite
-  BIOWIN4 score (`score_source="epi_suite"`); the app's own BIOWIN4 is an approximate reconstruction and is flagged. BIOWIN carries
-  no stated temperature, so the output is recorded as temperature-unspecified; a stated temperature is only normalised to
-  20 °C when supplied. Emits a reviewable `FATE.WATER_DT50` model-prediction candidate; measured DT50 always preferred.
+- **BIOWIN4 → screening DT50: implemented** (`app/services/biowin_dt50.py`, `/api/providers/biowin-dt50/estimate`, `/regions`).
+  Owner relation DT50 [hours, **25 °C**] = 10^(5 − BIOWIN4) (25 °C confirmed by the owner 2026-09-24); identical to the
+  existing veterinary manure relation. **Unit checked against EPA's own EPI Suite output** (5 → hours, 4 → days, 3 → weeks,
+  2 → months, 1 → longer): read in hours it gives 1 h / 10 h / ~4 d / ~6 wk / ~14 months and fits at both ends; read in days
+  it is 1–2 classes too slow. (An earlier note here that days matched the scale labels was wrong.) Re-expressed at a
+  per-region target temperature with theta 1.047 (EU = 10 °C, owner-stated; any other region must be supplied, none guessed).
+  **No literature source attached**; EPI Suite score expected (the app's own BIOWIN4 is a reconstruction and is flagged).
+  Emits a reviewable candidate (manure by default, water optional); measured DT50 always wins.
 - **OPERA biodegradation via CompTox** (`/chemical/fate/search/by-dtxsid/{dtxsid}`): predicted half-life and ready
   biodegradability with applicability-domain verdicts exist, and 160 chemicals have OPERA/SRC 98-008 survey values.
   These are *not* soil DT50s (atrazine: 4.9 d, flagged outside the training domain). Not wired in — the user is working on
