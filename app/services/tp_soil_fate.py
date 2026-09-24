@@ -546,6 +546,7 @@ def run_tp_soil_fate(payload: dict[str, Any]) -> dict[str, Any]:
         }
         product["major_transformation_product"] = {
             "flag": product["peak"]["percent_of_applied_molar"] >= MAJOR_TP_PERCENT, "threshold_percent": MAJOR_TP_PERCENT,
+            "formation_fraction_defaulted": bool(product["formation_fraction_defaulted"]),  # True: the flag rests on the worst-case 1.0
             "basis": "OECD TG 307 (2025) para 51: >= 10% of applied dose at any time (molar analogue)",
         }
         product["final_concentration_mg_kg"] = product["series_mg_kg"][-1]

@@ -547,6 +547,7 @@ async function loadIdentificationProfile(url, displayName, inchikey) {
 }
 
 function renderIdentificationProfile(profile, displayName) {
+  state.identificationProfile = profile;
   const generated = profile.generated_at ? new Date(profile.generated_at).toLocaleString() : "";
   $("identification-status").innerHTML = `<strong>${escapeHtml(displayName)} · ${escapeHtml(profile.inchikey || "")}</strong><small>Generated ${escapeHtml(generated)}</small>`;
 
@@ -588,6 +589,8 @@ function renderIdentificationProfile(profile, displayName) {
       const row = tp.known_transformation_products[Number(button.dataset.identificationIndex)];
       button.addEventListener("click", () => lookupIdentificationByInchikey(row.tp_inchikey, row.tp_name));
     });
+    $("identification-transformation-products").insertAdjacentHTML("beforeend", '<p><button class="ghost-button" id="identification-to-soil" type="button">Model these transformation products in soil</button></p>');
+    $("identification-to-soil")?.addEventListener("click", () => tpLoadFromAssessment({ knownTps: true }));
   } else {
     $("identification-transformation-products").innerHTML = `<p>${escapeHtml(tp.message || "No known transformation products recorded.")}</p>`;
   }
@@ -4208,7 +4211,7 @@ function tpSubstanceResult(item, isParent) {
     sorptionText = `log Koc ${tpFmt(sorption.log_koc)} · ${mobility} · ${escapeHtml(sorption.model)}`;
   } else if (sorption) sorptionText = escapeHtml(sorption.reason || "unavailable");
   const peak = item.peak;
-  const peakText = isParent ? "" : `<p><strong>Peak:</strong> ${tpFmt(peak.concentration_mg_kg)} mg/kg (${tpFmt(peak.percent_of_applied_molar)} % of applied) ${peak.within_simulation_window ? `at day ${tpFmt(peak.time_days)}` : "— no peak inside the window (still rising); highest value in the window shown"}. ${item.major_transformation_product.flag ? '<span class="feature-chip">major transformation product (≥ 10 %)</span>' : "Below the 10 % major-product line."}</p>
+  const peakText = isParent ? "" : `<p><strong>Peak:</strong> ${tpFmt(peak.concentration_mg_kg)} mg/kg (${tpFmt(peak.percent_of_applied_molar)} % of applied) ${peak.within_simulation_window ? `at day ${tpFmt(peak.time_days)}` : "— no peak inside the window (still rising); highest value in the window shown"}. ${item.major_transformation_product.flag ? (item.major_transformation_product.formation_fraction_defaulted ? '<span class="feature-chip">≥ 10 % only under the worst-case formation fraction of 1.0 — not evidence that it is a major product</span>' : '<span class="feature-chip">major transformation product (≥ 10 %)</span>') : "Below the 10 % major-product line."}</p>
     <p><small>Formation fraction ${tpFmt(item.formation_fraction)} — ${escapeHtml(item.formation_fraction_basis)}</small></p>`;
   const notes = (item.property_notes || []).map((n) => `<p><small>${escapeHtml(n)}</small></p>`).join("");
   const u = item.dt50_uncertainty;
@@ -4278,3 +4281,62 @@ async function tpInit() {
   tpRun();
 }
 document.addEventListener("DOMContentLoaded", () => { tpInit(); });
+
+/* ---- Hand-off: assessed chemical, its known transformation products and its soil PEC -> the soil TP screen ---- */
+async function tpKnownProductsFor(chemical) {
+  // Local reference data only (no live MassBank call), so a dead third-party service cannot block the hand-off.
+  if (!chemical.inchikey) return { rows: [], message: "This chemical has no InChIKey, so its known transformation products cannot be looked up." };
+  const block = await api(`/api/analytical-identification/${encodeURIComponent(chemical.inchikey)}/transformation-products`);
+  return { rows: block.found && Array.isArray(block.known_transformation_products) ? block.known_transformation_products : [], message: block.message || null };
+}
+
+async function tpLoadFromAssessment({ knownTps }) {
+  const status = $("tp-status");
+  const chemical = state.chemical;
+  if (!chemical) { toast("Choose and confirm a chemical first.", 5000); return; }
+  const profile = state.profile || {};
+  const hasDt50 = profile.soil_dt50_days != null;
+  const parent = {
+    name: chemical.preferred_name, smiles: chemical.smiles || "", mw: chemical.molecular_weight_g_mol ?? "", log_p: profile.log_kow ?? "",
+    pka_a: profile.pkaa ?? "", pka_b: profile.pkab ?? "", dt50: hasDt50 ? profile.soil_dt50_days : "", temp: 20,
+    source: hasDt50 ? "user_estimate" : chemical.smiles ? "pepper_auto" : "measured", lo: "", hi: "",
+  };
+  let products = [];
+  let productNote = "";
+  if (knownTps) {
+    status.className = "design-status running";
+    status.innerHTML = "<strong>Looking up known transformation products…</strong>";
+    try {
+      const known = await tpKnownProductsFor(chemical);
+      products = known.rows.slice(0, 8).map((row) => ({
+        name: row.tp_name || "Unnamed product", smiles: row.tp_smiles || "", mw: "", log_p: "", pka_a: "", pka_b: "", dt50: "", temp: 20,
+        source: row.tp_smiles ? "pepper_auto" : "measured", ff: "", from: "", lo: "", hi: "",
+      }));
+      productNote = products.length
+        ? `${products.length} curated parent–product pair(s) from NORMAN EAWAGTPS were added as direct products of the parent. They say the product is known, not that it forms in soil or in what yield: formation fractions are blank (worst case 1.0), DT50s are PEPPER predictions (slow, low confidence for unusual structures), and log P is an RDKit proxy. Rewire "Formed from" where a product comes from another product.`
+        : (known.message || "No known transformation products are recorded for this chemical.");
+    } catch (error) {
+      productNote = `The known-product lookup failed: ${error.message}`;
+    }
+  }
+  if (!products.length) products = [{ name: "", smiles: "", mw: "", log_p: "", pka_a: "", pka_b: "", dt50: "", temp: 20, source: "measured", ff: "", from: "", lo: "", hi: "" }];
+  tpRenderInputs({ parent, products });
+  const soil = currentScreeningSoilEndpoint();
+  if (soil && soil.concentration_ug_kg > 0) $("tp-c0").value = Number((soil.concentration_ug_kg / 1000).toPrecision(4));
+  const options = state.modelSystem && [...$("tp-region").options].some((o) => o.value === state.modelSystem);
+  if (options) $("tp-region").value = state.modelSystem;
+  const parts = [
+    `Parent: ${chemical.preferred_name}${hasDt50 ? " (soil DT50 from the reviewed profile — relabel it if it is measured)" : chemical.smiles ? " (no soil DT50 in the profile, so PEPPER will predict one)" : " (no soil DT50 and no SMILES: enter a DT50)"}.`,
+    soil ? `Initial soil concentration: ${Number((soil.concentration_ug_kg / 1000).toPrecision(4))} mg/kg from the ${soil.label}.` : "No soil concentration from the assessment yet: set the initial parent concentration yourself.",
+    productNote,
+  ].filter(Boolean);
+  status.className = "design-status";
+  status.innerHTML = `<strong>Loaded from the assessed chemical.</strong><small>${parts.map(escapeHtml).join(" ")}</small>`;
+  $("tp-soil-fate")?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  $("tp-use-assessed")?.addEventListener("click", () => tpLoadFromAssessment({ knownTps: false }));
+  $("tp-use-known")?.addEventListener("click", () => tpLoadFromAssessment({ knownTps: true }));
+  $("continue-tp-soil")?.addEventListener("click", () => tpLoadFromAssessment({ knownTps: true }));
+});

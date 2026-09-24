@@ -296,3 +296,28 @@ def test_identification_route_422s_when_chemical_has_no_inchikey():
         db.delete(db.get(Chemical, chemical_id))
         db.commit()
         db.close()
+
+
+def test_identification_profile_keeps_local_sections_when_massbank_is_down():
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(500, text="internal error")
+
+    client = httpx.Client(transport=httpx.MockTransport(handler))
+    configuration = Settings(_env_file=None, massbank_base_url="https://massbank.example")
+    profile = ai.identification_profile(CARBAMAZEPINE_INCHIKEY, configuration=configuration, client=client)
+    client.close()
+    ions = profile["known_product_ions"]
+    assert ions["found"] is False and ions["unavailable"] is True and ions["spectra"] == []
+    assert "not a 'no spectrum' result" in ions["message"] and "HTTP 500" in ions["message"]
+    assert profile["known_transformation_products"]["found"] is True  # local EAWAGTPS data is unaffected
+    assert profile["ionisation_and_platform"]["found"] is True
+
+
+def test_transformation_products_route_is_local_only_and_returns_smiles():
+    with TestClient(app) as client:
+        response = client.get(f"/api/analytical-identification/{CARBAMAZEPINE_INCHIKEY}/transformation-products")
+        unknown = client.get(f"/api/analytical-identification/{UNKNOWN_INCHIKEY}/transformation-products")
+    assert response.status_code == 200
+    body = response.json()
+    assert body["found"] is True and any(row["tp_name"] == "Carbamazepine-10,11-epoxide" and row["tp_smiles"] for row in body["known_transformation_products"])
+    assert unknown.status_code == 200 and unknown.json()["found"] is False

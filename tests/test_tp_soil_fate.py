@@ -711,3 +711,12 @@ def test_bad_formation_fraction_ranges_are_refused(mutation, message):
     mutation(payload)
     with pytest.raises(TpFateInputError, match=message):
         run_tp_soil_fate(payload)
+
+
+def test_a_major_flag_that_rests_on_the_worst_case_default_says_so():
+    payload = _payload()
+    del payload["products"][0]["formation_fraction"]
+    flagged = run_tp_soil_fate(payload)["products"][0]["major_transformation_product"]
+    assert flagged["flag"] is True and flagged["formation_fraction_defaulted"] is True
+    supplied = run_tp_soil_fate(_payload())["products"][0]["major_transformation_product"]
+    assert supplied["formation_fraction_defaulted"] is False

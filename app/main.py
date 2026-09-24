@@ -92,6 +92,7 @@ from .services.envipath import (
 )
 from .services.analytical_identification import (
     identification_profile as build_identification_profile,
+    known_transformation_products,
     source_registry as analytical_source_registry,
 )
 from .services.ms_evidence import (
@@ -1817,6 +1818,15 @@ def get_chemical_identification_profile(chemical_id: int, ion_mode: str | None =
         )
     try:
         return build_identification_profile(chemical.inchikey, ion_mode=ion_mode)
+    except ValueError as exc:
+        raise HTTPException(422, str(exc)) from exc
+
+
+@app.get("/api/analytical-identification/{inchikey}/transformation-products")
+def get_known_transformation_products_by_inchikey(inchikey: str):
+    """Curated (NORMAN EAWAGTPS) parent -> transformation-product pairs only: local data, no live third-party call."""
+    try:
+        return known_transformation_products(inchikey)
     except ValueError as exc:
         raise HTTPException(422, str(exc)) from exc
 

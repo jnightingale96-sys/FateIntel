@@ -517,7 +517,7 @@
 <button class="ghost-button" id="retry-assessment" type="button">Try again</button>
 </section>
 <section class="results-section hidden" id="results">
-<div class="results-heading"><div><span class="complete-badge">ASSESSMENT COMPLETE</span><h2 id="results-title">Here is what happens to Carbamazepine.</h2><p id="results-subtitle">Calculated from the stored scenario and linked model runs.</p></div><div class="results-actions"><button class="ghost-button" id="refine-assessment">Refine scenario</button><button class="ghost-button" id="continue-toxswa" type="button">Refine surface water in TOXSWA</button><button class="ghost-button hidden" id="continue-pearl" type="button">Continue to FOCUS PEARL</button><button class="ghost-button" id="continue-envirodesign" type="button">Inspect molecular design</button><a class="primary-button link-button" href="/static/expert.html">Inspect evidence</a></div></div>
+<div class="results-heading"><div><span class="complete-badge">ASSESSMENT COMPLETE</span><h2 id="results-title">Here is what happens to Carbamazepine.</h2><p id="results-subtitle">Calculated from the stored scenario and linked model runs.</p></div><div class="results-actions"><button class="ghost-button" id="refine-assessment">Refine scenario</button><button class="ghost-button" id="continue-toxswa" type="button">Refine surface water in TOXSWA</button><button class="ghost-button hidden" id="continue-pearl" type="button">Continue to FOCUS PEARL</button><button class="ghost-button" id="continue-envirodesign" type="button">Inspect molecular design</button><button class="ghost-button" id="continue-tp-soil" type="button">Model transformation products in soil</button><a class="primary-button link-button" href="/static/expert.html">Inspect evidence</a></div></div>
 <div class="jurisdiction-banner" id="results-jurisdiction-banner"></div>
 <div class="metric-grid">
 <article class="metric-card water influent" id="metric-card-influent"><span class="metric-icon">⇣</span><div><small>WWTP influent / ClocalINF</small><strong id="metric-influent">—</strong><span id="metric-influent-mass">Untreated wastewater</span></div></article>
@@ -1182,6 +1182,7 @@
 </div>
 <button class="ghost-button" data-drawer="tp-soil-fate-method" type="button">Scientific boundaries</button>
 </div>
+<div class="tp-handoff" style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0"><button class="ghost-button" id="tp-use-assessed" type="button">Use the assessed chemical as the parent</button><button class="ghost-button" id="tp-use-known" type="button">…and add its known transformation products</button></div>
 <div class="design-status" id="tp-status"><strong>Example loaded — illustrative numbers, not literature values.</strong><small>Replace them with your measured or predicted inputs, then calculate.</small></div>
 <div class="envirodesign-grid">
 <section class="design-control-card">

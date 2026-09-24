@@ -323,12 +323,21 @@ def identification_profile(
     if not key:
         raise ValueError("An InChIKey is required")
 
+    # MassBank is a live third-party service; the ionisation and transformation-product sections come from local
+    # reference files. One dead upstream must not take the local sections down with it, so its failure is reported
+    # inside the product-ion section (found=False, unavailable=True) instead of failing the whole profile.
+    try:
+        product_ions = known_product_ions(key, ion_mode=ion_mode, configuration=configuration, client=client)
+    except (ExternalDataSourceError, ExternalModelUnavailableError) as exc:
+        product_ions = {
+            "inchikey": key, "found": False, "unavailable": True, "match_count": 0, "returned_count": 0, "spectra": [],
+            "message": f"Product-ion spectra could not be retrieved from MassBank Europe right now ({exc}). This is not a 'no spectrum' result.",
+            "source_key": "massbank_eu", "citation": MASSBANK_CITATION, "queried_at": _utc_now(),
+        }
     return {
         "inchikey": key,
         "generated_at": _utc_now(),
         "ionisation_and_platform": ionisation_and_platform(key),
-        "known_product_ions": known_product_ions(
-            key, ion_mode=ion_mode, configuration=configuration, client=client
-        ),
+        "known_product_ions": product_ions,
         "known_transformation_products": known_transformation_products(key),
     }
