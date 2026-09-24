@@ -479,6 +479,7 @@ def run_tp_soil_fate(payload: dict[str, Any]) -> dict[str, Any]:
         products.append({
             "name": names[index - 1], "formed_from": parent["name"] if sources[index - 1] == -1 else names[sources[index - 1]],
             "generation": generations[index - 1], "molecular_weight_g_mol": mw, "log_p": log_p,
+            "pathway_source": (str(entry["pathway_source"]).strip()[:120] or None) if entry.get("pathway_source") else None,
             "pka_a": entry.get("pka_a"), "pka_b": entry.get("pka_b"), "property_notes": notes,
             "formation_fraction": ff, "formation_fraction_basis": ff_basis, "formation_fraction_logit_sd": ff_logit_sd,
             "formation_fraction_range": entry.get("formation_fraction_range"), "formation_fraction_defaulted": entry.get("formation_fraction") is None,

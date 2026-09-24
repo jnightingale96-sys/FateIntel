@@ -1207,6 +1207,11 @@
 <div class="mini-heading"><span>Main-stage transformation products</span><span class="design-legend">Each has one source: the parent or another product</span></div>
 <div id="tp-products"></div>
 <button class="ghost-button" id="tp-add-product" type="button">+ Add transformation product</button>
+<details class="tp-import"><summary>Import products from another pathway tool</summary>
+<p><small>One product per line: <strong>name, SMILES, formation fraction, formed from, pathway source</strong>. Only the name is required. Separate with a tab (paste from a spreadsheet), a semicolon or a pipe; a comma works if the line has no commas in the name (quote names that do). "Formed from" is the parent or another product's name. Works with output from the OECD QSAR Toolbox, EPA CTS, CATALOGIC, a paper or your own table; nothing is looked up online.</small></p>
+<textarea id="tp-import-text" rows="5" placeholder="Carbamazepine-10,11-epoxide;NC(=O)N1c2ccccc2C2OC2c2ccccc21;0.2;;QSAR Toolbox"></textarea>
+<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><button class="ghost-button" id="tp-import-run" type="button">Add to the products</button><label class="ghost-button" style="cursor:pointer">Load a CSV or text file<input id="tp-import-file" type="file" accept=".csv,.tsv,.txt" hidden/></label></div>
+</details>
 </section>
 </div>
 <div class="design-insight-grid">

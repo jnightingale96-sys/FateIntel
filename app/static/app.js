@@ -4103,7 +4103,7 @@ function tpSubstanceHtml(prefix, item, isProduct) {
     <div class="cl-row3">${field("dt50", "Soil DT50 (days)", item.dt50, 'type="number" step="any" min="0"')}${field("temp", "DT50 measured at (°C)", item.temp, 'type="number" step="any"')}
       <label><span>DT50 source</span><select data-tp="source">${sourceOptions}</select></label></div>
     <div class="cl-row2">${field("dt50_lo", "DT50 90 % range: low (days, optional)", item.lo ?? "", 'type="number" step="any" min="0"')}${field("dt50_hi", "DT50 90 % range: high (days, optional)", item.hi ?? "", 'type="number" step="any" min="0"')}</div>
-    ${isProduct ? `<label><span>Formed from</span><select data-tp="formed_from" data-tp-from="${escapeHtml(item.from || "")}"></select></label>
+    ${isProduct ? `${field("pathway_source", "Pathway source (tool or reference that proposed it, optional)", item.pathway_source ?? "")}<label><span>Formed from</span><select data-tp="formed_from" data-tp-from="${escapeHtml(item.from || "")}"></select></label>
     <div class="cl-row2">${field("ff", "Formation fraction (molar, 0–1) of its source", item.ff ?? "", 'type="number" step="any" min="0" max="1" placeholder="blank = 1.0 worst case"')}
       <button class="ghost-button" type="button" data-tp-remove="1">Remove</button></div>
     <div class="cl-row2">${field("ff_lo", "Formation fraction 90 % range: low (optional)", item.ff_lo ?? "", 'type="number" step="any" min="0" max="1"')}${field("ff_hi", "Formation fraction 90 % range: high (optional)", item.ff_hi ?? "", 'type="number" step="any" min="0" max="1"')}</div>` : ""}
@@ -4141,6 +4141,7 @@ function tpReadSubstance(node, isProduct) {
   if (get("source") === "pepper_auto") { entry.dt50_from_pepper = true; delete entry.dt50_days; delete entry.dt50_source; delete entry.dt50_temperature_c; delete entry.dt50_range_days; }
   if (isProduct && get("ff") !== "") entry.formation_fraction = Number(get("ff"));
   if (isProduct && get("formed_from") !== "") entry.formed_from = get("formed_from");
+  if (isProduct && get("pathway_source").trim() !== "") entry.pathway_source = get("pathway_source").trim();
   if (isProduct && num("ff_lo") !== null && num("ff_hi") !== null) entry.formation_fraction_range = [num("ff_lo"), num("ff_hi")];
   Object.keys(entry).forEach((key) => { if (entry[key] === null || entry[key] === undefined) delete entry[key]; });
   return entry;
@@ -4218,7 +4219,7 @@ function tpSubstanceResult(item, isParent) {
   const uncertaintyText = u?.source === "user_range" ? `<p><small>Your 90 % range for the DT50: ${tpFmt(u.range_days[0])}–${tpFmt(u.range_days[1])} d (as stated, at the DT50's own temperature).</small></p>` : u ? `<p><small>PEPPER 90 % interval for the mean DT50 at 20 °C: ${u.mean_90CI_days ? `${tpFmt(u.mean_90CI_days[0])}–${tpFmt(u.mean_90CI_days[1])} d` : "n/a"} · single-soil 90 % interval ${u.single_soil_90PI_days ? `${tpFmt(u.single_soil_90PI_days[0])}–${tpFmt(u.single_soil_90PI_days[1])} d` : "n/a"} · confidence ${escapeHtml(String(u.confidence))}. Treat the number as a wide range, not a point.</small></p>` : "";
   const b = item._band;
   const bandText = b ? `<p><strong>Uncertainty (5–95 %):</strong> peak ${tpFmt(b.peak_percent_of_applied_molar.p05)}–${tpFmt(b.peak_percent_of_applied_molar.p95)} % of applied (median ${tpFmt(b.peak_percent_of_applied_molar.p50)} %), reached between day ${tpFmt(b.peak_time_days.p05)} and ${tpFmt(b.peak_time_days.p95)}. Probability of being a major product (≥ 10 %): <strong>${tpFmt(b.probability_major_transformation_product * 100, 2)} %</strong>.${b.drivers.length ? ` Main driver: ${escapeHtml(b.drivers[0].variable || b.drivers[0].substance)} (rank correlation ${tpFmt(b.drivers[0].spearman_rho, 2)}).` : ""}</p>` : "";
-  const lineage = isParent ? "" : `<p><small>Generation ${item.generation} · formed from ${escapeHtml(item.formed_from)}</small></p>`;
+  const lineage = isParent ? "" : `<p><small>Generation ${item.generation} · formed from ${escapeHtml(item.formed_from)}${item.pathway_source ? ` · pathway source: ${escapeHtml(item.pathway_source)}` : ""}</small></p>`;
   return `<article class="hypothesis-card"><div><h4>${escapeHtml(item.name)}</h4>${lineage}
     <p><strong>DT50 at soil temperature:</strong> ${tpFmt(item.dt50_days)} d · ${escapeHtml(item.dt50_source.replace(/_/g, " "))}</p>
     <p><small>${escapeHtml(item.dt50_basis)}</small></p>${uncertaintyText}${peakText}${bandText}
@@ -4339,4 +4340,86 @@ document.addEventListener("DOMContentLoaded", () => {
   $("tp-use-assessed")?.addEventListener("click", () => tpLoadFromAssessment({ knownTps: false }));
   $("tp-use-known")?.addEventListener("click", () => tpLoadFromAssessment({ knownTps: true }));
   $("continue-tp-soil")?.addEventListener("click", () => tpLoadFromAssessment({ knownTps: true }));
+});
+
+/* ---- Import products proposed by any pathway tool (QSAR Toolbox, CTS, CATALOGIC, a paper, a spreadsheet) ---- */
+function tpSplitLine(line, delimiter) {
+  const cells = [];
+  let cell = "";
+  let quoted = false;
+  for (let i = 0; i < line.length; i += 1) {
+    const ch = line[i];
+    if (quoted) {
+      if (ch === '"' && line[i + 1] === '"') { cell += '"'; i += 1; } else if (ch === '"') quoted = false; else cell += ch;
+    } else if (ch === '"') quoted = true;
+    else if (ch === delimiter) { cells.push(cell.trim()); cell = ""; } else cell += ch;
+  }
+  cells.push(cell.trim());
+  return cells;
+}
+
+// Columns: name, SMILES, formation fraction (0-1, molar), formed from (parent or a product name), pathway source. Only the name is required.
+function tpParseImport(text) {
+  const rows = [];
+  const issues = [];
+  const lines = text.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+  lines.forEach((line, index) => {
+    const delimiter = line.includes("\t") ? "\t" : line.includes(";") ? ";" : line.includes("|") ? "|" : ",";
+    const cells = tpSplitLine(line, delimiter);
+    if (index === 0 && /^(name|product|tp)\b/i.test(cells[0]) && /smiles/i.test(line)) return; // header row
+    const [name, smiles = "", ffText = "", from = "", source = ""] = cells;
+    if (!name) { issues.push(`Line ${index + 1}: no name, skipped.`); return; }
+    let ff = "";
+    if (ffText !== "") {
+      const value = Number(ffText);
+      if (!Number.isFinite(value) || value <= 0 || value > 1) { issues.push(`Line ${index + 1} (${name}): formation fraction "${ffText}" is not a number in (0, 1], so it was left blank (worst case 1.0).`); } else ff = value;
+    }
+    if (!smiles) issues.push(`Line ${index + 1} (${name}): no SMILES, so enter its molecular weight and DT50 yourself.`);
+    rows.push({ name, smiles, ff, from, source });
+  });
+  return { rows, issues };
+}
+
+function tpImportProducts(text) {
+  const { rows, issues } = tpParseImport(text);
+  const existing = [...document.querySelectorAll("#tp-products [data-tp-prefix]")];
+  const room = 8 - existing.length;
+  if (!rows.length) return { added: 0, issues: issues.length ? issues : ["Nothing to import: paste one product per line."] };
+  if (rows.length > room) issues.push(`Only ${Math.max(room, 0)} more product(s) fit (8 in total); the rest were not added.`);
+  const names = new Set(existing.map((node) => (node.querySelector('[data-tp="name"]')?.value || "").trim()));
+  const parentName = (document.querySelector('#tp-parent [data-tp="name"]')?.value || "").trim();
+  const accepted = [];
+  for (const row of rows.slice(0, Math.max(room, 0))) {
+    if (names.has(row.name) || row.name === parentName) { issues.push(`${row.name}: a substance with that name is already listed, skipped.`); continue; }
+    names.add(row.name);
+    accepted.push(row);
+  }
+  const known = new Set([parentName, ...names]);
+  accepted.forEach((row, offset) => {
+    let from = row.from;
+    if (from && from !== "parent" && !known.has(from)) { issues.push(`${row.name}: formed-from "${from}" is not the parent or a listed product, so it is set to the parent.`); from = ""; }
+    if (from === "parent" || from === parentName) from = "";
+    const count = document.querySelectorAll("#tp-products [data-tp-prefix]").length;
+    $("tp-products").insertAdjacentHTML("beforeend", tpSubstanceHtml(`product-${count + offset}`, {
+      name: row.name, smiles: row.smiles, mw: "", log_p: "", pka_a: "", pka_b: "", dt50: "", temp: 20,
+      source: row.smiles ? "pepper_auto" : "measured", ff: row.ff, from, lo: "", hi: "", pathway_source: row.source,
+    }, true));
+  });
+  tpRefreshSources();
+  return { added: accepted.length, issues };
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  $("tp-import-run")?.addEventListener("click", () => {
+    const outcome = tpImportProducts($("tp-import-text").value);
+    const status = $("tp-status");
+    status.className = "design-status";
+    status.innerHTML = `<strong>${outcome.added} product(s) imported.</strong><small>${outcome.issues.map(escapeHtml).join(" ") || "Set a DT50 (or keep PEPPER) and a formation fraction for each, then calculate. Blank formation fractions use the worst case of 1.0."}</small>`;
+    if (outcome.added) $("tp-import-text").value = "";
+  });
+  $("tp-import-file")?.addEventListener("change", async (event) => {
+    const file = event.target.files?.[0];
+    if (file) $("tp-import-text").value = await file.text();
+    event.target.value = "";
+  });
 });

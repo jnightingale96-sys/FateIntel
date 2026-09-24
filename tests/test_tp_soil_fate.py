@@ -720,3 +720,13 @@ def test_a_major_flag_that_rests_on_the_worst_case_default_says_so():
     assert flagged["flag"] is True and flagged["formation_fraction_defaulted"] is True
     supplied = run_tp_soil_fate(_payload())["products"][0]["major_transformation_product"]
     assert supplied["formation_fraction_defaulted"] is False
+
+
+def test_the_pathway_source_of_each_product_is_kept_and_trimmed():
+    payload = _payload()
+    payload["products"][0]["pathway_source"] = "  QSAR Toolbox 4.9 (microbial simulator)  "
+    payload["products"].append({"name": "M2", "molecular_weight_g_mol": 90.0, "formation_fraction": 0.2, "dt50_days": 30.0, "pathway_source": "x" * 300})
+    payload["products"].append({"name": "M3", "molecular_weight_g_mol": 90.0, "formation_fraction": 0.1, "dt50_days": 30.0})
+    products = run_tp_soil_fate(payload)["products"]
+    assert products[0]["pathway_source"] == "QSAR Toolbox 4.9 (microbial simulator)"
+    assert len(products[1]["pathway_source"]) == 120 and products[2]["pathway_source"] is None
