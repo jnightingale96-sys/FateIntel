@@ -141,6 +141,73 @@ def _toxval_record_to_candidate(record: dict[str, Any], *, dtxsid: str, chemical
     )
 
 
+_BIODEG_PROP_NAMES = ("Biodeg. Half-Life", "Ready Biodegradability")
+
+
+def _fate_biodeg_to_candidate(record: dict[str, Any], *, prop_name: str, dtxsid: str, chemical_name: str, cas_number: str | None) -> EvidenceCandidate:
+    """One OPERA (predicted) or OPERA/SRC-survey (experimental) biodegradation record from /chemical/fate.
+
+    These are generic aerobic-biodegradation figures, NOT matrix-specific DT50s (no soil/water/manure/sludge
+    is stated), so ``property_code`` stays None: shown for review, never auto-slotted into a DT50 endpoint.
+    Predictions carry OPERA's own applicability-domain verdict verbatim.
+    """
+
+    predicted = record.get("prop_type") == "predicted"
+    value = record.get("prop_value")
+    unit = _none_if_dash(record.get("prop_unit"))
+    text_value = _none_if_dash(record.get("prop_value_text")) or _none_if_dash(record.get("prop_value_string"))
+    ad = _none_if_dash(record.get("ad_conclusion_global")) or _none_if_dash(record.get("ad_conclusion"))
+    ad_note = (
+        f"applicability domain: {ad or 'not stated'}"
+        + (f" ({str(record.get('ad_reasoning')).replace('&lt;', '<')})" if _none_if_dash(record.get("ad_reasoning")) else "")
+    ) if predicted else None
+    label = f"{prop_name} ({'OPERA prediction' if predicted else 'experimental record'})"
+    return EvidenceCandidate(
+        candidate_id=_candidate_id("epa_comptox_fate", record.get("id"), prop_name, dtxsid),
+        source_key="epa_comptox", source_name="US EPA CompTox / CTX Chemical fate API (OPERA / curated experimental)",
+        source_record_id=str(record.get("id")) if record.get("id") is not None else None,
+        source_url=f"https://comptox.epa.gov/dashboard/chemical/env-fate-transport/{dtxsid}",
+        chemical_name=chemical_name, cas_number=cas_number, property_code=None, endpoint_label=label,
+        value=value if isinstance(value, (int, float)) and not isinstance(value, bool) else None, unit=unit, qualifier="=",
+        matrix=None, temperature_c=25.0 if predicted else record.get("exp_details_temperature_c"), ph=record.get("exp_details_ph"),
+        guideline=None, evidence_type="model_prediction" if predicted else "database_record",
+        publication_title=_none_if_dash(record.get("ls_name")), publication_year=None, doi=_none_if_dash(record.get("ls_doi")),
+        pmid=None, pmcid=None,
+        original_source=_none_if_dash(record.get("ls_citation")) or _none_if_dash(record.get("source_name")),
+        rights_status="public_government_data", import_allowed=True, needs_professional_review=True,
+        extraction_status="structured_database_field" if not predicted else "model_output",
+        snippet=" | ".join(part for part in (f"{prop_name} = {text_value or value} {unit or ''}".strip(), ad_note) if part),
+        notes=(
+            f"model: {record.get('model_name') or record.get('dataset') or 'not reported'}; source: {record.get('source_name') or 'not reported'}; "
+            "generic biodegradation figure -- no environmental matrix stated, so NOT a soil/water/manure/sludge DT50 and not auto-categorised."
+            + (" OPERA predictions are stated at 25 C." if predicted else "")
+            + (" Outside OPERA's applicability domain: treat as unreliable." if predicted and (ad or "").lower() == "outside" else "")
+        ),
+    )
+
+
+def fate_biodegradation_candidates(
+    client: httpx.Client, dtxsid: str, *, chemical_name: str, cas_number: str | None, limit: int = 20,
+) -> list[dict[str, Any]]:
+    """Biodegradation records from ``GET /chemical/fate/search/by-dtxsid/{dtxsid}`` (experimental first)."""
+
+    response = client.get(f"{BASE_URL}/chemical/fate/search/by-dtxsid/{quote(dtxsid, safe='')}")
+    response.raise_for_status()
+    groups = response.json()
+    if not isinstance(groups, list):
+        return []
+    experimental: list[dict[str, Any]] = []
+    predicted: list[dict[str, Any]] = []
+    for group in groups:
+        if not isinstance(group, dict) or group.get("propName") not in _BIODEG_PROP_NAMES:
+            continue
+        for key, bucket in (("experimentalFateData", experimental), ("predictedFateData", predicted)):
+            for record in group.get(key) or []:
+                if isinstance(record, dict):  # the API pads empty sections with [null]
+                    bucket.append(_fate_biodeg_to_candidate(record, prop_name=group["propName"], dtxsid=dtxsid, chemical_name=chemical_name, cas_number=cas_number).to_dict())
+    return (experimental + predicted)[:limit]
+
+
 def search_epa_comptox(
     chemical_name: str,
     *,
@@ -191,6 +258,15 @@ def search_epa_comptox(
                 break
 
         warnings: list[str] = []
+        fate_candidates: list[dict[str, Any]] = []
+        if not wanted_codes:  # biodegradation records carry no property code, so an endpoint filter excludes them
+            try:
+                fate_candidates = fate_biodegradation_candidates(
+                    http, dtxsid, chemical_name=chemical_name, cas_number=cas_number, limit=limit,
+                )
+            except (httpx.HTTPError, ValueError) as exc:
+                warnings.append(f"CompTox fate endpoint (OPERA biodegradation) unavailable: {type(exc).__name__}: {exc}")
+        candidates.extend(fate_candidates)
         status = "ok" if candidates else "no_eco_records_found"
         if not candidates:
             warnings.append(

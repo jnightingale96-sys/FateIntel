@@ -53,8 +53,10 @@ ECO_RECORD = {
 ECO_RECORD_UNMAPPED_TYPE = {**ECO_RECORD, "id": 999002, "toxvalType": "Effect Time", "toxvalUnits": "days"}
 
 
-def _handler(chemical_response, toxval_response):
+def _handler(chemical_response, toxval_response, fate_response=()):
     def handler(request: httpx.Request) -> httpx.Response:
+        if "/chemical/fate/search/by-dtxsid/" in request.url.path:
+            return httpx.Response(200, json=list(fate_response))
         if "/chemical/search/equal/" in request.url.path:
             return httpx.Response(200, json=chemical_response)
         if "/hazard/toxval/search/by-dtxsid/" in request.url.path:
@@ -135,3 +137,63 @@ def test_limit_caps_the_number_of_candidates():
     result = search_epa_comptox("Atrazine", cas_number="1912-24-9", limit=2, client=client, configuration=TEST_CONFIG)
     client.close()
     assert len(result["candidates"]) == 2
+
+
+# Shape observed live 2026-09-24 (atrazine, DTXSID9020112): the API pads an empty section with [null].
+OPERA_BIODEG_GROUP = {
+    "propName": "Biodeg. Half-Life",
+    "experimentalFateData": [None],
+    "predictedFateData": [{
+        "id": 61414149, "prop_name": "Biodeg. Half-Life", "prop_type": "predicted", "model_name": "OPERA_BioDeg",
+        "source_name": "OPERA2.8", "prop_value": 4.897788193684462, "prop_unit": "days",
+        "ad_conclusion_global": "Outside",
+        "ad_reasoning": "Outside training set (Global AD = 0) and poor local representation (Local AD index = 0.307 &lt; 0.4)",
+    }],
+}
+EXPERIMENTAL_BIODEG_GROUP = {
+    "propName": "Biodeg. Half-Life",
+    "experimentalFateData": [{
+        "id": 77, "prop_type": "experimental", "dataset": "exp_prop_BIODEG_v1", "prop_value": 30.0, "prop_unit": "days",
+        "source_name": "SRC 98-008 survey", "ls_citation": "Test citation", "ls_doi": None,
+    }],
+    "predictedFateData": [None],
+}
+UNRELATED_GROUP = {"propName": "Bioconcentration Factor", "experimentalFateData": [{"id": 1, "prop_value": 8.0}], "predictedFateData": [None]}
+
+
+def _fate_search(fate_groups, **kwargs):
+    client = httpx.Client(transport=httpx.MockTransport(_handler(ATRAZINE_MATCH, [HUMAN_HEALTH_RECORD], fate_groups)))
+    return search_epa_comptox("Atrazine", cas_number="1912-24-9", client=client, configuration=Settings(comptox_api_key="k"), **kwargs)
+
+
+def test_opera_prediction_is_surfaced_with_its_applicability_domain_and_no_matrix_claim():
+    result = _fate_search([UNRELATED_GROUP, OPERA_BIODEG_GROUP])
+    assert result["status"] == "ok" and len(result["candidates"]) == 1
+    candidate = result["candidates"][0]
+    assert candidate["value"] == pytest.approx(4.897788193684462) and candidate["unit"] == "days"
+    assert candidate["evidence_type"] == "model_prediction" and candidate["property_code"] is None and candidate["matrix"] is None
+    assert candidate["temperature_c"] == 25.0 and candidate["needs_professional_review"] is True
+    assert "Outside" in candidate["snippet"] and "Local AD index = 0.307 < 0.4" in candidate["snippet"]  # &lt; unescaped
+    assert "NOT a soil/water/manure/sludge DT50" in candidate["notes"] and "unreliable" in candidate["notes"]
+
+
+def test_experimental_biodegradation_record_precedes_the_prediction_and_null_padding_is_ignored():
+    result = _fate_search([OPERA_BIODEG_GROUP, EXPERIMENTAL_BIODEG_GROUP])
+    kinds = [c["evidence_type"] for c in result["candidates"]]
+    assert kinds == ["database_record", "model_prediction"]
+    assert result["candidates"][0]["value"] == 30.0 and result["candidates"][0]["original_source"] == "Test citation"
+
+
+def test_endpoint_filter_excludes_uncoded_biodegradation_records():
+    assert _fate_search([OPERA_BIODEG_GROUP], endpoint_codes=["ECOTOX.AQUATIC.LC50"])["candidates"] == []
+
+
+def test_fate_endpoint_failure_does_not_break_the_toxval_search():
+    def handler(request: httpx.Request) -> httpx.Response:
+        if "/chemical/fate/" in request.url.path:
+            return httpx.Response(500)
+        return _handler(ATRAZINE_MATCH, [ECO_RECORD])(request)
+    client = httpx.Client(transport=httpx.MockTransport(handler))
+    result = search_epa_comptox("Atrazine", cas_number="1912-24-9", client=client, configuration=Settings(comptox_api_key="k"))
+    assert result["status"] == "ok" and len(result["candidates"]) == 1
+    assert any("fate endpoint" in w for w in result["warnings"])
