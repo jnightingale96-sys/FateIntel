@@ -2362,6 +2362,7 @@ function drawSoilSeries(series, label='Soil PEC') {
 const drawerTemplates = {
   "us-exposure-method": () => `<span class="drawer-kicker">US EXPOSURE SCIENCE BOUNDARIES</span><h2>A transparent foundation, not an EPA clone</h2><p>The native calculation tracks one chemical throughput through non-overlapping loss events, controls, environmental media and managed waste. Captured material remains a transfer until downstream fate is assessed.</p><div class="drawer-block"><h3>Occupational screen</h3><p>Measured-air mode calculates route-specific shift dose. Well-mixed mode uses a time-averaged room build-up equation and omits near-field peaks; it is a screening bound, not ChemSTEER.</p></div><div class="drawer-block"><h3>Source governance</h3><p>Only 12 published EPA ESDs are enabled by default. Forty-eight draft records require explicit opt-in and remain labelled draft. ChemSTEER, CEM and E-FAST execute externally and are never bundled or rebranded.</p></div><div class="equation">throughput = retained process mass + direct release + managed-waste transfer</div>`,
   "envirodesign-method": () => `<span class="drawer-kicker">ENVIRODESIGN SCIENCE BOUNDARIES</span><h2>What this module can and cannot claim</h2><p>The fitted layer reproduces the supplied open BIOWIN 3/4 SMARTS reconstruction. It is not EPA source code and has not yet been validated as regulatory-equivalent output.</p><div class="drawer-block"><h3>Attribution</h3><p>A matched fragment explains part of the model score. It does not prove that the fragment is the experimental cause of persistence.</p></div><div class="drawer-block"><h3>Pathways</h3><p>Observed and predicted products retain their matrix, conditions, status and provenance. Direct commercial embedding of enviPath data remains licence-gated; this build supports manual import and an adapter contract.</p></div><div class="drawer-block"><h3>Design</h3><p>Candidate changes are hypotheses. Efficacy, metabolites, toxicity, mobility, bioaccumulation and synthetic feasibility must be reassessed before a structure can be described as safer or more sustainable.</p></div>`,
+  "tp-soil-fate-method": () => `<span class="drawer-kicker">SOIL TRANSFORMATION PRODUCTS · SCIENCE BOUNDARIES</span><h2>A theoretical screen, not a fate study</h2><p>Single first-order kinetics on a molar basis, one generation: each product forms directly from the parent with a formation fraction and declines with its own DT50. Mass follows from the molar-mass ratio (EFSA 2017 soil PEC guidance, section 2.8). The 10 % line follows OECD TG 307 (2025) paragraph 51: a major transformation product is any product at 10 % or more of the applied dose at any time; here it is applied to the molar percentage of the parent dose.</p><div class="drawer-block"><h3>Formation fractions</h3><p>If you give none, 1.0 is used for each product on its own — the conservative first step of the EFSA 2017 stepped approach (section 3.2.3). Those defaults are not additive and can sum above 1. Supplied fractions must sum to 1 or less.</p></div><div class="drawer-block"><h3>Temperature</h3><p>DT50s are moved with the FOCUS/EFSA Arrhenius factor (Ea 65.4 kJ/mol; no degradation at or below 0 °C). EU is set to 10 °C; other regions need a temperature you enter, and none is guessed.</p></div><div class="drawer-block"><h3>Prediction quality</h3><p>Predicted DT50s and log P are proxies and most such tools were built on one chemical class. The BIOWIN screen is an unsourced project relation. Prefer measured values, and treat every result as a hypothesis for review.</p></div><div class="drawer-block"><h3>Not modelled</h3><p>Secondary products, reversible steps, biphasic kinetics, leaching, plant uptake, volatilisation and run-off. Animal, wastewater and manure only set the starting soil concentration. The 0.1 µg/L groundwater relevance trigger for metabolites is not applied because it was not confirmed in primary text.</p></div>`,
   "degradation-kinetics-method": () => `<span class="drawer-kicker">DEGRADATION KINETICS SCIENCE BOUNDARIES</span><h2>Two different "10%" rules, on purpose</h2><p>FOCUS Kinetics Section 8.5.1 (verbatim): metabolites below 10% of applied parent throughout the study are "minor" — a full formation/decline fit is not required to the same reliability standard. This is a kinetic-modelling-reliability distinction, not a toxicological or ecotoxicological relevance decision; that is governed by a separate document (the Guidance Document on Relevant Metabolites), which this module does not evaluate.</p><p>VICH GL38 (verbatim): excreted metabolites representing 10% or more of the administered dose <em>and which do not form part of biochemical pathways</em> should be added to the active substance for PEC recalculation. Whether a metabolite "forms part of biochemical pathways" is a reviewer judgement this module cannot determine automatically — it only applies the rule once you tell it.</p><div class="drawer-block"><h3>Model selection</h3><p>Every candidate model (SFO, FOMC, HS, DFOP) is fitted; the chi-square error percentage against day-level means (FOCUS Kinetics Eq. 6-1) is reported for all four, and the simplest model that passes the 15% guidance figure is pre-selected — FOCUS Kinetics' own words: "this value should only be considered as guidance and not absolute cut-off criterion." A model that passes narrowly can still be visibly worse than a bi-phasic alternative; review every model's error, not just the selected one.</p></div><div class="drawer-block"><h3>DT50/DT90</h3><p>Found by numerically solving the fitted M(t) curve rather than a hand-transcribed closed form for every model — FOCUS Kinetics itself states DFOP has no analytical solution and recommends an iterative search.</p></div><div class="equation">SFO: M(t) = M0·e^(−kt) · FOMC: M(t) = M0·(1+t/β)^(−α) · HS: piecewise first-order with a breakpoint · DFOP: M(t) = M0·(g·e^(−k1t) + (1−g)·e^(−k2t))</div><p>Source documents: FOCUS (2014) Generic guidance for Estimating Persistence and Degradation Kinetics, Version 1.1; VICH GL38 (EMA/CVMP).</p>`,
   "identity-evidence": () => state.chemical ? `<span class="drawer-kicker">IDENTITY RESOLUTION</span><h2>Why this identity was selected</h2><p>${escapeHtml(state.chemical.preferred_name)} is stored as a confirmed identity snapshot: CAS ${escapeHtml(state.chemical.cas_number || 'not assigned')}, formula ${escapeHtml(state.chemical.molecular_formula || 'not supplied')}, molecular weight ${fmt(state.chemical.molecular_weight_g_mol,8)} g/mol and InChIKey ${escapeHtml(state.chemical.inchikey || 'not supplied')}.</p><div class="drawer-block"><h3>Trust boundary</h3><p>Resolution creates a candidate first. User confirmation creates or reuses the chemical record and attaches it to a separate project-specific calculation profile. Evidence searched for another identity cannot be staged against this record.</p></div><div class="equation">Input → candidate identity → user confirmation → immutable identity snapshot → reviewed parameter profile</div>` : `<h2>No chemical selected</h2>`,
   "use-suggestion": () => `<span class="drawer-kicker">RULE-BASED USE PROMPT</span><h2>Why use still requires confirmation</h2><p>A chemical identity does not prove whether the substance is used as a human medicine, veterinary medicine, pesticide, industrial chemical or consumer ingredient. The selected use controls emission assumptions and model applicability.</p><div class="drawer-block"><h3>User control</h3><p>You can switch among the supported use categories. Veterinary mode opens VICH Phase I and the relevant animal branch.</p></div>`,
@@ -4075,3 +4076,155 @@ document.addEventListener("DOMContentLoaded",()=>{
   init();
   if (navigator.serviceWorker?.register) navigator.serviceWorker.register("/static/sw.js").catch(()=>{});
 });
+
+/* ---- Transformation products in soil (theoretical screen) ---- */
+const TP_COLORS = ["#2a6f97", "#c2571a", "#3a7d44", "#8e4585", "#b08900", "#5c6b73", "#a4243b", "#1b7f79", "#6a4c93"];
+const TP_SOURCES = [["measured", "Measured"], ["pepper_prediction", "PEPPER prediction"], ["opera_prediction", "OPERA prediction"], ["biowin_screen", "BIOWIN screen (via score)"], ["user_estimate", "Own estimate"]];
+const TP_EXAMPLE = {
+  parent: { name: "Carbamazepine", mw: 236.27, log_p: 2.45, pka_a: "", pka_b: "", dt50: 100, temp: 20, source: "user_estimate" },
+  products: [{ name: "Carbamazepine-10,11-epoxide", mw: 252.27, log_p: 1.1, pka_a: "", pka_b: "", dt50: 30, temp: 20, source: "user_estimate", ff: 0.2 }],
+};
+
+function tpNumber(id) { const value = $(id)?.value; return value === "" || value == null ? null : Number(value); }
+
+function tpSubstanceHtml(prefix, item, isProduct) {
+  const sourceOptions = TP_SOURCES.map(([value, label]) => `<option value="${value}"${item.source === value ? " selected" : ""}>${label}</option>`).join("");
+  const field = (name, label, value, attrs = "") => `<label><span>${label}</span><input data-tp="${name}" value="${escapeHtml(String(value ?? ""))}" ${attrs}/></label>`;
+  return `<div class="tp-substance" data-tp-prefix="${prefix}">
+    <div class="cl-row2">${field("name", "Name", item.name)}${field("mw", "Molecular weight (g/mol)", item.mw, 'type="number" step="any" min="0"')}</div>
+    <div class="cl-row3">${field("log_p", "log P", item.log_p, 'type="number" step="any"')}${field("pka_a", "pKa (acid)", item.pka_a, 'type="number" step="any"')}${field("pka_b", "pKa (base)", item.pka_b, 'type="number" step="any"')}</div>
+    <div class="cl-row3">${field("dt50", "Soil DT50 (days)", item.dt50, 'type="number" step="any" min="0"')}${field("temp", "DT50 measured at (°C)", item.temp, 'type="number" step="any"')}
+      <label><span>DT50 source</span><select data-tp="source">${sourceOptions}</select></label></div>
+    ${isProduct ? `<div class="cl-row2">${field("ff", "Formation fraction (molar, 0–1)", item.ff ?? "", 'type="number" step="any" min="0" max="1" placeholder="blank = 1.0 worst case"')}
+      <button class="ghost-button" type="button" data-tp-remove="1">Remove</button></div>` : ""}
+  </div>`;
+}
+
+function tpRenderInputs(example) {
+  $("tp-parent").innerHTML = tpSubstanceHtml("parent", example.parent, false);
+  $("tp-products").innerHTML = example.products.map((item, index) => tpSubstanceHtml(`product-${index}`, item, true)).join("");
+}
+
+function tpReadSubstance(node, isProduct) {
+  const get = (name) => node.querySelector(`[data-tp="${name}"]`)?.value ?? "";
+  const num = (name) => (get(name) === "" ? null : Number(get(name)));
+  const entry = { name: get("name").trim() || undefined, molecular_weight_g_mol: num("mw"), log_p: num("log_p"), pka_a: num("pka_a"), pka_b: num("pka_b"),
+    dt50_days: num("dt50"), dt50_temperature_c: num("temp") ?? 20, dt50_source: get("source") };
+  if (isProduct && get("ff") !== "") entry.formation_fraction = Number(get("ff"));
+  Object.keys(entry).forEach((key) => { if (entry[key] === null || entry[key] === undefined) delete entry[key]; });
+  return entry;
+}
+
+function tpPayload() {
+  const parentNode = document.querySelector('#tp-parent [data-tp-prefix]');
+  const productNodes = [...document.querySelectorAll('#tp-products [data-tp-prefix]')];
+  const region = $("tp-region").value;
+  const payload = {
+    parent: tpReadSubstance(parentNode, false), products: productNodes.map((node) => tpReadSubstance(node, true)),
+    initial_parent_mg_kg: tpNumber("tp-c0"), duration_days: tpNumber("tp-duration") ?? 365,
+  };
+  const oc = tpNumber("tp-oc");
+  if (oc !== null) payload.soil = { organic_carbon_fraction: oc / 100, soil_ph: tpNumber("tp-ph") ?? 7 };
+  const temperature = tpNumber("tp-temperature");
+  if (temperature !== null) payload.temperature_c = temperature; else if (region) payload.region = region;
+  return payload;
+}
+
+function tpFmt(value, digits = 3) {
+  if (value === null || value === undefined || !Number.isFinite(value)) return "—";
+  if (value !== 0 && (Math.abs(value) < 0.001 || Math.abs(value) >= 10000)) return value.toExponential(2);
+  return Number(value.toPrecision(digits)).toString();
+}
+
+function tpDrawChart(result) {
+  const svg = $("tp-chart");
+  const W = 560, H = 300, L = 48, R = 16, T = 16, B = 40;
+  const times = result.times_days, tMax = times[times.length - 1];
+  const series = [{ name: result.parent.name, values: result.parent.series_mg_kg.map((v) => (v / result.initial_parent_mg_kg) * 100) },
+    ...result.products.map((p) => ({ name: p.name, values: p.series_percent_of_applied_molar }))];
+  const yMax = Math.max(100, ...series.flatMap((s) => s.values));
+  const niceMax = Math.ceil(yMax / 10) * 10;
+  const x = (t) => L + (t / tMax) * (W - L - R);
+  const y = (v) => T + (1 - v / niceMax) * (H - T - B);
+  const grid = [];
+  for (let i = 0; i <= 5; i += 1) {
+    const v = (niceMax * i) / 5;
+    grid.push(`<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="currentColor" stroke-opacity=".12"/><text x="${L - 6}" y="${y(v) + 4}" text-anchor="end" font-size="11" fill="currentColor">${tpFmt(v, 3)}</text>`);
+    const t = (tMax * i) / 5;
+    grid.push(`<text x="${x(t)}" y="${H - B + 16}" text-anchor="middle" font-size="11" fill="currentColor">${tpFmt(t, 3)}</text>`);
+  }
+  const major = `<line x1="${L}" x2="${W - R}" y1="${y(10)}" y2="${y(10)}" stroke="currentColor" stroke-opacity=".5" stroke-dasharray="5 4"/><text x="${W - R - 4}" y="${y(10) - 4}" text-anchor="end" font-size="11" fill="currentColor">10 %</text>`;
+  const lines = series.map((s, index) => `<polyline fill="none" stroke="${TP_COLORS[index % TP_COLORS.length]}" stroke-width="2" points="${s.values.map((v, i) => `${x(times[i]).toFixed(1)},${y(v).toFixed(1)}`).join(" ")}"/>`);
+  const peaks = result.products.map((p, index) => (p.peak.time_days === null ? "" :
+    `<circle cx="${x(p.peak.time_days)}" cy="${y(p.peak.percent_of_applied_molar)}" r="4" fill="${TP_COLORS[(index + 1) % TP_COLORS.length]}"/>`)).join("");
+  svg.innerHTML = `${grid.join("")}${major}${lines.join("")}${peaks}
+    <text x="${(L + W - R) / 2}" y="${H - 6}" text-anchor="middle" font-size="12" fill="currentColor">Days after application</text>
+    <text transform="translate(12 ${(T + H - B) / 2}) rotate(-90)" text-anchor="middle" font-size="12" fill="currentColor">% of applied parent (molar)</text>`;
+  $("tp-legend").innerHTML = series.map((s, index) => `<span class="feature-chip"><i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${TP_COLORS[index % TP_COLORS.length]};margin-right:6px"></i>${escapeHtml(s.name)}</span>`).join("");
+}
+
+function tpSubstanceResult(item, isParent) {
+  const sorption = item.sorption;
+  let sorptionText = "not calculated (needs log P and soil organic carbon)";
+  if (sorption?.available) {
+    const mobility = sorption.very_mobile_clp ? "very mobile (CLP log Koc &lt; 2)" : sorption.mobile_clp ? "mobile (CLP log Koc &lt; 3)" : "not mobile by the CLP log Koc line";
+    sorptionText = `log Koc ${tpFmt(sorption.log_koc)} · ${mobility} · ${escapeHtml(sorption.model)}`;
+  } else if (sorption) sorptionText = escapeHtml(sorption.reason || "unavailable");
+  const peak = item.peak;
+  const peakText = isParent ? "" : `<p><strong>Peak:</strong> ${tpFmt(peak.concentration_mg_kg)} mg/kg (${tpFmt(peak.percent_of_applied_molar)} % of applied) at day ${tpFmt(peak.time_days)}${peak.within_simulation_window ? "" : " — beyond the window, end value shown"}. ${item.major_transformation_product.flag ? '<span class="feature-chip">major transformation product (≥ 10 %)</span>' : "Below the 10 % major-product line."}</p>
+    <p><small>Formation fraction ${tpFmt(item.formation_fraction)} — ${escapeHtml(item.formation_fraction_basis)}</small></p>`;
+  const notes = (item.property_notes || []).map((n) => `<p><small>${escapeHtml(n)}</small></p>`).join("");
+  return `<article class="hypothesis-card"><div><h4>${escapeHtml(item.name)}</h4>
+    <p><strong>DT50 at soil temperature:</strong> ${tpFmt(item.dt50_days)} d · ${escapeHtml(item.dt50_source.replace(/_/g, " "))}</p>
+    <p><small>${escapeHtml(item.dt50_basis)}</small></p>${peakText}
+    <p><strong>Sorption:</strong> ${sorptionText}</p>${notes}</div></article>`;
+}
+
+async function tpRun() {
+  const button = $("tp-run"), status = $("tp-status");
+  let payload;
+  try { payload = tpPayload(); } catch (error) { toast(error.message, 6000); return; }
+  if (button) button.disabled = true;
+  status.className = "design-status running";
+  status.innerHTML = "<strong>Calculating…</strong>";
+  try {
+    const result = await api("/api/tp-soil-fate/run", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+    state.tpSoilFate = result;
+    tpDrawChart(result);
+    $("tp-results").innerHTML = [tpSubstanceResult(result.parent, true), ...result.products.map((p) => tpSubstanceResult(p, false))].join("");
+    const warnings = (result.warnings || []).map((w) => `<p><strong>Note:</strong> ${escapeHtml(w)}</p>`).join("");
+    $("tp-notes").innerHTML = `<p><strong>Soil temperature:</strong> ${tpFmt(result.target_temperature_c)} °C — ${escapeHtml(result.temperature_basis)}</p>${warnings}${result.limitations.map((l) => `<p>${escapeHtml(l)}</p>`).join("")}`;
+    status.className = "design-status";
+    status.innerHTML = `<strong>Calculated for ${escapeHtml(result.parent.name)} at ${tpFmt(result.target_temperature_c)} °C.</strong><small>${result.products.length} transformation product(s) · predictions are proxies; prefer measured DT50s.</small>`;
+  } catch (error) {
+    status.className = "design-status error";
+    status.innerHTML = `<strong>Could not calculate.</strong><small>${escapeHtml(error.message)}</small>`;
+  } finally {
+    if (button) button.disabled = false;
+  }
+}
+
+async function tpInit() {
+  if (!$("tp-soil-fate")) return;
+  tpRenderInputs(TP_EXAMPLE);
+  try {
+    const options = await api("/api/tp-soil-fate/options");
+    const regions = Object.entries(options.region_temperature_c);
+    $("tp-region").innerHTML = `<option value="">Reference (${options.reference_temperature_c} °C, no region)</option>` +
+      regions.map(([code, temp]) => `<option value="${escapeHtml(code)}">${escapeHtml(code)} — ${temp} °C</option>`).join("");
+    if (options.region_temperature_c[state.modelSystem] !== undefined) $("tp-region").value = state.modelSystem;
+  } catch (error) {
+    $("tp-region").innerHTML = '<option value="">Reference (20 °C, no region)</option>';
+  }
+  $("tp-run").addEventListener("click", tpRun);
+  $("tp-add-product").addEventListener("click", () => {
+    const count = document.querySelectorAll("#tp-products [data-tp-prefix]").length;
+    if (count >= 8) { toast("At most 8 main-stage transformation products.", 4000); return; }
+    $("tp-products").insertAdjacentHTML("beforeend", tpSubstanceHtml(`product-${count}`, { name: "", mw: "", log_p: "", pka_a: "", pka_b: "", dt50: "", temp: 20, source: "measured", ff: "" }, true));
+  });
+  $("tp-products").addEventListener("click", (event) => {
+    if (event.target.closest("[data-tp-remove]")) event.target.closest("[data-tp-prefix]").remove();
+  });
+  tpRun();
+}
+document.addEventListener("DOMContentLoaded", () => { tpInit(); });

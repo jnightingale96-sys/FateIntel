@@ -181,6 +181,10 @@ from .services.biowin_dt50 import router as biowin_dt50_router  # noqa: E402
 
 app.include_router(biowin_dt50_router, prefix="/api/providers")
 
+from .services.tp_soil_fate import router as tp_soil_fate_router  # noqa: E402
+
+app.include_router(tp_soil_fate_router, prefix="/api")
+
 
 @app.exception_handler(EnviroChemError)
 async def envirochem_exception_handler(request: Request, exc: EnviroChemError):
