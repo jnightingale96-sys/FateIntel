@@ -126,7 +126,13 @@ def _pepper_dt50(entry: dict[str, Any], label: str) -> tuple[float, str, str, di
         "mean_90CI_days": (result.prediction or {}).get("DT50_mean_90CI_days"),
         "single_soil_90PI_days": (result.prediction or {}).get("DT50_single_soil_90PI_days"),
         "max_tanimoto_to_training_set": (result.applicability or {}).get("max_tanimoto"), "warnings": list(result.warnings),
+        "source": "pepper", "log10_sd_mean": recommended.get("logDT50_sd"),
     }
+    sigma_soils = (result.prediction or {}).get("sigma_between_soils_used")
+    sd_mean = recommended.get("logDT50_sd")
+    uncertainty["log10_sd_single_soil"] = (
+        math.sqrt(sd_mean ** 2 + sigma_soils ** 2) if sd_mean is not None and sigma_soils is not None else sd_mean
+    )
     note = (
         f"PEPPER {recommended['DT50_ref_days']} d at 20 C ({recommended['basis']}; confidence {recommended.get('confidence')})"
         + ("" if measured else "; MODEL ESTIMATE, not an OECD-accepted QSAR -- prefer a measured OECD 307 value")
@@ -145,6 +151,7 @@ def _dt50_at_target(entry: dict[str, Any], label: str, target_c: float) -> dict[
         dt50 = _positive(entry["dt50_days"], f"{label}: dt50_days")
         from_c = float(entry.get("dt50_temperature_c", REFERENCE_TEMPERATURE_C))
         note = f"supplied DT50 {dt50:g} d at {from_c:g} C"
+        uncertainty = _range_to_uncertainty(entry, dt50, label)
     elif entry.get("dt50_from_pepper"):
         dt50, source, note, uncertainty = _pepper_dt50(entry, label)
         from_c = REFERENCE_TEMPERATURE_C
@@ -203,6 +210,141 @@ def time_of_peak(k_parent: float, k_product: float) -> float:
     if math.isclose(k_parent, k_product, rel_tol=1e-9):
         return 1.0 / k_parent
     return math.log(k_product / k_parent) / (k_product - k_parent)
+
+
+Z90 = 1.6448536269514722  # one-sided 95th percentile of the standard normal: a 90 % interval spans +-Z90 sd
+BAND_BASES = ("single_soil", "mean")
+BAND_PERCENTILES = (5.0, 50.0, 95.0)
+BAND_TIME_POINTS = 121
+
+
+def _range_to_uncertainty(entry: dict[str, Any], dt50: float, label: str) -> dict[str, Any] | None:
+    """A user-supplied 90 % range for a DT50 (same temperature basis as the DT50) as a log10 standard deviation."""
+
+    bounds = entry.get("dt50_range_days")
+    if bounds is None:
+        return None
+    if not isinstance(bounds, (list, tuple)) or len(bounds) != 2:
+        raise TpFateInputError(f"{label}: dt50_range_days must be [low, high]")
+    low, high = _positive(bounds[0], f"{label}: dt50_range_days low"), _positive(bounds[1], f"{label}: dt50_range_days high")
+    if not low < dt50 < high:
+        raise TpFateInputError(f"{label}: dt50_range_days must satisfy low < DT50 < high")
+    sd = (math.log10(high) - math.log10(low)) / (2.0 * Z90)
+    return {"source": "user_range", "range_days": [low, high], "log10_sd_mean": sd, "log10_sd_single_soil": sd, "confidence": "user range (90 %)"}
+
+
+def _rate_matrices(ks: np.ndarray, ffs: list[float], sources: list[int]) -> np.ndarray:
+    """Rate matrices for a stack of rate-constant vectors ks (S, n + 1): dY/dt = A Y."""
+
+    samples, size = ks.shape
+    rate = np.zeros((samples, size, size))
+    rate[:, 0, 0] = -ks[:, 0]
+    for j in range(1, size):
+        source_index = sources[j - 1] + 1
+        rate[:, j, source_index] += ffs[j - 1] * ks[:, source_index]
+        rate[:, j, j] -= ks[:, j]
+    return rate
+
+
+def _uncertainty_band(
+    parent: dict[str, Any], products: list[dict[str, Any]], sources: list[int], *, duration: float, c0: float, p0_mol: float,
+    config: dict[str, Any],
+) -> dict[str, Any]:
+    """Monte Carlo band: sample each uncertain DT50 log-normally and independently, rerun the kinetics, take percentiles.
+
+    Only DT50s with a stated uncertainty are sampled (PEPPER intervals or a user 90 % range); everything else,
+    including every formation fraction, is held at its central value and named as such. The 5/50/95 % lines are
+    percentiles of concentration AT EACH TIME, not a single scenario. Sampling is seeded, so a result reproduces.
+    """
+
+    from scipy.stats import spearmanr
+
+    basis = config.get("basis", "single_soil")
+    if basis not in BAND_BASES:
+        raise TpFateInputError(f"uncertainty.basis must be one of {BAND_BASES}")
+    n_samples = int(config.get("n_samples", 400))
+    if not 50 <= n_samples <= 2000:
+        raise TpFateInputError("uncertainty.n_samples must be between 50 and 2000")
+    seed = int(config.get("seed", 20260924))
+
+    substances = [parent, *products]
+    sd_key = "log10_sd_single_soil" if basis == "single_soil" else "log10_sd_mean"
+    sampled: list[int] = []
+    sds: dict[int, float] = {}
+    for index, substance in enumerate(substances):
+        u = substance.get("dt50_uncertainty") or {}
+        sd = u.get(sd_key) if u.get(sd_key) is not None else u.get("log10_sd_mean")
+        if sd is not None and sd > 0 and math.isfinite(substance["dt50_days"]):
+            sampled.append(index)
+            sds[index] = float(sd)
+    fixed = [s["name"] for i, s in enumerate(substances) if i not in sds]
+    if not sampled:
+        return {"available": False, "reason": "no DT50 carries an uncertainty (use a PEPPER prediction or give dt50_range_days), or the soil is frozen", "fixed": fixed}
+
+    rng = np.random.default_rng(seed)
+    n = len(products)
+    central = np.array([math.log(2.0) / s["dt50_days"] if math.isfinite(s["dt50_days"]) else 0.0 for s in substances])
+    ks = np.tile(central, (n_samples, 1))
+    log10_draws = {}
+    for index in sampled:
+        z = rng.standard_normal(n_samples)
+        scale = 10.0 ** (sds[index] * z)  # multiplies the input DT50; the temperature factor is a constant, so it carries through
+        ks[:, index] = central[index] / scale
+        log10_draws[index] = sds[index] * z
+    ffs = [p["formation_fraction"] for p in products]
+    rate = _rate_matrices(ks, ffs, sources)
+    grid = np.linspace(0.0, duration, BAND_TIME_POINTS)
+    # Uniform time grid: one matrix exponential per sample for the step dt, then repeated multiplication. Exact
+    # (exp(A (i+1) dt) e0 = exp(A dt) exp(A i dt) e0) and far cheaper than an exponential per sample and time.
+    step = expm(rate * (duration / (BAND_TIME_POINTS - 1)))  # (S, n + 1, n + 1)
+    conc = np.zeros((n_samples, BAND_TIME_POINTS, n + 1))
+    conc[:, 0, 0] = 1.0
+    for i in range(1, BAND_TIME_POINTS):
+        conc[:, i, :] = np.einsum("sij,sj->si", step, conc[:, i - 1, :])
+    conc = np.maximum(conc, 0.0)
+
+    def lines(values: np.ndarray) -> dict[str, list[float]]:
+        p05, p50, p95 = np.percentile(values, BAND_PERCENTILES, axis=0)
+        return {"p05": p05.tolist(), "p50": p50.tolist(), "p95": p95.tolist()}
+
+    parent_out = {"name": parent["name"], "percent_of_applied_molar": lines(conc[:, :, 0] * 100.0), "mg_kg": lines(conc[:, :, 0] * c0)}
+    products_out = []
+    for j, product in enumerate(products, start=1):
+        mw = product["molecular_weight_g_mol"]
+        series = conc[:, :, j]
+        peaks = series.max(axis=1) * 100.0
+        peak_times = grid[series.argmax(axis=1)]
+        p05, p50, p95 = np.percentile(peaks, BAND_PERCENTILES)
+        t05, t50, t95 = np.percentile(peak_times, BAND_PERCENTILES)
+        drivers = []
+        for index in sampled:
+            if np.ptp(peaks) == 0.0:
+                break
+            rho = spearmanr(log10_draws[index], peaks).statistic
+            if math.isfinite(rho):
+                drivers.append({"substance": substances[index]["name"], "spearman_rho": float(rho)})
+        drivers.sort(key=lambda d: -abs(d["spearman_rho"]))
+        products_out.append({
+            "name": product["name"],
+            "percent_of_applied_molar": lines(series * 100.0), "mg_kg": lines(series * p0_mol * mw),
+            "peak_percent_of_applied_molar": {"p05": float(p05), "p50": float(p50), "p95": float(p95)},
+            "peak_time_days": {"p05": float(t05), "p50": float(t50), "p95": float(t95)},
+            "probability_major_transformation_product": float(np.mean(peaks >= MAJOR_TP_PERCENT)),
+            "drivers": drivers,
+        })
+    return {
+        "available": True, "method": "Monte Carlo, independent log-normal DT50s, seeded", "n_samples": n_samples, "seed": seed,
+        "basis": basis, "percentiles": list(BAND_PERCENTILES), "times_days": grid.tolist(),
+        "sampled": [{"name": substances[i]["name"], "log10_sd": sds[i], "source": (substances[i].get("dt50_uncertainty") or {}).get("source", "pepper")} for i in sampled],
+        "fixed": fixed, "parent": parent_out, "products": products_out,
+        "notes": [
+            "Percentiles are taken at each time separately; they are not one scenario and neighbouring points do not belong to one curve.",
+            "Only DT50s with a stated uncertainty are sampled. Formation fractions and every fixed substance are held at their central values, so the band understates the full uncertainty.",
+            "Peak time and height are resolved on a " + str(BAND_TIME_POINTS) + "-point grid (about duration/120 days).",
+            "single_soil basis adds the between-soil spread to the model uncertainty (a single site); mean basis is the uncertainty of the typical soil only.",
+        ],
+    }
+
 
 
 def run_tp_soil_fate(payload: dict[str, Any]) -> dict[str, Any]:
@@ -360,11 +502,18 @@ def run_tp_soil_fate(payload: dict[str, Any]) -> dict[str, Any]:
         if not within_window and observed_peak > 0:
             warnings.append(f"{product['name']}: no interior peak within the {duration:g}-day window; the reported peak is the highest value in the window.")
 
+    uncertainty_config = payload.get("uncertainty")
+    band = None
+    if uncertainty_config is not False and (uncertainty_config is None or isinstance(uncertainty_config, dict)):
+        band = _uncertainty_band(parent, products, sources, duration=duration, c0=c0, p0_mol=p0_mol, config=uncertainty_config or {})
+    elif uncertainty_config is not False:
+        raise TpFateInputError("uncertainty must be an object, false or omitted")
+
     return {
         "model": "parent -> transformation products (chains and branches allowed), single first-order kinetics, molar basis",
         "target_temperature_c": target_c, "temperature_basis": temperature_basis,
         "initial_parent_mg_kg": c0, "duration_days": duration, "times_days": times,
-        "parent": parent, "products": products, "warnings": warnings,
+        "parent": parent, "products": products, "uncertainty_band": band, "warnings": warnings,
         "limitations": [
             "Each product has one source (the parent or another listed product), forming a tree: no reversible steps, and no product formed from two sources.",
             "Single first-order (SFO) kinetics; biphasic behaviour (FOMC/DFOP/HS) is not represented.",

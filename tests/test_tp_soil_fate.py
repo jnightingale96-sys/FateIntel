@@ -505,3 +505,130 @@ def test_real_pepper_agrees_with_the_provider_when_it_is_installed():
     assert result["dt50_input_days"] == pytest.approx(direct)
     assert result["dt50_days"] == pytest.approx(direct / corrections.temperature_factor(10.0), rel=1e-12)
     assert result["molecular_weight_g_mol"] == pytest.approx(236.27, abs=0.02)
+
+
+# ---------------------------------------------------------------- uncertainty band ---------------------------------------
+
+def _band_payload(**overrides):
+    payload = _payload(duration_days=365.0, n_points=121)
+    payload["parent"] = {"name": "P", "molecular_weight_g_mol": 200.0, "dt50_days": 50.0, "dt50_source": "measured", "dt50_range_days": [15.0, 170.0]}
+    payload["products"] = [
+        {"name": "M1", "molecular_weight_g_mol": 100.0, "formation_fraction": 0.6, "dt50_days": 40.0, "dt50_source": "measured", "dt50_range_days": [10.0, 150.0]},
+        {"name": "M2", "molecular_weight_g_mol": 80.0, "formation_fraction": 0.5, "dt50_days": 90.0, "dt50_source": "measured", "formed_from": "M1"},
+    ]
+    payload.update(overrides)
+    return payload
+
+
+Z90 = 1.6448536269514722
+
+
+def test_a_user_range_becomes_a_log10_sd_and_the_parent_band_matches_an_independent_calculation():
+    payload = _band_payload(uncertainty={"n_samples": 500, "seed": 7})
+    result = run_tp_soil_fate(payload)
+    band = result["uncertainty_band"]
+    sd = (math.log10(170.0) - math.log10(15.0)) / (2 * Z90)
+    assert band["available"] and band["sampled"][0] == {"name": "P", "log10_sd": pytest.approx(sd), "source": "user_range"}
+    # The parent is the first sampled substance, so its draws are the generator's first 500 standard normals.
+    z = np.random.default_rng(7).standard_normal(500)
+    dt50 = 50.0 * 10.0 ** (sd * z)  # target = DT50 temperature (20 C), so no temperature scaling
+    times = np.array(band["times_days"])
+    expected = np.exp(-np.log(2) * times[None, :] / dt50[:, None]) * 100.0
+    for q, key in ((5, "p05"), (50, "p50"), (95, "p95")):
+        assert np.allclose(band["parent"]["percent_of_applied_molar"][key], np.percentile(expected, q, axis=0), rtol=1e-9, atol=1e-9)
+
+
+def test_the_median_line_follows_the_central_curve_and_lines_are_ordered():
+    band = run_tp_soil_fate(_band_payload(uncertainty={"n_samples": 2000}))["uncertainty_band"]
+    central = run_tp_soil_fate(_band_payload(uncertainty=False, duration_days=365.0))["parent"]["series_mg_kg"]
+    for entry in (band["parent"], *band["products"]):
+        p05, p50, p95 = (np.array(entry["percent_of_applied_molar"][k]) for k in ("p05", "p50", "p95"))
+        assert (p05 <= p50 + 1e-12).all() and (p50 <= p95 + 1e-12).all()
+    t = band["times_days"][40]
+    assert band["parent"]["mg_kg"]["p50"][40] == pytest.approx(2.0 * math.exp(-math.log(2) * t / 50.0), rel=0.05)
+    assert central[0] == pytest.approx(2.0)
+
+
+def test_the_band_is_reproducible_for_a_seed_and_changes_with_another():
+    a = run_tp_soil_fate(_band_payload(uncertainty={"seed": 1}))["uncertainty_band"]
+    b = run_tp_soil_fate(_band_payload(uncertainty={"seed": 1}))["uncertainty_band"]
+    c = run_tp_soil_fate(_band_payload(uncertainty={"seed": 2}))["uncertainty_band"]
+    assert a["products"][0]["peak_percent_of_applied_molar"] == b["products"][0]["peak_percent_of_applied_molar"]
+    assert a["products"][0]["peak_percent_of_applied_molar"] != c["products"][0]["peak_percent_of_applied_molar"]
+
+
+def test_substances_without_an_uncertainty_are_named_as_fixed_and_no_uncertainty_means_no_band():
+    band = run_tp_soil_fate(_band_payload())["uncertainty_band"]
+    assert [s["name"] for s in band["sampled"]] == ["P", "M1"] and band["fixed"] == ["M2"]
+    assert any("formation fractions" in note.lower() for note in band["notes"])
+    none = run_tp_soil_fate(_payload())["uncertainty_band"]
+    assert none["available"] is False and "no DT50 carries an uncertainty" in none["reason"]
+    assert run_tp_soil_fate(_band_payload(uncertainty=False))["uncertainty_band"] is None
+
+
+def test_probability_of_a_major_transformation_product_is_zero_or_one_when_the_answer_is_clear():
+    high = _band_payload()
+    high["products"][0]["formation_fraction"] = 1.0
+    high["products"][0]["dt50_range_days"] = [35.0, 46.0]
+    high["parent"]["dt50_range_days"] = [45.0, 56.0]
+    assert run_tp_soil_fate(high)["uncertainty_band"]["products"][0]["probability_major_transformation_product"] == 1.0
+    low = _band_payload()
+    low["products"][0]["formation_fraction"] = 0.02
+    assert run_tp_soil_fate(low)["uncertainty_band"]["products"][0]["probability_major_transformation_product"] == 0.0
+
+
+def test_the_driver_ranking_finds_the_only_uncertain_substance_and_its_direction():
+    payload = _band_payload()
+    payload["products"][0].pop("dt50_range_days")  # only the parent DT50 is uncertain
+    band = run_tp_soil_fate(payload)["uncertainty_band"]
+    drivers = band["products"][0]["drivers"]
+    assert [d["substance"] for d in drivers] == ["P"]
+    assert drivers[0]["spearman_rho"] < -0.95  # a slower parent means a lower, later first-generation peak
+
+
+def test_the_single_soil_basis_is_wider_than_the_mean_basis_for_pepper(monkeypatch):
+    fake = _FakePredictor(dt50=40.0)
+    original = _FakeResult.__init__
+
+    def with_sigma(self, **kwargs):
+        original(self, **kwargs)
+        self.prediction["sigma_between_soils_used"] = 0.3
+
+    monkeypatch.setattr(_FakeResult, "__init__", with_sigma)
+    monkeypatch.setattr("app.services.soil_dt50.predictor.get_predictor", lambda: fake)
+    payload = _pepper_payload(uncertainty={"basis": "single_soil"})
+    single = run_tp_soil_fate(payload)
+    assert single["parent"]["dt50_uncertainty"]["log10_sd_mean"] == 0.4
+    assert single["parent"]["dt50_uncertainty"]["log10_sd_single_soil"] == pytest.approx(math.hypot(0.4, 0.3))
+    mean = run_tp_soil_fate(_pepper_payload(uncertainty={"basis": "mean"}))
+    width = lambda r: r["uncertainty_band"]["products"][0]["peak_percent_of_applied_molar"]["p95"] - r["uncertainty_band"]["products"][0]["peak_percent_of_applied_molar"]["p05"]
+    assert single["uncertainty_band"]["sampled"][0]["log10_sd"] > mean["uncertainty_band"]["sampled"][0]["log10_sd"]
+    assert width(single) > width(mean)
+
+
+@pytest.mark.parametrize("mutation, message", [
+    (lambda p: p["parent"].update(dt50_range_days=[60.0, 170.0]), "low < DT50 < high"),
+    (lambda p: p["parent"].update(dt50_range_days=[15.0]), r"\[low, high\]"),
+    (lambda p: p["parent"].update(dt50_range_days=[-1.0, 170.0]), "must be a positive"),
+    (lambda p: p.update(uncertainty={"basis": "guess"}), "basis"),
+    (lambda p: p.update(uncertainty={"n_samples": 5}), "n_samples"),
+    (lambda p: p.update(uncertainty="yes"), "uncertainty must be"),
+])
+def test_bad_uncertainty_inputs_are_refused(mutation, message):
+    payload = _band_payload()
+    mutation(payload)
+    with pytest.raises(TpFateInputError, match=message):
+        run_tp_soil_fate(payload)
+
+
+def test_a_frozen_soil_has_no_band_and_the_endpoint_serialises_the_band():
+    assert run_tp_soil_fate(_band_payload(temperature_c=-5.0))["uncertainty_band"]["available"] is False
+    from fastapi.testclient import TestClient
+
+    from app.main import app
+
+    with TestClient(app) as client:
+        response = client.post("/api/tp-soil-fate/run", json=_band_payload(region="EU"))
+    assert response.status_code == 200
+    band = response.json()["uncertainty_band"]
+    assert band["available"] is True and len(band["times_days"]) == 121 and len(band["products"]) == 2

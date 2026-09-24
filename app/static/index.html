@@ -1194,6 +1194,8 @@
 <label><span>Soil organic carbon (%)</span><input id="tp-oc" type="number" step="0.1" min="0" value="2"/></label>
 <label><span>Soil pH</span><input id="tp-ph" type="number" step="0.1" min="3" max="10" value="7"/></label>
 </div>
+<label><span>Uncertainty band</span><select id="tp-band-basis"><option value="single_soil">Single soil: model + between-soil spread</option><option value="mean">Typical soil: model uncertainty only</option></select></label>
+<label class="cl-check"><input id="tp-band" type="checkbox" checked/> <span>Show the 5–95 % band (needs a PEPPER DT50 or a DT50 range)</span></label>
 <button class="primary-button" id="tp-run" type="button"><span>↘</span> Calculate soil fate</button>
 </section>
 <section class="design-control-card">
