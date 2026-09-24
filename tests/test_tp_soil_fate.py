@@ -412,3 +412,96 @@ def test_endpoint_serialises_a_chain_to_json():
     body = response.json()
     assert [p["generation"] for p in body["products"]] == [1, 2]
     assert isinstance(body["products"][1]["peak"]["within_simulation_window"], bool)
+
+
+# ---------------------------------------------------------------- PEPPER-sourced DT50 --------------------------------
+
+class _FakeResult:
+    def __init__(self, dt50=40.0, basis="predicted (PEPPER GPR)", confidence="medium", status="ok"):
+        self.status = status
+        self.recommended = {"DT50_ref_days": dt50, "logDT50": math.log10(dt50), "logDT50_sd": 0.4, "basis": basis, "confidence": confidence}
+        self.prediction = {"DT50_mean_90CI_days": [10.0, 160.0], "DT50_single_soil_90PI_days": [8.0, 200.0]}
+        self.applicability = {"max_tanimoto": 0.5}
+        self.warnings = ["a warning"]
+
+
+class _FakePredictor:
+    def __init__(self, **kwargs):
+        self.kwargs = kwargs
+        self.calls = []
+
+    def predict(self, chemicals):
+        self.calls.append(chemicals)
+        return [_FakeResult(**self.kwargs)]
+
+
+def _pepper_payload(**overrides):
+    payload = _payload(**overrides)
+    payload["parent"] = {"name": "P", "molecular_weight_g_mol": 200.0, "smiles": "CCO", "dt50_from_pepper": True}
+    return payload
+
+
+def test_pepper_dt50_is_taken_at_20c_labelled_normalised_and_carries_its_uncertainty(monkeypatch):
+    fake = _FakePredictor(dt50=40.0)
+    monkeypatch.setattr("app.services.soil_dt50.predictor.get_predictor", lambda: fake)
+    result = run_tp_soil_fate(_pepper_payload(region="EU"))
+    parent = result["parent"]
+    assert fake.calls == [[{"smiles": "CCO", "name": "P"}]]
+    assert parent["dt50_source"] == "pepper_prediction" and "MODEL ESTIMATE" in parent["dt50_basis"]
+    assert parent["dt50_input_days"] == 40.0 and parent["dt50_input_temperature_c"] == 20.0
+    assert parent["dt50_days"] == pytest.approx(40.0 / corrections.temperature_factor(10.0), rel=1e-12)
+    assert parent["dt50_uncertainty"]["mean_90CI_days"] == [10.0, 160.0] and parent["dt50_uncertainty"]["confidence"] == "medium"
+
+
+def test_a_measured_eawag_soil_value_is_labelled_measured(monkeypatch):
+    monkeypatch.setattr("app.services.soil_dt50.predictor.get_predictor", lambda: _FakePredictor(dt50=12.0, basis="measured (EAWAG-SOIL)", confidence="measured"))
+    parent = run_tp_soil_fate(_pepper_payload())["parent"]
+    assert parent["dt50_source"] == "measured" and "MODEL ESTIMATE" not in parent["dt50_basis"]
+
+
+def test_a_supplied_dt50_beats_pepper_and_pepper_is_never_called(monkeypatch):
+    def boom():
+        raise AssertionError("PEPPER must not be called when a DT50 is supplied")
+
+    monkeypatch.setattr("app.services.soil_dt50.predictor.get_predictor", boom)
+    payload = _pepper_payload()
+    payload["parent"]["dt50_days"] = 20.0
+    payload["parent"]["dt50_source"] = "measured"
+    assert run_tp_soil_fate(payload)["parent"]["dt50_source"] == "measured"
+
+
+def test_pepper_refusals_are_clear_when_closed_missing_or_unusable(monkeypatch):
+    from app.services import soil_dt50
+
+    payload = _pepper_payload()
+    payload["parent"].pop("smiles")
+    with pytest.raises(TpFateInputError, match="SMILES is required"):
+        run_tp_soil_fate(payload)
+    monkeypatch.setattr(soil_dt50, "commercial_gate", lambda *a, **k: (False, "licence_required"))
+    with pytest.raises(TpFateInputError, match="closed here"):
+        run_tp_soil_fate(_pepper_payload())
+    monkeypatch.setattr(soil_dt50, "commercial_gate", lambda *a, **k: (True, "ok"))
+    monkeypatch.setattr(soil_dt50, "availability", lambda: {"available": False, "missing": ["java runtime (PaDEL)"]})
+    with pytest.raises(TpFateInputError, match="dependencies are missing"):
+        run_tp_soil_fate(_pepper_payload())
+    monkeypatch.setattr(soil_dt50, "availability", lambda: {"available": True, "missing": []})
+    monkeypatch.setattr("app.services.soil_dt50.predictor.get_predictor", lambda: _FakePredictor(status="outside_domain"))
+    with pytest.raises(TpFateInputError, match="could not predict"):
+        run_tp_soil_fate(_pepper_payload())
+
+
+def test_real_pepper_agrees_with_the_provider_when_it_is_installed():
+    from app.services import soil_dt50
+
+    if not soil_dt50.availability()["available"] or not soil_dt50.commercial_gate()[0]:
+        pytest.skip("PEPPER provider not available in this environment")
+    from app.services.soil_dt50.predictor import get_predictor
+
+    smiles = "NC(=O)N1c2ccccc2C=Cc2ccccc21"
+    direct = get_predictor().predict([{"smiles": smiles}])[0].recommended["DT50_ref_days"]
+    payload = _payload(region="EU")
+    payload["parent"] = {"name": "Carbamazepine", "smiles": smiles, "dt50_from_pepper": True}
+    result = run_tp_soil_fate(payload)["parent"]
+    assert result["dt50_input_days"] == pytest.approx(direct)
+    assert result["dt50_days"] == pytest.approx(direct / corrections.temperature_factor(10.0), rel=1e-12)
+    assert result["molecular_weight_g_mol"] == pytest.approx(236.27, abs=0.02)

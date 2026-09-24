@@ -4079,12 +4079,12 @@ document.addEventListener("DOMContentLoaded",()=>{
 
 /* ---- Transformation products in soil (theoretical screen) ---- */
 const TP_COLORS = ["#2a6f97", "#c2571a", "#3a7d44", "#8e4585", "#b08900", "#5c6b73", "#a4243b", "#1b7f79", "#6a4c93"];
-const TP_SOURCES = [["measured", "Measured"], ["pepper_prediction", "PEPPER prediction"], ["opera_prediction", "OPERA prediction"], ["biowin_screen", "BIOWIN screen (via score)"], ["user_estimate", "Own estimate"]];
+const TP_SOURCES = [["measured", "Measured"], ["pepper_prediction", "PEPPER prediction"], ["opera_prediction", "OPERA prediction"], ["biowin_screen", "BIOWIN screen (via score)"], ["user_estimate", "Own estimate"], ["pepper_auto", "PEPPER prediction from SMILES (fills the DT50)"]];
 const TP_EXAMPLE = {
-  parent: { name: "Carbamazepine", mw: 236.27, log_p: 2.45, pka_a: "", pka_b: "", dt50: 100, temp: 20, source: "user_estimate" },
+  parent: { name: "Carbamazepine", smiles: "NC(=O)N1c2ccccc2C=Cc2ccccc21", mw: 236.27, log_p: 2.45, pka_a: "", pka_b: "", dt50: 100, temp: 20, source: "user_estimate" },
   products: [
-    { name: "Carbamazepine-10,11-epoxide", mw: 252.27, log_p: 1.1, pka_a: "", pka_b: "", dt50: 30, temp: 20, source: "user_estimate", ff: 0.2, from: "" },
-    { name: "10,11-Dihydroxycarbamazepine", mw: 270.28, log_p: 0.3, pka_a: "", pka_b: "", dt50: 60, temp: 20, source: "user_estimate", ff: 0.5, from: "Carbamazepine-10,11-epoxide" },
+    { name: "Carbamazepine-10,11-epoxide", smiles: "NC(=O)N1c2ccccc2C2OC2c2ccccc21", mw: 252.27, log_p: 1.1, pka_a: "", pka_b: "", dt50: 30, temp: 20, source: "user_estimate", ff: 0.2, from: "" },
+    { name: "10,11-Dihydroxycarbamazepine", smiles: "NC(=O)N1c2ccccc2C(O)C(O)c2ccccc21", mw: 270.28, log_p: 0.3, pka_a: "", pka_b: "", dt50: 60, temp: 20, source: "user_estimate", ff: 0.5, from: "Carbamazepine-10,11-epoxide" },
   ],
 };
 
@@ -4095,6 +4095,7 @@ function tpSubstanceHtml(prefix, item, isProduct) {
   const field = (name, label, value, attrs = "") => `<label><span>${label}</span><input data-tp="${name}" value="${escapeHtml(String(value ?? ""))}" ${attrs}/></label>`;
   return `<div class="tp-substance" data-tp-prefix="${prefix}">
     <div class="cl-row2">${field("name", "Name", item.name)}${field("mw", "Molecular weight (g/mol)", item.mw, 'type="number" step="any" min="0"')}</div>
+    ${field("smiles", "SMILES (optional: fills a blank MW / log P and enables the PEPPER DT50)", item.smiles)}
     <div class="cl-row3">${field("log_p", "log P", item.log_p, 'type="number" step="any"')}${field("pka_a", "pKa (acid)", item.pka_a, 'type="number" step="any"')}${field("pka_b", "pKa (base)", item.pka_b, 'type="number" step="any"')}</div>
     <div class="cl-row3">${field("dt50", "Soil DT50 (days)", item.dt50, 'type="number" step="any" min="0"')}${field("temp", "DT50 measured at (°C)", item.temp, 'type="number" step="any"')}
       <label><span>DT50 source</span><select data-tp="source">${sourceOptions}</select></label></div>
@@ -4130,7 +4131,8 @@ function tpReadSubstance(node, isProduct) {
   const get = (name) => node.querySelector(`[data-tp="${name}"]`)?.value ?? "";
   const num = (name) => (get(name) === "" ? null : Number(get(name)));
   const entry = { name: get("name").trim() || undefined, molecular_weight_g_mol: num("mw"), log_p: num("log_p"), pka_a: num("pka_a"), pka_b: num("pka_b"),
-    dt50_days: num("dt50"), dt50_temperature_c: num("temp") ?? 20, dt50_source: get("source") };
+    dt50_days: num("dt50"), dt50_temperature_c: num("temp") ?? 20, dt50_source: get("source"), smiles: get("smiles").trim() || null };
+  if (get("source") === "pepper_auto") { entry.dt50_from_pepper = true; delete entry.dt50_days; delete entry.dt50_source; delete entry.dt50_temperature_c; }
   if (isProduct && get("ff") !== "") entry.formation_fraction = Number(get("ff"));
   if (isProduct && get("formed_from") !== "") entry.formed_from = get("formed_from");
   Object.keys(entry).forEach((key) => { if (entry[key] === null || entry[key] === undefined) delete entry[key]; });
@@ -4196,10 +4198,12 @@ function tpSubstanceResult(item, isParent) {
   const peakText = isParent ? "" : `<p><strong>Peak:</strong> ${tpFmt(peak.concentration_mg_kg)} mg/kg (${tpFmt(peak.percent_of_applied_molar)} % of applied) ${peak.within_simulation_window ? `at day ${tpFmt(peak.time_days)}` : "— no peak inside the window (still rising); highest value in the window shown"}. ${item.major_transformation_product.flag ? '<span class="feature-chip">major transformation product (≥ 10 %)</span>' : "Below the 10 % major-product line."}</p>
     <p><small>Formation fraction ${tpFmt(item.formation_fraction)} — ${escapeHtml(item.formation_fraction_basis)}</small></p>`;
   const notes = (item.property_notes || []).map((n) => `<p><small>${escapeHtml(n)}</small></p>`).join("");
+  const u = item.dt50_uncertainty;
+  const uncertaintyText = u ? `<p><small>PEPPER 90 % interval for the mean DT50 at 20 °C: ${u.mean_90CI_days ? `${tpFmt(u.mean_90CI_days[0])}–${tpFmt(u.mean_90CI_days[1])} d` : "n/a"} · single-soil 90 % interval ${u.single_soil_90PI_days ? `${tpFmt(u.single_soil_90PI_days[0])}–${tpFmt(u.single_soil_90PI_days[1])} d` : "n/a"} · confidence ${escapeHtml(String(u.confidence))}. Treat the number as a wide range, not a point.</small></p>` : "";
   const lineage = isParent ? "" : `<p><small>Generation ${item.generation} · formed from ${escapeHtml(item.formed_from)}</small></p>`;
   return `<article class="hypothesis-card"><div><h4>${escapeHtml(item.name)}</h4>${lineage}
     <p><strong>DT50 at soil temperature:</strong> ${tpFmt(item.dt50_days)} d · ${escapeHtml(item.dt50_source.replace(/_/g, " "))}</p>
-    <p><small>${escapeHtml(item.dt50_basis)}</small></p>${peakText}
+    <p><small>${escapeHtml(item.dt50_basis)}</small></p>${uncertaintyText}${peakText}
     <p><strong>Sorption:</strong> ${sorptionText}</p>${notes}</div></article>`;
 }
 
@@ -4209,7 +4213,8 @@ async function tpRun() {
   try { payload = tpPayload(); } catch (error) { toast(error.message, 6000); return; }
   if (button) button.disabled = true;
   status.className = "design-status running";
-  status.innerHTML = "<strong>Calculating…</strong>";
+  const usesPepper = [payload.parent, ...payload.products].some((entry) => entry.dt50_from_pepper);
+  status.innerHTML = usesPepper ? "<strong>Calculating…</strong><small>PEPPER computes structure descriptors (Java) and can take up to a minute on the first run.</small>" : "<strong>Calculating…</strong>";
   try {
     const result = await api("/api/tp-soil-fate/run", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
     state.tpSoilFate = result;

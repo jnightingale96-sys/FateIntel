@@ -95,9 +95,49 @@ def _structure_properties(entry: dict[str, Any], label: str) -> tuple[float, flo
     return _positive(mw, f"{label}: molecular_weight_g_mol"), (float(log_p) if log_p is not None else None), notes
 
 
+def _pepper_dt50(entry: dict[str, Any], label: str) -> tuple[float, str, str, dict[str, Any]]:
+    """Soil DT50 at the 20 C reference from the PEPPER provider, for a structure; measured EAWAG-SOIL value wins if present.
+
+    Runs only where the provider is allowed (same licence gate as ``/api/providers/soil-dt50``) and installed.
+    PEPPER predicts the disappearance of a compound as a parent in aerobic laboratory soil (OECD 307); using it for a
+    transformation product's own decline is an extension, and it does not predict formation.
+    """
+
+    from . import soil_dt50
+
+    smiles = entry.get("smiles")
+    if not smiles:
+        raise TpFateInputError(f"{label}: a SMILES is required to predict a DT50 with PEPPER")
+    gate_open, licence_status = soil_dt50.commercial_gate()
+    if not gate_open:
+        raise TpFateInputError(f"{label}: the PEPPER soil DT50 model is closed here ({licence_status}); supply a DT50 instead")
+    availability = soil_dt50.availability()
+    if not availability["available"]:
+        raise TpFateInputError(f"{label}: PEPPER dependencies are missing ({', '.join(availability['missing'])}); supply a DT50 instead")
+    from .soil_dt50.predictor import get_predictor
+
+    result = get_predictor().predict([{"smiles": smiles, "name": entry.get("name")}])[0]
+    if result.status != "ok" or not result.recommended:
+        raise TpFateInputError(f"{label}: PEPPER could not predict this structure ({result.status}); supply a DT50 instead")
+    recommended = result.recommended
+    measured = str(recommended.get("basis", "")).startswith("measured")
+    uncertainty = {
+        "logDT50_sd": recommended.get("logDT50_sd"), "confidence": recommended.get("confidence"),
+        "mean_90CI_days": (result.prediction or {}).get("DT50_mean_90CI_days"),
+        "single_soil_90PI_days": (result.prediction or {}).get("DT50_single_soil_90PI_days"),
+        "max_tanimoto_to_training_set": (result.applicability or {}).get("max_tanimoto"), "warnings": list(result.warnings),
+    }
+    note = (
+        f"PEPPER {recommended['DT50_ref_days']} d at 20 C ({recommended['basis']}; confidence {recommended.get('confidence')})"
+        + ("" if measured else "; MODEL ESTIMATE, not an OECD-accepted QSAR -- prefer a measured OECD 307 value")
+    )
+    return float(recommended["DT50_ref_days"]), ("measured" if measured else "pepper_prediction"), note, uncertainty
+
+
 def _dt50_at_target(entry: dict[str, Any], label: str, target_c: float) -> dict[str, Any]:
     """The substance's soil DT50 (days) at the target temperature, with its source label and derivation."""
 
+    uncertainty = None
     if entry.get("dt50_days") is not None:
         source = entry.get("dt50_source") or "user_estimate"
         if source not in DT50_SOURCES:
@@ -105,12 +145,15 @@ def _dt50_at_target(entry: dict[str, Any], label: str, target_c: float) -> dict[
         dt50 = _positive(entry["dt50_days"], f"{label}: dt50_days")
         from_c = float(entry.get("dt50_temperature_c", REFERENCE_TEMPERATURE_C))
         note = f"supplied DT50 {dt50:g} d at {from_c:g} C"
+    elif entry.get("dt50_from_pepper"):
+        dt50, source, note, uncertainty = _pepper_dt50(entry, label)
+        from_c = REFERENCE_TEMPERATURE_C
     elif entry.get("biowin4_score") is not None:
         est = dt50_from_biowin4(entry["biowin4_score"], output_unit="days")
         source, dt50, from_c = "biowin_screen", est["dt50"], est["reference_temperature_c"]
         note = f"BIOWIN4 screen {est['dt50']:.4g} d at {from_c:g} C (unsourced owner relation; prefer a measured DT50)"
     else:
-        raise TpFateInputError(f"{label}: give dt50_days (with dt50_source) or biowin4_score")
+        raise TpFateInputError(f"{label}: give dt50_days (with dt50_source), biowin4_score, or a SMILES with dt50_from_pepper")
     if source == "biowin_screen" and entry.get("dt50_days") is not None:
         note += " (BIOWIN screen: unsourced owner relation; prefer a measured DT50)"
     f_from = corrections.temperature_factor(from_c)
@@ -118,7 +161,7 @@ def _dt50_at_target(entry: dict[str, Any], label: str, target_c: float) -> dict[
     if f_from == 0:
         raise TpFateInputError(f"{label}: a DT50 stated at {from_c:g} C (<= 0 C) cannot be normalised")
     at_target = math.inf if f_to == 0 else dt50 * f_from / f_to
-    return {"dt50_days": at_target, "dt50_source": source, "dt50_basis": note, "dt50_input_days": dt50, "dt50_input_temperature_c": from_c}
+    return {"dt50_days": at_target, "dt50_source": source, "dt50_basis": note, "dt50_input_days": dt50, "dt50_input_temperature_c": from_c, "dt50_uncertainty": uncertainty}
 
 
 def _koc(entry: dict[str, Any], log_p: float | None, soil: dict[str, Any], label: str) -> dict[str, Any] | None:
