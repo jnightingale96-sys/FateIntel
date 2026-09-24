@@ -125,6 +125,10 @@ MODULES: dict[str, dict[str, str]] = {
     "contaminated_land": {"section": "contaminated-land", "label": "Contaminated land"},
 }
 
+# Families whose site track also offers the soil degradation and transformation-product screens (organic contaminants only:
+# not metals, and not PFAS, whose soil DT50 is not meaningful).
+SITE_ORGANIC_FAMILIES = ("legacy_persistent", "fuels_solvents")
+
 # Site-assessment receptor classes that have a named external method for at least one jurisdiction.
 _RECEPTOR_CLASSES = ("human", "ecological", "groundwater", "surface_water")
 _PARTIAL_KEY_MARKERS = ("NOT_MAPPED", "NOT_CONFIRMED", "PARTIAL", "NO_ERA", "NOT_YET")
@@ -241,6 +245,15 @@ def _site_track(region: dict[str, Any], family: dict[str, Any]) -> tuple[dict[st
         {"id": "review", "label": "Review", "module": "contaminated_land", "status": "available", "detail": None, "note": None},
     ]
     modules = {"evidence", "contaminated_land"}
+    if family["id"] in SITE_ORGANIC_FAMILIES:
+        # Organic contaminants degrade in soil and can leave transformation products, which is what a site assessor
+        # wants to know about aged contamination. The tools are screens, not the regulator's site method.
+        stages.insert(2, {
+            "id": "degradation", "label": "Soil degradation and transformation products", "module": "kinetics", "status": "available",
+            "detail": "Fit a DT50 from residue data, then model transformation products in soil. Screening tools, not a regulatory site method.",
+            "note": None,
+        })
+        modules |= {"kinetics", "tp_soil_fate"}
     return {"id": SITE, "label": "Contaminated-site assessment", "stages": stages, "methods": methods}, modules
 
 

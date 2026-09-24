@@ -425,3 +425,23 @@ def test_api_endpoints():
     assert client.get("/api/workflow", params={"region": "AU", "group": "nope"}).status_code == 422
     assert client.get("/api/workflow", params={"region": "ZZ", "group": "pesticide"}).status_code == 422
     assert client.get("/api/workflow", params={"region": "AU"}).status_code == 422
+
+
+# ---------- soil degradation tools on the organic site tracks ----------
+@pytest.mark.parametrize("group", ["legacy_pop_organic", "pah", "organotin", "hydrocarbon_solvent"])
+@pytest.mark.parametrize("region", ["EU", "US", "AE"])
+def test_organic_site_tracks_offer_soil_degradation_and_transformation_product_tools(region, group):
+    wf = resolve_workflow(region, group)
+    site = next(t for t in wf["tracks"] if t["id"] == SITE)
+    assert {"kinetics", "tp_soil_fate"} <= set(site["modules"])
+    ids = [s["id"] for s in site["stages"]]
+    assert ids.index("site_model") < ids.index("degradation") < ids.index("methods") < ids.index("review")
+    degradation = stage(wf, SITE, "degradation")
+    assert degradation["module"] == "kinetics" and degradation["status"] == "available" and "not a regulatory site method" in degradation["detail"]
+
+
+@pytest.mark.parametrize("group", ["metal_inorganic", "pfas_persistent_mobile"])
+def test_metals_and_pfas_site_tracks_do_not_offer_soil_degradation_tools(group):
+    site = next(t for t in resolve_workflow("EU", group)["tracks"] if t["id"] == SITE)
+    assert not {"kinetics", "tp_soil_fate"} & set(site["modules"])
+    assert "degradation" not in [s["id"] for s in site["stages"]]
