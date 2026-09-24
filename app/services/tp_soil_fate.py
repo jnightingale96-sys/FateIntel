@@ -233,15 +233,36 @@ def _range_to_uncertainty(entry: dict[str, Any], dt50: float, label: str) -> dic
     return {"source": "user_range", "range_days": [low, high], "log10_sd_mean": sd, "log10_sd_single_soil": sd, "confidence": "user range (90 %)"}
 
 
-def _rate_matrices(ks: np.ndarray, ffs: list[float], sources: list[int]) -> np.ndarray:
-    """Rate matrices for a stack of rate-constant vectors ks (S, n + 1): dY/dt = A Y."""
+def _logit(value: float) -> float:
+    return math.log(value / (1.0 - value))
+
+
+def _ff_range_to_logit_sd(entry: dict[str, Any], ff: float, label: str) -> float | None:
+    """A user 90 % range for a formation fraction (molar) as a logit-scale standard deviation; ff is the median."""
+
+    bounds = entry.get("formation_fraction_range")
+    if bounds is None:
+        return None
+    if not isinstance(bounds, (list, tuple)) or len(bounds) != 2:
+        raise TpFateInputError(f"{label}: formation_fraction_range must be [low, high]")
+    try:
+        low, high = float(bounds[0]), float(bounds[1])
+    except (TypeError, ValueError) as exc:
+        raise TpFateInputError(f"{label}: formation_fraction_range must be numbers") from exc
+    if not (0.0 < low < ff < high < 1.0):
+        raise TpFateInputError(f"{label}: formation_fraction_range must satisfy 0 < low < formation_fraction < high < 1")
+    return (_logit(high) - _logit(low)) / (2.0 * Z90)
+
+
+def _rate_matrices(ks: np.ndarray, ffs: np.ndarray, sources: list[int]) -> np.ndarray:
+    """Rate matrices for stacks of rate constants ks (S, n + 1) and formation fractions ffs (S, n): dY/dt = A Y."""
 
     samples, size = ks.shape
     rate = np.zeros((samples, size, size))
     rate[:, 0, 0] = -ks[:, 0]
     for j in range(1, size):
         source_index = sources[j - 1] + 1
-        rate[:, j, source_index] += ffs[j - 1] * ks[:, source_index]
+        rate[:, j, source_index] += ffs[:, j - 1] * ks[:, source_index]
         rate[:, j, j] -= ks[:, j]
     return rate
 
@@ -252,8 +273,10 @@ def _uncertainty_band(
 ) -> dict[str, Any]:
     """Monte Carlo band: sample each uncertain DT50 log-normally and independently, rerun the kinetics, take percentiles.
 
-    Only DT50s with a stated uncertainty are sampled (PEPPER intervals or a user 90 % range); everything else,
-    including every formation fraction, is held at its central value and named as such. The 5/50/95 % lines are
+    DT50s with a stated uncertainty (PEPPER intervals or a user 90 % range) are sampled log-normally; formation
+    fractions with a user 90 % range are sampled logit-normally (median = the supplied value). Everything else is
+    held at its central value and named as such. Sibling fractions from one source are scaled down together in any
+    draw where they would sum above 1 (never for a source with a defaulted, worst-case child). The 5/50/95 % lines are
     percentiles of concentration AT EACH TIME, not a single scenario. Sampling is seeded, so a result reproduces.
     """
 
@@ -278,8 +301,9 @@ def _uncertainty_band(
             sampled.append(index)
             sds[index] = float(sd)
     fixed = [s["name"] for i, s in enumerate(substances) if i not in sds]
-    if not sampled:
-        return {"available": False, "reason": "no DT50 carries an uncertainty (use a PEPPER prediction or give dt50_range_days), or the soil is frozen", "fixed": fixed}
+    ff_sampled = [j for j, product in enumerate(products) if product.get("formation_fraction_logit_sd")]
+    if not sampled and not ff_sampled:
+        return {"available": False, "reason": "no DT50 or formation fraction carries an uncertainty (use a PEPPER prediction, or give dt50_range_days / formation_fraction_range), or the soil is frozen", "fixed": fixed}
 
     rng = np.random.default_rng(seed)
     n = len(products)
@@ -291,7 +315,22 @@ def _uncertainty_band(
         scale = 10.0 ** (sds[index] * z)  # multiplies the input DT50; the temperature factor is a constant, so it carries through
         ks[:, index] = central[index] / scale
         log10_draws[index] = sds[index] * z
-    ffs = [p["formation_fraction"] for p in products]
+    ffs = np.tile(np.array([p["formation_fraction"] for p in products]), (n_samples, 1))
+    ff_draws: dict[int, np.ndarray] = {}
+    for j in ff_sampled:  # drawn after every DT50, so adding a range never moves the DT50 draws
+        z = rng.standard_normal(n_samples)
+        sd = products[j]["formation_fraction_logit_sd"]
+        ffs[:, j] = 1.0 / (1.0 + np.exp(-(_logit(products[j]["formation_fraction"]) + sd * z)))
+        ff_draws[j] = sd * z
+    renormalised = 0
+    for source in {src for src in sources}:
+        children = [j for j, src in enumerate(sources) if src == source]
+        if any(products[j]["formation_fraction_defaulted"] for j in children) or not any(j in ff_draws for j in children):
+            continue
+        total = ffs[:, children].sum(axis=1)
+        over = total > 1.0
+        renormalised = max(renormalised, int(over.sum()))
+        ffs[over[:, None] & np.isin(np.arange(len(products)), children)[None, :]] /= np.repeat(total[over], len(children))
     rate = _rate_matrices(ks, ffs, sources)
     grid = np.linspace(0.0, duration, BAND_TIME_POINTS)
     # Uniform time grid: one matrix exponential per sample for the step dt, then repeated multiplication. Exact
@@ -317,12 +356,14 @@ def _uncertainty_band(
         p05, p50, p95 = np.percentile(peaks, BAND_PERCENTILES)
         t05, t50, t95 = np.percentile(peak_times, BAND_PERCENTILES)
         drivers = []
-        for index in sampled:
+        candidates = [(f"{substances[i]['name']} DT50", "dt50", substances[i]["name"], log10_draws[i]) for i in sampled]
+        candidates += [(f"{products[q]['name']} formation fraction", "formation_fraction", products[q]["name"], ff_draws[q]) for q in ff_sampled]
+        for label_text, kind, owner, draws in candidates:
             if np.ptp(peaks) == 0.0:
                 break
-            rho = spearmanr(log10_draws[index], peaks).statistic
+            rho = spearmanr(draws, peaks).statistic
             if math.isfinite(rho):
-                drivers.append({"substance": substances[index]["name"], "spearman_rho": float(rho)})
+                drivers.append({"substance": owner, "variable": label_text, "kind": kind, "spearman_rho": float(rho)})
         drivers.sort(key=lambda d: -abs(d["spearman_rho"]))
         products_out.append({
             "name": product["name"],
@@ -333,13 +374,17 @@ def _uncertainty_band(
             "drivers": drivers,
         })
     return {
-        "available": True, "method": "Monte Carlo, independent log-normal DT50s, seeded", "n_samples": n_samples, "seed": seed,
+        "available": True, "method": "Monte Carlo, independent log-normal DT50s and logit-normal formation fractions, seeded", "n_samples": n_samples, "seed": seed,
         "basis": basis, "percentiles": list(BAND_PERCENTILES), "times_days": grid.tolist(),
-        "sampled": [{"name": substances[i]["name"], "log10_sd": sds[i], "source": (substances[i].get("dt50_uncertainty") or {}).get("source", "pepper")} for i in sampled],
+        "sampled": [{"name": substances[i]["name"], "kind": "dt50", "log10_sd": sds[i], "source": (substances[i].get("dt50_uncertainty") or {}).get("source", "pepper")} for i in sampled]
+        + [{"name": f"{products[j]['name']} formation fraction", "kind": "formation_fraction", "logit_sd": products[j]["formation_fraction_logit_sd"], "source": "user_range", "range": products[j]["formation_fraction_range"]} for j in ff_sampled],
+        "formation_fraction_renormalised_draws": renormalised,
         "fixed": fixed, "parent": parent_out, "products": products_out,
         "notes": [
             "Percentiles are taken at each time separately; they are not one scenario and neighbouring points do not belong to one curve.",
-            "Only DT50s with a stated uncertainty are sampled. Formation fractions and every fixed substance are held at their central values, so the band understates the full uncertainty.",
+            "Only DT50s and formation fractions with a stated uncertainty are sampled. Everything else named as fixed is held at its central value, so the band understates the full uncertainty."
+            + ("" if ff_sampled else " No formation fraction range was given, so every formation fraction is held fixed."),
+            "Formation fractions with a range are drawn logit-normally around the supplied value, taken as the median. Where sibling fractions from one source would sum above 1 in a draw they are scaled down together.",
             "Peak time and height are resolved on a " + str(BAND_TIME_POINTS) + "-point grid (about duration/120 days).",
             "single_soil basis adds the between-soil spread to the model uncertainty (a single site); mean basis is the uncertainty of the typical soil only.",
         ],
@@ -419,6 +464,8 @@ def run_tp_soil_fate(payload: dict[str, Any]) -> dict[str, Any]:
         label = f"product {index} ({names[index - 1]})"
         mw, log_p, notes = _structure_properties(entry, label)
         if entry.get("formation_fraction") is None:
+            if entry.get("formation_fraction_range") is not None:
+                raise TpFateInputError(f"{label}: formation_fraction_range needs a supplied formation_fraction (the median)")
             ff, ff_basis = 1.0, FF_DEFAULT_NOTE
             defaulted_sources.add(sources[index - 1])
         else:
@@ -426,13 +473,16 @@ def run_tp_soil_fate(payload: dict[str, Any]) -> dict[str, Any]:
             if isinstance(entry["formation_fraction"], bool) or not math.isfinite(ff) or not 0 < ff <= 1:
                 raise TpFateInputError(f"{label}: formation_fraction must be in (0, 1] (molar)")
             ff_basis = entry.get("formation_fraction_source") or "supplied by the user"
+        ff_logit_sd = _ff_range_to_logit_sd(entry, ff, label)
         dt = _dt50_at_target(entry, label, target_c)
         k = 0.0 if math.isinf(dt["dt50_days"]) else math.log(2.0) / dt["dt50_days"]
         products.append({
             "name": names[index - 1], "formed_from": parent["name"] if sources[index - 1] == -1 else names[sources[index - 1]],
             "generation": generations[index - 1], "molecular_weight_g_mol": mw, "log_p": log_p,
             "pka_a": entry.get("pka_a"), "pka_b": entry.get("pka_b"), "property_notes": notes,
-            "formation_fraction": ff, "formation_fraction_basis": ff_basis, **dt, "k_per_day": k,
+            "formation_fraction": ff, "formation_fraction_basis": ff_basis, "formation_fraction_logit_sd": ff_logit_sd,
+            "formation_fraction_range": entry.get("formation_fraction_range"), "formation_fraction_defaulted": entry.get("formation_fraction") is None,
+            **dt, "k_per_day": k,
             "sorption": _koc(entry, log_p, soil, label),
         })
     if defaulted_sources:

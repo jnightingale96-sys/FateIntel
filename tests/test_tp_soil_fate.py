@@ -528,7 +528,7 @@ def test_a_user_range_becomes_a_log10_sd_and_the_parent_band_matches_an_independ
     result = run_tp_soil_fate(payload)
     band = result["uncertainty_band"]
     sd = (math.log10(170.0) - math.log10(15.0)) / (2 * Z90)
-    assert band["available"] and band["sampled"][0] == {"name": "P", "log10_sd": pytest.approx(sd), "source": "user_range"}
+    assert band["available"] and band["sampled"][0] == {"name": "P", "kind": "dt50", "log10_sd": pytest.approx(sd), "source": "user_range"}
     # The parent is the first sampled substance, so its draws are the generator's first 500 standard normals.
     z = np.random.default_rng(7).standard_normal(500)
     dt50 = 50.0 * 10.0 ** (sd * z)  # target = DT50 temperature (20 C), so no temperature scaling
@@ -562,7 +562,7 @@ def test_substances_without_an_uncertainty_are_named_as_fixed_and_no_uncertainty
     assert [s["name"] for s in band["sampled"]] == ["P", "M1"] and band["fixed"] == ["M2"]
     assert any("formation fractions" in note.lower() for note in band["notes"])
     none = run_tp_soil_fate(_payload())["uncertainty_band"]
-    assert none["available"] is False and "no DT50 carries an uncertainty" in none["reason"]
+    assert none["available"] is False and "no DT50 or formation fraction carries an uncertainty" in none["reason"]
     assert run_tp_soil_fate(_band_payload(uncertainty=False))["uncertainty_band"] is None
 
 
@@ -632,3 +632,82 @@ def test_a_frozen_soil_has_no_band_and_the_endpoint_serialises_the_band():
     assert response.status_code == 200
     band = response.json()["uncertainty_band"]
     assert band["available"] is True and len(band["times_days"]) == 121 and len(band["products"]) == 2
+
+
+# ---------------------------------------------------------------- formation-fraction uncertainty --------------------------
+
+def _logit(x):
+    return math.log(x / (1 - x))
+
+
+def _ff_payload(**overrides):
+    payload = _payload(duration_days=365.0, n_points=121)
+    payload["products"][0].update(formation_fraction=0.4, formation_fraction_range=[0.15, 0.75])
+    payload.update(overrides)
+    return payload
+
+
+def test_a_formation_fraction_range_is_drawn_logit_normally_and_matches_an_independent_calculation():
+    result = run_tp_soil_fate(_ff_payload(uncertainty={"n_samples": 400, "seed": 11}))
+    band = result["uncertainty_band"]
+    sd = (_logit(0.75) - _logit(0.15)) / (2 * Z90)
+    assert band["available"] and band["sampled"] == [{"name": "M1 formation fraction", "kind": "formation_fraction", "logit_sd": pytest.approx(sd), "source": "user_range", "range": [0.15, 0.75]}]
+    z = np.random.default_rng(11).standard_normal(400)  # no DT50 is sampled, so these are the first draws
+    ff = 1.0 / (1.0 + np.exp(-(_logit(0.4) + sd * z)))
+    t = np.array(band["times_days"])
+    kp, km = math.log(2) / 20.0, math.log(2) / 50.0
+    unit = kp * (np.exp(-kp * t) - np.exp(-km * t)) / (km - kp)  # M1 per mole of parent, per unit formation fraction
+    expected = ff[:, None] * unit[None, :] * 100.0
+    for q, key in ((5, "p05"), (50, "p50"), (95, "p95")):
+        assert np.allclose(band["products"][0]["percent_of_applied_molar"][key], np.percentile(expected, q, axis=0), rtol=1e-9, atol=1e-12)
+
+
+def test_the_formation_fraction_is_the_driver_of_its_own_peak():
+    band = run_tp_soil_fate(_ff_payload())["uncertainty_band"]
+    top = band["products"][0]["drivers"][0]
+    assert top["kind"] == "formation_fraction" and top["variable"] == "M1 formation fraction" and top["spearman_rho"] > 0.99
+    assert band["products"][0]["peak_percent_of_applied_molar"]["p05"] < band["products"][0]["peak_percent_of_applied_molar"]["p95"]
+
+
+def test_adding_a_fraction_range_does_not_move_the_dt50_draws():
+    with_ff = _band_payload()
+    with_ff["products"][0].update(formation_fraction=0.6, formation_fraction_range=[0.3, 0.85])
+    a = run_tp_soil_fate(_band_payload())["uncertainty_band"]["parent"]["percent_of_applied_molar"]
+    b = run_tp_soil_fate(with_ff)["uncertainty_band"]["parent"]["percent_of_applied_molar"]
+    assert a == b  # DT50 draws come first, so the parent (a DT50-only quantity) is untouched
+
+
+def test_sibling_fractions_are_scaled_down_together_when_a_draw_would_exceed_one():
+    payload = _payload(duration_days=365.0)
+    payload["products"] = [
+        {"name": "A", "molecular_weight_g_mol": 100.0, "formation_fraction": 0.6, "formation_fraction_range": [0.4, 0.9], "dt50_days": 30.0},
+        {"name": "B", "molecular_weight_g_mol": 90.0, "formation_fraction": 0.35, "formation_fraction_range": [0.2, 0.6], "dt50_days": 30.0},
+    ]
+    band = run_tp_soil_fate(payload)["uncertainty_band"]
+    assert band["formation_fraction_renormalised_draws"] > 0
+    defaulted = _payload(duration_days=365.0)
+    defaulted["products"] = [
+        {"name": "A", "molecular_weight_g_mol": 100.0, "formation_fraction": 0.6, "formation_fraction_range": [0.4, 0.9], "dt50_days": 30.0},
+        {"name": "B", "molecular_weight_g_mol": 90.0, "dt50_days": 30.0},  # defaulted worst case 1.0: never rescaled
+    ]
+    assert run_tp_soil_fate(defaulted)["uncertainty_band"]["formation_fraction_renormalised_draws"] == 0
+
+
+def test_without_a_fraction_range_the_notes_say_the_fractions_are_fixed_and_with_one_they_do_not():
+    assert any("No formation fraction range was given" in n for n in run_tp_soil_fate(_band_payload())["uncertainty_band"]["notes"])
+    assert not any("No formation fraction range was given" in n for n in run_tp_soil_fate(_ff_payload())["uncertainty_band"]["notes"])
+
+
+@pytest.mark.parametrize("mutation, message", [
+    (lambda p: p["products"][0].update(formation_fraction_range=[0.5, 0.75]), "0 < low < formation_fraction < high < 1"),  # median 0.4 below low
+    (lambda p: p["products"][0].update(formation_fraction_range=[0.15, 1.0]), "0 < low < formation_fraction < high < 1"),
+    (lambda p: p["products"][0].update(formation_fraction_range=[0.0, 0.75]), "0 < low < formation_fraction < high < 1"),
+    (lambda p: p["products"][0].update(formation_fraction_range=[0.15]), r"\[low, high\]"),
+    (lambda p: p["products"][0].update(formation_fraction_range=["a", "b"]), "must be numbers"),
+    (lambda p: p["products"][0].pop("formation_fraction"), "needs a supplied formation_fraction"),
+])
+def test_bad_formation_fraction_ranges_are_refused(mutation, message):
+    payload = _ff_payload()
+    mutation(payload)
+    with pytest.raises(TpFateInputError, match=message):
+        run_tp_soil_fate(payload)
