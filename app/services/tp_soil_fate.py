@@ -4,12 +4,17 @@ Theoretical screening tool. Each substance needs only what the owner named: mole
 DT50 (Koc is derived from log P and pKa by ``sorption.run_sorption_model``). Predictions are proxies and most of the
 estimators behind them were built on one chemical class; every input carries a source label and none is invented.
 
-Model (single first-order kinetics, molar basis, one generation only -- "main-stage" TPs formed directly from the parent):
+Model (single first-order kinetics, molar basis; each product has ONE source, the parent or another product, so chains
+parent -> TP1 -> TP2 and branches are allowed, reversible steps are not):
 
     dP/dt  = -kP P                              P(t)  = P0 exp(-kP t)
     dMj/dt =  ffj kP P - kj Mj                  Mj(t) = ffj kP P0 (exp(-kP t) - exp(-kj t)) / (kj - kP)   (kj != kP)
                                                 Mj(t) = ffj kP P0 t exp(-kP t)                           (kj == kP)
     t_max  = ln(kj / kP) / (kj - kP)            (1 / kP when kj == kP)
+
+Products formed from other products (dMj/dt = ffj ks Ms - kj Mj, ks the source's rate constant) are solved as the
+linear system dY/dt = A Y with the matrix exponential, Y(t) = expm(A t) Y(0); direct products of the parent keep the
+closed forms above for peak time and height, deeper generations are located numerically.
 
 Mass = moles x MW, so a TP is converted with the molar-mass ratio MW_TP / MW_parent (EFSA 2017, soil PEC guidance,
 section 2.8: dose x formation fraction x MW_TP / MW_parent).
@@ -34,6 +39,10 @@ from __future__ import annotations
 
 import math
 from typing import Any
+
+import numpy as np
+from scipy.linalg import expm
+from scipy.optimize import minimize_scalar
 
 from .biowin_dt50 import REGION_TEMPERATURE_C, dt50_from_biowin4
 from .pathway_plausibility import LOG_KOC_M_THRESHOLD, LOG_KOC_VM_THRESHOLD
@@ -195,76 +204,128 @@ def run_tp_soil_fate(payload: dict[str, Any]) -> dict[str, Any]:
         **dt_p, "k_per_day": k_p, "sorption": _koc(parent_in, logp_p, soil, "parent"),
     }
 
-    defaulted = False
-    ffs: list[float] = []
+    # ---- build the reaction tree: every product has exactly one source (the parent or another product) ----
+    names = [(entry.get("name") or f"product {i}").strip() for i, entry in enumerate(products_in, start=1)]
+    if len(set(names)) != len(names) or parent["name"] in names:
+        raise TpFateInputError("substance names must be unique (parent and every product), so 'formed_from' is unambiguous")
+    sources: list[int] = []  # -1 = parent, otherwise index into products
+    for index, entry in enumerate(products_in):
+        ref = entry.get("formed_from")
+        if ref is None or ref == "parent" or ref == parent["name"]:
+            sources.append(-1)
+        elif ref in names:
+            sources.append(names.index(ref))
+        else:
+            raise TpFateInputError(f"product {index + 1} ({names[index]}): formed_from {ref!r} is not the parent or a listed product")
+    generations: list[int] = []
+    for index in range(len(products_in)):
+        depth, node, seen = 1, sources[index], {index}
+        while node != -1:
+            if node in seen:
+                raise TpFateInputError(f"product {index + 1} ({names[index]}): formed_from creates a loop; reversible steps are not supported")
+            seen.add(node)
+            depth += 1
+            node = sources[node]
+        generations.append(depth)
+
     products: list[dict[str, Any]] = []
+    defaulted_sources: set[int] = set()
     for index, entry in enumerate(products_in, start=1):
-        label = f"product {index} ({entry.get('name') or 'unnamed'})"
+        label = f"product {index} ({names[index - 1]})"
         mw, log_p, notes = _structure_properties(entry, label)
         if entry.get("formation_fraction") is None:
             ff, ff_basis = 1.0, FF_DEFAULT_NOTE
-            defaulted = True
+            defaulted_sources.add(sources[index - 1])
         else:
             ff = float(entry["formation_fraction"])
             if isinstance(entry["formation_fraction"], bool) or not math.isfinite(ff) or not 0 < ff <= 1:
                 raise TpFateInputError(f"{label}: formation_fraction must be in (0, 1] (molar)")
             ff_basis = entry.get("formation_fraction_source") or "supplied by the user"
-        ffs.append(ff)
         dt = _dt50_at_target(entry, label, target_c)
         k = 0.0 if math.isinf(dt["dt50_days"]) else math.log(2.0) / dt["dt50_days"]
         products.append({
-            "name": entry.get("name") or f"product {index}", "molecular_weight_g_mol": mw, "log_p": log_p,
+            "name": names[index - 1], "formed_from": parent["name"] if sources[index - 1] == -1 else names[sources[index - 1]],
+            "generation": generations[index - 1], "molecular_weight_g_mol": mw, "log_p": log_p,
             "pka_a": entry.get("pka_a"), "pka_b": entry.get("pka_b"), "property_notes": notes,
             "formation_fraction": ff, "formation_fraction_basis": ff_basis, **dt, "k_per_day": k,
             "sorption": _koc(entry, log_p, soil, label),
         })
-    if defaulted:
+    if defaulted_sources:
         warnings.append("Defaulted formation fractions are per-product worst cases and are not additive; they may sum above 1.")
-    elif sum(ffs) > 1.0 + 1e-9:
-        raise TpFateInputError(f"formation fractions sum to {sum(ffs):.3f}, more than 1 (molar): the parent cannot yield more than it contains")
+    for source in {s for s in sources}:
+        children = [j for j, s in enumerate(sources) if s == source]
+        if source in defaulted_sources:
+            continue  # this source has a defaulted (worst-case) child; the sum check would be meaningless
+        total = sum(products[j]["formation_fraction"] for j in children)
+        if total > 1.0 + 1e-9:
+            who = parent["name"] if source == -1 else names[source]
+            raise TpFateInputError(f"formation fractions from {who} sum to {total:.3f}, more than 1 (molar): a substance cannot yield more than it contains")
+
+    # ---- linear kinetics: dY/dt = A Y, Y = moles per mole of parent applied [parent, product 1..n]; Y(t) = expm(A t) Y0 ----
+    n = len(products)
+    rate = np.zeros((n + 1, n + 1))
+    rate[0, 0] = -k_p
+    ks = [k_p] + [p["k_per_day"] for p in products]
+    for j, product in enumerate(products, start=1):
+        source_index = sources[j - 1] + 1  # parent -> 0, product i -> i + 1
+        rate[j, source_index] += product["formation_fraction"] * ks[source_index]
+        rate[j, j] -= product["k_per_day"]
+    y0 = np.zeros(n + 1)
+    y0[0] = 1.0
+
+    def moles_at(t: float) -> np.ndarray:
+        return expm(rate * t) @ y0
 
     p0_mol = c0 / mw_p  # mg/kg / (g/mol) = mmol/kg
     times = [duration * i / (n_points - 1) for i in range(n_points)]
-    parent["series_mg_kg"] = [c0 * parent_moles_fraction(t, k_p) for t in times]
-    for product in products:
+    grid = np.array([moles_at(t) for t in times])  # (n_points, n + 1)
+    parent["series_mg_kg"] = [float(v) * c0 for v in grid[:, 0]]
+    dense_t = np.linspace(0.0, duration, 2001)
+    dense = np.array([moles_at(t) for t in dense_t])
+    for j, product in enumerate(products, start=1):
         kj, ff, mw = product["k_per_day"], product["formation_fraction"], product["molecular_weight_g_mol"]
-        if k_p == 0.0:  # nothing degrades, nothing forms
-            moles = [0.0 for _ in times]
-            t_peak, peak_moles = None, 0.0
-        else:
-            moles = [product_moles_fraction(t, k_p, kj, ff) if kj > 0.0 else ff * (1.0 - math.exp(-k_p * t)) for t in times]
-            if kj > 0.0:
-                t_peak = time_of_peak(k_p, kj)
-                peak_moles = product_moles_fraction(t_peak, k_p, kj, ff)
-            else:  # a non-degrading product accumulates to ff
-                t_peak, peak_moles = math.inf, ff
-        product["series_mg_kg"] = [m * p0_mol * mw for m in moles]
-        product["series_percent_of_applied_molar"] = [m * 100.0 for m in moles]
+        series = np.maximum(grid[:, j], 0.0)  # expm rounding can leave -1e-17
+        product["series_mg_kg"] = [float(m) * p0_mol * mw for m in series]
+        product["series_percent_of_applied_molar"] = [float(m) * 100.0 for m in series]
+        if k_p == 0.0 or not np.any(dense[:, j] > 0.0):  # nothing degrades upstream, so nothing forms
+            t_peak, peak_moles, within_window = None, 0.0, False
+        elif sources[j - 1] == -1 and kj > 0.0:  # direct product of the parent: analytic peak
+            t_peak = time_of_peak(k_p, kj)
+            peak_moles = product_moles_fraction(t_peak, k_p, kj, ff)
+            within_window = t_peak <= duration
+        else:  # deeper generations (and non-degrading products): dense scan, then refine
+            best = int(np.argmax(dense[:, j]))
+            # an interior maximum must clearly exceed the end value; a plateau's rounding noise is not a peak
+            within_window = bool(0 < best < len(dense_t) - 1 and dense[best, j] > dense[-1, j] * (1.0 + 1e-6))
+            if within_window:
+                res = minimize_scalar(lambda t: -moles_at(t)[j], bounds=(dense_t[best - 1], dense_t[best + 1]), method="bounded", options={"xatol": 1e-9})
+                t_peak, peak_moles = float(res.x), float(-res.fun)
+            else:
+                t_peak, peak_moles = None, float(dense[best, j])
         observed_peak = max(product["series_percent_of_applied_molar"])
-        within_window = t_peak is not None and t_peak <= duration
         product["peak"] = {
-            "time_days": t_peak if (t_peak is None or math.isfinite(t_peak)) else None,
+            "time_days": t_peak,
             "percent_of_applied_molar": peak_moles * 100.0 if within_window else observed_peak,
             "concentration_mg_kg": (peak_moles * p0_mol * mw) if within_window else max(product["series_mg_kg"]),
             "within_simulation_window": within_window,
         }
-        peak_pct = product["peak"]["percent_of_applied_molar"]
         product["major_transformation_product"] = {
-            "flag": peak_pct >= MAJOR_TP_PERCENT, "threshold_percent": MAJOR_TP_PERCENT,
+            "flag": product["peak"]["percent_of_applied_molar"] >= MAJOR_TP_PERCENT, "threshold_percent": MAJOR_TP_PERCENT,
             "basis": "OECD TG 307 (2025) para 51: >= 10% of applied dose at any time (molar analogue)",
         }
         product["final_concentration_mg_kg"] = product["series_mg_kg"][-1]
-        if not within_window and t_peak is not None:
-            warnings.append(f"{product['name']}: peak is beyond the {duration:g}-day window; the reported peak is the value at the end.")
+        if not within_window and observed_peak > 0:
+            warnings.append(f"{product['name']}: no interior peak within the {duration:g}-day window; the reported peak is the highest value in the window.")
 
     return {
-        "model": "parent -> main-stage transformation products, single first-order kinetics, molar basis",
+        "model": "parent -> transformation products (chains and branches allowed), single first-order kinetics, molar basis",
         "target_temperature_c": target_c, "temperature_basis": temperature_basis,
         "initial_parent_mg_kg": c0, "duration_days": duration, "times_days": times,
         "parent": parent, "products": products, "warnings": warnings,
         "limitations": [
-            "One generation only: products formed directly from the parent; no secondary TPs and no reversible steps.",
+            "Each product has one source (the parent or another listed product), forming a tree: no reversible steps, and no product formed from two sources.",
             "Single first-order (SFO) kinetics; biphasic behaviour (FOMC/DFOP/HS) is not represented.",
+            "Later generations depend on the earlier products' DT50s and formation fractions; uncertainty compounds down the chain.",
             "Soil DT50s are estimates unless labelled measured; predictors were built on limited chemical classes.",
             "Concentrations are bulk-soil averages with no leaching, plant uptake, volatilisation or run-off.",
         ],
