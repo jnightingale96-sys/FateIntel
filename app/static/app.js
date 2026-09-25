@@ -4082,7 +4082,7 @@ document.addEventListener("DOMContentLoaded",()=>{
 
 /* ---- Transformation products in soil (theoretical screen) ---- */
 const TP_COLORS = ["#2a6f97", "#c2571a", "#3a7d44", "#8e4585", "#b08900", "#5c6b73", "#a4243b", "#1b7f79", "#6a4c93"];
-const TP_SOURCES = [["measured", "Measured"], ["pepper_prediction", "PEPPER prediction"], ["opera_prediction", "OPERA prediction"], ["biowin_screen", "BIOWIN screen (via score)"], ["user_estimate", "Own estimate"], ["pepper_auto", "PEPPER prediction from SMILES (fills the DT50)"]];
+const TP_SOURCES = [["auto", "Best available: your DT50, else PEPPER, BIOWIN only as last resort"], ["measured", "Measured"], ["pepper_prediction", "PEPPER prediction"], ["opera_prediction", "OPERA prediction"], ["biowin_screen", "BIOWIN screen (via score)"], ["user_estimate", "Own estimate"], ["pepper_auto", "PEPPER prediction from SMILES (fills the DT50)"]];
 const TP_EXAMPLE = {
   parent: { name: "Carbamazepine", smiles: "NC(=O)N1c2ccccc2C=Cc2ccccc21", mw: 236.27, log_p: 2.45, pka_a: "", pka_b: "", dt50: 100, temp: 20, source: "user_estimate", lo: 30, hi: 330 },
   products: [
@@ -4102,6 +4102,7 @@ function tpSubstanceHtml(prefix, item, isProduct) {
     <div class="cl-row3">${field("log_p", "log P", item.log_p, 'type="number" step="any"')}${field("pka_a", "pKa (acid)", item.pka_a, 'type="number" step="any"')}${field("pka_b", "pKa (base)", item.pka_b, 'type="number" step="any"')}</div>
     <div class="cl-row3">${field("dt50", "Soil DT50 (days)", item.dt50, 'type="number" step="any" min="0"')}${field("temp", "DT50 measured at (°C)", item.temp, 'type="number" step="any"')}
       <label><span>DT50 source</span><select data-tp="source">${sourceOptions}</select></label></div>
+    ${field("biowin4", "BIOWIN4 score from EPI Suite (last resort, used only if nothing better exists)", item.biowin4 ?? "", 'type="number" step="any"')}
     <div class="cl-row2">${field("dt50_lo", "DT50 90 % range: low (days, optional)", item.lo ?? "", 'type="number" step="any" min="0"')}${field("dt50_hi", "DT50 90 % range: high (days, optional)", item.hi ?? "", 'type="number" step="any" min="0"')}</div>
     ${isProduct ? `${field("pathway_source", "Pathway source (tool or reference that proposed it, optional)", item.pathway_source ?? "")}<label><span>Formed from</span><select data-tp="formed_from" data-tp-from="${escapeHtml(item.from || "")}"></select></label>
     <div class="cl-row2">${field("ff", "Formation fraction (molar, 0–1) of its source", item.ff ?? "", 'type="number" step="any" min="0" max="1" placeholder="blank = 1.0 worst case"')}
@@ -4138,6 +4139,8 @@ function tpReadSubstance(node, isProduct) {
   const entry = { name: get("name").trim() || undefined, molecular_weight_g_mol: num("mw"), log_p: num("log_p"), pka_a: num("pka_a"), pka_b: num("pka_b"),
     dt50_days: num("dt50"), dt50_temperature_c: num("temp") ?? 20, dt50_source: get("source"), smiles: get("smiles").trim() || null };
   if (num("dt50_lo") !== null && num("dt50_hi") !== null) entry.dt50_range_days = [num("dt50_lo"), num("dt50_hi")];
+  if (num("biowin4") !== null) entry.biowin4_score = num("biowin4");
+  if (get("source") === "auto") { entry.dt50_auto = true; delete entry.dt50_source; if (entry.dt50_days != null) entry.dt50_source = "user_estimate"; }
   if (get("source") === "pepper_auto") { entry.dt50_from_pepper = true; delete entry.dt50_days; delete entry.dt50_source; delete entry.dt50_temperature_c; delete entry.dt50_range_days; }
   if (isProduct && get("ff") !== "") entry.formation_fraction = Number(get("ff"));
   if (isProduct && get("formed_from") !== "") entry.formed_from = get("formed_from");
@@ -4222,7 +4225,7 @@ function tpSubstanceResult(item, isParent) {
   const lineage = isParent ? "" : `<p><small>Generation ${item.generation} · formed from ${escapeHtml(item.formed_from)}${item.pathway_source ? ` · pathway source: ${escapeHtml(item.pathway_source)}` : ""}</small></p>`;
   return `<article class="hypothesis-card"><div><h4>${escapeHtml(item.name)}</h4>${lineage}
     <p><strong>DT50 at soil temperature:</strong> ${tpFmt(item.dt50_days)} d · ${escapeHtml(item.dt50_source.replace(/_/g, " "))}</p>
-    <p><small>${escapeHtml(item.dt50_basis)}</small></p>${uncertaintyText}${peakText}${bandText}
+    <p><small>${escapeHtml(item.dt50_basis)}</small></p>${(item.dt50_ladder || []).map((step) => `<p><small>Ladder: ${escapeHtml(step)}</small></p>`).join("")}${uncertaintyText}${peakText}${bandText}
     <p><strong>Sorption:</strong> ${sorptionText}</p>${notes}</div></article>`;
 }
 
@@ -4300,7 +4303,7 @@ async function tpLoadFromAssessment({ knownTps }) {
   const parent = {
     name: chemical.preferred_name, smiles: chemical.smiles || "", mw: chemical.molecular_weight_g_mol ?? "", log_p: profile.log_kow ?? "",
     pka_a: profile.pkaa ?? "", pka_b: profile.pkab ?? "", dt50: hasDt50 ? profile.soil_dt50_days : "", temp: 20,
-    source: hasDt50 ? "user_estimate" : chemical.smiles ? "pepper_auto" : "measured", lo: "", hi: "",
+    source: hasDt50 ? "user_estimate" : "auto", lo: "", hi: "",
   };
   let products = [];
   let productNote = "";
@@ -4311,7 +4314,7 @@ async function tpLoadFromAssessment({ knownTps }) {
       const known = await tpKnownProductsFor(chemical);
       products = known.rows.slice(0, 8).map((row) => ({
         name: row.tp_name || "Unnamed product", smiles: row.tp_smiles || "", mw: "", log_p: "", pka_a: "", pka_b: "", dt50: "", temp: 20,
-        source: row.tp_smiles ? "pepper_auto" : "measured", ff: "", from: "", lo: "", hi: "",
+        source: "auto", ff: "", from: "", lo: "", hi: "",
       }));
       productNote = products.length
         ? `${products.length} curated parent–product pair(s) from NORMAN EAWAGTPS were added as direct products of the parent. They say the product is known, not that it forms in soil or in what yield: formation fractions are blank (worst case 1.0), DT50s are PEPPER predictions (slow, low confidence for unusual structures), and log P is an RDKit proxy. Rewire "Formed from" where a product comes from another product.`
@@ -4402,7 +4405,7 @@ function tpImportProducts(text) {
     const count = document.querySelectorAll("#tp-products [data-tp-prefix]").length;
     $("tp-products").insertAdjacentHTML("beforeend", tpSubstanceHtml(`product-${count + offset}`, {
       name: row.name, smiles: row.smiles, mw: "", log_p: "", pka_a: "", pka_b: "", dt50: "", temp: 20,
-      source: row.smiles ? "pepper_auto" : "measured", ff: row.ff, from, lo: "", hi: "", pathway_source: row.source,
+      source: "auto", ff: row.ff, from, lo: "", hi: "", pathway_source: row.source,
     }, true));
   });
   tpRefreshSources();

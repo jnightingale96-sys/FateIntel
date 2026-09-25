@@ -67,14 +67,15 @@ data from outside the training set (non-pesticides, warm-climate soils; the user
 
 ## Not done / open
 
-- **BIOWIN4 → screening DT50: implemented** (`app/services/biowin_dt50.py`, `/api/providers/biowin-dt50/estimate`, `/regions`).
-  Owner relation DT50 [hours, **25 °C**] = 10^(5 − BIOWIN4) (25 °C confirmed by the owner 2026-09-24); identical to the
-  existing veterinary manure relation. **Unit checked against EPA's own EPI Suite output** (5 → hours, 4 → days, 3 → weeks,
-  2 → months, 1 → longer): read in hours it gives 1 h / 10 h / ~4 d / ~6 wk / ~14 months and fits at both ends; read in days
-  it is 1–2 classes too slow. (An earlier note here that days matched the scale labels was wrong.) Re-expressed at a
-  per-region target temperature with theta 1.047 (EU = 10 °C, owner-stated; any other region must be supplied, none guessed).
-  **No literature source attached**; EPI Suite score expected (the app's own BIOWIN4 is a reconstruction and is flagged).
-  Emits a reviewable candidate (manure by default, water optional); measured DT50 always wins.
+- **BIOWIN4 → screening DT50 (LAST RESORT)** (`app/services/biowin_dt50.py`, `/api/providers/biowin-dt50/estimate`). Owner's property-tool
+  relation, confirmed 2026-09-25: aquatic DT50 [h] = 10^(6 − BIOWIN4) at 25 °C, soil DT50 = 0.5 × aquatic (`merge_properties.py`).
+  Supersedes the earlier 10^(5 − BIOWIN4) h reading (a factor 10 lower); the older manure benchmark in `veterinary.py` is separate and unchanged.
+  Scale check against EPA's EPI Suite labels (hours/days/weeks/months/longer for scores 5..1): 10 h, 4 d, 6 wk, 14 months, 4.7 y. No literature
+  source; the 0.5 soil factor is unsourced (worth checking against ECHA R.16 defaults before client-facing use). Per-region temperature via
+  theta 1.047 (EU = 10 °C, owner-stated; others must be supplied).
+  **In the soil transformation-product tab BIOWIN is only used after better sources:** supplied/measured DT50, then PEPPER (EAWAG-SOIL measured
+  value if the compound is in the training set, otherwise the GPR prediction), then BIOWIN if a score was given (`dt50_auto`; the skipped
+  sources are listed in `dt50_ladder`).
 - **OPERA biodegradation via CompTox** (`/chemical/fate/search/by-dtxsid/{dtxsid}`): predicted half-life and ready
   biodegradability with applicability-domain verdicts exist, and 160 chemicals have OPERA/SRC 98-008 survey values.
   These are *not* soil DT50s (atrazine: 4.9 d, flagged outside the training domain). Not wired in — the user is working on

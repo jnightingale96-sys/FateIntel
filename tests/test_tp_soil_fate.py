@@ -181,10 +181,10 @@ def test_supplied_formation_fractions_summing_above_one_are_refused():
 def test_biowin_screen_supplies_a_labelled_dt50_at_25c_and_is_normalised_by_arrhenius():
     payload = _payload(temperature_c=20.0)
     payload["products"][0].pop("dt50_days")
-    payload["products"][0]["biowin4_score"] = 3.0  # 100 h at 25 C = 100/24 d
+    payload["products"][0]["biowin4_score"] = 3.0  # aquatic 10**3 h; soil = 0.5 x = 500 h at 25 C = 500/24 d
     product = run_tp_soil_fate(payload)["products"][0]
-    assert product["dt50_source"] == "biowin_screen" and "unsourced" in product["dt50_basis"]
-    assert product["dt50_days"] == pytest.approx(100.0 / 24.0 * corrections.temperature_factor(25.0), rel=1e-12)
+    assert product["dt50_source"] == "biowin_screen" and "unsourced" in product["dt50_basis"] and "last resort" in product["dt50_basis"]
+    assert product["dt50_days"] == pytest.approx(500.0 / 24.0 * corrections.temperature_factor(25.0), rel=1e-12)
 
 
 def test_smiles_fills_mw_and_a_flagged_crippen_logp():
@@ -730,3 +730,52 @@ def test_the_pathway_source_of_each_product_is_kept_and_trimmed():
     products = run_tp_soil_fate(payload)["products"]
     assert products[0]["pathway_source"] == "QSAR Toolbox 4.9 (microbial simulator)"
     assert len(products[1]["pathway_source"]) == 120 and products[2]["pathway_source"] is None
+
+
+# ---------------------------------------------------------------- best-available DT50 ladder (BIOWIN last) ----------------
+
+def _auto_payload(**parent_extra):
+    payload = _payload(region="EU")
+    payload["parent"] = {"name": "P", "molecular_weight_g_mol": 200.0, "dt50_auto": True, **parent_extra}
+    return payload
+
+
+def test_auto_prefers_a_supplied_dt50_over_everything_and_never_calls_pepper(monkeypatch):
+    def boom():
+        raise AssertionError("PEPPER must not be called when a DT50 is supplied")
+
+    monkeypatch.setattr("app.services.soil_dt50.predictor.get_predictor", boom)
+    payload = _auto_payload(smiles="CCO", biowin4_score=3.0, dt50_days=12.0, dt50_source="measured")
+    parent = run_tp_soil_fate(payload)["parent"]
+    assert parent["dt50_source"] == "measured" and parent["dt50_input_days"] == 12.0
+
+
+def test_auto_uses_pepper_before_biowin_even_when_a_biowin_score_is_given(monkeypatch):
+    monkeypatch.setattr("app.services.soil_dt50.predictor.get_predictor", lambda: _FakePredictor(dt50=40.0))
+    parent = run_tp_soil_fate(_auto_payload(smiles="CCO", biowin4_score=3.0))["parent"]
+    assert parent["dt50_source"] == "pepper_prediction" and parent["dt50_input_days"] == 40.0 and parent["dt50_ladder"] == []
+
+
+def test_auto_falls_back_to_biowin_only_last_and_records_why(monkeypatch):
+    monkeypatch.setattr("app.services.soil_dt50.predictor.get_predictor", lambda: _FakePredictor(status="outside_domain"))
+    parent = run_tp_soil_fate(_auto_payload(smiles="CCO", biowin4_score=3.0))["parent"]
+    assert parent["dt50_source"] == "biowin_screen" and parent["dt50_input_days"] == pytest.approx(500.0 / 24.0)
+    assert len(parent["dt50_ladder"]) == 1 and "PEPPER not used" in parent["dt50_ladder"][0]
+    no_smiles = run_tp_soil_fate(_auto_payload(biowin4_score=3.0))["parent"]
+    assert no_smiles["dt50_source"] == "biowin_screen" and no_smiles["dt50_ladder"] == ["PEPPER needs a SMILES"]
+
+
+def test_auto_with_nothing_available_says_what_was_tried(monkeypatch):
+    monkeypatch.setattr("app.services.soil_dt50.predictor.get_predictor", lambda: _FakePredictor(status="failed"))
+    with pytest.raises(TpFateInputError, match="no DT50 could be found automatically.*PEPPER not used"):
+        run_tp_soil_fate(_auto_payload(smiles="CCO"))
+    with pytest.raises(TpFateInputError, match="no DT50 could be found automatically.*needs a SMILES"):
+        run_tp_soil_fate(_auto_payload())
+
+
+def test_explicit_pepper_still_fails_loudly_rather_than_silently_using_biowin(monkeypatch):
+    monkeypatch.setattr("app.services.soil_dt50.predictor.get_predictor", lambda: _FakePredictor(status="failed"))
+    payload = _payload()
+    payload["parent"] = {"name": "P", "molecular_weight_g_mol": 200.0, "smiles": "CCO", "dt50_from_pepper": True, "biowin4_score": 3.0}
+    with pytest.raises(TpFateInputError, match="could not predict"):
+        run_tp_soil_fate(payload)

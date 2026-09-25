@@ -140,10 +140,27 @@ def _pepper_dt50(entry: dict[str, Any], label: str) -> tuple[float, str, str, di
     return float(recommended["DT50_ref_days"]), ("measured" if measured else "pepper_prediction"), note, uncertainty
 
 
+def _biowin_soil_dt50(entry: dict[str, Any]) -> tuple[float, float, str]:
+    """LAST-RESORT soil DT50 from a BIOWIN4 score (owner's relation: aquatic 10**(6 - x) h, soil = 0.5 x aquatic)."""
+
+    est = dt50_from_biowin4(entry["biowin4_score"], matrix="soil", output_unit="days")
+    note = (f"BIOWIN4 screen {est['dt50']:.4g} d at {est['reference_temperature_c']:g} C "
+            "(last resort: unsourced project relation and 0.5 soil factor; prefer a measured or PEPPER value)")
+    return est["dt50"], est["reference_temperature_c"], note
+
+
 def _dt50_at_target(entry: dict[str, Any], label: str, target_c: float) -> dict[str, Any]:
-    """The substance's soil DT50 (days) at the target temperature, with its source label and derivation."""
+    """The substance's soil DT50 (days) at the target temperature, with its source label and derivation.
+
+    Order when ``dt50_auto`` is set (best source first, BIOWIN strictly last): a supplied DT50 (measured beats any
+    prediction) -> PEPPER (the EAWAG-SOIL measured value if the compound is in the training set, otherwise the GPR
+    prediction with its interval) -> a BIOWIN4 score, only if one was given. Why each better source was skipped is kept
+    in ``dt50_ladder``. Without ``dt50_auto`` the explicit fields are honoured as before.
+    """
 
     uncertainty = None
+    ladder: list[str] = []
+    auto = bool(entry.get("dt50_auto"))
     if entry.get("dt50_days") is not None:
         source = entry.get("dt50_source") or "user_estimate"
         if source not in DT50_SOURCES:
@@ -152,23 +169,41 @@ def _dt50_at_target(entry: dict[str, Any], label: str, target_c: float) -> dict[
         from_c = float(entry.get("dt50_temperature_c", REFERENCE_TEMPERATURE_C))
         note = f"supplied DT50 {dt50:g} d at {from_c:g} C"
         uncertainty = _range_to_uncertainty(entry, dt50, label)
-    elif entry.get("dt50_from_pepper"):
-        dt50, source, note, uncertainty = _pepper_dt50(entry, label)
-        from_c = REFERENCE_TEMPERATURE_C
+    elif entry.get("dt50_from_pepper") or auto:
+        picked = False
+        if entry.get("smiles"):
+            try:
+                dt50, source, note, uncertainty = _pepper_dt50(entry, label)
+                from_c = REFERENCE_TEMPERATURE_C
+                picked = True
+            except TpFateInputError as exc:
+                if not auto:
+                    raise
+                ladder.append(f"PEPPER not used: {exc}")
+        elif auto:
+            ladder.append("PEPPER needs a SMILES")
+        else:
+            raise TpFateInputError(f"{label}: a SMILES is required to predict a DT50 with PEPPER")
+        if not picked:
+            if entry.get("biowin4_score") is None:
+                raise TpFateInputError(
+                    f"{label}: no DT50 could be found automatically ({'; '.join(ladder) or 'no source available'}). "
+                    "Supply dt50_days, or a BIOWIN4 score as a last resort."
+                )
+            dt50, from_c, note = _biowin_soil_dt50(entry)
+            source = "biowin_screen"
     elif entry.get("biowin4_score") is not None:
-        est = dt50_from_biowin4(entry["biowin4_score"], output_unit="days")
-        source, dt50, from_c = "biowin_screen", est["dt50"], est["reference_temperature_c"]
-        note = f"BIOWIN4 screen {est['dt50']:.4g} d at {from_c:g} C (unsourced owner relation; prefer a measured DT50)"
+        dt50, from_c, note = _biowin_soil_dt50(entry)
+        source = "biowin_screen"
     else:
-        raise TpFateInputError(f"{label}: give dt50_days (with dt50_source), biowin4_score, or a SMILES with dt50_from_pepper")
-    if source == "biowin_screen" and entry.get("dt50_days") is not None:
-        note += " (BIOWIN screen: unsourced owner relation; prefer a measured DT50)"
+        raise TpFateInputError(f"{label}: give dt50_days (with dt50_source), a SMILES with dt50_from_pepper or dt50_auto, or a BIOWIN4 score")
     f_from = corrections.temperature_factor(from_c)
     f_to = corrections.temperature_factor(target_c)
     if f_from == 0:
         raise TpFateInputError(f"{label}: a DT50 stated at {from_c:g} C (<= 0 C) cannot be normalised")
     at_target = math.inf if f_to == 0 else dt50 * f_from / f_to
-    return {"dt50_days": at_target, "dt50_source": source, "dt50_basis": note, "dt50_input_days": dt50, "dt50_input_temperature_c": from_c, "dt50_uncertainty": uncertainty}
+    return {"dt50_days": at_target, "dt50_source": source, "dt50_basis": note, "dt50_input_days": dt50, "dt50_input_temperature_c": from_c,
+            "dt50_uncertainty": uncertainty, "dt50_ladder": ladder}
 
 
 def _koc(entry: dict[str, Any], log_p: float | None, soil: dict[str, Any], label: str) -> dict[str, Any] | None:
