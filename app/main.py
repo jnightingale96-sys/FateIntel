@@ -1,5 +1,6 @@
 from __future__ import annotations
 from contextlib import asynccontextmanager
+from dataclasses import asdict
 from io import BytesIO
 import json
 import math
@@ -52,6 +53,8 @@ from .schemas import (
     EvidenceSourceSearchCreate, EvidenceCandidateImportCreate,
     MultimediaFateRunCreate, CatchmentRiverRunCreate,
     ReachPnecPreviewCreate, ReachReviewBundleCreate,
+    EquilibriumPartitioningPnecCreate, PbtPmtClassificationCreate,
+    FishSecondaryPoisoningTerCreate, EarthwormSecondaryPoisoningTerCreate,
     USIndustrialExposureRunCreate, USExposureCompletenessCreate,
     DegradationKineticsAssessmentCreate,
     MSFeatureReviewUpdate,
@@ -144,6 +147,11 @@ from .reach.pnec import SUPPORTED_AQUATIC_ENDPOINTS, derive_pnec
 from .reach.signing import (
     SigningError, read_private_key_file, signing_available,
 )
+from .services.equilibrium_partitioning import (
+    derive_pnec_sediment_from_water, derive_pnec_soil_from_water,
+)
+from .services.pbt_pmt_classifier import classify_pbt_and_vpvb, classify_pmt_and_vpvm
+from .services.eu_birds_mammals import fish_secondary_poisoning_ter, earthworm_secondary_poisoning_ter
 
 BASE_DIR = Path(__file__).resolve().parent
 logger = configure_logging(settings.log_level, settings.log_format)
@@ -953,6 +961,74 @@ def preview_reach_pnec(payload: ReachPnecPreviewCreate):
         return derive_pnec(**payload.model_dump())
     except ValueError as exc:
         raise ReachReviewError(str(exc)) from exc
+
+
+# --- Sediment/soil PNEC (equilibrium partitioning), PBT/PMT classification, secondary poisoning -------------------
+# These three reviewer-input calculation modules (app/services/equilibrium_partitioning.py,
+# pbt_pmt_classifier.py, eu_birds_mammals.py) existed before this wiring but had no API route, matching the
+# same "built but not yet exposed" pattern the OASIS/NITE/OPERA providers went through. None of these derive or
+# guess an input on the reviewer's behalf; every route 422s with the module's own message on an invalid input.
+
+@app.post("/api/pnec/sediment-from-water")
+def derive_sediment_pnec(payload: EquilibriumPartitioningPnecCreate):
+    try:
+        return asdict(derive_pnec_sediment_from_water(**payload.model_dump()))
+    except ValueError as exc:
+        raise HTTPException(422, str(exc)) from exc
+
+
+@app.post("/api/pnec/soil-from-water")
+def derive_soil_pnec(payload: EquilibriumPartitioningPnecCreate):
+    try:
+        return asdict(derive_pnec_soil_from_water(**payload.model_dump()))
+    except ValueError as exc:
+        raise HTTPException(422, str(exc)) from exc
+
+
+@app.post("/api/pbt-pmt/classify")
+def classify_pbt_pmt(payload: PbtPmtClassificationCreate):
+    """Runs both the PBT/vPvB (REACH Annex XIII) and PMT/vPvM (CLP Annex I 4.4.2) classifications from one
+    reviewer-supplied substance record, since most of their inputs (persistence half-lives, toxicity/CLP
+    classification flags) are shared -- only bioaccumulation (BCF) vs. mobility (log Koc) differ."""
+
+    data = payload.model_dump()
+    try:
+        pbt_vpvb = classify_pbt_and_vpvb(
+            half_life_days=data["half_life_days"], bcf_l_per_kg=data["bcf_l_per_kg"],
+            noec_or_ec10_mg_l=data["noec_or_ec10_mg_l"],
+            carcinogenic_category_1a_1b=data["carcinogenic_category_1a_1b"],
+            germ_cell_mutagen_category_1a_1b=data["germ_cell_mutagen_category_1a_1b"],
+            reproductive_toxicant_category_1a_1b_2=data["reproductive_toxicant_category_1a_1b_2"],
+            stot_re_category_1_2=data["stot_re_category_1_2"], substance_group=data["substance_group"],
+        )
+        pmt_vpvm = classify_pmt_and_vpvm(
+            half_life_days=data["half_life_days"], log_koc=data["log_koc"],
+            noec_or_ec10_mg_l=data["noec_or_ec10_mg_l"],
+            carcinogenic_category_1a_1b=data["carcinogenic_category_1a_1b"],
+            germ_cell_mutagen_category_1a_1b=data["germ_cell_mutagen_category_1a_1b"],
+            reproductive_toxicant_category_1a_1b_2=data["reproductive_toxicant_category_1a_1b_2"],
+            stot_re_category_1_2=data["stot_re_category_1_2"],
+            endocrine_disruptor_category_1=data["endocrine_disruptor_category_1"], substance_group=data["substance_group"],
+        )
+    except ValueError as exc:
+        raise HTTPException(422, str(exc)) from exc
+    return {"pbt_vpvb": pbt_vpvb, "pmt_vpvm": pmt_vpvm}
+
+
+@app.post("/api/secondary-poisoning/fish")
+def fish_secondary_poisoning(payload: FishSecondaryPoisoningTerCreate):
+    try:
+        return fish_secondary_poisoning_ter(**payload.model_dump())
+    except ValueError as exc:
+        raise HTTPException(422, str(exc)) from exc
+
+
+@app.post("/api/secondary-poisoning/earthworm")
+def earthworm_secondary_poisoning(payload: EarthwormSecondaryPoisoningTerCreate):
+    try:
+        return earthworm_secondary_poisoning_ter(**payload.model_dump())
+    except ValueError as exc:
+        raise HTTPException(422, str(exc)) from exc
 
 
 @app.post("/api/reach/review-bundles")

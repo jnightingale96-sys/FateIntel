@@ -157,6 +157,57 @@ class ReachEvidencePnecCreate(BaseModel):
     target_compartment: Literal["freshwater"] = "freshwater"
 
 
+class EquilibriumPartitioningPnecCreate(BaseModel):
+    """PNECsediment/PNECsoil via the EU TGD equilibrium-partitioning method (app/services/equilibrium_partitioning.py)."""
+
+    pnec_water_mg_per_l: float = Field(gt=0, allow_inf_nan=False)
+    koc_l_per_kg: float = Field(gt=0, allow_inf_nan=False)
+    high_log_kow_factor: Optional[float] = Field(default=None, gt=0, allow_inf_nan=False)
+
+
+class PbtPmtClassificationCreate(BaseModel):
+    """UK REACH Annex XIII (PBT/vPvB) + EU CLP Annex I 4.4.2 (PMT/vPvM) (app/services/pbt_pmt_classifier.py).
+
+    ``half_life_days`` keys are any of: marine_water, freshwater_or_estuarine_water, marine_sediment,
+    freshwater_or_estuarine_sediment, soil -- only supplied compartments are evaluated.
+    """
+
+    half_life_days: Optional[dict[str, float]] = None
+    bcf_l_per_kg: Optional[float] = Field(default=None, gt=0, allow_inf_nan=False)
+    log_koc: Optional[float] = Field(default=None, allow_inf_nan=False)
+    noec_or_ec10_mg_l: Optional[float] = Field(default=None, gt=0, allow_inf_nan=False)
+    carcinogenic_category_1a_1b: bool = False
+    germ_cell_mutagen_category_1a_1b: bool = False
+    reproductive_toxicant_category_1a_1b_2: bool = False
+    stot_re_category_1_2: bool = False
+    endocrine_disruptor_category_1: bool = False
+    substance_group: Optional[str] = None
+
+
+class FishSecondaryPoisoningTerCreate(BaseModel):
+    """Tier 1 fish-eating-bird/mammal secondary poisoning TER (EFSA 2023;21(2):7790, app/services/eu_birds_mammals.py)."""
+
+    log_kow: float = Field(allow_inf_nan=False)
+    relevant_endpoint_mg_kg_bw_day: float = Field(gt=0, allow_inf_nan=False)
+    food_intake_rate_g_day: float = Field(gt=0, allow_inf_nan=False)
+    body_weight_g: float = Field(gt=0, allow_inf_nan=False)
+    twa_surface_water_concentration_ug_l: float = Field(gt=0, allow_inf_nan=False)
+    measured_bcf_fish_l_kg: Optional[float] = Field(default=None, gt=0, allow_inf_nan=False)
+
+
+class EarthwormSecondaryPoisoningTerCreate(BaseModel):
+    """Tier 1 earthworm-eating-bird/mammal secondary poisoning TER (ECHA R.16 Section R.16.6.7.2, app/services/eu_birds_mammals.py)."""
+
+    log_kow: float = Field(allow_inf_nan=False)
+    koc_l_per_kg: float = Field(gt=0, allow_inf_nan=False)
+    soil_concentration_mg_kg_wwt: float = Field(gt=0, allow_inf_nan=False)
+    relevant_endpoint_mg_kg_bw_day: float = Field(gt=0, allow_inf_nan=False)
+    food_intake_rate_g_day: float = Field(gt=0, allow_inf_nan=False)
+    body_weight_g: float = Field(gt=0, allow_inf_nan=False)
+    measured_bcf_earthworm_l_per_kg: Optional[float] = Field(default=None, gt=0, allow_inf_nan=False)
+    gut_loading_fraction: float = Field(default=0.1, gt=0, lt=1, allow_inf_nan=False)
+
+
 class ReachReviewBundleCreate(BaseModel):
     project_id: int = Field(gt=0)
     chemical_id: int = Field(gt=0)
