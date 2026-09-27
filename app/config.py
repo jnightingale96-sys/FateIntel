@@ -124,6 +124,9 @@ class Settings(BaseModel):
     # "Biodegradation in soil OASIS" (LMC Bourgas) measured soil DT50 lookup -- see oasis_soil_dt50.py.
     oasis_soil_dt50_commercial_license_confirmed: bool = False
 
+    # "Biodegradation NITE" (METI Japan) measured mineralization/ready-biodegradability lookup -- see nite_ready_biodegradability.py.
+    nite_ready_biodegradability_commercial_license_confirmed: bool = False
+
     # OPERA (NIEHS/NICEATM QSAR suite) command-line build, used as the structure-only fallback for log P, pKa,
     # biodegradation half-life and log Koc. Unavailable until OPERA_EXE_PATH points at OPERA.exe; the bundled MATLAB
     # Runtime is put on PATH for the child process only (default <exe folder>/../R2024b).

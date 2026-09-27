@@ -89,6 +89,17 @@ def fixture_reference_data(monkeypatch, tmp_path):
     }
     monkeypatch.setattr(ai, "_EAWAGTPS_BY_PARENT", eawagtps_fixture)
 
+    microbial_fixture = {
+        CARBAMAZEPINE_INCHIKEY: [
+            {
+                "tp_smiles": "CC(=O)O", "tp_inchikey": "QTBSBXVTEAMEQO-UHFFFAOYSA-N", "tp_formula": "C2H4O2",
+                "tp_exact_mass_da": 60.0211, "tp_cas": "64-19-7", "quantity_percent": None,
+                "source_record_ids": ["15d7ae50-b437-4361-b8ac-62c9d5cd9bb6"],
+            }
+        ]
+    }
+    monkeypatch.setattr(ai, "_OBSERVED_MICROBIAL_METABOLISM_BY_PARENT", microbial_fixture)
+
     susdat_record = {
         "inchikey": CARBAMAZEPINE_INCHIKEY,
         "precursor_m_plus_h_da": 237.102239,
@@ -128,10 +139,19 @@ def test_ionisation_and_platform_reports_absence_explicitly(fixture_reference_da
 def test_known_transformation_products_returns_curated_pairs(fixture_reference_data):
     result = ai.known_transformation_products(CARBAMAZEPINE_INCHIKEY)
     assert result["found"] is True
-    assert result["known_transformation_product_count"] == 1
+    assert result["known_transformation_product_count"] == 2
     tp = result["known_transformation_products"][0]
     assert tp["tp_name"] == "Carbamazepine-10,11-epoxide"
-    assert tp["evidence_status"] == "database_curated"
+    assert tp["evidence_status"] == "database_curated" and tp["source_key"] == "norman_eawagtps"
+
+
+def test_known_transformation_products_merges_the_observed_microbial_metabolism_source(fixture_reference_data):
+    result = ai.known_transformation_products(CARBAMAZEPINE_INCHIKEY)
+    microbial = result["known_transformation_products"][1]
+    assert microbial["source_key"] == "oasis_observed_microbial_metabolism"
+    assert microbial["tp_smiles"] == "CC(=O)O" and microbial["tp_name"] == "64-19-7"  # falls back to CAS, no name data
+    assert microbial["source_record_id"] == "15d7ae50-b437-4361-b8ac-62c9d5cd9bb6"
+    assert "unconfirmed" in microbial["citation"].lower()
 
 
 def test_known_transformation_products_reports_absence_explicitly(fixture_reference_data):

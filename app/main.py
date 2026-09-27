@@ -186,6 +186,10 @@ from .services.oasis_soil_dt50 import router as oasis_soil_dt50_router  # noqa: 
 
 app.include_router(oasis_soil_dt50_router, prefix="/api/providers")
 
+from .services.nite_ready_biodegradability import router as nite_ready_biodegradability_router  # noqa: E402
+
+app.include_router(nite_ready_biodegradability_router, prefix="/api/providers")
+
 from .services.tp_soil_fate import router as tp_soil_fate_router  # noqa: E402
 
 app.include_router(tp_soil_fate_router, prefix="/api")

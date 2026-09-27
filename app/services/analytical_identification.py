@@ -54,6 +54,23 @@ EAWAGTPS_PATH = DATA_DIR / "eawag_transformation_products.json"
 _EAWAGTPS: dict[str, Any] = json.loads(EAWAGTPS_PATH.read_text(encoding="utf-8"))
 _EAWAGTPS_BY_PARENT: dict[str, list[dict[str, Any]]] = _EAWAGTPS["by_parent_inchikey"]
 
+# A second known-transformation-product source: real, curated precursor -> product structure pairs from the
+# "Observed Microbial metabolism" database (LMC Bourgas + US EPA, METAPATH platform; largely UM-BBD and literature
+# derived, mostly aerobic general biodegradation -- not soil-specific), exported read-only (2026-09-27) from a
+# locally restored QSAR Toolbox 4.9 database. Licence UNCONFIRMED, same gate discipline as PEPPER/oasis_soil_dt50 --
+# see analytical_source_registry.json's "oasis_observed_microbial_metabolism" entry and
+# scripts/convert_observed_microbial_metabolism.py for the full provenance. Keyed by the PRECURSOR's InChIKey (which
+# may itself be a pathway intermediate, not only a root parent), so re-querying a returned TP's own InChIKey follows
+# the chain, exactly like NORMAN EAWAGTPS.
+OBSERVED_MICROBIAL_METABOLISM_PATH = DATA_DIR / "observed_microbial_metabolism.json"
+_OBSERVED_MICROBIAL_METABOLISM: dict[str, Any] = json.loads(OBSERVED_MICROBIAL_METABOLISM_PATH.read_text(encoding="utf-8"))
+_OBSERVED_MICROBIAL_METABOLISM_BY_PARENT: dict[str, list[dict[str, Any]]] = _OBSERVED_MICROBIAL_METABOLISM["by_parent_inchikey"]
+OBSERVED_MICROBIAL_METABOLISM_CITATION = (
+    "\"Observed Microbial metabolism\" database, Laboratory of Mathematical Chemistry (LMC), Bourgas, with US EPA "
+    "(ORD/NERL, ORD/NHEERL/MED), METAPATH platform -- real observed precursor/product pairs, largely from UM-BBD "
+    "and the literature. Licence unconfirmed; no formation-fraction/yield data for almost all pairs."
+)
+
 SUSDAT_INDEX_PATH = DATA_DIR / "norman_susdat_index.json"
 _SUSDAT_INDEX: dict[str, Any] = json.loads(SUSDAT_INDEX_PATH.read_text(encoding="utf-8"))
 SUSDAT_DATA_PATH = DATA_DIR / _SUSDAT_INDEX["data_file"]
@@ -111,24 +128,42 @@ def ionisation_and_platform(inchikey: str) -> dict[str, Any]:
 
 
 def known_transformation_products(inchikey: str) -> dict[str, Any]:
-    """Known (not predicted) transformation products of one parent, from NORMAN EAWAGTPS."""
+    """Known (not predicted) transformation products of one parent/precursor, merged from every curated-pair
+    source this app has: NORMAN EAWAGTPS, then the observed microbial metabolism database. Each entry keeps its
+    own ``source_key``/``source_name``/``citation``/``source_url`` so provenance stays visible per row."""
     key = (inchikey or "").strip()
     if not key:
         raise ValueError("An InChIKey is required")
 
-    entries = _EAWAGTPS_BY_PARENT.get(key, [])
+    eawagtps_entries = [
+        {**entry, "evidence_status": "database_curated", "source_key": "norman_eawagtps",
+         "source_name": "NORMAN EAWAGTPS", "citation": _EAWAGTPS["citation"], "source_url": _EAWAGTPS["source_url"]}
+        for entry in _EAWAGTPS_BY_PARENT.get(key, [])
+    ]
+    microbial_entries = [
+        {
+            "tp_name": entry.get("tp_cas") or "Observed microbial metabolite", "tp_smiles": entry["tp_smiles"],
+            "tp_inchikey": entry["tp_inchikey"], "tp_formula": entry.get("tp_formula"), "tp_cas": entry.get("tp_cas"),
+            "tp_exact_mass_da": entry.get("tp_exact_mass_da"), "transformation_type": None, "ionization": None,
+            "mass_diff_da": None, "formula_diff": None,
+            "quantity_percent": entry.get("quantity_percent"),  # present for very few pairs; never invented otherwise
+            "evidence_status": "database_curated", "source_key": "oasis_observed_microbial_metabolism",
+            "source_name": "Observed Microbial metabolism (LMC/US EPA)", "citation": OBSERVED_MICROBIAL_METABOLISM_CITATION,
+            "source_url": None, "source_record_id": ";".join(entry.get("source_record_ids") or []) or None,
+        }
+        for entry in _OBSERVED_MICROBIAL_METABOLISM_BY_PARENT.get(key, [])
+    ]
+    entries = eawagtps_entries + microbial_entries
     return {
         "found": bool(entries),
         "parent_inchikey": key,
         "known_transformation_product_count": len(entries),
-        "known_transformation_products": [
-            {**entry, "evidence_status": "database_curated"} for entry in entries
-        ] if entries else [],
+        "known_transformation_products": entries,
         "message": None if entries else (
-            "No known transformation products for this parent are recorded in the NORMAN "
-            "EAWAGTPS reference set."
+            "No known transformation products for this parent are recorded in the NORMAN EAWAGTPS or observed "
+            "microbial metabolism reference sets."
         ),
-        "source_key": "norman_eawagtps",
+        "source_key": "norman_eawagtps+oasis_observed_microbial_metabolism",
         "citation": _EAWAGTPS["citation"],
         "source_url": _EAWAGTPS["source_url"],
     }

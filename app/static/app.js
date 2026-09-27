@@ -582,7 +582,7 @@ function renderIdentificationProfile(profile, displayName) {
       <div class="identification-tp-card">
         <p><strong>${escapeHtml(row.tp_name || "Unnamed transformation product")}</strong> <em>${escapeHtml(row.transformation_type || "")}</em></p>
         <p>${escapeHtml(row.tp_formula || "—")} · mass diff ${fmt(row.mass_diff_da,4)} Da (${escapeHtml(row.formula_diff || "—")}) · ionisation ${escapeHtml(row.ionization || "—")}</p>
-        <p class="identification-source">Source: <a href="${escapeHtml(row.source_url || "#")}" rel="noopener" target="_blank">NORMAN EAWAGTPS record ${escapeHtml(String(row.source_record_id || ""))}</a> · curated pair, not predicted.</p>
+        <p class="identification-source">Source: <a href="${escapeHtml(row.source_url || "#")}" rel="noopener" target="_blank">${escapeHtml(row.source_name || "curated reference")} ${row.source_record_id ? "record " + escapeHtml(String(row.source_record_id)).slice(0, 60) : ""}</a> · curated pair, not predicted.${row.quantity_percent != null ? ` Reported quantity: ${fmt(row.quantity_percent, 3)}%.` : ""}</p>
         ${row.tp_inchikey ? `<button class="text-button" data-identification-index="${index}" type="button">View this TP's own identification profile</button>` : ""}
       </div>`).join("");
     $$('#identification-transformation-products [data-identification-index]').forEach(button => {
