@@ -4294,7 +4294,24 @@ async function tpKnownProductsFor(chemical) {
   return { rows: block.found && Array.isArray(block.known_transformation_products) ? block.known_transformation_products : [], message: block.message || null };
 }
 
-async function tpLoadFromAssessment({ knownTps }) {
+async function tpPredictedProductsFor(chemical, { numberOfSteps = 2 } = {}) {
+  // BioTransformer's environmental-microbial module: real structure predictions, no formation fractions or rates.
+  if (!chemical.smiles) return { rows: [], message: "This chemical has no SMILES, so predicted transformation products cannot be requested.", warnings: [] };
+  const result = await api("/api/transformation-pathways/predict", {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ provider: "biotransformer", parent_smiles: chemical.smiles, parent_name: chemical.preferred_name, number_of_steps: numberOfSteps }),
+  });
+  const nodesById = new Map((result.pathway?.nodes || []).map((node) => [node.id, node]));
+  const firstSourceByTarget = new Map();
+  for (const edge of result.pathway?.edges || []) if (!firstSourceByTarget.has(edge.target)) firstSourceByTarget.set(edge.target, edge.source);
+  const rows = (result.products || []).map((product) => {
+    const sourceNode = nodesById.get(firstSourceByTarget.get(product.provider_node_id));
+    return { ...product, formed_from_name: sourceNode ? sourceNode.name : null };
+  });
+  return { rows, message: result.warnings?.[0] || null, warnings: result.warnings || [] };
+}
+
+async function tpLoadFromAssessment({ knownTps, predictedTps } = {}) {
   const status = $("tp-status");
   const chemical = state.chemical;
   if (!chemical) { toast("Choose and confirm a chemical first.", 5000); return; }
@@ -4307,20 +4324,32 @@ async function tpLoadFromAssessment({ knownTps }) {
   };
   let products = [];
   let productNote = "";
-  if (knownTps) {
+  if (knownTps || predictedTps) {
     status.className = "design-status running";
     status.innerHTML = "<strong>Looking up known transformation products…</strong>";
     try {
-      const known = await tpKnownProductsFor(chemical);
-      products = known.rows.slice(0, 8).map((row) => ({
-        name: row.tp_name || "Unnamed product", smiles: row.tp_smiles || "", mw: "", log_p: "", pka_a: "", pka_b: "", dt50: "", temp: 20,
-        source: "auto", ff: "", from: "", lo: "", hi: "",
-      }));
+      let lookup;
+      if (predictedTps) {
+        status.innerHTML = "<strong>Predicting transformation products (BioTransformer)…</strong><small>This can take up to a minute.</small>";
+        lookup = await tpPredictedProductsFor(chemical);
+        products = lookup.rows.slice(0, 8).map((row) => ({
+          name: row.name || "Unnamed product", smiles: row.smiles || "", mw: "", log_p: "", pka_a: "", pka_b: "", dt50: "", temp: 20,
+          source: "auto", ff: "", from: row.formed_from_name || "", lo: "", hi: "", pathway_source: row.source || "BioTransformer (predicted)",
+        }));
+      } else {
+        lookup = await tpKnownProductsFor(chemical);
+        products = lookup.rows.slice(0, 8).map((row) => ({
+          name: row.tp_name || "Unnamed product", smiles: row.tp_smiles || "", mw: "", log_p: "", pka_a: "", pka_b: "", dt50: "", temp: 20,
+          source: "auto", ff: "", from: "", lo: "", hi: "",
+        }));
+      }
       productNote = products.length
-        ? `${products.length} curated parent–product pair(s) from NORMAN EAWAGTPS were added as direct products of the parent. They say the product is known, not that it forms in soil or in what yield: formation fractions are blank (worst case 1.0), DT50s are PEPPER predictions (slow, low confidence for unusual structures), and log P is an RDKit proxy. Rewire "Formed from" where a product comes from another product.`
-        : (known.message || "No known transformation products are recorded for this chemical.");
+        ? (predictedTps
+            ? `${products.length} predicted transformation product(s) from BioTransformer's environmental-microbial module were added, with "Formed from" set from the predicted reaction. These are structure hypotheses, not confirmed products, and BioTransformer gives no formation fractions or rates: formation fractions are blank (worst case 1.0). Each DT50 uses the best-available ladder (measured OASIS data, then PEPPER, then BIOWIN only as a last resort). Review every structure before using it.`
+            : `${products.length} curated parent–product pair(s) from NORMAN EAWAGTPS were added as direct products of the parent. They say the product is known, not that it forms in soil or in what yield: formation fractions are blank (worst case 1.0). Each DT50 uses the best-available ladder (measured OASIS data, then PEPPER, then BIOWIN only as a last resort). Rewire "Formed from" where a product comes from another product.`)
+        : (lookup.message || (predictedTps ? "BioTransformer returned no transformation products for this structure." : "No known transformation products are recorded for this chemical."));
     } catch (error) {
-      productNote = `The known-product lookup failed: ${error.message}`;
+      productNote = `The ${predictedTps ? "predicted-product" : "known-product"} lookup failed: ${error.message}`;
     }
   }
   if (!products.length) products = [{ name: "", smiles: "", mw: "", log_p: "", pka_a: "", pka_b: "", dt50: "", temp: 20, source: "measured", ff: "", from: "", lo: "", hi: "" }];
@@ -4342,6 +4371,7 @@ async function tpLoadFromAssessment({ knownTps }) {
 document.addEventListener("DOMContentLoaded", () => {
   $("tp-use-assessed")?.addEventListener("click", () => tpLoadFromAssessment({ knownTps: false }));
   $("tp-use-known")?.addEventListener("click", () => tpLoadFromAssessment({ knownTps: true }));
+  $("tp-use-predicted")?.addEventListener("click", () => tpLoadFromAssessment({ predictedTps: true }));
   $("continue-tp-soil")?.addEventListener("click", () => tpLoadFromAssessment({ knownTps: true }));
 });
 

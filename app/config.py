@@ -121,6 +121,17 @@ class Settings(BaseModel):
     soil_dt50_enabled: bool = True
     soil_dt50_commercial_license_confirmed: bool = False
 
+    # "Biodegradation in soil OASIS" (LMC Bourgas) measured soil DT50 lookup -- see oasis_soil_dt50.py.
+    oasis_soil_dt50_commercial_license_confirmed: bool = False
+
+    # OPERA (NIEHS/NICEATM QSAR suite) command-line build, used as the structure-only fallback for log P, pKa,
+    # biodegradation half-life and log Koc. Unavailable until OPERA_EXE_PATH points at OPERA.exe; the bundled MATLAB
+    # Runtime is put on PATH for the child process only (default <exe folder>/../R2024b).
+    opera_enabled: bool = True
+    opera_exe_path: str | None = None
+    opera_runtime_dir: str | None = None
+    opera_timeout_seconds: int = Field(default=900, ge=30, le=7200)
+
     # MassBank Europe is the analytical-identification feature's live connector:
     # an open REST API returning real, measured MS2 (product-ion) spectra plus
     # chromatography metadata (retention time, column, mobile phase, ionisation

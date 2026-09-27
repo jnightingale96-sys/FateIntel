@@ -182,9 +182,17 @@ from .services.biowin_dt50 import router as biowin_dt50_router  # noqa: E402
 
 app.include_router(biowin_dt50_router, prefix="/api/providers")
 
+from .services.oasis_soil_dt50 import router as oasis_soil_dt50_router  # noqa: E402
+
+app.include_router(oasis_soil_dt50_router, prefix="/api/providers")
+
 from .services.tp_soil_fate import router as tp_soil_fate_router  # noqa: E402
 
 app.include_router(tp_soil_fate_router, prefix="/api")
+
+from .services.opera_local import router as opera_router  # noqa: E402
+
+app.include_router(opera_router, prefix="/api/providers")
 
 
 @app.exception_handler(EnviroChemError)

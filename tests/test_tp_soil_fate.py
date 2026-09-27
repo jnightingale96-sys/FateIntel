@@ -750,17 +750,35 @@ def test_auto_prefers_a_supplied_dt50_over_everything_and_never_calls_pepper(mon
     assert parent["dt50_source"] == "measured" and parent["dt50_input_days"] == 12.0
 
 
-def test_auto_uses_pepper_before_biowin_even_when_a_biowin_score_is_given(monkeypatch):
+def test_auto_tries_oasis_measured_data_before_pepper_and_pepper_before_biowin(monkeypatch):
     monkeypatch.setattr("app.services.soil_dt50.predictor.get_predictor", lambda: _FakePredictor(dt50=40.0))
+    # ethanol (CCO) is not in the real OASIS soil DT50 set, so this also exercises a real (not mocked) miss.
     parent = run_tp_soil_fate(_auto_payload(smiles="CCO", biowin4_score=3.0))["parent"]
-    assert parent["dt50_source"] == "pepper_prediction" and parent["dt50_input_days"] == 40.0 and parent["dt50_ladder"] == []
+    assert parent["dt50_source"] == "pepper_prediction" and parent["dt50_input_days"] == 40.0
+    assert len(parent["dt50_ladder"]) == 1 and "OASIS soil DT50 not used" in parent["dt50_ladder"][0]
+
+
+def test_auto_prefers_a_real_oasis_measured_record_over_pepper(monkeypatch):
+    def boom():
+        raise AssertionError("PEPPER must not be called once OASIS has a measured match")
+
+    monkeypatch.setattr("app.services.soil_dt50.predictor.get_predictor", boom)
+    # Use a real key from the shipped data file, so this test tracks the actual data rather than a guess.
+    from app.services.oasis_soil_dt50 import _load
+
+    canonical_smiles, records = next(iter(_load()["records"].items()))
+    parent = run_tp_soil_fate(_auto_payload(smiles=canonical_smiles, biowin4_score=3.0))["parent"]
+    assert parent["dt50_source"] == "measured" and parent["dt50_ladder"] == []
+    means = [r["dt50_mean_days"] for r in records if r["dt50_mean_days"] is not None]
+    assert parent["dt50_input_days"] == pytest.approx(sum(means) / len(means))
 
 
 def test_auto_falls_back_to_biowin_only_last_and_records_why(monkeypatch):
     monkeypatch.setattr("app.services.soil_dt50.predictor.get_predictor", lambda: _FakePredictor(status="outside_domain"))
     parent = run_tp_soil_fate(_auto_payload(smiles="CCO", biowin4_score=3.0))["parent"]
     assert parent["dt50_source"] == "biowin_screen" and parent["dt50_input_days"] == pytest.approx(500.0 / 24.0)
-    assert len(parent["dt50_ladder"]) == 1 and "PEPPER not used" in parent["dt50_ladder"][0]
+    assert len(parent["dt50_ladder"]) == 2
+    assert "OASIS soil DT50 not used" in parent["dt50_ladder"][0] and "PEPPER not used" in parent["dt50_ladder"][1]
     no_smiles = run_tp_soil_fate(_auto_payload(biowin4_score=3.0))["parent"]
     assert no_smiles["dt50_source"] == "biowin_screen" and no_smiles["dt50_ladder"] == ["PEPPER needs a SMILES"]
 

@@ -45,6 +45,7 @@ from scipy.linalg import expm
 from scipy.optimize import minimize_scalar
 
 from .biowin_dt50 import REGION_TEMPERATURE_C, dt50_from_biowin4
+from .oasis_soil_dt50 import lookup_by_smiles as _oasis_lookup
 from .pathway_plausibility import LOG_KOC_M_THRESHOLD, LOG_KOC_VM_THRESHOLD
 from .soil_dt50 import corrections
 from .sorption import run_sorption_model
@@ -171,7 +172,17 @@ def _dt50_at_target(entry: dict[str, Any], label: str, target_c: float) -> dict[
         uncertainty = _range_to_uncertainty(entry, dt50, label)
     elif entry.get("dt50_from_pepper") or auto:
         picked = False
-        if entry.get("smiles"):
+        if auto and entry.get("smiles"):
+            oasis = _oasis_lookup(entry["smiles"])
+            if oasis.get("found"):
+                dt50, from_c, source = oasis["dt50_mean_days"], REFERENCE_TEMPERATURE_C, "measured"
+                note = (f"OASIS soil DT50 (measured) {dt50:.4g} d across {oasis['n']} record(s); LMC Bourgas, "
+                        "licence unconfirmed -- see oasis_soil_dt50.py")
+                uncertainty = None
+                picked = True
+            else:
+                ladder.append(f"OASIS soil DT50 not used: {oasis.get('reason', 'not found')}")
+        if not picked and entry.get("smiles"):
             try:
                 dt50, source, note, uncertainty = _pepper_dt50(entry, label)
                 from_c = REFERENCE_TEMPERATURE_C
@@ -180,9 +191,9 @@ def _dt50_at_target(entry: dict[str, Any], label: str, target_c: float) -> dict[
                 if not auto:
                     raise
                 ladder.append(f"PEPPER not used: {exc}")
-        elif auto:
+        elif not picked and auto:
             ladder.append("PEPPER needs a SMILES")
-        else:
+        elif not picked:
             raise TpFateInputError(f"{label}: a SMILES is required to predict a DT50 with PEPPER")
         if not picked:
             if entry.get("biowin4_score") is None:
