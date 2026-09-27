@@ -255,6 +255,7 @@ def _mineralization(entry: dict[str, Any]) -> dict[str, Any] | None:
     return {
         "biodeg_percent": result["biodeg_percent_mean"], "n": result["n"], "duration_days": record.get("duration_days"),
         "test_guideline": record.get("test_guideline"), "citation": result["citation"],
+        "readily_biodegradable": record.get("readily_biodegradable"),
     }
 
 

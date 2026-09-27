@@ -25,10 +25,12 @@ def fixture_path(tmp_path):
             ETHANOL_CANONICAL: [
                 {"cas_number": "64-17-5", "names": "ethanol", "biodeg_percent": 90.0, "biodeg_percent_min": None,
                  "biodeg_percent_max": None, "duration_days": 28.0, "test_guideline": "OECD Guideline 301 C",
-                 "endpoint_type": "Ready Biodegradability", "year": "1990", "record_id": "1"},
+                 "endpoint_type": "Ready Biodegradability", "year": "1990", "record_id": "1",
+                 "readily_biodegradable": n.classify_ready_biodegradability(90.0, "OECD Guideline 301 C")},
                 {"cas_number": "64-17-5", "names": "ethanol", "biodeg_percent": 80.0, "biodeg_percent_min": None,
                  "biodeg_percent_max": None, "duration_days": 28.0, "test_guideline": "OECD Guideline 301 C",
-                 "endpoint_type": "Ready Biodegradability", "year": "1990", "record_id": "2"},
+                 "endpoint_type": "Ready Biodegradability", "year": "1990", "record_id": "2",
+                 "readily_biodegradable": n.classify_ready_biodegradability(80.0, "OECD Guideline 301 C")},
             ],
         },
     }), encoding="utf-8")
@@ -59,15 +61,46 @@ def test_closed_outside_local_test_until_licence_confirmed(fixture_path):
     assert opened["found"] is True
 
 
-def test_candidate_is_a_reviewable_measured_percentage_with_no_pass_fail_asserted(fixture_path):
+def test_candidate_is_a_reviewable_measured_percentage_with_the_confirmed_pass_fail_classification(fixture_path):
     result = n.lookup_by_smiles(ETHANOL, configuration=LOCAL, data_path=fixture_path)
     candidate = n.to_evidence_candidate(result, chemical_name="Ethanol")
     assert candidate["property_code"] == "FATE.BIODEGRADATION" and candidate["value"] == pytest.approx(85.0) and candidate["unit"] == "%"
     assert candidate["guideline"] == "OECD Guideline 301 C" and candidate["matrix"] == "aqueous_screening_test"
     assert candidate["rights_status"] == "third_party_data_licence_unconfirmed" and candidate["needs_professional_review"] is True
-    assert "no pass/fail threshold" in candidate["notes"]
+    assert "Readily biodegradable: pass" in candidate["notes"] and "OECD TG 301" in candidate["notes"]
     with pytest.raises(ValueError):
         n.to_evidence_candidate({"found": False}, chemical_name="x")
+
+
+# ---------------------------------------------------------------- confirmed OECD TG 301 pass/fail classification -----
+
+def test_301c_is_classified_pass_or_fail_at_the_60_percent_thod_threshold():
+    at_threshold = n.classify_ready_biodegradability(60.0, "OECD Guideline 301 C (Ready Biodegradability: Modified MITI Test (I))")
+    just_below = n.classify_ready_biodegradability(59.9, "OECD Guideline 301 C (Ready Biodegradability: Modified MITI Test (I))")
+    assert at_threshold["classification"] == "pass" and "OECD TG 301" in at_threshold["basis"]
+    assert just_below["classification"] == "fail"
+
+
+def test_301d_is_indicative_only_302c_is_not_applicable_and_unknown_guidelines_are_unknown():
+    d301 = n.classify_ready_biodegradability(90.0, "OECD Guideline 301 D (Ready Biodegradability: Closed Bottle Test)")
+    c302 = n.classify_ready_biodegradability(90.0, "OECD Guideline 302 C (Inherent Biodegradability: Modified MITI Test (II))")
+    other = n.classify_ready_biodegradability(90.0, "Undefined Test Guideline")
+    missing_percent = n.classify_ready_biodegradability(None, "OECD Guideline 301 C")
+    assert d301["classification"] == "indicative_only" and "10-day window" in d301["basis"]
+    assert c302["classification"] == "not_applicable" and "inherent" in c302["basis"].lower()
+    assert other["classification"] == "unknown"
+    assert missing_percent["classification"] == "unknown" and "No percentage" in missing_percent["basis"]
+
+
+def test_real_data_file_has_the_classification_baked_into_every_record():
+    import collections
+
+    data = n._load()
+    counts = collections.Counter()
+    for records in data["records"].values():
+        for record in records:
+            counts[record["readily_biodegradable"]["classification"]] += 1
+    assert counts == {"fail": 868, "pass": 391, "not_applicable": 72, "indicative_only": 34, "unknown": 8}
 
 
 def test_real_data_file_loads_with_the_expected_shape():

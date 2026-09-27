@@ -835,3 +835,11 @@ def test_mineralization_never_feeds_the_kinetics(monkeypatch):
     payload["parent"].pop("smiles")
     without = run_tp_soil_fate(payload)["parent"]
     assert with_mineralization["dt50_days"] == without["dt50_days"] == pytest.approx(20.0)
+
+
+def test_mineralization_carries_the_confirmed_pass_fail_classification():
+    payload = _payload()
+    payload["parent"]["smiles"] = "Clc1c(Cl)c(Cl)c(-c2c(Cl)c(Cl)c(Cl)c(Cl)c2Cl)c(Cl)c1Cl"  # decachlorobiphenyl, real NITE 301C record, 10.1%
+    parent = run_tp_soil_fate(payload)["parent"]
+    rb = parent["mineralization"]["readily_biodegradable"]
+    assert rb["classification"] == "fail" and "OECD TG 301" in rb["basis"]

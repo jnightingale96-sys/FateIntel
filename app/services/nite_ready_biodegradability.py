@@ -5,17 +5,38 @@ QSAR Toolbox 4.9 PostgreSQL database (storehouse "Biodegradation NITE", endpoint
 The database holds biodegradation test data for existing chemicals under Japan's Chemical Substances Control Law
 (CSCL), run by METI (Ministry of Economy, Trade and Industry, Japan) to OECD Test Guidelines 301C, 301D, 302C or
 302D. Each record is **biodegradation expressed as the percentage of observed oxygen uptake to theoretical oxygen
-demand (BOD, %)** over a stated duration (mostly 28 days for 301C, the "Modified MITI Test (I)") -- a measure of
-aerobic microbial MINERALIZATION (respiration to CO2/H2O), not a soil DT50 and not a transformation-product pathway.
+demand (BOD, %)** over a stated duration -- a measure of aerobic microbial MINERALIZATION (respiration to CO2/H2O),
+not a soil DT50 and not a transformation-product pathway.
 
 **Licence: UNCONFIRMED**, exactly like the PEPPER and OASIS-soil-DT50 providers -- a vendor-donated database bundled
 inside a Toolbox database backup, no separate redistribution terms found. Same gate shape: open for local/
 development evaluation, closed elsewhere until an operator confirms a licence.
 
-**No pass/fail "readily biodegradable" classification is applied here.** OECD 301 guidance defines a numeric
-pass threshold (commonly cited as >=60% for an O2-consumption/CO2-evolution test, reached within a 10-day window
-of the 28-day test), but that criterion has not been read in primary text in this project, so it is not encoded --
-the raw percentage, duration and guideline are reported and nothing more. Matching is by RDKit-canonical SMILES only.
+**Ready-biodegradability pass/fail, confirmed in primary text (2026-09-27) and encoded.** OECD Test Guideline 301,
+"Ready Biodegradability" (Council Decision, adopted 17 July 1992), paragraph 10, read directly from the OECD's own
+PDF (not summarised by another tool):
+
+    "The pass levels for ready biodegradability are 70% removal of DOC and 60% of ThOD or ThCO2 production for
+    respirometric methods. ... These pass values have to be reached in a 10-d window within the [28-day] test,
+    except where mentioned below. ... Chemicals which reach the pass levels after the 28-d period are not deemed
+    to be readily biodegradable. The 10-d window concept does not apply to the MITI method."
+
+Table 1 of the same guideline lists "MITI (I) (301 C)" as a respirometric method ("Respirometry: oxygen
+consumption"), so its pass level is 60% ThOD -- and, per the quoted sentence, the 10-day-window requirement is
+explicitly waived for it. Since this dataset never carries a day-by-day series (only one reported percentage at a
+stated duration), that waiver is exactly what makes a 301C record classifiable at all: **91.7% of these records
+(1,259 of 1,373) are 301C**, and for those, and only those, this module asserts a plain pass (>=60%) or fail (<60%).
+
+Two guidelines in the same dataset are deliberately NOT given a pass/fail here:
+  * **301D (Closed Bottle, 34 records)** is also a ready-biodegradability test, but the 10-day-window requirement
+    (or the guideline's own 14-day alternative for this method) does apply to it, and a single reported percentage
+    cannot show whether that window condition was met -- so a 301D record is labelled indicative-only, never pass/fail.
+  * **302C (Modified MITI Test II, 72 records)** measures a different endpoint entirely: *inherent* biodegradability
+    (of substances already found poorly degradable in 301C), not *ready* biodegradability. OECD 301's pass levels
+    do not apply to it. Secondary sources describe a 302C threshold near 70%, but that number was not confirmed in
+    OECD's own 302C text in this project (a scanned, non-text-extractable PDF), so no numeric criterion is encoded
+    for it -- it is labelled not-applicable, not scored.
+An "Undefined Test Guideline" record (8 of 1,373) is labelled unknown for the same reason: no verified rule to apply.
 """
 
 from __future__ import annotations
@@ -30,6 +51,42 @@ from ..config import Settings, settings
 from .evidence_sources import EvidenceCandidate, _candidate_id
 
 PROVIDER_KEY = "nite_ready_biodegradability"
+READY_BIODEGRADABILITY_PASS_THRESHOLD_PERCENT = 60.0  # OECD TG 301 (1992) para 10, respirometric methods (ThOD/ThCO2)
+READY_BIODEGRADABILITY_CITATION = (
+    "OECD Test Guideline 301, \"Ready Biodegradability\" (adopted 17 July 1992), paragraph 10 and Table 1."
+)
+
+
+def classify_ready_biodegradability(percent: float | None, test_guideline: str | None) -> dict[str, Any]:
+    """Pass/fail against the OECD TG 301 respirometric threshold (60% ThOD), applied ONLY where the guideline's own
+    text supports doing so from a single reported percentage -- see the module docstring for the primary-text basis
+    and why 301D, 302C and unrecognised guidelines are excluded rather than guessed at."""
+
+    guideline = (test_guideline or "").strip()
+    if percent is None:
+        return {"classification": "unknown", "basis": "No percentage was reported for this record."}
+    if "301 C" in guideline:
+        passed = percent >= READY_BIODEGRADABILITY_PASS_THRESHOLD_PERCENT
+        return {
+            "classification": "pass" if passed else "fail",
+            "basis": (f"OECD TG 301 (1992) para 10: pass level {READY_BIODEGRADABILITY_PASS_THRESHOLD_PERCENT:g}% ThOD for respirometric "
+                      "methods; the 10-day-window requirement is explicitly waived for the MITI method (301C)."),
+        }
+    if "301 D" in guideline:
+        return {
+            "classification": "indicative_only",
+            "basis": ("OECD TG 301 (1992) para 10 requires the pass level to be reached within a 10-day window (a 14-day "
+                      "alternative is permitted for Closed Bottle); a single reported percentage cannot show this, so no "
+                      "pass/fail is asserted for 301D."),
+        }
+    if "302" in guideline:
+        return {
+            "classification": "not_applicable",
+            "basis": "This is an inherent-biodegradability test (Modified MITI II), a different endpoint from ready biodegradability; OECD TG 301's pass levels do not apply to it.",
+        }
+    return {"classification": "unknown", "basis": f"No verified ready-biodegradability rule for guideline {guideline or 'not reported'!r}."}
+
+
 DATA_PATH = Path(__file__).resolve().parents[1] / "data" / "nite_ready_biodegradability.json"
 CITATION = (
     "\"Biodegradation NITE\" database, Laboratory of Mathematical Chemistry (LMC) / METI (Japan) -- biodegradation "
@@ -144,7 +201,8 @@ def to_evidence_candidate(result: dict[str, Any], *, chemical_name: str, cas_num
         needs_professional_review=True, extraction_status="structured_database_field",
         snippet=(f"{result['biodeg_percent_mean']:.3g}% of theoretical oxygen demand across {result['n']} record(s)"
                  + (f" over {duration:g} d" if duration is not None else "")),
-        notes="A ready-biodegradability screening percentage (microbial mineralization via O2 consumption), not a soil or water DT50; no pass/fail threshold is applied here.",
+        notes=("A ready-biodegradability screening percentage (microbial mineralization via O2 consumption), not a soil or water DT50. "
+               f"Readily biodegradable: {record['readily_biodegradable']['classification']} -- {record['readily_biodegradable']['basis']}"),
     ).to_dict()
 
 
