@@ -86,6 +86,29 @@ data from outside the training set (non-pesticides, warm-climate soils; the user
   biodegradability with applicability-domain verdicts exist, and 160 chemicals have OPERA/SRC 98-008 survey values.
   These are *not* soil DT50s (atrazine: 4.9 d, flagged outside the training domain). Not wired in — the user is working on
   biodegradation and asked to move on.
+- **OPERA local CLI build (`app/services/opera_local.py`): the SMILES-only structure fallback (log P, pKa, biodeg
+  half-life, log Koc), FIXED and live-verified 2026-09-27.** Root cause of the earlier hang (module built, but the
+  work was paused uncommitted): OPERA's own `-s`/SMILES-input mode calls its bundled PaDEL internally and hangs
+  indefinitely on this build (confirmed: the log gets stuck at "Loaded structures: NaN. PaDEL calculating 2D
+  descriptors..." and never proceeds). Fix: run PaDEL ourselves (`padel-full-1.00.jar` + `desc_fp.xml`, both bundled
+  next to `OPERA.exe`) for 2D descriptors and for fingerprints separately, align the two CSVs on their `Name` column
+  (PaDEL can drop a structure from one output and not the other), then call OPERA with `-d`/`-fp` (pre-calculated
+  descriptors) instead of `-s`. Needs a `java` executable on PATH (Temurin 21 confirmed working); `_paths()` now
+  checks for the PaDEL jar/XML and `java` up front and reports which is missing rather than failing opaquely.
+  One further one-time machine-level gotcha, not code: OPERA's MATLAB Runtime caches its install folder in
+  `%LOCALAPPDATA%\MathWorks\MatlabRuntimeCache\R2024b\OPERA_installdir.txt` — if that file's content drifts from the
+  real `OPERA.exe` folder it fails fast with a clear "Default install folder was changed during installation"
+  error (not a hang); fixing that file's content is a one-time manual step, unrelated to this module.
+  Live-verified end to end: carbamazepine + ethanol, 22.3 s, real plausible values (carbamazepine log P 2.23 vs.
+  ~2.45 experimental; ethanol log P −0.31, matching its known experimental value almost exactly); a cached repeat
+  lookup returned in 0.002 s. A prior real 1,500-molecule batch run by the user directly (not through this module)
+  confirmed the same `-d`/`-fp` recipe at scale: all 17 endpoints, 6 min 19 s, 1,500/1,505 structures matched between
+  the two PaDEL outputs. 18 new mocked-subprocess tests (`tests/test_opera_local.py`) cover the full pipeline,
+  toolchain-availability checks, alignment/dedup, and both PaDEL- and OPERA-side failure paths, without depending on
+  a real install. **Not yet wired into any screen** — it exists as a backend capability
+  (`/api/providers/opera/{capabilities,predict}`) exactly as before pausing; where it should surface (Evidence Data
+  Hub search source vs. a reviewed-profile auto-fill button vs. something else) is an open question for the user,
+  not assumed here.
 - **EFSA OpenFoodTox 3.0** (Zenodo 19388272, CC BY-ND 4.0): the only open structured pesticide soil-fate source found; the
   DT50 values are in the 1 GB IUCLID archive (the Excel export has none). Not parsed; NoDerivatives licence needs a
   decision before any subset ships in a paid tier.

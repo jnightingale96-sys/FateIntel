@@ -13,3 +13,4 @@ data/backups/
 .env.local
 
 data/validation_runs/
+data/opera_cache.json
