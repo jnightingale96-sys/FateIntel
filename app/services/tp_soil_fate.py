@@ -46,6 +46,7 @@ from scipy.optimize import minimize_scalar
 
 from .biowin_dt50 import REGION_TEMPERATURE_C, dt50_from_biowin4
 from .oasis_soil_dt50 import lookup_by_smiles as _oasis_lookup
+from .nite_ready_biodegradability import lookup_by_smiles as _nite_lookup
 from .pathway_plausibility import LOG_KOC_M_THRESHOLD, LOG_KOC_VM_THRESHOLD
 from .soil_dt50 import corrections
 from .sorption import run_sorption_model
@@ -237,6 +238,23 @@ def _koc(entry: dict[str, Any], log_p: float | None, soil: dict[str, Any], label
         "koc_l_kg": selected["koc_l_kg"], "log_koc": log_koc, "warnings": selected.get("warnings", []),
         "very_mobile_clp": log_koc < LOG_KOC_VM_THRESHOLD, "mobile_clp": log_koc < LOG_KOC_M_THRESHOLD,
         "mobility_note": "CLP mobility uses the lowest log Koc over pH 4-9 for ionisable substances; this is a single-pH value.",
+    }
+
+
+def _mineralization(entry: dict[str, Any]) -> dict[str, Any] | None:
+    """Measured microbial mineralization / ready biodegradability (% ThOD, NITE), when a SMILES is given. This is a
+    ready-biodegradability screening result (aerobic water, OECD 301/302), not a soil DT50 -- shown for context only,
+    never used in the kinetics."""
+
+    if not entry.get("smiles"):
+        return None
+    result = _nite_lookup(entry["smiles"])
+    if not result.get("found"):
+        return None
+    record = result["records"][0]
+    return {
+        "biodeg_percent": result["biodeg_percent_mean"], "n": result["n"], "duration_days": record.get("duration_days"),
+        "test_guideline": record.get("test_guideline"), "citation": result["citation"],
     }
 
 
@@ -477,7 +495,7 @@ def run_tp_soil_fate(payload: dict[str, Any]) -> dict[str, Any]:
     parent = {
         "name": parent_in.get("name") or "parent", "molecular_weight_g_mol": mw_p, "log_p": logp_p,
         "pka_a": parent_in.get("pka_a"), "pka_b": parent_in.get("pka_b"), "property_notes": notes_p,
-        **dt_p, "k_per_day": k_p, "sorption": _koc(parent_in, logp_p, soil, "parent"),
+        **dt_p, "k_per_day": k_p, "sorption": _koc(parent_in, logp_p, soil, "parent"), "mineralization": _mineralization(parent_in),
     }
 
     # ---- build the reaction tree: every product has exactly one source (the parent or another product) ----
@@ -530,7 +548,7 @@ def run_tp_soil_fate(payload: dict[str, Any]) -> dict[str, Any]:
             "formation_fraction": ff, "formation_fraction_basis": ff_basis, "formation_fraction_logit_sd": ff_logit_sd,
             "formation_fraction_range": entry.get("formation_fraction_range"), "formation_fraction_defaulted": entry.get("formation_fraction") is None,
             **dt, "k_per_day": k,
-            "sorption": _koc(entry, log_p, soil, label),
+            "sorption": _koc(entry, log_p, soil, label), "mineralization": _mineralization(entry),
         })
     if defaulted_sources:
         warnings.append("Defaulted formation fractions are per-product worst cases and are not additive; they may sum above 1.")

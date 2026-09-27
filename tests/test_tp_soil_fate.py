@@ -797,3 +797,41 @@ def test_explicit_pepper_still_fails_loudly_rather_than_silently_using_biowin(mo
     payload["parent"] = {"name": "P", "molecular_weight_g_mol": 200.0, "smiles": "CCO", "dt50_from_pepper": True, "biowin4_score": 3.0}
     with pytest.raises(TpFateInputError, match="could not predict"):
         run_tp_soil_fate(payload)
+
+
+# ---------------------------------------------------------------- microbial mineralization context -------------------
+
+def test_mineralization_is_looked_up_when_a_matching_structure_has_smiles():
+    payload = _payload()
+    from app.services.nite_ready_biodegradability import _load
+
+    canonical_smiles = next(iter(_load()["records"]))
+    payload["parent"]["smiles"] = canonical_smiles
+    parent = run_tp_soil_fate(payload)["parent"]
+    assert parent["mineralization"] is not None
+    assert parent["mineralization"]["biodeg_percent"] is not None and "NITE" in parent["mineralization"]["citation"]
+
+
+def test_mineralization_is_none_without_a_smiles_or_without_a_match():
+    without_smiles = run_tp_soil_fate(_payload())["parent"]
+    assert without_smiles["mineralization"] is None
+    from app.services.nite_ready_biodegradability import lookup_by_smiles as real_nite_lookup
+
+    absent_smiles = "CC1(C)CC(N)CC(C)(C)N1"  # a stable hindered-amine structure unlikely to be in a 1970s-90s dataset
+    assert not real_nite_lookup(absent_smiles)["found"], "test fixture assumption broke: this structure is now in the real NITE set"
+    with_unmatched_smiles = _payload()
+    with_unmatched_smiles["parent"]["smiles"] = absent_smiles
+    assert run_tp_soil_fate(with_unmatched_smiles)["parent"]["mineralization"] is None
+
+
+def test_mineralization_never_feeds_the_kinetics(monkeypatch):
+    from app.services import tp_soil_fate as m
+
+    monkeypatch.setattr(m, "_nite_lookup", lambda smiles: {"found": True, "biodeg_percent_mean": 999.0, "n": 1,
+                                                            "records": [{"duration_days": 1, "test_guideline": "x"}], "citation": "x"})
+    payload = _payload()
+    payload["parent"]["smiles"] = "CCO"
+    with_mineralization = run_tp_soil_fate(payload)["parent"]
+    payload["parent"].pop("smiles")
+    without = run_tp_soil_fate(payload)["parent"]
+    assert with_mineralization["dt50_days"] == without["dt50_days"] == pytest.approx(20.0)
