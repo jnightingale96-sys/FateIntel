@@ -42,6 +42,8 @@ import httpx
 
 from ..config import Settings, settings
 from ..exceptions import ExternalDataSourceError, ExternalModelUnavailableError
+from .oasis_soil_dt50 import lookup_by_inchikey as _oasis_soil_dt50_by_inchikey
+from .nite_ready_biodegradability import lookup_by_inchikey as _nite_mineralization_by_inchikey
 
 BASE_DIR = Path(__file__).resolve().parents[1]
 DATA_DIR = BASE_DIR / "data"
@@ -375,4 +377,9 @@ def identification_profile(
         "ionisation_and_platform": ionisation_and_platform(key),
         "known_product_ions": product_ions,
         "known_transformation_products": known_transformation_products(key),
+        # Measured environmental-fate values for this exact substance, when its InChIKey matches these locally
+        # restored QSAR Toolbox reference sets. Neither call touches a live service, so failures here are never
+        # possible in the way MassBank's are; both simply report found=False when there is no match.
+        "oasis_soil_dt50": _oasis_soil_dt50_by_inchikey(key),
+        "nite_mineralization": _nite_mineralization_by_inchikey(key),
     }

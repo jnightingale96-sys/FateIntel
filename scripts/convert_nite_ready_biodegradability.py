@@ -29,6 +29,7 @@ def _meta(text: str) -> dict[str, str]:
 def convert(source: Path, out_path: Path = OUT_PATH) -> None:
     rows = list(csv.DictReader(source.open(encoding="utf-8")))
     records: dict[str, list[dict]] = {}
+    by_inchikey: dict[str, list[dict]] = {}
     skipped = 0
     for row in rows:
         smiles = (row.get("smiles") or "").strip()
@@ -37,8 +38,9 @@ def convert(source: Path, out_path: Path = OUT_PATH) -> None:
             skipped += 1
             continue
         key = Chem.MolToSmiles(mol)
+        inchikey = Chem.MolToInchiKey(mol)
         meta = _meta(row.get("meta_data", ""))
-        records.setdefault(key, []).append({
+        entry = {
             "cas_number": row.get("cas_number") or None,
             "names": row.get("names") or None,
             "biodeg_percent": float(row["biodeg_percent"]) if row.get("biodeg_percent") not in (None, "") else None,
@@ -49,8 +51,10 @@ def convert(source: Path, out_path: Path = OUT_PATH) -> None:
             "endpoint_type": meta.get("Endpoint type") or None,
             "year": meta.get("Year") or None,
             "record_id": row.get("record_id"),
-        })
-    out_path.write_text(json.dumps({"version": "1.0", "source": "nite_ready_biodegradability", "records": records}, indent=0), encoding="utf-8")
+        }
+        records.setdefault(key, []).append(entry)
+        by_inchikey.setdefault(inchikey, []).append({**entry, "canonical_smiles": key})
+    out_path.write_text(json.dumps({"version": "1.0", "source": "nite_ready_biodegradability", "records": records, "by_inchikey": by_inchikey}, indent=0), encoding="utf-8")
     print(f"{len(rows)} rows -> {len(records)} distinct structures, {skipped} skipped (no parseable SMILES); wrote {out_path}")
 
 

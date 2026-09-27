@@ -84,3 +84,27 @@ def test_capabilities_route_and_lookup_route_round_trip(fixture_path, monkeypatc
     assert caps.status_code == 200
     assert found.status_code == 200 and found.json()["found"] is True and found.json()["evidence_candidate"]["property_code"] == "FATE.BIODEGRADATION"
     assert missing.status_code == 200 and missing.json()["found"] is False
+
+
+def test_lookup_by_inchikey_matches_the_smiles_lookup_and_reports_absence(fixture_path):
+    import json as _json
+
+    data = _json.loads(fixture_path.read_text(encoding="utf-8"))
+    data["by_inchikey"] = {"LFQSCWFLJHTTHZ-UHFFFAOYSA-N": [{**r, "canonical_smiles": ETHANOL_CANONICAL} for r in data["records"][ETHANOL_CANONICAL]]}
+    fixture_path.write_text(_json.dumps(data), encoding="utf-8")
+
+    result = n.lookup_by_inchikey("LFQSCWFLJHTTHZ-UHFFFAOYSA-N", configuration=LOCAL, data_path=fixture_path)
+    assert result["found"] is True and result["biodeg_percent_mean"] == pytest.approx(85.0)
+    assert n.lookup_by_inchikey("NOT-A-REAL-KEY", configuration=LOCAL, data_path=fixture_path)["found"] is False
+    assert n.lookup_by_inchikey("", configuration=LOCAL, data_path=fixture_path) == {"found": False, "available": True, "reason": "an InChIKey is required"}
+    closed = n.lookup_by_inchikey("LFQSCWFLJHTTHZ-UHFFFAOYSA-N", configuration=STAGING, data_path=fixture_path)
+    assert closed["found"] is False and closed["available"] is False
+
+
+def test_real_data_file_has_an_inchikey_index_matching_the_smiles_index():
+    from rdkit import Chem
+
+    canonical_smiles, records = next(iter(n._load()["records"].items()))
+    inchikey = Chem.MolToInchiKey(Chem.MolFromSmiles(canonical_smiles))
+    by_key = n.lookup_by_inchikey(inchikey)
+    assert by_key["found"] is True and by_key["biodeg_percent_mean"] == pytest.approx(n.lookup_by_smiles(canonical_smiles)["biodeg_percent_mean"])

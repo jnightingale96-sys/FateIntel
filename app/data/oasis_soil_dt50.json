@@ -2353,5 +2353,2573 @@
 "record_id": "32674107"
 }
 ]
+},
+"by_inchikey": {
+"DDBMQDADIHOWIC-UHFFFAOYSA-N": [
+{
+"cas_number": "74070465",
+"names": "2-chloro-6-nitro-3-phenoxyaniline",
+"dt50_mean_days": 71.0,
+"dt50_min_days": 43.0,
+"dt50_max_days": 99.0,
+"qualifier": 0,
+"record_id": "32673890",
+"canonical_smiles": "Nc1c([N+](=O)[O-])ccc(Oc2ccccc2)c1Cl"
+}
+],
+"YLFSVIMMRPNPFK-UHFFFAOYSA-N": [
+{
+"cas_number": "101007061",
+"names": "(S)-\u03b1-cyano-3-phenoxybenzyl",
+"dt50_mean_days": 23.0,
+"dt50_min_days": 9.0,
+"dt50_max_days": 37.0,
+"qualifier": 0,
+"record_id": "32673891",
+"canonical_smiles": "CC1(C)C(C=CC(=O)OC(C(F)(F)F)C(F)(F)F)C1C(=O)OC(C#N)c1cccc(Oc2ccccc2)c1"
+}
+],
+"XCSGPAVHZFQHGE-UHFFFAOYSA-N": [
+{
+"cas_number": "15972608",
+"names": "2-chloro-2\u2032,6\u2032-diethyl-N-methoxymethylacetanilide",
+"dt50_mean_days": 22.0,
+"dt50_min_days": 14.0,
+"dt50_max_days": 29.0,
+"qualifier": 0,
+"record_id": "32673892",
+"canonical_smiles": "CCc1cccc(CC)c1N(COC)C(=O)CCl"
+}
+],
+"QGLZXHRNAYXIBU-UHFFFAOYSA-N": [
+{
+"cas_number": "116063",
+"names": "2-methyl-2-(methylthio)propionaldehyde O-methylcarbamoyloxime",
+"dt50_mean_days": 2.4,
+"dt50_min_days": 1.3,
+"dt50_max_days": 3.5,
+"qualifier": 0,
+"record_id": "32673893",
+"canonical_smiles": "CNC(=O)ON=CC(C)(C)SC"
+}
+],
+"DVQHRBFGRZHMSR-UHFFFAOYSA-N": [
+{
+"cas_number": "55635137",
+"names": "Cyclohexanecarboxylic acid, 2,2-dimethyl-4,6-dioxo-5-(1-(2-propenyloxy)imino)butyl)-, methyl ester, ion(1-), sodium",
+"dt50_mean_days": 20.0,
+"dt50_min_days": 2.0,
+"dt50_max_days": 38.0,
+"qualifier": 0,
+"record_id": "32673894",
+"canonical_smiles": "C=CCON=C(CCC)[C-]1C(=O)CC(C)(C)C(C(=O)OC)C1=O.[Na+]"
+}
+],
+"IMHBYKMAHXWHRP-UHFFFAOYSA-N": [
+{
+"cas_number": "101053",
+"names": "4,6-dichloro-N-(2-chlorophenyl)-1,3,5-triazin-2-amine",
+"dt50_mean_days": 1.0,
+"dt50_min_days": null,
+"dt50_max_days": null,
+"qualifier": 0,
+"record_id": "32673895",
+"canonical_smiles": "Clc1nc(Cl)nc(Nc2ccccc2Cl)n1"
+}
+],
+"VGPYEHKOIGNJKV-UHFFFAOYSA-N": [
+{
+"cas_number": "3337711",
+"names": "Methyl sulfanilylcarbamate",
+"dt50_mean_days": 24.0,
+"dt50_min_days": 9.0,
+"dt50_max_days": 39.0,
+"qualifier": 0,
+"record_id": "32673896",
+"canonical_smiles": "COC(=O)NS(=O)(=O)c1ccc(N)cc1"
+}
+],
+"MXWJVTOOROXGIU-UHFFFAOYSA-N": [
+{
+"cas_number": "1912249",
+"names": "6-chloro-N2-ethyl-N4-isopropyl-1,3,5-triazine-2,4-diamine",
+"dt50_mean_days": 50.0,
+"dt50_min_days": 38.0,
+"dt50_max_days": 62.0,
+"qualifier": 0,
+"record_id": "32673897",
+"canonical_smiles": "CCNc1nc(Cl)nc(NC(C)C)n1"
+}
+],
+"CJJOSEISRRTUQB-UHFFFAOYSA-N": [
+{
+"cas_number": "86500",
+"names": "S-(3,4-dihydro-4-oxobenzo[d]-[1,2,3]-triazin-3-ylmethyl) O,O-dimethyl phosphorodithioate",
+"dt50_mean_days": 52.0,
+"dt50_min_days": null,
+"dt50_max_days": null,
+"qualifier": 0,
+"record_id": "32673898",
+"canonical_smiles": "COP(=S)(OC)SCn1nnc2ccccc2c1=O"
+}
+],
+"XEGGRYVFLWGFHI-UHFFFAOYSA-N": [
+{
+"cas_number": "22781233",
+"names": "2,2-dimethyl-1,3-benzodioxol-4-yl methylcarbamate",
+"dt50_mean_days": 28.0,
+"dt50_min_days": 5.0,
+"dt50_max_days": 63.0,
+"qualifier": 0,
+"record_id": "32673900",
+"canonical_smiles": "CNC(=O)Oc1cccc2c1OC(C)(C)O2"
+}
+],
+"YFXPPSKYMBTNAV-UHFFFAOYSA-N": [
+{
+"cas_number": "17606314",
+"names": "S,S\u2032-2-dimethylaminotrimethylene di(benzenethiosulfonate)",
+"dt50_mean_days": 7.0,
+"dt50_min_days": null,
+"dt50_max_days": null,
+"qualifier": 0,
+"record_id": "32673901",
+"canonical_smiles": "CN(C)C(CSS(=O)(=O)c1ccccc1)CSS(=O)(=O)c1ccccc1"
+}
+],
+"ZOMSMJKLGFBRBS-UHFFFAOYSA-N": [
+{
+"cas_number": "25057890",
+"names": "3-isopropyl-1H-2,1,3-benzothiadiazin-4(3H)-one 2,2-dioxide",
+"dt50_mean_days": 48.0,
+"dt50_min_days": 19.0,
+"dt50_max_days": 77.0,
+"qualifier": 0,
+"record_id": "32673902",
+"canonical_smiles": "CC(C)N1C(=O)c2ccccc2NS1(=O)=O"
+}
+],
+"OMFRMAHOUUJSGP-UHFFFAOYSA-N": [
+{
+"cas_number": "82657043",
+"names": "2-methylbiphenyl-3-ylmethyl (Z)-(1RS,3RS)-3-(2-chloro-3,3,3-trifluoroprop-1-enyl)-2,2-dimethylcyclopropanecarboxylate",
+"dt50_mean_days": 219.0,
+"dt50_min_days": 169.0,
+"dt50_max_days": 292.0,
+"qualifier": 0,
+"record_id": "32673903",
+"canonical_smiles": "Cc1c(COC(=O)C2C(C=C(Cl)C(F)(F)F)C2(C)C)cccc1-c1ccccc1"
+}
+],
+"XTFNPKDYCLFGPV-UHFFFAOYSA-N": [
+{
+"cas_number": "13181174",
+"names": "3,5-dibromo-4-hydroxybenzaldehyde 2,4-dinitrophenyloxime",
+"dt50_mean_days": 73.0,
+"dt50_min_days": 0.7,
+"dt50_max_days": 145.0,
+"qualifier": 0,
+"record_id": "32673904",
+"canonical_smiles": "O=[N+]([O-])c1ccc(ON=Cc2cc(Br)c(O)c(Br)c2)c([N+](=O)[O-])c1"
+}
+],
+"KWGUFOITWDSNQY-UHFFFAOYSA-N": [
+{
+"cas_number": "4824786",
+"names": "O-4-bromo-2,5-dichlorophenyl O,O-diethyl phosphorothioate",
+"dt50_mean_days": 8.0,
+"dt50_min_days": 6.0,
+"dt50_max_days": 10.0,
+"qualifier": 0,
+"record_id": "32673905",
+"canonical_smiles": "CCOP(=S)(OCC)Oc1cc(Cl)c(Br)cc1Cl"
+}
+],
+"FOANIXZHAMJWOI-UHFFFAOYSA-N": [
+{
+"cas_number": "18181801",
+"names": "isopropyl 4,4\u2032-dibromobenzilate",
+"dt50_mean_days": 59.0,
+"dt50_min_days": 47.0,
+"dt50_max_days": 70.0,
+"qualifier": 0,
+"record_id": "32673906",
+"canonical_smiles": "CC(C)OC(=O)C(O)(c1ccc(Br)cc1)c1ccc(Br)cc1"
+}
+],
+"NMBXMBCZBXUXAM-UHFFFAOYSA-N": [
+{
+"cas_number": "51249059",
+"names": "dibutyl 1-butylaminocyclohexylphosphonate",
+"dt50_mean_days": 9.0,
+"dt50_min_days": 6.0,
+"dt50_max_days": 13.0,
+"qualifier": 0,
+"record_id": "32673907",
+"canonical_smiles": "CCCCNC1(P(=O)(OCCCC)OCCCC)CCCCC1"
+}
+],
+"DSKJPMWIHSOYEA-UHFFFAOYSA-N": [
+{
+"cas_number": "41483436",
+"names": "5-butyl-2-ethylamino-6-methylpyrimidin-4-yl dimethylsulfamate",
+"dt50_mean_days": 79.0,
+"dt50_min_days": 67.0,
+"dt50_max_days": 91.0,
+"qualifier": 0,
+"record_id": "32673908",
+"canonical_smiles": "CCCCc1c(C)nc(NCC)nc1OS(=O)(=O)N(C)C"
+}
+],
+"CVXBEEMKQHEXEN-UHFFFAOYSA-N": [
+{
+"cas_number": "63252",
+"names": "1-naphthyl methylcarbamate",
+"dt50_mean_days": 14.0,
+"dt50_min_days": null,
+"dt50_max_days": null,
+"qualifier": 4,
+"record_id": "32673909",
+"canonical_smiles": "CNC(=O)Oc1cccc2ccccc12"
+}
+],
+"AMRQXHFXNZFDCH-UHFFFAOYSA-N": [
+{
+"cas_number": "16118493",
+"names": "(R)-1-(ethylcarbamoyl)ethyl carbanilate",
+"dt50_mean_days": 10.0,
+"dt50_min_days": 5.0,
+"dt50_max_days": 15.0,
+"qualifier": 0,
+"record_id": "32673910",
+"canonical_smiles": "CCNC(=O)C(C)OC(=O)Nc1ccccc1"
+}
+],
+"GYSSRZJIHXQEHQ-UHFFFAOYSA-N": [
+{
+"cas_number": "5234684",
+"names": "5,6-dihydro-2-methyl-1,4-oxathi-ine-3-carboxanilide",
+"dt50_mean_days": 7.0,
+"dt50_min_days": null,
+"dt50_max_days": null,
+"qualifier": 0,
+"record_id": "32673911",
+"canonical_smiles": "CC1=C(C(=O)Nc2ccccc2)SCCO1"
+}
+],
+"NLYNUTMZTCLNOO-UHFFFAOYSA-N": [
+{
+"cas_number": "13360457",
+"names": "3-(4-bromo-3-chlorophenyl)-1-methoxy-1-methylurea",
+"dt50_mean_days": 39.0,
+"dt50_min_days": 18.0,
+"dt50_max_days": 60.0,
+"qualifier": 0,
+"record_id": "32673912",
+"canonical_smiles": "CON(C)C(=O)Nc1ccc(Br)c(Cl)c1"
+}
+],
+"FSAVDKDHPDSCTO-UHFFFAOYSA-N": [
+{
+"cas_number": "470906",
+"names": "(EZ)-2-chloro-1-(2,4-dichlorophenyl)vinyl diethyl phosphate",
+"dt50_mean_days": 36.0,
+"dt50_min_days": null,
+"dt50_max_days": null,
+"qualifier": 0,
+"record_id": "32673913",
+"canonical_smiles": "CCOP(=O)(OCC)OC(=CCl)c1ccc(Cl)cc1Cl"
+}
+],
+"WYKYKTKDBLFHCY-UHFFFAOYSA-N": [
+{
+"cas_number": "1698608",
+"names": "5-amino-4-chloro-2-phenylpyridazin-3(2H)-one",
+"dt50_mean_days": 31.0,
+"dt50_min_days": 15.0,
+"dt50_max_days": 46.0,
+"qualifier": 0,
+"record_id": "32673914",
+"canonical_smiles": "Nc1cnn(-c2ccccc2)c(=O)c1Cl"
+}
+],
+"JUZXDNPBRPUIOR-UHFFFAOYSA-N": [
+{
+"cas_number": "7003896",
+"names": "2-chloroethyltrimethylammonium",
+"dt50_mean_days": 1.3,
+"dt50_min_days": null,
+"dt50_max_days": null,
+"qualifier": 0,
+"record_id": "32673915",
+"canonical_smiles": "C[N+](C)(C)CCCl"
+}
+],
+"CRQQGFGUEAVUIL-UHFFFAOYSA-N": [
+{
+"cas_number": "1897456",
+"names": "tetrachloroisophthalonitrile",
+"dt50_mean_days": 10.0,
+"dt50_min_days": null,
+"dt50_max_days": null,
+"qualifier": 0,
+"record_id": "32673916",
+"canonical_smiles": "N#Cc1c(Cl)c(Cl)c(Cl)c(C#N)c1Cl"
+}
+],
+"JXCGFZXSOMJFOA-UHFFFAOYSA-N": [
+{
+"cas_number": "15545489",
+"names": "3-(3-chloro-p-tolyl)-1,1-dimethylurea",
+"dt50_mean_days": 63.0,
+"dt50_min_days": 42.0,
+"dt50_max_days": 83.0,
+"qualifier": 0,
+"record_id": "32673917",
+"canonical_smiles": "Cc1ccc(NC(=O)N(C)C)cc1Cl"
+}
+],
+"IVUXTESCPZUGJC-UHFFFAOYSA-N": [
+{
+"cas_number": "1982474",
+"names": "3-[4-(4-chlorophenoxy)phenyl]-1,1-dimethylurea",
+"dt50_mean_days": 36.0,
+"dt50_min_days": null,
+"dt50_max_days": null,
+"qualifier": 0,
+"record_id": "32673918",
+"canonical_smiles": "CN(C)C(=O)Nc1ccc(Oc2ccc(Cl)cc2)cc1"
+}
+],
+"CWJSHJJYOPWUGX-UHFFFAOYSA-N": [
+{
+"cas_number": "101213",
+"names": "isopropyl 3-chlorocarbanilate",
+"dt50_mean_days": 40.0,
+"dt50_min_days": 36.0,
+"dt50_max_days": 44.0,
+"qualifier": 0,
+"record_id": "32673919",
+"canonical_smiles": "CC(C)OC(=O)Nc1cccc(Cl)c1"
+}
+],
+"SBPBAQFWLVIOKP-UHFFFAOYSA-N": [
+{
+"cas_number": "2921882",
+"names": "O,O-diethyl O-3,5,6-trichloro-2-pyridyl phosphorothioate",
+"dt50_mean_days": 94.0,
+"dt50_min_days": 16.0,
+"dt50_max_days": 172.0,
+"qualifier": 0,
+"record_id": "32673920",
+"canonical_smiles": "CCOP(=S)(OCC)Oc1nc(Cl)c(Cl)cc1Cl"
+}
+],
+"JBDHZKLJNAIJNC-UHFFFAOYSA-N": [
+{
+"cas_number": "105512069",
+"names": "Propanoic acid, 2-(4-((5-chloro-3-fluoro-2-pyridinyl)oxy)phenoxy)-, 2-propynyl ester,(R)-",
+"dt50_mean_days": 0.6,
+"dt50_min_days": null,
+"dt50_max_days": null,
+"qualifier": 0,
+"record_id": "32673921",
+"canonical_smiles": "C#CCOC(=O)C(C)Oc1ccc(Oc2ncc(Cl)cc2F)cc1"
+}
+],
+"UXADOQPNKNTIHB-UHFFFAOYSA-N": [
+{
+"cas_number": "74115245",
+"names": "3,6-bis(2-chlorophenyl)-1,2,4,5-tetrazine",
+"dt50_mean_days": 39.0,
+"dt50_min_days": 19.0,
+"dt50_max_days": 59.0,
+"qualifier": 0,
+"record_id": "32673922",
+"canonical_smiles": "Clc1ccccc1-c1nnc(-c2ccccc2Cl)nn1"
+}
+],
+"XZMCDFZZKTWFGF-UHFFFAOYSA-N": [
+{
+"cas_number": "420042",
+"names": "Cyanamide",
+"dt50_mean_days": 3.5,
+"dt50_min_days": 0.4,
+"dt50_max_days": 6.6,
+"qualifier": 0,
+"record_id": "32673923",
+"canonical_smiles": "N#CN"
+}
+],
+"MZZBPDKVEFVLFF-UHFFFAOYSA-N": [
+{
+"cas_number": "21725462",
+"names": "2-(4-chloro-6-ethylamino-1,3,5-triazin-2-ylamino)-2-methylpropionitrile",
+"dt50_mean_days": 16.0,
+"dt50_min_days": 13.0,
+"dt50_max_days": 19.0,
+"qualifier": 0,
+"record_id": "32673924",
+"canonical_smiles": "CCNc1nc(Cl)nc(NC(C)(C)C#N)n1"
+}
+],
+"DFCAFRGABIXSDS-UHFFFAOYSA-N": [
+{
+"cas_number": "1134232",
+"names": "S-ethyl cyclohexyl(ethyl)thiocarbamate",
+"dt50_mean_days": 61.0,
+"dt50_min_days": 9.4,
+"dt50_max_days": 133.0,
+"qualifier": 0,
+"record_id": "32673925",
+"canonical_smiles": "CCSC(=O)N(CC)C1CCCCC1"
+}
+],
+"GGWHBJGBERXSLL-UHFFFAOYSA-N": [
+{
+"cas_number": "101205021",
+"names": "(RS)-(EZ)-2-[1-(ethoxyimino)butyl]-3-hydroxy-5-thian-3-ylcyclohex-2-en-1-one",
+"dt50_mean_days": 1.0,
+"dt50_min_days": null,
+"dt50_max_days": null,
+"qualifier": 0,
+"record_id": "32673926",
+"canonical_smiles": "CCCC(=NOCC)C1=C(O)CC(C2CCCSC2)CC1=O"
+}
+],
+"QQODLKZGRKWIFG-UHFFFAOYSA-N": [
+{
+"cas_number": "68359375",
+"names": "(RS)-\u03b1-cyano-4-fluoro-3-phenoxybenzyl (1RS,3RS; 1RS,3SR)-3-(2,2-dichlorovinyl)-2,2-dimethylcyclopropanecarboxylate",
+"dt50_mean_days": 116.0,
+"dt50_min_days": 74.0,
+"dt50_max_days": 172.0,
+"qualifier": 0,
+"record_id": "32673927",
+"canonical_smiles": "CC1(C)C(C=C(Cl)Cl)C1C(=O)OC(C#N)c1ccc(F)c(Oc2ccccc2)c1"
+}
+],
+"XERJKGMBORTKEO-UHFFFAOYSA-N": [
+{
+"cas_number": "57966957",
+"names": "1-(2-cyano-2-methoxyiminoacetyl)-3-ethylurea",
+"dt50_mean_days": 0.7,
+"dt50_min_days": 0.01,
+"dt50_max_days": 1.3,
+"qualifier": 0,
+"record_id": "32673928",
+"canonical_smiles": "CCNC(=O)NC(=O)C(C#N)=NOC"
+}
+],
+"KAATUXNTWXVJKI-UHFFFAOYSA-N": [
+{
+"cas_number": "52315078",
+"names": "(RS)-\u03b1-cyano-3-phenoxybenzyl (1RS,3RS; 1RS,3SR)-3-(2,2-dichlorovinyl)-2,2-dimethylcyclopropanecarboxylate",
+"dt50_mean_days": 90.0,
+"dt50_min_days": 61.0,
+"dt50_max_days": 119.0,
+"qualifier": 0,
+"record_id": "32673929",
+"canonical_smiles": "CC1(C)C(C=C(Cl)Cl)C1C(=O)OC(C#N)c1cccc(Oc2ccccc2)c1"
+},
+{
+"cas_number": "52315078",
+"names": "(RS)-\u03b1-cyano-3-phenoxybenzyl (1RS,3RS; 1RS,3SR)-3-(2,2-dichlorovinyl)-2,2-dimethylcyclopropanecarboxylate",
+"dt50_mean_days": 32.0,
+"dt50_min_days": 22.0,
+"dt50_max_days": 42.0,
+"qualifier": 0,
+"record_id": "32673930",
+"canonical_smiles": "CC1(C)C(C=C(Cl)Cl)C1C(=O)OC(C#N)c1cccc(Oc2ccccc2)c1"
+}
+],
+"UFNOUKDBUJZYDE-UHFFFAOYSA-N": [
+{
+"cas_number": "94361065",
+"names": "(2RS,3RS; 2RS,3SR)-2-(4-chlorophenyl)-3-cyclopropyl-1-(1H-1,2,4-triazol-1-yl)butan-2-ol",
+"dt50_mean_days": 110.0,
+"dt50_min_days": null,
+"dt50_max_days": null,
+"qualifier": 0,
+"record_id": "32673931",
+"canonical_smiles": "CC(C1CC1)C(O)(Cn1cncn1)c1ccc(Cl)cc1"
+}
+],
+"LVQDKIWDGQRHTE-UHFFFAOYSA-N": [
+{
+"cas_number": "66215278",
+"names": "N-cyclopropyl-1,3,5-triazine-2,4,6-triamine",
+"dt50_mean_days": 93.0,
+"dt50_min_days": 75.0,
+"dt50_max_days": 110.0,
+"qualifier": 0,
+"record_id": "32673932",
+"canonical_smiles": "Nc1nc(N)nc(NC2CC2)n1"
+}
+],
+"NDUPDOJHUQKPAG-UHFFFAOYSA-N": [
+{
+"cas_number": "75990",
+"names": "2,2-dichloropropionic acid",
+"dt50_mean_days": 3.6,
+"dt50_min_days": 1.0,
+"dt50_max_days": 7.0,
+"qualifier": 0,
+"record_id": "32673933",
+"canonical_smiles": "CC(Cl)(Cl)C(=O)O"
+}
+],
+"NOQGZXFMHARMLW-UHFFFAOYSA-N": [
+{
+"cas_number": "1596845",
+"names": "N-dimethylaminosuccinamic acid",
+"dt50_mean_days": 4.5,
+"dt50_min_days": 3.0,
+"dt50_max_days": 4.5,
+"qualifier": 0,
+"record_id": "32673934",
+"canonical_smiles": "CN(C)NC(=O)CCC(=O)O"
+}
+],
+"QAYICIQNSGETAS-UHFFFAOYSA-N": [
+{
+"cas_number": "533744",
+"names": "3,5-dimethyl-1,3,5-thiadiazinane-2-thione",
+"dt50_mean_days": 1.0,
+"dt50_min_days": null,
+"dt50_max_days": null,
+"qualifier": 4,
+"record_id": "32673935",
+"canonical_smiles": "CN1CSC(=S)N(C)C1"
+}
+],
+"OWZREIFADZCYQD-UHFFFAOYSA-N": [
+{
+"cas_number": "52918635",
+"names": "(S)-\u03b1-cyano-3-phenoxybenzyl (1R,3R)-3-(2,2-dibromovinyl)-2,2-dimethylcyclopropanecarboxylate",
+"dt50_mean_days": 25.0,
+"dt50_min_days": 18.0,
+"dt50_max_days": 30.0,
+"qualifier": 0,
+"record_id": "32673936",
+"canonical_smiles": "CC1(C)C(C=C(Br)Br)C1C(=O)OC(C#N)c1cccc(Oc2ccccc2)c1"
+}
+],
+"PZIRJMYRYORVIT-UHFFFAOYSA-N": [
+{
+"cas_number": "17040196",
+"names": "S-2-ethylsulfonylethyl O,O-dimethyl phosphorothioate",
+"dt50_mean_days": 2.7,
+"dt50_min_days": 0.5,
+"dt50_max_days": 5.1,
+"qualifier": 0,
+"record_id": "32673937",
+"canonical_smiles": "CCS(=O)(=O)CCSP(=O)(OC)OC"
+}
+],
+"WZJZMXBKUWKXTQ-UHFFFAOYSA-N": [
+{
+"cas_number": "13684565",
+"names": "ethyl 3-phenylcarbamoyloxyphenylcarbamate",
+"dt50_mean_days": 49.0,
+"dt50_min_days": 8.0,
+"dt50_max_days": 101.0,
+"qualifier": 0,
+"record_id": "32673938",
+"canonical_smiles": "CCOC(=O)Nc1cccc(OC(=O)Nc2ccccc2)c1"
+}
+],
+"HCRWJJJUKUVORR-UHFFFAOYSA-N": [
+{
+"cas_number": "1014693",
+"names": "N2-isopropyl-N4-methyl-6-methylthio-1,3,5-triazine-2,4-diamine",
+"dt50_mean_days": 9.0,
+"dt50_min_days": 8.0,
+"dt50_max_days": 10.0,
+"qualifier": 0,
+"record_id": "32673939",
+"canonical_smiles": "CNc1nc(NC(C)C)nc(SC)n1"
+}
+],
+"FHIVAFMUCKRCQO-UHFFFAOYSA-N": [
+{
+"cas_number": "333415",
+"names": "O,O-diethyl O-2-isopropyl-6-methylpyrimidin-4-yl phosphorothioate",
+"dt50_mean_days": 21.0,
+"dt50_min_days": 10.0,
+"dt50_max_days": 31.0,
+"qualifier": 0,
+"record_id": "32673940",
+"canonical_smiles": "CCOP(=S)(OCC)Oc1cc(C)nc(C(C)C)n1"
+}
+],
+"IWEDIXLBFLAXBO-UHFFFAOYSA-N": [
+{
+"cas_number": "1918009",
+"names": "3,6-dichloro-o-anisic acid",
+"dt50_mean_days": 48.0,
+"dt50_min_days": 5.0,
+"dt50_max_days": 91.0,
+"qualifier": 0,
+"record_id": "32673941",
+"canonical_smiles": "COc1c(Cl)ccc(Cl)c1C(=O)O"
+}
+],
+"YOYAIZYFCNQIRF-UHFFFAOYSA-N": [
+{
+"cas_number": "1194656",
+"names": "2,6-dichlorobenzonitrile",
+"dt50_mean_days": 70.0,
+"dt50_min_days": 24.0,
+"dt50_max_days": 116.0,
+"qualifier": 0,
+"record_id": "32673942",
+"canonical_smiles": "N#Cc1c(Cl)cccc1Cl"
+}
+],
+"WGOWCPGHOCIHBW-UHFFFAOYSA-N": [
+{
+"cas_number": "97176",
+"names": "O-2,4-dichlorophenyl O,O-diethyl phosphorothioate",
+"dt50_mean_days": 6.0,
+"dt50_min_days": 4.0,
+"dt50_max_days": 9.0,
+"qualifier": 0,
+"record_id": "32673943",
+"canonical_smiles": "CCOP(=S)(OCC)Oc1ccc(Cl)cc1Cl"
+}
+],
+"WURGXGVFSMYFCG-UHFFFAOYSA-N": [
+{
+"cas_number": "1085989",
+"names": "N-dichlorofluoromethylthio-N\u2032,N\u2032-dimethyl-N-phenylsulfamide",
+"dt50_mean_days": 2.9,
+"dt50_min_days": 2.3,
+"dt50_max_days": 3.5,
+"qualifier": 0,
+"record_id": "32673944",
+"canonical_smiles": "CN(C)S(=O)(=O)N(SC(F)(Cl)Cl)c1ccccc1"
+}
+],
+"MZHCENGPTKEIGP-UHFFFAOYSA-N": [
+{
+"cas_number": "120365",
+"names": "(rs)-2-(2,4-dichlorophenoxy)propionic acid",
+"dt50_mean_days": 15.0,
+"dt50_min_days": 10.0,
+"dt50_max_days": 20.0,
+"qualifier": 0,
+"record_id": "32673945",
+"canonical_smiles": "CC(Oc1ccc(Cl)cc1Cl)C(=O)O"
+},
+{
+"cas_number": "15165670",
+"names": "(R)-2-(2,4-dichlorophenoxy)propionic acid",
+"dt50_mean_days": 15.0,
+"dt50_min_days": 10.0,
+"dt50_max_days": 20.0,
+"qualifier": 0,
+"record_id": "32673946",
+"canonical_smiles": "CC(Oc1ccc(Cl)cc1Cl)C(=O)O"
+}
+],
+"OEBRKCOSUFCWJD-UHFFFAOYSA-N": [
+{
+"cas_number": "62737",
+"names": "2,2-dichlorovinyl dimethyl phosphate",
+"dt50_mean_days": 2.0,
+"dt50_min_days": 1.0,
+"dt50_max_days": 2.0,
+"qualifier": 0,
+"record_id": "32673947",
+"canonical_smiles": "COP(=O)(OC)OC=C(Cl)Cl"
+}
+],
+"BIXZHMJUSMUDOQ-UHFFFAOYSA-N": [
+{
+"cas_number": "99309",
+"names": "2,6-dichloro-4-nitroaniline",
+"dt50_mean_days": 282.0,
+"dt50_min_days": null,
+"dt50_max_days": null,
+"qualifier": 0,
+"record_id": "32673948",
+"canonical_smiles": "Nc1c(Cl)cc([N+](=O)[O-])cc1Cl"
+}
+],
+"UOAMTSKGCBMZTC-UHFFFAOYSA-N": [
+{
+"cas_number": "115322",
+"names": "2,2,2-trichloro-1,1-bis(4-chlorophenyl)ethanol",
+"dt50_mean_days": 15.0,
+"dt50_min_days": null,
+"dt50_max_days": null,
+"qualifier": 0,
+"record_id": "32673949",
+"canonical_smiles": "OC(c1ccc(Cl)cc1)(c1ccc(Cl)cc1)C(Cl)(Cl)Cl"
+}
+],
+"RUPBZQFQVRMKDG-UHFFFAOYSA-M": [
+{
+"cas_number": "7173515",
+"names": "didecyldimethylammoniumchloride",
+"dt50_mean_days": 23.0,
+"dt50_min_days": 14.0,
+"dt50_max_days": 31.0,
+"qualifier": 0,
+"record_id": "32673950",
+"canonical_smiles": "CCCCCCCCCC[N+](C)(C)CCCCCCCCCC.[Cl-]"
+}
+],
+"WFKSADNZWSKCRZ-UHFFFAOYSA-N": [
+{
+"cas_number": "38727558",
+"names": "ethyl N-(chloroacetyl)-N-(2,6-diethylphenyl)glycinate",
+"dt50_mean_days": 114.0,
+"dt50_min_days": 98.0,
+"dt50_max_days": 131.0,
+"qualifier": 0,
+"record_id": "32673951",
+"canonical_smiles": "CCOC(=O)CN(C(=O)CCl)c1c(CC)cccc1CC"
+}
+],
+"LNJNFVJKDJYTEU-UHFFFAOYSA-N": [
+{
+"cas_number": "87130209",
+"names": "isopropyl 3,4-diethoxycarbanilate",
+"dt50_mean_days": 5.4,
+"dt50_min_days": 1.5,
+"dt50_max_days": 9.2,
+"qualifier": 0,
+"record_id": "32673952",
+"canonical_smiles": "CCOc1ccc(NC(=O)OC(C)C)cc1OCC"
+}
+],
+"BQYJATMQXGBDHF-UHFFFAOYSA-N": [
+{
+"cas_number": "119446683",
+"names": "cis-trans-3-chloro-4-[4-methyl-2-(1H-1,2,4-triazol-1-ylmethyl)-1,3-dioxolan-2-yl]phenyl 4-chlorophenyl ether",
+"dt50_mean_days": 140.0,
+"dt50_min_days": null,
+"dt50_max_days": null,
+"qualifier": 0,
+"record_id": "32673953",
+"canonical_smiles": "CC1COC(Cn2cncn2)(c2ccc(Oc3ccc(Cl)cc3)cc2Cl)O1"
+}
+],
+"AMVYOVYGIJXTQB-UHFFFAOYSA-N": [
+{
+"cas_number": "14214325",
+"names": "3-[4-(4-methoxyphenoxy)phenyl]-1,1-dimethylurea",
+"dt50_mean_days": 18.0,
+"dt50_min_days": null,
+"dt50_max_days": null,
+"qualifier": 0,
+"record_id": "32673954",
+"canonical_smiles": "COc1ccc(Oc2ccc(NC(=O)N(C)C)cc2)cc1"
+}
+],
+"QQQYTWIFVNKMRW-UHFFFAOYSA-N": [
+{
+"cas_number": "35367385",
+"names": "1-(4-Chlorophenyl)-3-(2,6-difluorobenzoyl)urea",
+"dt50_mean_days": 3.0,
+"dt50_min_days": 2.0,
+"dt50_max_days": 4.0,
+"qualifier": 0,
+"record_id": "32673955",
+"canonical_smiles": "O=C(NC(=O)c1c(F)cccc1F)Nc1ccc(Cl)cc1"
+}
+],
+"WYEHFWKAOXOVJD-UHFFFAOYSA-N": [
+{
+"cas_number": "83164334",
+"names": "2\u2032,4\u2032-difluoro-2-(\u03b1,\u03b1,\u03b1-trifluoro-m-tolyloxy)nicotinanilide",
+"dt50_mean_days": 192.0,
+"dt50_min_days": 116.0,
+"dt50_max_days": 277.0,
+"qualifier": 0,
+"record_id": "32673956",
+"canonical_smiles": "O=C(Nc1ccc(F)cc1F)c1cccnc1Oc1cccc(C(F)(F)F)c1"
+}
+],
+"DEWVPZYHFVYXMZ-UHFFFAOYSA-M": [
+{
+"cas_number": "52508357",
+"names": "Sodium 2,3:4,6-di-O-isopropylidene-alpha-L-xylo-2-hexulofuranosonate",
+"dt50_mean_days": 195.0,
+"dt50_min_days": null,
+"dt50_max_days": null,
+"qualifier": 5,
+"record_id": "32673957",
+"canonical_smiles": "CC1(C)OCC2OC3(C(=O)[O-])OC(C)(C)OC3C2O1.[Na+]"
+}
+],
+"DHWRNDJOGMTCPB-UHFFFAOYSA-N": [
+{
+"cas_number": "34205215",
+"names": "3-[4-(5-tert-butyl-2,3-dihydro-2-oxo-1,3,4-oxadiazol-3-yl)-3-chlorophenyl]-1,1-dimethylurea",
+"dt50_mean_days": 170.0,
+"dt50_min_days": null,
+"dt50_max_days": null,
+"qualifier": 0,
+"record_id": "32673958",
+"canonical_smiles": "CN(C)C(=O)Nc1ccc(-n2nc(C(C)(C)C)oc2=O)c(Cl)c1"
+}
+],
+"MCWXGJITAZMZEV-UHFFFAOYSA-N": [
+{
+"cas_number": "60515",
+"names": "O,O-dimethyl S-methylcarbamoylmethyl phosphorodithioate",
+"dt50_mean_days": 16.0,
+"dt50_min_days": 10.0,
+"dt50_max_days": 21.0,
+"qualifier": 0,
+"record_id": "32673959",
+"canonical_smiles": "CNC(=O)CSP(=S)(OC)OC"
+}
+],
+"QNBTYORWCCMPQP-UHFFFAOYSA-N": [
+{
+"cas_number": "110488705",
+"names": "(EZ)-4-[3-(4-chlorophenyl)-3-(3,4-dimethoxyphenyl)acryloyl]morpholine",
+"dt50_mean_days": 41.0,
+"dt50_min_days": null,
+"dt50_max_days": null,
+"qualifier": 0,
+"record_id": "32673960",
+"canonical_smiles": "COc1ccc(C(=CC(=O)N2CCOCC2)c2ccc(Cl)cc2)cc1OC"
+}
+],
+"IIPZYDQGBIWLBU-UHFFFAOYSA-N": [
+{
+"cas_number": "1420071",
+"names": "2-tert-butyl-4,6-dinitrophenol",
+"dt50_mean_days": 9.8,
+"dt50_min_days": 9.2,
+"dt50_max_days": 10.4,
+"qualifier": 0,
+"record_id": "32673962",
+"canonical_smiles": "CC(C)(C)c1cc([N+](=O)[O-])cc([N+](=O)[O-])c1O"
+}
+],
+"PYZSVQVRHDXQSL-UHFFFAOYSA-N": [
+{
+"cas_number": "3347226",
+"names": "5,10-dihydro-5,10-dioxonaphtho[2,3-b]-1,4-dithi-in-2,3-dicarbonitrile",
+"dt50_mean_days": 5.0,
+"dt50_min_days": 5.0,
+"dt50_max_days": 9.0,
+"qualifier": 0,
+"record_id": "32673963",
+"canonical_smiles": "N#Cc1sc2c(=O)c3ccccc3c(=O)c=2sc1C#N"
+}
+],
+"XMTQQYYKAHVGBJ-UHFFFAOYSA-N": [
+{
+"cas_number": "330541",
+"names": "3-(3,4-dichlorophenyl)-1,1-dimethylurea",
+"dt50_mean_days": 94.0,
+"dt50_min_days": 79.0,
+"dt50_max_days": 108.0,
+"qualifier": 0,
+"record_id": "32673964",
+"canonical_smiles": "CN(C)C(=O)Nc1ccc(Cl)c(Cl)c1"
+}
+],
+"ZXVONLUNISGICL-UHFFFAOYSA-N": [
+{
+"cas_number": "534521",
+"names": "4,6-dinitro-o-cresol",
+"dt50_mean_days": 8.5,
+"dt50_min_days": 4.0,
+"dt50_max_days": 13.0,
+"qualifier": 0,
+"record_id": "32673965",
+"canonical_smiles": "Cc1cc([N+](=O)[O-])cc([N+](=O)[O-])c1O"
+}
+],
+"JMXKCYUTURMERF-UHFFFAOYSA-N": [
+{
+"cas_number": "1593777",
+"names": "4-cyclododecyl-2,6-dimethylmorpholine",
+"dt50_mean_days": 190.0,
+"dt50_min_days": 152.0,
+"dt50_max_days": 228.0,
+"qualifier": 0,
+"record_id": "32673966",
+"canonical_smiles": "CC1CN(C2CCCCCCCCCCC2)CC(C)O1"
+}
+],
+"GUVLYNGULCJVDO-UHFFFAOYSA-N": [
+{
+"cas_number": "759944",
+"names": "S-ethyl dipropylthiocarbamate",
+"dt50_mean_days": 47.0,
+"dt50_min_days": 42.0,
+"dt50_max_days": 52.0,
+"qualifier": 0,
+"record_id": "32673967",
+"canonical_smiles": "CCCN(CCC)C(=O)SCC"
+}
+],
+"UDPGUMQDCGORJQ-UHFFFAOYSA-N": [
+{
+"cas_number": "16672870",
+"names": "2-chloroethylphosphonic acid",
+"dt50_mean_days": 1.0,
+"dt50_min_days": null,
+"dt50_max_days": null,
+"qualifier": 0,
+"record_id": "32673968",
+"canonical_smiles": "O=P(O)(O)CCCl"
+}
+],
+"HEZNVIYQEUHLNI-UHFFFAOYSA-N": [
+{
+"cas_number": "29973135",
+"names": "\u03b1-ethylthio-o-tolyl methylcarbamate",
+"dt50_mean_days": 37.0,
+"dt50_min_days": 34.0,
+"dt50_max_days": 131.0,
+"qualifier": 0,
+"record_id": "32673969",
+"canonical_smiles": "CCSCc1ccccc1OC(=O)NC"
+}
+],
+"IRCMYGHHKLLGHV-UHFFFAOYSA-N": [
+{
+"cas_number": "26225796",
+"names": "(RS)-2-ethoxy-2,3-dihydro-3,3-dimethylbenzofuran-5-yl methanesulfonate",
+"dt50_mean_days": 37.0,
+"dt50_min_days": null,
+"dt50_max_days": null,
+"qualifier": 0,
+"record_id": "32673970",
+"canonical_smiles": "CCOC1Oc2ccc(OS(C)(=O)=O)cc2C1(C)C"
+}
+],
+"VJYFKVYYMZPMAB-UHFFFAOYSA-N": [
+{
+"cas_number": "13194484",
+"names": "O-ethyl S,S-dipropyl phosphorodithioate",
+"dt50_mean_days": 32.0,
+"dt50_min_days": 8.0,
+"dt50_max_days": 56.0,
+"qualifier": 0,
+"record_id": "32673971",
+"canonical_smiles": "CCCSP(=O)(OCC)SCCC"
+}
+],
+"YREQHYQNNWYQCJ-UHFFFAOYSA-N": [
+{
+"cas_number": "80844071",
+"names": "2-(4-ethoxyphenyl)-2-methylpropyl 3-phenoxybenzyl ether",
+"dt50_mean_days": 11.0,
+"dt50_min_days": 10.0,
+"dt50_max_days": 11.0,
+"qualifier": 0,
+"record_id": "32673972",
+"canonical_smiles": "CCOc1ccc(C(C)(C)COCc2cccc(Oc3ccccc3)c2)cc1"
+}
+],
+"KQTVWCSONPJJPE-UHFFFAOYSA-N": [
+{
+"cas_number": "2593159",
+"names": "ethyl 3-trichloromethyl-1,2,4-thiadiazol-5-yl ether",
+"dt50_mean_days": 23.0,
+"dt50_min_days": 12.0,
+"dt50_max_days": 33.0,
+"qualifier": 0,
+"record_id": "32673973",
+"canonical_smiles": "CCOc1nc(C(Cl)(Cl)Cl)ns1"
+}
+],
+"FGIWFCGDPUIBEZ-UHFFFAOYSA-N": [
+{
+"cas_number": "38260547",
+"names": "O-6-ethoxy-2-ethylpyrimidin-4-yl O,O-dimethyl phosphorothioate",
+"dt50_mean_days": 12.5,
+"dt50_min_days": 8.0,
+"dt50_max_days": 17.0,
+"qualifier": 0,
+"record_id": "32673974",
+"canonical_smiles": "CCOc1cc(OP(=S)(OC)OC)nc(CC)n1"
+}
+],
+"IWDQPCIQCXRBQP-UHFFFAOYSA-M": [
+{
+"cas_number": "140567",
+"names": "sodium 4-dimethylaminobenzenediazosulfonate",
+"dt50_mean_days": 17.0,
+"dt50_min_days": null,
+"dt50_max_days": null,
+"qualifier": 0,
+"record_id": "32673975",
+"canonical_smiles": "CN(C)c1ccc(N=NS(=O)(=O)[O-])cc1.[Na+]"
+}
+],
+"ZCJPOPBZHLUFHF-UHFFFAOYSA-N": [
+{
+"cas_number": "22224926",
+"names": "(RS)-ethyl 4-methylthio-m-tolyl isopropylphosphoramidate",
+"dt50_mean_days": 21.0,
+"dt50_min_days": 14.0,
+"dt50_max_days": 28.0,
+"qualifier": 0,
+"record_id": "32673976",
+"canonical_smiles": "CCOP(=O)(NC(C)C)Oc1ccc(SC)c(C)c1"
+}
+],
+"GMBRUAIJEFRHFQ-UHFFFAOYSA-N": [
+{
+"cas_number": "103112352",
+"names": "1H-1,2,4-Triazole-3-carboxylic acid, 1-(2,4-dichlorophenyl)-5-(trichloromethyl)-, ethyl ester",
+"dt50_mean_days": 2.4,
+"dt50_min_days": 1.6,
+"dt50_max_days": 3.1,
+"qualifier": 0,
+"record_id": "32673977",
+"canonical_smiles": "CCOC(=O)c1nc(C(Cl)(Cl)Cl)n(-c2ccc(Cl)cc2Cl)n1"
+}
+],
+"ZNOLGFHPUIJIMJ-UHFFFAOYSA-N": [
+{
+"cas_number": "122145",
+"names": "O,O-dimethyl O-4-nitro-m-tolyl phosphorothioate",
+"dt50_mean_days": 28.0,
+"dt50_min_days": 14.0,
+"dt50_max_days": 42.0,
+"qualifier": 0,
+"record_id": "32673978",
+"canonical_smiles": "COP(=S)(OC)Oc1ccc([N+](=O)[O-])c(C)c1"
+}
+],
+"PQKBPHSEKWERTG-UHFFFAOYSA-N": [
+{
+"cas_number": "66441234",
+"names": "Ethyl 2-(4-((6-chlorobenzoxazol-2-yl)oxy)phenoxy)propionate",
+"dt50_mean_days": 1.0,
+"dt50_min_days": null,
+"dt50_max_days": null,
+"qualifier": 4,
+"record_id": "32673979",
+"canonical_smiles": "CCOC(=O)C(C)Oc1ccc(Oc2nc3ccc(Cl)cc3o2)cc1"
+},
+{
+"cas_number": "71283802",
+"names": "Propanoic acid, 2-(4-((6-chloro-2-benzoxazolyl)oxy)phenoxy)-, ethyl ester, (2R)-",
+"dt50_mean_days": 0.65,
+"dt50_min_days": 0.6,
+"dt50_max_days": 0.7,
+"qualifier": 0,
+"record_id": "32673980",
+"canonical_smiles": "CCOC(=O)C(C)Oc1ccc(Oc2nc3ccc(Cl)cc3o2)cc1"
+}
+],
+"FKLFBQCQQYDUAM-UHFFFAOYSA-N": [
+{
+"cas_number": "74738173",
+"names": "4-(2,3-dichlorophenyl)pyrrole-3-carbonitrile",
+"dt50_mean_days": 308.0,
+"dt50_min_days": 210.0,
+"dt50_max_days": 458.0,
+"qualifier": 0,
+"record_id": "32673981",
+"canonical_smiles": "N#Cc1c[nH]cc1-c1cccc(Cl)c1Cl"
+}
+],
+"XQUXKZZNEFRCAW-UHFFFAOYSA-N": [
+{
+"cas_number": "39515418",
+"names": "(RS)-\u03b1-cyano-3-phenoxybenzyl 2,2,3,3-tetramethylcyclopropanecarboxylate",
+"dt50_mean_days": 34.0,
+"dt50_min_days": 13.0,
+"dt50_max_days": 54.0,
+"qualifier": 0,
+"record_id": "32673982",
+"canonical_smiles": "CC1(C)C(C(=O)OC(C#N)c2cccc(Oc3ccccc3)c2)C1(C)C"
+}
+],
+"MGNFYQILYYYUBS-UHFFFAOYSA-N": [
+{
+"cas_number": "67306007",
+"names": "(RS)-1-[3-(4-tert-butylphenyl)-2-methylpropyl]piperidine",
+"dt50_mean_days": 111.0,
+"dt50_min_days": 73.0,
+"dt50_max_days": 149.0,
+"qualifier": 0,
+"record_id": "32673983",
+"canonical_smiles": "CC(Cc1ccc(C(C)(C)C)cc1)CN1CCCCC1"
+}
+],
+"RYAUSSKQMZRMAI-UHFFFAOYSA-N": [
+{
+"cas_number": "67564914",
+"names": "(RS)-cis-4-[3-(4-tert-butylphenyl)-2-methylpropyl]-2,6-dimethylmorpholine",
+"dt50_mean_days": 67.0,
+"dt50_min_days": 16.0,
+"dt50_max_days": 145.0,
+"qualifier": 0,
+"record_id": "32673984",
+"canonical_smiles": "CC(Cc1ccc(C(C)(C)C)cc1)CN1CC(C)OC(C)C1"
+}
+],
+"WDQNIWFZKXZFAY-UHFFFAOYSA-M": [
+{
+"cas_number": "900958",
+"names": "fentin acetate",
+"dt50_mean_days": 46.0,
+"dt50_min_days": 29.0,
+"dt50_max_days": 62.0,
+"qualifier": 0,
+"record_id": "32673985",
+"canonical_smiles": "CC(=O)[O][Sn]([c]1ccccc1)([c]1ccccc1)[c]1ccccc1"
+}
+],
+"BFWMWWXRWVJXSE-UHFFFAOYSA-M": [
+{
+"cas_number": "76879",
+"names": "fentin hydroxide",
+"dt50_mean_days": 26.0,
+"dt50_min_days": 5.0,
+"dt50_max_days": 53.0,
+"qualifier": 0,
+"record_id": "32673986",
+"canonical_smiles": "[OH][Sn]([c]1ccccc1)([c]1ccccc1)[c]1ccccc1"
+}
+],
+"NYPJDWWKZLNGGM-UHFFFAOYSA-N": [
+{
+"cas_number": "51630581",
+"names": "(RS)-\u03b1-cyano-3-phenoxybenzyl (RS)-2-(4-chlorophenyl)-3-methylbutyrate",
+"dt50_mean_days": 83.0,
+"dt50_min_days": 30.0,
+"dt50_max_days": 135.0,
+"qualifier": 0,
+"record_id": "32673987",
+"canonical_smiles": "CC(C)C(C(=O)OC(C#N)c1cccc(Oc2ccccc2)c1)c1ccc(Cl)cc1"
+}
+],
+"UZCGKGPEKUCDTF-UHFFFAOYSA-N": [
+{
+"cas_number": "79622596",
+"names": "3-chloro-N-(3-chloro-5-trifluoromethyl-2-pyridyl)-\u03b1,\u03b1,\u03b1-trifluoro-2,6-dinitro-p-toluidine",
+"dt50_mean_days": 107.0,
+"dt50_min_days": 48.0,
+"dt50_max_days": 165.0,
+"qualifier": 0,
+"record_id": "32673988",
+"canonical_smiles": "O=[N+]([O-])c1cc(C(F)(F)F)c(Cl)c([N+](=O)[O-])c1Nc1ncc(C(F)(F)F)cc1Cl"
+}
+],
+"PCKNFPQPGUWFHO-UHFFFAOYSA-N": [
+{
+"cas_number": "113036887",
+"names": "1-[\u03b1-(4-chloro-\u03b1-cyclopropylbenzylideneamino-oxy)-p-tolyl]-3-(2,6-difluorobenzoyl)urea (ratio 50-80% (E)- and 50-20% (Z)- isomers)",
+"dt50_mean_days": 208.0,
+"dt50_min_days": 146.0,
+"dt50_max_days": 269.0,
+"qualifier": 0,
+"record_id": "32673989",
+"canonical_smiles": "O=C(NC(=O)c1c(F)cccc1F)Nc1ccc(CON=C(c2ccc(Cl)cc2)C2CC2)cc1"
+}
+],
+"OLZQTUCTGLHFTQ-UHFFFAOYSA-N": [
+{
+"cas_number": "81406373",
+"names": "1-Methylheptyl ((4-amino-3,5-dichloro-6-fluoropyridin-2-yl)oxy)acetate",
+"dt50_mean_days": 27.0,
+"dt50_min_days": null,
+"dt50_max_days": null,
+"qualifier": 0,
+"record_id": "32673990",
+"canonical_smiles": "CCCCCCC(C)OC(=O)COc1nc(F)c(Cl)c(N)c1Cl"
+}
+],
+"MEFQWPUMEMWTJP-UHFFFAOYSA-N": [
+{
+"cas_number": "69377817",
+"names": "4-amino-3,5-dichloro-6-fluoro-2-pyridyloxyacetic acid",
+"dt50_mean_days": 2.4,
+"dt50_min_days": null,
+"dt50_max_days": null,
+"qualifier": 0,
+"record_id": "32673991",
+"canonical_smiles": "Nc1c(Cl)c(F)nc(OCC(=O)O)c1Cl"
+}
+],
+"FQKUGOMFVDPBIZ-UHFFFAOYSA-N": [
+{
+"cas_number": "85509199",
+"names": "bis(4-fluorophenyl)(methyl)(1H-1,2,4-triazol-1-ylmethyl)silane",
+"dt50_mean_days": 600.0,
+"dt50_min_days": null,
+"dt50_max_days": null,
+"qualifier": 0,
+"record_id": "32673992",
+"canonical_smiles": "C[Si](Cn1cncn1)(c1ccc(F)cc1)c1ccc(F)cc1"
+}
+],
+"PTCGDEVVHUXTMP-UHFFFAOYSA-N": [
+{
+"cas_number": "66332965",
+"names": "\u03b1,\u03b1,\u03b1-trifluoro-3\u2032-isopropoxy-o-toluanilide",
+"dt50_mean_days": 601.0,
+"dt50_min_days": 445.0,
+"dt50_max_days": 712.0,
+"qualifier": 0,
+"record_id": "32673993",
+"canonical_smiles": "CC(C)Oc1cccc(NC(=O)c2ccccc2C(F)(F)F)c1"
+}
+],
+"INISTDXBRIBGOC-UHFFFAOYSA-N": [
+{
+"cas_number": "69409945",
+"names": "(RS)-\u03b1-cyano-3-phenoxybenzyl N-(2-chloro-\u03b1,\u03b1,\u03b1-trifluoro-p-tolyl)-DL-valinate",
+"dt50_mean_days": 7.0,
+"dt50_min_days": 4.0,
+"dt50_max_days": 10.0,
+"qualifier": 0,
+"record_id": "32673994",
+"canonical_smiles": "CC(C)C(Nc1ccc(C(F)(F)F)cc1Cl)C(=O)OC(C#N)c1cccc(Oc2ccccc2)c1"
+}
+],
+"KVGLBTYUCJYMND-UHFFFAOYSA-N": [
+{
+"cas_number": "944229",
+"names": "(RS)-O-ethyl S-phenyl ethylphosphonodithioate",
+"dt50_mean_days": 99.0,
+"dt50_min_days": 48.0,
+"dt50_max_days": 150.0,
+"qualifier": 0,
+"record_id": "32673995",
+"canonical_smiles": "CCOP(=S)(CC)Sc1ccccc1"
+}
+],
+"AIKKULXCBHRFOS-UHFFFAOYSA-N": [
+{
+"cas_number": "2540821",
+"names": "S-[formyl(methyl)carbamoylmethyl] O,O-dimethyl phosphorodithioate",
+"dt50_mean_days": 1.0,
+"dt50_min_days": null,
+"dt50_max_days": null,
+"qualifier": 4,
+"record_id": "32673996",
+"canonical_smiles": "COP(=S)(OC)SCC(=O)N(C)C=O"
+}
+],
+"ZKZMJOFIHHZSRW-UHFFFAOYSA-K": [
+{
+"cas_number": "39148248",
+"names": "aluminium triethyl triphosphonate",
+"dt50_mean_days": 0.07,
+"dt50_min_days": 0.03,
+"dt50_max_days": 0.11,
+"qualifier": 0,
+"record_id": "32673997",
+"canonical_smiles": "CCO[PH](=O)[O][Al]([O][PH](=O)OCC)[O][PH](=O)OCC"
+}
+],
+"HAWJXYBZNNRMNO-UHFFFAOYSA-N": [
+{
+"cas_number": "65907304",
+"names": "butyl 2,3-dihydro-2,2-dimethylbenzofuran-7-yl N,N\u2032-dimethyl-N,N\u2032-thiodicarbamate",
+"dt50_mean_days": 1.0,
+"dt50_min_days": null,
+"dt50_max_days": null,
+"qualifier": 0,
+"record_id": "32673998",
+"canonical_smiles": "CCCCOC(=O)N(C)SN(C)C(=O)Oc1cccc2c1OC(C)(C)C2"
+}
+],
+"RUCAXVJJQQJZGU-UHFFFAOYSA-M": [
+{
+"cas_number": "81591813",
+"names": "Glycine, N-(phosphonomethyl)-, ion(1-), trimethylsulfonium",
+"dt50_mean_days": 8.0,
+"dt50_min_days": null,
+"dt50_max_days": null,
+"qualifier": 0,
+"record_id": "32673999",
+"canonical_smiles": "C[S+](C)C.O=C([O-])CNCP(=O)(O)O"
+},
+{
+"cas_number": "81591813",
+"names": "Glycine, N-(phosphonomethyl)-, ion(1-), trimethylsulfonium",
+"dt50_mean_days": 4.0,
+"dt50_min_days": null,
+"dt50_max_days": null,
+"qualifier": 0,
+"record_id": "32674000",
+"canonical_smiles": "C[S+](C)C.O=C([O-])CNCP(=O)(O)O"
+}
+],
+"RONFGUROBZGJKP-UHFFFAOYSA-N": [
+{
+"cas_number": "108173906",
+"names": "guazatine",
+"dt50_mean_days": 20.0,
+"dt50_min_days": null,
+"dt50_max_days": null,
+"qualifier": 0,
+"record_id": "32674001",
+"canonical_smiles": "N=C(N)NCCCCCCCCNCCCCCCCCNC(=N)N"
+}
+],
+"MIJLZGZLQLAQCM-UHFFFAOYSA-N": [
+{
+"cas_number": "87237487",
+"names": "2-ethoxyethyl (RS)-2-{4-[3-chloro-5-(trifluoromethyl)-2-pyridyloxy]phenoxy}propionate",
+"dt50_mean_days": 1.5,
+"dt50_min_days": null,
+"dt50_max_days": null,
+"qualifier": 0,
+"record_id": "32674002",
+"canonical_smiles": "CCOCCOC(=O)C(C)Oc1ccc(Oc2ncc(C(F)(F)F)cc2Cl)cc1"
+}
+],
+"GBAWQJNHVWMTLU-UHFFFAOYSA-N": [
+{
+"cas_number": "23560590",
+"names": "7-chlorobicyclo[3.2.0]hepta-2,6-dien-6-yl dimethyl phosphate",
+"dt50_mean_days": 0.7,
+"dt50_min_days": 0.07,
+"dt50_max_days": 1.8,
+"qualifier": 0,
+"record_id": "32674003",
+"canonical_smiles": "COP(=O)(OC)OC1=C(Cl)C2C=CCC12"
+}
+],
+"STMIIPIFODONDC-UHFFFAOYSA-N": [
+{
+"cas_number": "79983714",
+"names": "(RS)-2-(2,4-dichlorophenyl)-1-(1H-1,2,4-triazol-1-yl)hexan-2-ol",
+"dt50_mean_days": 122.0,
+"dt50_min_days": 49.0,
+"dt50_max_days": 200.0,
+"qualifier": 0,
+"record_id": "32674004",
+"canonical_smiles": "CCCCC(O)(Cn1cncn1)c1ccc(Cl)cc1Cl"
+}
+],
+"CAWXEEYDBZRFPE-UHFFFAOYSA-N": [
+{
+"cas_number": "51235042",
+"names": "3-cyclohexyl-6-dimethylamino-1-methyl-1,3,5-triazine-2,4(1H,3H)-dione",
+"dt50_mean_days": 62.0,
+"dt50_min_days": 59.0,
+"dt50_max_days": 64.0,
+"qualifier": 0,
+"record_id": "32674005",
+"canonical_smiles": "CN(C)c1nc(=O)n(C2CCCCC2)c(=O)n1C"
+}
+],
+"WXUNXXKSYBUHMK-UHFFFAOYSA-N": [
+{
+"cas_number": "81405858",
+"names": "Benzoic acid, 2-(4,5-dihydro-4-methyl-4-(1-methylethyl)-5-oxo-1H-imidazol-2-yl)-4(or 5)-methyl-, methyl ester",
+"dt50_mean_days": 51.0,
+"dt50_min_days": 45.0,
+"dt50_max_days": 57.0,
+"qualifier": 0,
+"record_id": "32674006",
+"canonical_smiles": "COC(=O)c1cc(C)ccc1C1=NC(C)(C(C)C)C(=O)N1.COC(=O)c1ccc(C)cc1C1=NC(C)(C(C)C)C(=O)N1"
+}
+],
+"CLQMBPJKHLGMQK-UHFFFAOYSA-N": [
+{
+"cas_number": "81334341",
+"names": "(RS)-2-(4-isopropyl-4-methyl-5-oxo-2-imidazolin-2-yl)nicotinic acid",
+"dt50_mean_days": 510.0,
+"dt50_min_days": null,
+"dt50_max_days": null,
+"qualifier": 0,
+"record_id": "32674008",
+"canonical_smiles": "CC(C)C1(C)N=C(c2ncccc2C(=O)O)NC1=O"
+}
+],
+"YWTYJOPNNQFBPC-UHFFFAOYSA-N": [
+{
+"cas_number": "138261413",
+"names": "(EZ)-1-(6-chloro-3-pyridylmethyl)-N-nitroimidazolidin-2-ylideneamine",
+"dt50_mean_days": 180.0,
+"dt50_min_days": 159.0,
+"dt50_max_days": 200.0,
+"qualifier": 0,
+"record_id": "32674009",
+"canonical_smiles": "O=[N+]([O-])N=C1NCCN1Cc1ccc(Cl)nc1"
+}
+],
+"ONUFESLQCSAYKA-UHFFFAOYSA-N": [
+{
+"cas_number": "36734197",
+"names": "3-(3,5-dichlorophenyl)-N-isopropyl-2,4-dioxoimidazolidine-1-carboxamide",
+"dt50_mean_days": 41.0,
+"dt50_min_days": null,
+"dt50_max_days": null,
+"qualifier": 0,
+"record_id": "32674010",
+"canonical_smiles": "CC(C)NC(=O)N1CC(=O)N(c2cc(Cl)cc(Cl)c2)C1=O"
+}
+],
+"HOQADATXFBOEGG-UHFFFAOYSA-N": [
+{
+"cas_number": "25311711",
+"names": "(RS)-O-ethyl O-2-isopropoxycarbonylphenyl isopropylphosphoramidothioate",
+"dt50_mean_days": 64.0,
+"dt50_min_days": 40.0,
+"dt50_max_days": 88.0,
+"qualifier": 0,
+"record_id": "32674011",
+"canonical_smiles": "CCOP(=S)(NC(C)C)Oc1ccccc1C(=O)OC(C)C"
+}
+],
+"PMHURSZHKKJGBM-UHFFFAOYSA-N": [
+{
+"cas_number": "82558507",
+"names": "N-[3-(1-ethyl-1-methylpropyl)-1,2-oxazol-5-yl]-2,6-dimethoxybenzamide",
+"dt50_mean_days": 262.0,
+"dt50_min_days": 165.0,
+"dt50_max_days": 389.0,
+"qualifier": 0,
+"record_id": "32674012",
+"canonical_smiles": "CCC(C)(CC)c1cc(NC(=O)c2c(OC)cccc2OC)on1"
+}
+],
+"ZXQYGBMAQZUVMI-UHFFFAOYSA-N": [
+{
+"cas_number": "91465086",
+"names": "reaction product comprising equal quantities of (S)-\u03b1-cyano-3-phenoxybenzyl (Z)-(1R,3R)-3-(2-chloro-3,3,3-trifluoropropenyl)-2,2-dimethylcyclopropanecarboxylate and (R)-\u03b1-cyano-3-phenoxybenzyl (Z)-(1S,3S)-3-(2-chloro-3,3,3-trifluoropropenyl)-2,2-dimethylcyclopropanecarboxylate",
+"dt50_mean_days": 41.0,
+"dt50_min_days": 13.0,
+"dt50_max_days": 69.0,
+"qualifier": 0,
+"record_id": "32674013",
+"canonical_smiles": "CC1(C)C(C=C(Cl)C(F)(F)F)C1C(=O)OC(C#N)c1cccc(Oc2ccccc2)c1"
+}
+],
+"ZTMKADLOSYKWCA-UHFFFAOYSA-N": [
+{
+"cas_number": "2164081",
+"names": "3-cyclohexyl-1,5,6,7-tetrahydrocyclopentapyrimidine-2,4(3H)-dione",
+"dt50_mean_days": 179.0,
+"dt50_min_days": null,
+"dt50_max_days": null,
+"qualifier": 0,
+"record_id": "32674014",
+"canonical_smiles": "O=c1[nH]c2c(c(=O)n1C1CCCCC1)CCC2"
+}
+],
+"JLYXXMFPNIAWKQ-UHFFFAOYSA-N": [
+{
+"cas_number": "58899",
+"names": "1\u03b1,2\u03b1,3\u03b2,4\u03b1,5\u03b1,6\u03b2-hexachlorocyclohexane",
+"dt50_mean_days": 1406.0,
+"dt50_min_days": null,
+"dt50_max_days": null,
+"qualifier": 0,
+"record_id": "32674015",
+"canonical_smiles": "ClC1C(Cl)C(Cl)C(Cl)C(Cl)C1Cl"
+}
+],
+"XKJMBINCVNINCA-UHFFFAOYSA-N": [
+{
+"cas_number": "330552",
+"names": "3-(3,4-dichlorophenyl)-1-methoxy-1-methylurea",
+"dt50_mean_days": 131.0,
+"dt50_min_days": 47.0,
+"dt50_max_days": 236.0,
+"qualifier": 0,
+"record_id": "32674016",
+"canonical_smiles": "CON(C)C(=O)Nc1ccc(Cl)c(Cl)c1"
+}
+],
+"YKSNLCVSTHTHJA-UHFFFAOYSA-L": [
+{
+"cas_number": "12427382",
+"names": "manganese ethylenebis(dithiocarbamate) (polymeric)",
+"dt50_mean_days": 56.0,
+"dt50_min_days": null,
+"dt50_max_days": null,
+"qualifier": 0,
+"record_id": "32674017",
+"canonical_smiles": "S=C([S-])NCCNC(=S)[S-].[Mn+2]"
+}
+],
+"WHKUVVPPKQRRBV-UHFFFAOYSA-N": [
+{
+"cas_number": "94746",
+"names": "(4-chloro-2-methylphenoxy)acetic acid",
+"dt50_mean_days": 15.0,
+"dt50_min_days": 6.0,
+"dt50_max_days": 24.0,
+"qualifier": 0,
+"record_id": "32674018",
+"canonical_smiles": "Cc1cc(Cl)ccc1OCC(=O)O"
+}
+],
+"WNTGYJSOUMFZEP-UHFFFAOYSA-N": [
+{
+"cas_number": "7085190",
+"names": "(RS)-2-(4-chloro-o-tolyloxy)propionic acid",
+"dt50_mean_days": 11.0,
+"dt50_min_days": 6.0,
+"dt50_max_days": 14.0,
+"qualifier": 0,
+"record_id": "32674019",
+"canonical_smiles": "Cc1cc(Cl)ccc1OC(C)C(=O)O"
+},
+{
+"cas_number": "16484778",
+"names": "(R)-2-(4-chloro-o-tolyloxy)propionic acid",
+"dt50_mean_days": 11.0,
+"dt50_min_days": 6.0,
+"dt50_max_days": 14.0,
+"qualifier": 0,
+"record_id": "32674020",
+"canonical_smiles": "Cc1cc(Cl)ccc1OC(C)C(=O)O"
+}
+],
+"ZQEIXNIJLIKNTD-UHFFFAOYSA-N": [
+{
+"cas_number": "57837191",
+"names": "methyl N-(methoxyacetyl)-N-(2,6-xylyl)-DL-alaninate",
+"dt50_mean_days": 42.0,
+"dt50_min_days": 29.0,
+"dt50_max_days": 54.0,
+"qualifier": 0,
+"record_id": "32674021",
+"canonical_smiles": "COCC(=O)N(c1c(C)cccc1C)C(C)C(=O)OC"
+}
+],
+"GKKDCARASOJPNG-UHFFFAOYSA-N": [
+{
+"cas_number": "108623",
+"names": "r-2,c-4,c-6,c-8-tetramethyl-1,3,5,7-tetroxocane",
+"dt50_mean_days": 10.0,
+"dt50_min_days": 9.0,
+"dt50_max_days": 12.0,
+"qualifier": 0,
+"record_id": "32674022",
+"canonical_smiles": "CC1OC(C)OC(C)OC(C)O1"
+}
+],
+"AFCCDDWKHLHPDF-UHFFFAOYSA-M": [
+{
+"cas_number": "137428",
+"names": "Carbamic acid, N-methyldithio-, sodium salt",
+"dt50_mean_days": 0.009,
+"dt50_min_days": 0.003,
+"dt50_max_days": 0.018,
+"qualifier": 0,
+"record_id": "32674023",
+"canonical_smiles": "CNC(=S)[S][Na]"
+}
+],
+"VHCNQEUWZYOAEV-UHFFFAOYSA-N": [
+{
+"cas_number": "41394052",
+"names": "4-amino-4,5-dihydro-3-methyl-6-phenyl-1,2,4-triazin-5-one",
+"dt50_mean_days": 30.0,
+"dt50_min_days": 20.0,
+"dt50_max_days": 40.0,
+"qualifier": 0,
+"record_id": "32674024",
+"canonical_smiles": "Cc1nnc(-c2ccccc2)c(=O)n1N"
+}
+],
+"STEPQTYSZVCJPV-UHFFFAOYSA-N": [
+{
+"cas_number": "67129082",
+"names": "2-chloro-N-(pyrazol-1-ylmethyl)acet-2\u2032,6\u2032-xylidide",
+"dt50_mean_days": 18.0,
+"dt50_min_days": 10.0,
+"dt50_max_days": 27.0,
+"qualifier": 0,
+"record_id": "32674025",
+"canonical_smiles": "Cc1cccc(C)c1N(Cn1cccn1)C(=O)CCl"
+}
+],
+"RRVIAQKBTUQODI-UHFFFAOYSA-N": [
+{
+"cas_number": "18691979",
+"names": "1-(1,3-benzothiazol-2-yl)-1,3-dimethylurea",
+"dt50_mean_days": 135.0,
+"dt50_min_days": 117.0,
+"dt50_max_days": 153.0,
+"qualifier": 0,
+"record_id": "32674026",
+"canonical_smiles": "CNC(=O)N(C)c1nc2ccccc2s1"
+}
+],
+"NNKVPIKMPCQWCG-UHFFFAOYSA-N": [
+{
+"cas_number": "10265926",
+"names": "(RS)-O,S-dimethyl phosphoramidothioate",
+"dt50_mean_days": 2.6,
+"dt50_min_days": 1.2,
+"dt50_max_days": 4.0,
+"qualifier": 0,
+"record_id": "32674027",
+"canonical_smiles": "COP(N)(=O)SC"
+}
+],
+"MEBQXILRKZHVCX-UHFFFAOYSA-N": [
+{
+"cas_number": "950378",
+"names": "S-2,3-dihydro-5-methoxy-2-oxo-1,3,4-thiadiazol-3-ylmethyl O,O-dimethyl phosphorodithioate",
+"dt50_mean_days": 4.5,
+"dt50_min_days": null,
+"dt50_max_days": null,
+"qualifier": 0,
+"record_id": "32674028",
+"canonical_smiles": "COc1nn(CSP(=S)(OC)OC)c(=O)s1"
+}
+],
+"YFBPRJGDJKVWAH-UHFFFAOYSA-N": [
+{
+"cas_number": "2032657",
+"names": "4-methylthio-3,5-xylyl methylcarbamate",
+"dt50_mean_days": 61.0,
+"dt50_min_days": 42.0,
+"dt50_max_days": 80.0,
+"qualifier": 0,
+"record_id": "32674029",
+"canonical_smiles": "CNC(=O)Oc1cc(C)c(SC)c(C)c1"
+}
+],
+"UHXUZOCRWCRNSJ-UHFFFAOYSA-N": [
+{
+"cas_number": "16752775",
+"names": "S-methyl (EZ)-N-(methylcarbamoyloxy)thioacetimidate",
+"dt50_mean_days": 8.0,
+"dt50_min_days": 2.0,
+"dt50_max_days": 14.0,
+"qualifier": 0,
+"record_id": "32674030",
+"canonical_smiles": "CNC(=O)ON=C(C)SC"
+}
+],
+"GZUXJHMPEANEGY-UHFFFAOYSA-N": [
+{
+"cas_number": "74839",
+"names": "bromomethane",
+"dt50_mean_days": 15.0,
+"dt50_min_days": 1.0,
+"dt50_max_days": 29.0,
+"qualifier": 0,
+"record_id": "32674031",
+"canonical_smiles": "CBr"
+}
+],
+"LGDSHSYDSCRFAB-UHFFFAOYSA-N": [
+{
+"cas_number": "556616",
+"names": "Methyl isothiocyanate",
+"dt50_mean_days": 6.0,
+"dt50_min_days": 4.0,
+"dt50_max_days": 8.0,
+"qualifier": 0,
+"record_id": "32674032",
+"canonical_smiles": "CN=C=S"
+}
+],
+"WVQBLGZPHOPPFO-UHFFFAOYSA-N": [
+{
+"cas_number": "51218452",
+"names": "(aRS,1RS)-2-chloro-6\u2032-ethyl-N-(2-methoxy-1-methylethyl)acet-o-toluidide",
+"dt50_mean_days": 101.0,
+"dt50_min_days": 59.0,
+"dt50_max_days": 144.0,
+"qualifier": 0,
+"record_id": "32674033",
+"canonical_smiles": "CCc1cccc(C)c1N(C(=O)CCl)C(C)COC"
+}
+],
+"DSRNRYQBBJQVCW-UHFFFAOYSA-N": [
+{
+"cas_number": "19937598",
+"names": "3-(3-chloro-4-methoxyphenyl)-1,1-dimethylurea",
+"dt50_mean_days": 18.5,
+"dt50_min_days": 16.0,
+"dt50_max_days": 21.0,
+"qualifier": 0,
+"record_id": "32674034",
+"canonical_smiles": "COc1ccc(NC(=O)N(C)C)cc1Cl"
+}
+],
+"RSMUVYRMZCOLBH-UHFFFAOYSA-N": [
+{
+"cas_number": "74223646",
+"names": "Benzoic acid, 2-(((((4-methoxy-6-methyl-1,3,5-triazin-2-yl)amino)carbonyl)amino)sulfonyl)-, methyl ester",
+"dt50_mean_days": 31.0,
+"dt50_min_days": 27.0,
+"dt50_max_days": 34.0,
+"qualifier": 0,
+"record_id": "32674035",
+"canonical_smiles": "COC(=O)c1ccccc1S(=O)(=O)NC(=O)Nc1nc(C)nc(OC)n1"
+}
+],
+"YCFPRPBATDQSBA-UHFFFAOYSA-N": [
+{
+"cas_number": "26718650",
+"names": "(EZ)-2-methoxycarbonyl-1-methylvinyl dimethyl phosphate",
+"dt50_mean_days": 1.2,
+"dt50_min_days": 0.4,
+"dt50_max_days": 2.0,
+"qualifier": 0,
+"record_id": "32674036",
+"canonical_smiles": "COC(=O)C(C)=COP(=O)(OC)OC"
+}
+],
+"LKJPSUCKSLORMF-UHFFFAOYSA-N": [
+{
+"cas_number": "1746812",
+"names": "3-(4-chlorophenyl)-1-methoxy-1-methylurea",
+"dt50_mean_days": 50.0,
+"dt50_min_days": 33.0,
+"dt50_max_days": 66.0,
+"qualifier": 0,
+"record_id": "32674037",
+"canonical_smiles": "CON(C)C(=O)Nc1ccc(Cl)cc1"
+}
+],
+"HZJKXKUJVSEEFU-UHFFFAOYSA-N": [
+{
+"cas_number": "88671890",
+"names": "(RS)-2-(4-chlorophenyl)-2-(1H-1,2,4-triazol-1-ylmethyl)hexanenitrile",
+"dt50_mean_days": 282.0,
+"dt50_min_days": 200.0,
+"dt50_max_days": 393.0,
+"qualifier": 0,
+"record_id": "32674038",
+"canonical_smiles": "CCCCC(C#N)(Cn1cncn1)c1ccc(Cl)cc1"
+}
+],
+"VJAWBEFMCIINFU-UHFFFAOYSA-N": [
+{
+"cas_number": "10552746",
+"names": "di-isopropyl 5-nitroisophthalate",
+"dt50_mean_days": 4.0,
+"dt50_min_days": 1.2,
+"dt50_max_days": 9.0,
+"qualifier": 0,
+"record_id": "32674039",
+"canonical_smiles": "CC(C)OC(=O)c1cc(C(=O)OC(C)C)cc([N+](=O)[O-])c1"
+}
+],
+"SAPGTCDSBGMXCD-UHFFFAOYSA-N": [
+{
+"cas_number": "63284719",
+"names": "(RS)-2-chloro-4\u2032-fluoro-\u03b1-(pyrimidin-5-yl)benzhydryl alcohol",
+"dt50_mean_days": 306.0,
+"dt50_min_days": 213.0,
+"dt50_max_days": 399.0,
+"qualifier": 0,
+"record_id": "32674040",
+"canonical_smiles": "OC(c1ccc(F)cc1)(c1cncnc1)c1ccccc1Cl"
+}
+],
+"PZXOQEXFMJCDPG-UHFFFAOYSA-N": [
+{
+"cas_number": "1113026",
+"names": "O,O-dimethyl S-methylcarbamoylmethyl phosphorothioate",
+"dt50_mean_days": 1.0,
+"dt50_min_days": 0.9,
+"dt50_max_days": 1.2,
+"qualifier": 0,
+"record_id": "32674041",
+"canonical_smiles": "CNC(=O)CSP(=O)(OC)OC"
+}
+],
+"KZAUOCCYDRDERY-UHFFFAOYSA-N": [
+{
+"cas_number": "23135220",
+"names": "(EZ)-N,N-dimethyl-2-methylcarbamoyloxyimino-2-(methylthio)acetamide",
+"dt50_mean_days": 18.0,
+"dt50_min_days": 10.0,
+"dt50_max_days": 26.0,
+"qualifier": 0,
+"record_id": "32674042",
+"canonical_smiles": "CNC(=O)ON=C(SC)C(=O)N(C)C"
+}
+],
+"PMCVMORKVPSKHZ-UHFFFAOYSA-N": [
+{
+"cas_number": "301122",
+"names": "S-2-ethylsulfinylethyl O,O-dimethyl phosphorothioate",
+"dt50_mean_days": 0.5,
+"dt50_min_days": null,
+"dt50_max_days": null,
+"qualifier": 0,
+"record_id": "32674043",
+"canonical_smiles": "CC[S+]([O-])CCSP(=O)(OC)OC"
+}
+],
+"LCCNCVORNKJIRZ-UHFFFAOYSA-N": [
+{
+"cas_number": "56382",
+"names": "O,O-diethyl O-4-nitrophenyl phosphorothioate",
+"dt50_mean_days": 49.0,
+"dt50_min_days": 18.0,
+"dt50_max_days": 92.0,
+"qualifier": 0,
+"record_id": "32674044",
+"canonical_smiles": "CCOP(=S)(OCC)Oc1ccc([N+](=O)[O-])cc1"
+}
+],
+"RLBIQVVOMOPOHC-UHFFFAOYSA-N": [
+{
+"cas_number": "298000",
+"names": "O,O-dimethyl O-4-nitrophenyl phosphorothioate",
+"dt50_mean_days": 19.0,
+"dt50_min_days": 14.0,
+"dt50_max_days": 23.0,
+"qualifier": 0,
+"record_id": "32674045",
+"canonical_smiles": "COP(=S)(OC)Oc1ccc([N+](=O)[O-])cc1"
+}
+],
+"WKBPZYKAUNRMKP-UHFFFAOYSA-N": [
+{
+"cas_number": "66246886",
+"names": "(RS)-1-(2,4-dichloro-\u03b2-propylphenethyl)-1H-1,2,4-triazole",
+"dt50_mean_days": 197.0,
+"dt50_min_days": 194.0,
+"dt50_max_days": 200.0,
+"qualifier": 0,
+"record_id": "32674046",
+"canonical_smiles": "CCCC(Cn1cncn1)c1ccc(Cl)cc1Cl"
+}
+],
+"OGYFATSSENRIKG-UHFFFAOYSA-N": [
+{
+"cas_number": "66063056",
+"names": "1-(4-chlorobenzyl)-1-cyclopentyl-3-phenylurea",
+"dt50_mean_days": 64.0,
+"dt50_min_days": 42.0,
+"dt50_max_days": 86.0,
+"qualifier": 0,
+"record_id": "32674047",
+"canonical_smiles": "O=C(Nc1ccccc1)N(Cc1ccc(Cl)cc1)C1CCCC1"
+}
+],
+"CHIFOSRWCNZCFN-UHFFFAOYSA-N": [
+{
+"cas_number": "40487421",
+"names": "N-(1-ethylpropyl)-2,6-dinitro-3,4-xylidine",
+"dt50_mean_days": 171.0,
+"dt50_min_days": 129.0,
+"dt50_max_days": 207.0,
+"qualifier": 0,
+"record_id": "32674048",
+"canonical_smiles": "CCC(CC)Nc1c([N+](=O)[O-])cc(C)c(C)c1[N+](=O)[O-]"
+}
+],
+"RLLPVAHGXHCWKJ-UHFFFAOYSA-N": [
+{
+"cas_number": "52645531",
+"names": "1RS,3SR)-3-(2,2-dichlorovinyl)-2,2-dimethylcyclopropanecarboxylate; 3-phenoxybenzyl (1RS,3RS",
+"dt50_mean_days": 13.0,
+"dt50_min_days": null,
+"dt50_max_days": null,
+"qualifier": 0,
+"record_id": "32674049",
+"canonical_smiles": "CC1(C)C(C=C(Cl)Cl)C1C(=O)OCc1cccc(Oc2ccccc2)c1"
+}
+],
+"IDOWTHOLJBTAFI-UHFFFAOYSA-N": [
+{
+"cas_number": "13684634",
+"names": "methyl 3-(3-methylcarbaniloyloxy)carbanilate",
+"dt50_mean_days": 45.0,
+"dt50_min_days": 16.0,
+"dt50_max_days": 74.0,
+"qualifier": 0,
+"record_id": "32674050",
+"canonical_smiles": "COC(=O)Nc1cccc(OC(=O)Nc2cccc(C)c2)c1"
+}
+],
+"IOUNQDKNJZEDEP-UHFFFAOYSA-N": [
+{
+"cas_number": "2310170",
+"names": "S-6-chloro-2,3-dihydro-2-oxobenzoxazol-3-ylmethyl O,O-diethyl phosphorodithioate",
+"dt50_mean_days": 7.0,
+"dt50_min_days": 4.6,
+"dt50_max_days": 9.4,
+"qualifier": 0,
+"record_id": "32674051",
+"canonical_smiles": "CCOP(=S)(OCC)SCn1c(=O)oc2cc(Cl)ccc21"
+}
+],
+"LMNZTLDVJIUSHT-UHFFFAOYSA-N": [
+{
+"cas_number": "732116",
+"names": "O,O-dimethyl S-phthalimidomethyl phosphorodithioate",
+"dt50_mean_days": 5.6,
+"dt50_min_days": 3.4,
+"dt50_max_days": 7.0,
+"qualifier": 0,
+"record_id": "32674052",
+"canonical_smiles": "COP(=S)(OC)SCN1C(=O)c2ccccc2C1=O"
+}
+],
+"RGCLLPNLLBQHPF-UHFFFAOYSA-N": [
+{
+"cas_number": "13171216",
+"names": "(EZ)-2-chloro-2-diethylcarbamoyl-1-methylvinyl dimethyl phosphate",
+"dt50_mean_days": 4.5,
+"dt50_min_days": 0.8,
+"dt50_max_days": 5.3,
+"qualifier": 0,
+"record_id": "32674053",
+"canonical_smiles": "CCN(CC)C(=O)C(Cl)=C(C)OP(=O)(OC)OC"
+}
+],
+"FIPWRIJSWJWJAI-UHFFFAOYSA-N": [
+{
+"cas_number": "51036",
+"names": "5-[2-(2-butoxyethoxy)ethoxymethyl]-6-propyl-1,3-benzodioxole",
+"dt50_mean_days": 13.0,
+"dt50_min_days": 12.0,
+"dt50_max_days": 14.0,
+"qualifier": 0,
+"record_id": "32674054",
+"canonical_smiles": "CCCCOCCOCCOCc1cc2c(cc1CCC)OCO2"
+}
+],
+"YFGYUFNIOHWBOB-UHFFFAOYSA-N": [
+{
+"cas_number": "23103982",
+"names": "2-dimethylamino-5,6-dimethylpyrimidin-4-yl dimethylcarbamate",
+"dt50_mean_days": 108.0,
+"dt50_min_days": 8.0,
+"dt50_max_days": 222.0,
+"qualifier": 0,
+"record_id": "32674055",
+"canonical_smiles": "Cc1nc(N(C)C)nc(OC(=O)N(C)C)c1C"
+}
+],
+"QHOQHJPRIBSPCY-UHFFFAOYSA-N": [
+{
+"cas_number": "29232937",
+"names": "O-2-diethylamino-6-methylpyrimidin-4-yl O,O-dimethyl phosphorothioate",
+"dt50_mean_days": 12.5,
+"dt50_min_days": 12.0,
+"dt50_max_days": 13.0,
+"qualifier": 0,
+"record_id": "32674056",
+"canonical_smiles": "CCN(CC)c1nc(C)cc(OP(=S)(OC)OC)n1"
+}
+],
+"VXPLXMJHHKHSOA-UHFFFAOYSA-N": [
+{
+"cas_number": "122429",
+"names": "isopropyl carbanilate",
+"dt50_mean_days": 11.0,
+"dt50_min_days": 6.0,
+"dt50_max_days": 15.0,
+"qualifier": 0,
+"record_id": "32674057",
+"canonical_smiles": "CC(C)OC(=O)Nc1ccccc1"
+}
+],
+"AAEVYOVXGOFMJO-UHFFFAOYSA-N": [
+{
+"cas_number": "7287196",
+"names": "N2,N4-di-isopropyl-6-methylthio-1,3,5-triazine-2,4-diamine",
+"dt50_mean_days": 41.0,
+"dt50_min_days": 37.0,
+"dt50_max_days": 45.0,
+"qualifier": 0,
+"record_id": "32674058",
+"canonical_smiles": "CSc1nc(NC(C)C)nc(NC(C)C)n1"
+}
+],
+"MFOUDYKPLGXPGO-UHFFFAOYSA-N": [
+{
+"cas_number": "1918167",
+"names": "2-chloro-N-isopropylacetanilide",
+"dt50_mean_days": 5.2,
+"dt50_min_days": 3.4,
+"dt50_max_days": 7.0,
+"qualifier": 0,
+"record_id": "32674059",
+"canonical_smiles": "CC(C)N(C(=O)CCl)c1ccccc1"
+}
+],
+"WZZLDXDUQPOXNW-UHFFFAOYSA-N": [
+{
+"cas_number": "24579735",
+"names": "propyl 3-(dimethylamino)propylcarbamate",
+"dt50_mean_days": 25.0,
+"dt50_min_days": 16.0,
+"dt50_max_days": 38.0,
+"qualifier": 0,
+"record_id": "32674060",
+"canonical_smiles": "CCCOC(=O)NCCCN(C)C"
+}
+],
+"FROBCXTULYFHEJ-UHFFFAOYSA-N": [
+{
+"cas_number": "111479051",
+"names": "2-isopropylideneamino-oxyethyl (R)-2-[4-(6-chloroquinoxalin-2-yloxy)phenoxy]propionate",
+"dt50_mean_days": 10.0,
+"dt50_min_days": null,
+"dt50_max_days": null,
+"qualifier": 0,
+"record_id": "32674061",
+"canonical_smiles": "CC(C)=NOCCOC(=O)C(C)Oc1ccc(Oc2cnc3cc(Cl)ccc3n2)cc1"
+}
+],
+"WJNRPILHGGKWCK-UHFFFAOYSA-N": [
+{
+"cas_number": "139402",
+"names": "6-chloro-N2,N4-di-isopropyl-1,3,5-triazine-2,4-diamine",
+"dt50_mean_days": 132.0,
+"dt50_min_days": 92.0,
+"dt50_max_days": 157.0,
+"qualifier": 0,
+"record_id": "32674062",
+"canonical_smiles": "CC(C)Nc1nc(Cl)nc(NC(C)C)n1"
+}
+],
+"STJLVHWMYQXCPB-UHFFFAOYSA-N": [
+{
+"cas_number": "60207901",
+"names": "cis-trans-1-[2-(2,4-dichlorophenyl)-4-propyl-1,3-dioxolan-2-ylmethyl]-1H-1,2,4-triazole",
+"dt50_mean_days": 96.0,
+"dt50_min_days": 67.0,
+"dt50_max_days": 125.0,
+"qualifier": 0,
+"record_id": "32674063",
+"canonical_smiles": "CCCC1COC(Cn2cncn2)(c2ccc(Cl)cc2Cl)O1"
+}
+],
+"ISRUGXGCCGIOQO-UHFFFAOYSA-N": [
+{
+"cas_number": "114261",
+"names": "2-isopropoxyphenyl methylcarbamate",
+"dt50_mean_days": 79.0,
+"dt50_min_days": 26.0,
+"dt50_max_days": 131.0,
+"qualifier": 0,
+"record_id": "32674064",
+"canonical_smiles": "CNC(=O)Oc1ccccc1OC(C)C"
+}
+],
+"PHNUZKMIPFFYSO-UHFFFAOYSA-N": [
+{
+"cas_number": "23950585",
+"names": "3,5-dichloro-N-(1,1-dimethylpropynyl)benzamide",
+"dt50_mean_days": 25.0,
+"dt50_min_days": 12.0,
+"dt50_max_days": 37.0,
+"qualifier": 0,
+"record_id": "32674065",
+"canonical_smiles": "C#CC(C)(C)NC(=O)c1cc(Cl)cc(Cl)c1"
+}
+],
+"NQLVQOSNDJXLKG-UHFFFAOYSA-N": [
+{
+"cas_number": "52888809",
+"names": "S-benzyl dipropylthiocarbamate",
+"dt50_mean_days": 24.0,
+"dt50_min_days": 9.0,
+"dt50_max_days": 39.0,
+"qualifier": 0,
+"record_id": "32674066",
+"canonical_smiles": "CCCN(CCC)C(=O)SCc1ccccc1"
+}
+],
+"JOOMJVFZQRQWKR-UHFFFAOYSA-N": [
+{
+"cas_number": "13457186",
+"names": "ethyl 2-diethoxyphosphinothioyloxy-5-methylpyrazolo[1,5-a]pyrimidine-6-carboxylate",
+"dt50_mean_days": 39.0,
+"dt50_min_days": 23.0,
+"dt50_max_days": 53.0,
+"qualifier": 0,
+"record_id": "32674067",
+"canonical_smiles": "CCOC(=O)c1cn2nc(OP(=S)(OCC)OCC)cc2nc1C"
+}
+],
+"JTZCTMAVMHRNTR-UHFFFAOYSA-N": [
+{
+"cas_number": "55512339",
+"names": "6-chloro-3-phenylpyridazin-4-yl S-octyl thiocarbonate",
+"dt50_mean_days": 5.0,
+"dt50_min_days": 3.5,
+"dt50_max_days": 6.0,
+"qualifier": 0,
+"record_id": "32674068",
+"canonical_smiles": "CCCCCCCCSC(=O)Oc1cc(Cl)nnc1-c1ccccc1"
+}
+],
+"DWFZBUWUXWZWKD-UHFFFAOYSA-N": [
+{
+"cas_number": "96489713",
+"names": "2-tert-butyl-5-(4-tert-butylbenzylthio)-4-chloropyridazin-3(2H)-one",
+"dt50_mean_days": 55.0,
+"dt50_min_days": 26.0,
+"dt50_max_days": 84.0,
+"qualifier": 0,
+"record_id": "32674069",
+"canonical_smiles": "CC(C)(C)c1ccc(CSc2cnn(C(C)(C)C)c(=O)c2Cl)cc1"
+}
+],
+"CKPCAYZTYMHQEX-UHFFFAOYSA-N": [
+{
+"cas_number": "88283414",
+"names": "2\u2032,4\u2032-dichloro-2-(3-pyridyl)acetophenone (EZ)-O-methyloxime",
+"dt50_mean_days": 66.0,
+"dt50_min_days": 60.0,
+"dt50_max_days": 72.0,
+"qualifier": 0,
+"record_id": "32674070",
+"canonical_smiles": "CON=C(Cc1cccnc1)c1ccc(Cl)cc1Cl"
+}
+],
+"ALZOLUNSQWINIR-UHFFFAOYSA-N": [
+{
+"cas_number": "90717036",
+"names": "7-chloro-3-methylquinoline-8-carboxylic acid",
+"dt50_mean_days": 68.0,
+"dt50_min_days": 35.0,
+"dt50_max_days": 101.0,
+"qualifier": 0,
+"record_id": "32674071",
+"canonical_smiles": "Cc1cnc2c(C(=O)O)c(Cl)ccc2c1"
+}
+],
+"OSUHJPCHFDQAIT-UHFFFAOYSA-N": [
+{
+"cas_number": "76578148",
+"names": "Propanoic acid, 2-(4-((6-chloro-2-quinoxalinyl)oxy)phenoxy)-, ethyl ester",
+"dt50_mean_days": 0.3,
+"dt50_min_days": 0.26,
+"dt50_max_days": 0.35,
+"qualifier": 0,
+"record_id": "32674072",
+"canonical_smiles": "CCOC(=O)C(C)Oc1ccc(Oc2cnc3cc(Cl)ccc3n2)cc1"
+},
+{
+"cas_number": "100646513",
+"names": "Propanoic acid, 2-(4-((6-chloro-2-quinoxalinyl)oxy)phenoxy)-, ethyl ester, (R",
+"dt50_mean_days": 2.0,
+"dt50_min_days": null,
+"dt50_max_days": null,
+"qualifier": 0,
+"record_id": "32674073",
+"canonical_smiles": "CCOC(=O)C(C)Oc1ccc(Oc2cnc3cc(Cl)ccc3n2)cc1"
+}
+],
+"MEFOUWRMVYJCQC-UHFFFAOYSA-N": [
+{
+"cas_number": "122931480",
+"names": "1-(4,6-dimethoxypyrimidin-2-yl)-3-(3-ethylsulfonyl-2-pyridylsulfonyl)urea",
+"dt50_mean_days": 31.0,
+"dt50_min_days": null,
+"dt50_max_days": null,
+"qualifier": 0,
+"record_id": "32674074",
+"canonical_smiles": "CCS(=O)(=O)c1cccnc1S(=O)(=O)NC(=O)Nc1nc(OC)cc(OC)n1"
+}
+],
+"CSPPKDPQLUUTND-UHFFFAOYSA-N": [
+{
+"cas_number": "74051802",
+"names": "(RS)-(EZ)-2-(1-ethoxyiminobutyl)-5-[2-(ethylthio)propyl]-3-hydroxycyclohex-2-en-1-one",
+"dt50_mean_days": 1.2,
+"dt50_min_days": 0.9,
+"dt50_max_days": 1.5,
+"qualifier": 0,
+"record_id": "32674075",
+"canonical_smiles": "CCCC(=NOCC)C1=C(O)CC(CC(C)SCC)CC1=O"
+}
+],
+"ODCWYMIRDDJXKW-UHFFFAOYSA-N": [
+{
+"cas_number": "122349",
+"names": "6-chloro-N2,N4-diethyl-1,3,5-triazine-2,4-diamine",
+"dt50_mean_days": 58.0,
+"dt50_min_days": 31.0,
+"dt50_max_days": 85.0,
+"qualifier": 0,
+"record_id": "32674076",
+"canonical_smiles": "CCNc1nc(Cl)nc(NCC)n1"
+}
+],
+"XIUROWKZWPIAIB-UHFFFAOYSA-N": [
+{
+"cas_number": "3689245",
+"names": "O,O,O\u2032,O\u2032-tetraethyl dithiopyrophosphate",
+"dt50_mean_days": 28.0,
+"dt50_min_days": 14.0,
+"dt50_max_days": 42.0,
+"qualifier": 0,
+"record_id": "32674077",
+"canonical_smiles": "CCOP(=S)(OCC)OP(=S)(OCC)OCC"
+}
+],
+"PXMNMQRDXWABCY-UHFFFAOYSA-N": [
+{
+"cas_number": "107534963",
+"names": "(RS)-1-p-chlorophenyl-4,4-dimethyl-3-(1H-1,2,4-triazol-1-ylmethyl)pentan-3-ol",
+"dt50_mean_days": 652.0,
+"dt50_min_days": 355.0,
+"dt50_max_days": 841.0,
+"qualifier": 0,
+"record_id": "32674078",
+"canonical_smiles": "CC(C)(C)C(O)(CCc1ccc(Cl)cc1)Cn1cncn1"
+}
+],
+"ZFHGXWPMULPQSE-UHFFFAOYSA-N": [
+{
+"cas_number": "79538322",
+"names": "2,3,5,6-tetrafluoro-4-methylbenzyl (Z)-(1RS,3RS)-3-(2-chloro-3,3,3-trifluoroprop-1-enyl)-2,2-dimethylcyclopropanecarboxylate",
+"dt50_mean_days": 13.0,
+"dt50_min_days": null,
+"dt50_max_days": null,
+"qualifier": 0,
+"record_id": "32674079",
+"canonical_smiles": "Cc1c(F)c(F)c(COC(=O)C2C(C=C(Cl)C(F)(F)F)C2(C)C)c(F)c1F"
+}
+],
+"WWJZWCUNLNYYAU-UHFFFAOYSA-N": [
+{
+"cas_number": "3383968",
+"names": "O,O,O\u2032,O\u2032-tetramethyl O,O\u2032-thiodi-p-phenylene bis(phosphorothioate)",
+"dt50_mean_days": 2.0,
+"dt50_min_days": null,
+"dt50_max_days": null,
+"qualifier": 4,
+"record_id": "32674080",
+"canonical_smiles": "COP(=S)(OC)Oc1ccc(Sc2ccc(OP(=S)(OC)OC)cc2)cc1"
+}
+],
+"XLNZEKHULJKQBA-UHFFFAOYSA-N": [
+{
+"cas_number": "13071799",
+"names": "S-tert-butylthiomethyl O,O-diethyl phosphorodithioate",
+"dt50_mean_days": 8.0,
+"dt50_min_days": 6.0,
+"dt50_max_days": 11.0,
+"qualifier": 0,
+"record_id": "32674081",
+"canonical_smiles": "CCOP(=S)(OCC)SCSC(C)(C)C"
+}
+],
+"IROINLKCQGIITA-UHFFFAOYSA-N": [
+{
+"cas_number": "886500",
+"names": "N2-tert-butyl-N4-ethyl-6-methylthio-1,3,5-triazine-2,4-diamine",
+"dt50_mean_days": 74.0,
+"dt50_min_days": 22.0,
+"dt50_max_days": 125.0,
+"qualifier": 0,
+"record_id": "32674082",
+"canonical_smiles": "CCNc1nc(NC(C)(C)C)nc(SC)n1"
+}
+],
+"AHTPATJNIAFOLR-UHFFFAOYSA-N": [
+{
+"cas_number": "79277273",
+"names": "2-Thiophenecarboxylic acid, 3-(((((4-methoxy-6-methyl-1,3,5-triazin-2-yl)amino)carbonyl)amino)sulfonyl)-, methyl ester",
+"dt50_mean_days": 6.0,
+"dt50_min_days": 3.0,
+"dt50_max_days": 9.0,
+"qualifier": 0,
+"record_id": "32674083",
+"canonical_smiles": "COC(=O)c1sccc1S(=O)(=O)NC(=O)Nc1nc(C)nc(OC)n1"
+}
+],
+"ICTQUFQQEYSGGJ-UHFFFAOYSA-N": [
+{
+"cas_number": "31895224",
+"names": "1,2,3-Trithian-5-amine, N,N-dimethyl-, ethanedioate (1:1)",
+"dt50_mean_days": 2.2,
+"dt50_min_days": 0.5,
+"dt50_max_days": 3.8,
+"qualifier": 0,
+"record_id": "32674084",
+"canonical_smiles": "CN(C)C1CSSSC1.O=C(O)C(=O)O"
+}
+],
+"XDOTVMNBCQVZKG-UHFFFAOYSA-N": [
+{
+"cas_number": "59669260",
+"names": "3,7,9,13-tetramethyl-5,11-dioxa-2,8,14-trithia-4,7,9,12-tetra-azapentadeca-3,12-diene-6,10-dione",
+"dt50_mean_days": 2.0,
+"dt50_min_days": 1.5,
+"dt50_max_days": 3.0,
+"qualifier": 0,
+"record_id": "32674085",
+"canonical_smiles": "CSC(C)=NOC(=O)N(C)SN(C)C(=O)ON=C(C)SC"
+}
+],
+"FZSVSABTBYGOQH-UHFFFAOYSA-N": [
+{
+"cas_number": "39196184",
+"names": "3,3-dimethyl-1-methylthiobutanone O-methylcarbamoyloxime",
+"dt50_mean_days": 4.0,
+"dt50_min_days": 2.0,
+"dt50_max_days": 6.0,
+"qualifier": 0,
+"record_id": "32674086",
+"canonical_smiles": "CNC(=O)ON=C(CSC)C(C)(C)C"
+}
+],
+"OPASCBHCTNRLRM-UHFFFAOYSA-N": [
+{
+"cas_number": "640153",
+"names": "S-2-ethylthioethyl O,O-dimethyl phosphorodithioate",
+"dt50_mean_days": 2.0,
+"dt50_min_days": 1.9,
+"dt50_max_days": 7.0,
+"qualifier": 0,
+"record_id": "32674087",
+"canonical_smiles": "CCSCCSP(=S)(OC)OC"
+}
+],
+"KUAZQDVKQLNFPE-UHFFFAOYSA-N": [
+{
+"cas_number": "137268",
+"names": "tetramethylthiuram disulfide",
+"dt50_mean_days": 18.0,
+"dt50_min_days": 7.0,
+"dt50_max_days": 35.0,
+"qualifier": 0,
+"record_id": "32674088",
+"canonical_smiles": "CN(C)C(=S)SSC(=S)N(C)C"
+}
+],
+"OBZIQQJJIKNWNO-UHFFFAOYSA-N": [
+{
+"cas_number": "57018049",
+"names": "O-2,6-dichloro-p-tolyl O,O-dimethyl phosphorothioate",
+"dt50_mean_days": 66.0,
+"dt50_min_days": 45.0,
+"dt50_max_days": 95.0,
+"qualifier": 0,
+"record_id": "32674089",
+"canonical_smiles": "COP(=S)(OC)Oc1c(Cl)cc(C)cc1Cl"
+}
+],
+"HYVWIQDYBVKITD-UHFFFAOYSA-N": [
+{
+"cas_number": "731271",
+"names": "N-dichlorofluoromethylthio-N\u2032,N\u2032-dimethyl-N-p-tolylsulfamide",
+"dt50_mean_days": 1.0,
+"dt50_min_days": 1.0,
+"dt50_max_days": 1.0,
+"qualifier": 0,
+"record_id": "32674090",
+"canonical_smiles": "Cc1ccc(N(SC(F)(Cl)Cl)S(=O)(=O)N(C)C)cc1"
+}
+],
+"MWBPRDONLNQCFV-UHFFFAOYSA-N": [
+{
+"cas_number": "2303175",
+"names": "S-2,3,3-trichloroallyl di-isopropylthiocarbamate",
+"dt50_mean_days": 103.0,
+"dt50_min_days": 101.0,
+"dt50_max_days": 104.0,
+"qualifier": 0,
+"record_id": "32674091",
+"canonical_smiles": "CC(C)N(C(=O)SCC(Cl)=C(Cl)Cl)C(C)C"
+}
+],
+"BAZVSMNPJJMILC-UHFFFAOYSA-N": [
+{
+"cas_number": "55219653",
+"names": "(1RS,2RS; 1RS,2SR)-1-(4-chlorophenoxy)-3,3-dimethyl-1-(1H-1,2,4-triazol-1-yl)butan-2-ol",
+"dt50_mean_days": 114.0,
+"dt50_min_days": null,
+"dt50_max_days": null,
+"qualifier": 0,
+"record_id": "32674092",
+"canonical_smiles": "CC(C)(C)C(O)C(Oc1ccc(Cl)cc1)n1cncn1"
+}
+],
+"CNFMJLVJDNGPHR-UHFFFAOYSA-N": [
+{
+"cas_number": "76608883",
+"names": "(E)-(RS)-1-cyclohexyl-4,4-dimethyl-2-(1H-1,2,4-triazol-1-yl)pent-1-en-1-ol",
+"dt50_mean_days": 81.0,
+"dt50_min_days": 65.0,
+"dt50_max_days": 95.0,
+"qualifier": 0,
+"record_id": "32674093",
+"canonical_smiles": "CC(C)(C)C(O)C(=CC1CCCCC1)n1cncn1"
+}
+],
+"AMFGTOFWMRQMEM-UHFFFAOYSA-N": [
+{
+"cas_number": "24017478",
+"names": "O,O-diethyl O-1-phenyl-1H-1,2,4-triazol-3-yl phosphorothioate",
+"dt50_mean_days": 65.0,
+"dt50_min_days": 27.0,
+"dt50_max_days": 102.0,
+"qualifier": 0,
+"record_id": "32674094",
+"canonical_smiles": "CCOP(=S)(OCC)Oc1ncn(-c2ccccc2)n1"
+}
+],
+"NFACJZMKEDPNKN-UHFFFAOYSA-N": [
+{
+"cas_number": "52686",
+"names": "dimethyl (RS)-2,2,2-trichloro-1-hydroxyethylphosphonate",
+"dt50_mean_days": 18.0,
+"dt50_min_days": 7.0,
+"dt50_max_days": 30.0,
+"qualifier": 0,
+"record_id": "32674095",
+"canonical_smiles": "COP(=O)(OC)C(O)C(Cl)(Cl)Cl"
+}
+],
+"REEQLXCGVXDJSQ-UHFFFAOYSA-N": [
+{
+"cas_number": "55335063",
+"names": "3,5,6-trichloro-2-pyridyloxyacetic acid",
+"dt50_mean_days": 20.0,
+"dt50_min_days": 12.0,
+"dt50_max_days": 27.0,
+"qualifier": 0,
+"record_id": "32674096",
+"canonical_smiles": "O=C(O)COc1nc(Cl)c(Cl)cc1Cl"
+}
+],
+"YTOPFCCWCSOHFV-UHFFFAOYSA-N": [
+{
+"cas_number": "24602866",
+"names": "2,6-dimethyl-4-tridecylmorpholine",
+"dt50_mean_days": 34.0,
+"dt50_min_days": 11.0,
+"dt50_max_days": 56.0,
+"qualifier": 0,
+"record_id": "32674097",
+"canonical_smiles": "CCCCCCCCCCCCCN1CC(C)OC(C)C1"
+}
+],
+"HSMVPDGQOIQYSR-UHFFFAOYSA-N": [
+{
+"cas_number": "99387890",
+"names": "(E)-4-chloro-\u03b1,\u03b1,\u03b1-trifluoro-N-(1-imidazol-1-yl-2-propoxyethylidene)-o-toluidine",
+"dt50_mean_days": 13.0,
+"dt50_min_days": 7.0,
+"dt50_max_days": 19.0,
+"qualifier": 0,
+"record_id": "32674098",
+"canonical_smiles": "CCCOCC(=Nc1ccc(Cl)cc1C(F)(F)F)n1ccnc1"
+}
+],
+"ZSDSQXJSNMTJDA-UHFFFAOYSA-N": [
+{
+"cas_number": "1582098",
+"names": "\u03b1,\u03b1,\u03b1-trifluoro-2,6-dinitro-N,N-dipropyl-p-toluidine",
+"dt50_mean_days": 221.0,
+"dt50_min_days": 186.0,
+"dt50_max_days": 255.0,
+"qualifier": 0,
+"record_id": "32674099",
+"canonical_smiles": "CCCN(CCC)c1c([N+](=O)[O-])cc(C(F)(F)F)cc1[N+](=O)[O-]"
+}
+],
+"RROQIUMZODEXOR-UHFFFAOYSA-N": [
+{
+"cas_number": "26644462",
+"names": "N,N\u2032-{piperazine-1,4-diylbis[(trichloromethyl)methylene]}diformamide",
+"dt50_mean_days": 19.0,
+"dt50_min_days": 11.0,
+"dt50_max_days": 27.0,
+"qualifier": 0,
+"record_id": "32674100",
+"canonical_smiles": "O=CNC(N1CCN(C(NC=O)C(Cl)(Cl)Cl)CC1)C(Cl)(Cl)Cl"
+}
+],
+"LESVOLZBIFDZGS-UHFFFAOYSA-N": [
+{
+"cas_number": "2275232",
+"names": "O,O-dimethyl S-(RS)-2-(1-methylcarbamoylethylthio)ethyl phosphorothioate",
+"dt50_mean_days": 1.8,
+"dt50_min_days": 1.5,
+"dt50_max_days": 2.1,
+"qualifier": 0,
+"record_id": "32674101",
+"canonical_smiles": "CNC(=O)C(C)SCCSP(=O)(OC)OC"
+}
+],
+"FSCWZHGZWWDELK-UHFFFAOYSA-N": [
+{
+"cas_number": "50471448",
+"names": "(RS)-3-(3,5-dichlorophenyl)-5-methyl-5-vinyl-1,3-oxazolidine-2,4-dione",
+"dt50_mean_days": 23.0,
+"dt50_min_days": 4.0,
+"dt50_max_days": 43.0,
+"qualifier": 0,
+"record_id": "32674102",
+"canonical_smiles": "C=CC1(C)OC(=O)N(c2cc(Cl)cc(Cl)c2)C1=O"
+}
+],
+"PJVWKTKQMONHTI-UHFFFAOYSA-N": [
+{
+"cas_number": "81812",
+"names": "(RS)-4-hydroxy-3-(3-oxo-1-phenylbutyl)coumarin",
+"dt50_mean_days": 5.0,
+"dt50_min_days": null,
+"dt50_max_days": null,
+"qualifier": 0,
+"record_id": "32674103",
+"canonical_smiles": "CC(=O)CC(c1ccccc1)c1c(O)c2ccccc2oc1=O"
+}
+],
+"DUBNHZYBDBBJHD-UHFFFAOYSA-L": [
+{
+"cas_number": "137304",
+"names": "zinc bis(dimethyldithiocarbamate)",
+"dt50_mean_days": 40.0,
+"dt50_min_days": null,
+"dt50_max_days": null,
+"qualifier": 0,
+"record_id": "32674104",
+"canonical_smiles": "CN(C)C(=S)[S-].CN(C)C(=S)[S-].[Zn+2]"
+}
+],
+"UOORRWUZONOOLO-UHFFFAOYSA-N": [
+{
+"cas_number": "542756",
+"names": "(EZ)-1,3-dichloropropene",
+"dt50_mean_days": 13.0,
+"dt50_min_days": 2.0,
+"dt50_max_days": 24.0,
+"qualifier": 0,
+"record_id": "32674105",
+"canonical_smiles": "ClC=CCCl"
+}
+],
+"OVSKIKFHRZPJSS-UHFFFAOYSA-N": [
+{
+"cas_number": "94757",
+"names": "(2,4-dichlorophenoxy)acetic acid",
+"dt50_mean_days": 8.0,
+"dt50_min_days": 2.0,
+"dt50_max_days": 14.0,
+"qualifier": 0,
+"record_id": "32674106",
+"canonical_smiles": "O=C(O)COc1ccc(Cl)cc1Cl"
+},
+{
+"cas_number": "94757",
+"names": "(2,4-dichlorophenoxy)acetic acid",
+"dt50_mean_days": 8.0,
+"dt50_min_days": 2.0,
+"dt50_max_days": 14.0,
+"qualifier": 0,
+"record_id": "32674107",
+"canonical_smiles": "O=C(O)COc1ccc(Cl)cc1Cl"
+}
+]
 }
 }

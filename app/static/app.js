@@ -507,7 +507,7 @@ function renderNeutralWorkspace() {
 function resetIdentificationPanels() {
   if (!$("identification-status")) return;
   $("identification-status").innerHTML = "<strong>Select a chemical to load its identification profile.</strong><small>Looks up the selected chemical's stored InChIKey against NORMAN SusDat, NORMAN EAWAGTPS and MassBank Europe.</small>";
-  ["identification-ionisation","identification-product-ions","identification-transformation-products"].forEach(id => {
+  ["identification-ionisation","identification-product-ions","identification-transformation-products","identification-oasis-soil-dt50","identification-nite-mineralization"].forEach(id => {
     if ($(id)) $(id).innerHTML = "<p>No chemical selected.</p>";
   });
 }
@@ -518,7 +518,7 @@ async function refreshIdentificationProfile() {
   if (!chemical) { resetIdentificationPanels(); return; }
   if (!chemical.inchikey) {
     $("identification-status").innerHTML = `<strong>No InChIKey on record.</strong><small>${escapeHtml(chemical.preferred_name)} has no stored InChIKey, so an identification profile cannot be looked up.</small>`;
-    ["identification-ionisation","identification-product-ions","identification-transformation-products"].forEach(id => {
+    ["identification-ionisation","identification-product-ions","identification-transformation-products","identification-oasis-soil-dt50","identification-nite-mineralization"].forEach(id => {
       if ($(id)) $(id).innerHTML = "<p>Not available.</p>";
     });
     return;
@@ -532,7 +532,7 @@ async function lookupIdentificationByInchikey(inchikey, name) {
 
 async function loadIdentificationProfile(url, displayName, inchikey) {
   $("identification-status").innerHTML = `<strong>Looking up ${escapeHtml(displayName)}…</strong><small>Querying NORMAN SusDat, NORMAN EAWAGTPS and MassBank Europe.</small>`;
-  ["identification-ionisation","identification-product-ions","identification-transformation-products"].forEach(id => {
+  ["identification-ionisation","identification-product-ions","identification-transformation-products","identification-oasis-soil-dt50","identification-nite-mineralization"].forEach(id => {
     if ($(id)) $(id).innerHTML = "<p>Loading…</p>";
   });
   try {
@@ -540,7 +540,7 @@ async function loadIdentificationProfile(url, displayName, inchikey) {
     renderIdentificationProfile(profile, displayName);
   } catch (error) {
     $("identification-status").innerHTML = `<strong>Identification lookup failed.</strong><small>${escapeHtml(error.message)}</small>`;
-    ["identification-ionisation","identification-product-ions","identification-transformation-products"].forEach(id => {
+    ["identification-ionisation","identification-product-ions","identification-transformation-products","identification-oasis-soil-dt50","identification-nite-mineralization"].forEach(id => {
       if ($(id)) $(id).innerHTML = "<p>Lookup failed.</p>";
     });
   }
@@ -593,6 +593,26 @@ function renderIdentificationProfile(profile, displayName) {
     $("identification-to-soil")?.addEventListener("click", () => tpLoadFromAssessment({ knownTps: true }));
   } else {
     $("identification-transformation-products").innerHTML = `<p>${escapeHtml(tp.message || "No known transformation products recorded.")}</p>`;
+  }
+
+  const soilDt50 = profile.oasis_soil_dt50 || {};
+  if (soilDt50.found) {
+    const rec = soilDt50.records[0];
+    $("identification-oasis-soil-dt50").innerHTML = `<p><strong>${fmt(soilDt50.dt50_mean_days)} days</strong> (mean across ${soilDt50.n} record(s))</p>
+      <p><small>${escapeHtml(rec.names || "")}${rec.names ? " · " : ""}CAS ${escapeHtml(rec.cas_number || "not reported")}</small></p>
+      <p class="identification-source">Source: Biodegradation in soil OASIS (LMC Bourgas) · exact-structure match · licence unconfirmed, review before external use.</p>`;
+  } else {
+    $("identification-oasis-soil-dt50").innerHTML = `<p>${escapeHtml(soilDt50.reason || "No exact-structure match in this reference set.")}</p>`;
+  }
+
+  const mineralization = profile.nite_mineralization || {};
+  if (mineralization.found) {
+    const rec = mineralization.records[0];
+    $("identification-nite-mineralization").innerHTML = `<p><strong>${fmt(mineralization.biodeg_percent_mean)}%</strong> of theoretical oxygen demand (mean across ${mineralization.n} record(s))${rec.duration_days != null ? ` over ${fmt(rec.duration_days)} d` : ""}</p>
+      <p><small>${escapeHtml(rec.test_guideline || "")}</small></p>
+      <p class="identification-source">Source: Biodegradation NITE (METI Japan) · a ready-biodegradability screening result, not a soil DT50 · licence unconfirmed.</p>`;
+  } else {
+    $("identification-nite-mineralization").innerHTML = `<p>${escapeHtml(mineralization.reason || "No exact-structure match in this reference set.")}</p>`;
   }
 }
 

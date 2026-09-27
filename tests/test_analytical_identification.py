@@ -341,3 +341,20 @@ def test_transformation_products_route_is_local_only_and_returns_smiles():
     body = response.json()
     assert body["found"] is True and any(row["tp_name"] == "Carbamazepine-10,11-epoxide" and row["tp_smiles"] for row in body["known_transformation_products"])
     assert unknown.status_code == 200 and unknown.json()["found"] is False
+
+
+def test_identification_profile_includes_oasis_soil_dt50_and_nite_mineralization(monkeypatch):
+    monkeypatch.setattr(ai, "_oasis_soil_dt50_by_inchikey", lambda key: {"found": True, "dt50_mean_days": 42.0, "n": 1, "records": [{"cas_number": "1"}]})
+    monkeypatch.setattr(ai, "_nite_mineralization_by_inchikey", lambda key: {"found": False, "available": True, "reason": "no structure match for this InChIKey"})
+    profile = ai.identification_profile(CARBAMAZEPINE_INCHIKEY)
+    assert profile["oasis_soil_dt50"] == {"found": True, "dt50_mean_days": 42.0, "n": 1, "records": [{"cas_number": "1"}]}
+    assert profile["nite_mineralization"]["found"] is False
+
+
+def test_transformation_products_route_still_works_alongside_the_new_measured_lookups():
+    with TestClient(app) as client:
+        response = client.get(f"/api/analytical-identification/{CARBAMAZEPINE_INCHIKEY}")
+    assert response.status_code == 200
+    body = response.json()
+    assert "oasis_soil_dt50" in body and "nite_mineralization" in body
+    assert body["oasis_soil_dt50"]["found"] is False  # carbamazepine is not a pesticide in the OASIS soil set

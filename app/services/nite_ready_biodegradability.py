@@ -105,6 +105,28 @@ def lookup_by_smiles(smiles: str, *, configuration: Settings = settings, data_pa
     }
 
 
+def lookup_by_inchikey(inchikey: str, *, configuration: Settings = settings, data_path: Path | None = None) -> dict[str, Any]:
+    """Same as ``lookup_by_smiles``, but keyed by InChIKey -- for callers (the Identification screen) that have an
+    InChIKey and no SMILES to hand. Built from the same conversion script's ``by_inchikey`` index."""
+
+    gate_open, licence_status = commercial_gate(configuration)
+    if not gate_open:
+        return {"found": False, "available": False, "reason": f"closed outside local/test evaluation: {licence_status}"}
+    if not availability(data_path)["available"]:
+        return {"found": False, "available": False, "reason": "data file missing"}
+    key = (inchikey or "").strip()
+    if not key:
+        return {"found": False, "available": True, "reason": "an InChIKey is required"}
+    records = _load(data_path)["by_inchikey"].get(key)
+    if not records:
+        return {"found": False, "available": True, "reason": "no structure match for this InChIKey"}
+    means = [r["biodeg_percent"] for r in records if r["biodeg_percent"] is not None]
+    return {
+        "found": True, "available": True, "inchikey": key, "records": records, "n": len(records),
+        "biodeg_percent_mean": sum(means) / len(means) if means else None, "citation": CITATION,
+    }
+
+
 def to_evidence_candidate(result: dict[str, Any], *, chemical_name: str, cas_number: str | None = None) -> dict[str, Any]:
     if not result.get("found"):
         raise ValueError("to_evidence_candidate requires a found=True lookup result")

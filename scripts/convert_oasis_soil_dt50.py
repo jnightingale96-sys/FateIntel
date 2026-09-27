@@ -23,6 +23,7 @@ OUT_PATH = Path(__file__).resolve().parents[1] / "app" / "data" / "oasis_soil_dt
 def convert(source: Path, out_path: Path = OUT_PATH) -> None:
     rows = list(csv.DictReader(source.open(encoding="utf-8")))
     records: dict[str, list[dict]] = {}
+    by_inchikey: dict[str, list[dict]] = {}
     skipped = 0
     for row in rows:
         smiles = (row.get("smiles") or "").strip()
@@ -31,7 +32,8 @@ def convert(source: Path, out_path: Path = OUT_PATH) -> None:
             skipped += 1
             continue
         key = Chem.MolToSmiles(mol)
-        records.setdefault(key, []).append({
+        inchikey = Chem.MolToInchiKey(mol)
+        entry = {
             "cas_number": row.get("cas_number") or None,
             "names": row.get("names") or None,
             "dt50_mean_days": float(row["dt50_mean_days"]) if row.get("dt50_mean_days") else None,
@@ -39,8 +41,10 @@ def convert(source: Path, out_path: Path = OUT_PATH) -> None:
             "dt50_max_days": float(row["dt50_max_days"]) if row.get("dt50_max_days") else None,
             "qualifier": int(row["mean_qualifier"]) if row.get("mean_qualifier") else 0,
             "record_id": row.get("record_id"),
-        })
-    out_path.write_text(json.dumps({"version": "1.0", "source": "oasis_soil_dt50", "records": records}, indent=0), encoding="utf-8")
+        }
+        records.setdefault(key, []).append(entry)
+        by_inchikey.setdefault(inchikey, []).append({**entry, "canonical_smiles": key})
+    out_path.write_text(json.dumps({"version": "1.0", "source": "oasis_soil_dt50", "records": records, "by_inchikey": by_inchikey}, indent=0), encoding="utf-8")
     print(f"{len(rows)} rows -> {len(records)} distinct structures, {skipped} skipped (no parseable SMILES); wrote {out_path}")
 
 
