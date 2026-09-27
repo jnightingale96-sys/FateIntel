@@ -629,6 +629,7 @@ def search_sources(
     limit_per_source: int = 20,
     include_open_access_full_text: bool = True,
     molecular_weight_g_mol: float | None = None,
+    smiles: str | None = None,
 ) -> dict[str, Any]:
     results: list[dict[str, Any]] = []
     all_candidates: list[dict[str, Any]] = []
@@ -660,6 +661,12 @@ def search_sources(
                     chemical_name, cas_number=cas_number, endpoint_codes=list(endpoint_codes) if endpoint_codes else None,
                     limit=limit_per_source,
                 )
+            elif key == "oasis_soil_dt50":
+                from .oasis_soil_dt50 import search_oasis_soil_dt50
+                result = search_oasis_soil_dt50(chemical_name, cas_number=cas_number, smiles=smiles, limit=limit_per_source)
+            elif key == "nite_ready_biodegradability":
+                from .nite_ready_biodegradability import search_nite_ready_biodegradability
+                result = search_nite_ready_biodegradability(chemical_name, cas_number=cas_number, smiles=smiles, limit=limit_per_source)
             else:
                 result = {"source_key": key, "status": "not_implemented", "candidates": [], "warnings": ["Adapter registered but live search implementation is not yet enabled."]}
         except (httpx.HTTPError, LookupError, ValueError, json.JSONDecodeError) as exc:

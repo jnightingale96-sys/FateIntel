@@ -145,7 +145,7 @@
   },
   {
     "key": "uba_pharms",
-    "name": "PHARMS-UBA — Pharmaceuticals in the Environment",
+    "name": "PHARMS-UBA \u2014 Pharmaceuticals in the Environment",
     "owner": "German Environment Agency (UBA)",
     "scope": [
       "human_pharmaceuticals",
@@ -368,7 +368,7 @@
   },
   {
     "key": "janusinfo_pharma_environment",
-    "name": "Region Stockholm — Pharmaceuticals and Environment",
+    "name": "Region Stockholm \u2014 Pharmaceuticals and Environment",
     "owner": "Region Stockholm",
     "scope": [
       "human_pharmaceuticals"
@@ -394,7 +394,7 @@
   },
   {
     "key": "nihs_japan_pharma_era",
-    "name": "Japan NIHS — Human Pharmaceutical ERA Databases",
+    "name": "Japan NIHS \u2014 Human Pharmaceutical ERA Databases",
     "owner": "National Institute of Health Sciences (Japan)",
     "scope": [
       "human_pharmaceuticals"
@@ -580,5 +580,46 @@
     "homepage": "https://github.com/FennerLabs/pepper",
     "docs_url": "/api/providers/soil-dt50/capabilities",
     "notes": "Probabilistic Gaussian-process model (Hafner et al., ES&T 2026) trained on EAWAG-SOIL (Latino et al., 2017). Returns the measured EAWAG-SOIL mean when the compound is in the training set, otherwise a labelled prediction with confidence and applicability domain. Peer-reviewed, moderate performance, but no QMRF and not an OECD-accepted QSAR; trained on EU pesticides and transformation products, so pharmaceuticals, industrial chemicals and PFAS are sparse. Runs only in local/test evaluation until an operator confirms the training-data licence."
+  },
+  {
+    "key": "oasis_soil_dt50",
+    "name": "OASIS soil biodegradation DT50 (QSAR Toolbox, LMC)",
+    "owner": "Laboratory of Mathematical Chemistry (LMC), Bourgas; OASIS-LMC / QSAR Toolbox",
+    "scope": [
+      "organic_chemicals"
+    ],
+    "endpoint_families": [
+      "soil_degradation"
+    ],
+    "access_mode": "local_model_provider",
+    "commercial_status": "qsar_toolbox_data_licence_to_confirm",
+    "integration_status": "provider_api_licence_gated",
+    "search_enabled": true,
+    "requires_api_key": false,
+    "evidence_tier": "measured_data_curated_database",
+    "homepage": "https://qsartoolbox.org/",
+    "docs_url": "/api/providers/oasis-soil-dt50/capabilities",
+    "notes": "218 real measured 'Biodegradation in soil' records from the QSAR Toolbox 4.9 storehouse (OASIS-LMC), matched by exact structure. A real measured DT50, not a prediction -- used ahead of PEPPER and BIOWIN4 in the soil-fate ladder when it exists for the exact structure. Runs only in local/test evaluation until an operator confirms the QSAR Toolbox data licence."
+  },
+  {
+    "key": "nite_ready_biodegradability",
+    "name": "NITE ready-biodegradability / mineralization data (QSAR Toolbox, METI Japan)",
+    "owner": "National Institute of Technology and Evaluation (NITE), Japan (METI/CSCL); distributed via QSAR Toolbox",
+    "scope": [
+      "organic_chemicals"
+    ],
+    "endpoint_families": [
+      "biodegradation",
+      "environmental_fate"
+    ],
+    "access_mode": "local_model_provider",
+    "commercial_status": "qsar_toolbox_data_licence_to_confirm",
+    "integration_status": "provider_api_licence_gated",
+    "search_enabled": true,
+    "requires_api_key": false,
+    "evidence_tier": "measured_data_curated_database",
+    "homepage": "https://www.nite.go.jp/en/chem/chrip/chrip_search/",
+    "docs_url": "/api/providers/nite-ready-biodegradability/capabilities",
+    "notes": "1,373 real measured ready-biodegradability screening records (percent ThOD/ThCO2 via O2 consumption, OECD TG 301/302), matched by exact structure. A ready-biodegradability screening percentage, not a soil or water DT50 -- shown as context (mineralization + pass/fail), never used to derive kinetics. Pass/fail classification (60% ThOD threshold) confirmed against OECD Test Guideline 301 primary text (1992, para. 10, Table 1); applies to 301C-labelled records only -- 301D is indicative-only, 302C is a different (inherent, not ready) endpoint and is not classified. Runs only in local/test evaluation until an operator confirms the QSAR Toolbox data licence."
   }
 ]

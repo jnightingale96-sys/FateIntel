@@ -116,3 +116,37 @@ def test_real_data_file_has_an_inchikey_index_matching_the_smiles_index():
     inchikey = Chem.MolToInchiKey(Chem.MolFromSmiles(canonical_smiles))
     by_key = o.lookup_by_inchikey(inchikey)
     assert by_key["found"] is True and by_key["dt50_mean_days"] == pytest.approx(o.lookup_by_smiles(canonical_smiles)["dt50_mean_days"])
+
+
+# ---------------------------------------------------------------------- search_oasis_soil_dt50 (Evidence Data Hub) ---
+
+def test_search_requires_smiles_since_matching_is_by_exact_structure():
+    result = o.search_oasis_soil_dt50("Ethanol")
+    assert result == {
+        "source_key": "oasis_soil_dt50", "status": "smiles_required", "candidates": [],
+        "warnings": ["OASIS soil DT50 matches by exact structure. Search it only for the confirmed chemical whose SMILES is known."],
+    }
+
+
+def test_search_reports_no_match_without_inventing_a_value(monkeypatch, fixture_path):
+    monkeypatch.setattr(o, "DATA_PATH", fixture_path)
+    monkeypatch.setattr(o, "_cache", None)
+    result = o.search_oasis_soil_dt50("Phenol", smiles=PHENOL, configuration=LOCAL)
+    assert result["source_key"] == "oasis_soil_dt50" and result["status"] == "no_match" and result["candidates"] == []
+
+
+def test_search_returns_one_evidence_candidate_on_a_real_structure_match(monkeypatch, fixture_path):
+    monkeypatch.setattr(o, "DATA_PATH", fixture_path)
+    monkeypatch.setattr(o, "_cache", None)
+    result = o.search_oasis_soil_dt50("Ethanol", cas_number="64-17-5", smiles=ETHANOL, configuration=LOCAL)
+    assert result["source_key"] == "oasis_soil_dt50" and result["status"] == "ok"
+    assert len(result["candidates"]) == 1
+    candidate = result["candidates"][0]
+    assert candidate["property_code"] == "FATE.SOIL_DT50" and candidate["value"] == pytest.approx(5.0)
+
+
+def test_search_is_closed_outside_local_test_until_licence_confirmed(monkeypatch, fixture_path):
+    monkeypatch.setattr(o, "DATA_PATH", fixture_path)
+    monkeypatch.setattr(o, "_cache", None)
+    closed = o.search_oasis_soil_dt50("Ethanol", smiles=ETHANOL, configuration=STAGING)
+    assert closed["status"] == "unavailable" and closed["candidates"] == []

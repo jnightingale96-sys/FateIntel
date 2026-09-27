@@ -3883,7 +3883,7 @@ function escapeHtml(value) {
 }
 
 function evidenceSourceLabel(sourceKey) {
-  const labels = {pubchem:"PubChem", europe_pmc:"Europe PMC", epa_comptox:"EPA CompTox", efsa_openfoodtox:"EFSA OpenFoodTox", epa_ecotox:"EPA ECOTOX", aeru_vsdb:"AERU VSDB", aeru_ppdb:"AERU PPDB", premier:"PREMIER"};
+  const labels = {pubchem:"PubChem", europe_pmc:"Europe PMC", epa_comptox:"EPA CompTox", efsa_openfoodtox:"EFSA OpenFoodTox", epa_ecotox:"EPA ECOTOX", aeru_vsdb:"AERU VSDB", aeru_ppdb:"AERU PPDB", premier:"PREMIER", oasis_soil_dt50:"OASIS soil DT50", nite_ready_biodegradability:"NITE mineralization"};
   return labels[sourceKey] || sourceKey;
 }
 
@@ -4005,8 +4005,16 @@ async function searchEvidenceHub() {
   const sources = [];
   if ($("evidence-use-pubchem")?.checked) sources.push("pubchem");
   if ($("evidence-use-epmc")?.checked) sources.push("europe_pmc");
+  if ($("evidence-use-oasis-soil-dt50")?.checked) sources.push("oasis_soil_dt50");
+  if ($("evidence-use-nite-mineralization")?.checked) sources.push("nite_ready_biodegradability");
   if (!sources.length) { toast("Select at least one live evidence source."); return; }
   const endpoint = $("evidence-endpoint")?.value || "";
+  const norm = value => String(value || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+  const structureMatch = state.chemical?.smiles && norm(chemicalName) === norm(state.chemical.preferred_name);
+  const smiles = structureMatch ? state.chemical.smiles : null;
+  if ((sources.includes("oasis_soil_dt50") || sources.includes("nite_ready_biodegradability")) && !smiles) {
+    toast("OASIS soil DT50 / NITE mineralization match by exact structure: enter the confirmed chemical's own name (matching the reviewed profile) to search them.", 6500);
+  }
   if (button) button.disabled = true;
   if (status) status.textContent = "Searching attributed databases and literature…";
   try {
@@ -4019,6 +4027,7 @@ async function searchEvidenceHub() {
         endpoint_codes: endpoint ? [endpoint] : [],
         limit_per_source: 24,
         include_open_access_full_text: Boolean($("evidence-fulltext")?.checked),
+        smiles,
       })
     });
     renderEvidenceCandidates(result);

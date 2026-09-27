@@ -166,3 +166,26 @@ def get_lookup(smiles: str, chemical_name: str | None = None, cas_number: str | 
     if include_evidence_candidate and result.get("found"):
         result["evidence_candidate"] = to_evidence_candidate(result, chemical_name=chemical_name or "unnamed", cas_number=cas_number)
     return result
+
+
+def search_oasis_soil_dt50(
+    chemical_name: str, *, cas_number: str | None = None, smiles: str | None = None,
+    limit: int = 20, configuration: Settings = settings,
+) -> dict[str, Any]:
+    """Evidence Data Hub adapter: {source_key, status, candidates, warnings}, matching every other connector's shape.
+
+    Unlike PubChem/CompTox, this source matches by EXACT structure, not name/CAS resolution -- a caller with no
+    SMILES to hand (or one for a different chemical than ``chemical_name``) gets ``smiles_required``, never a guess.
+    """
+
+    if not smiles:
+        return {
+            "source_key": PROVIDER_KEY, "status": "smiles_required", "candidates": [],
+            "warnings": ["OASIS soil DT50 matches by exact structure. Search it only for the confirmed chemical whose SMILES is known."],
+        }
+    result = lookup_by_smiles(smiles, configuration=configuration)
+    if not result.get("found"):
+        status = "no_match" if result.get("available") else "unavailable"
+        return {"source_key": PROVIDER_KEY, "status": status, "candidates": [], "warnings": [result["reason"]] if result.get("reason") else []}
+    candidate = to_evidence_candidate(result, chemical_name=chemical_name, cas_number=cas_number)
+    return {"source_key": PROVIDER_KEY, "status": "ok", "candidates": [candidate][:limit], "warnings": []}

@@ -116,3 +116,69 @@ def test_oecd_guideline_is_attached_to_water_sediment_dt50():
     rows = _extract("In an OECD 308 aerobic water-sediment study, the total-system DT50 was 82 days at 20 C.")
     row = next(item for item in rows if item["property_code"] == "FATE.WATER_SEDIMENT_DT50")
     assert row["guideline"] == "OECD 308"
+
+
+def test_registry_contains_oasis_and_nite_as_licence_gated_search_enabled_sources():
+    rows = {row["key"]: row for row in source_registry()}
+    for key in {"oasis_soil_dt50", "nite_ready_biodegradability"}:
+        assert key in rows
+        assert rows[key]["search_enabled"] is True
+        assert rows[key]["commercial_status"] == "qsar_toolbox_data_licence_to_confirm"
+        assert rows[key]["access_mode"] == "local_model_provider"
+
+
+def test_evidence_hub_ui_offers_oasis_and_nite_checkboxes_and_sends_smiles():
+    assert 'id="evidence-use-oasis-soil-dt50"' in HTML
+    assert 'id="evidence-use-nite-mineralization"' in HTML
+    assert "oasis_soil_dt50" in JS and "nite_ready_biodegradability" in JS
+    assert "smiles" in JS
+
+
+def test_search_route_wires_smiles_through_to_oasis_and_nite(monkeypatch, tmp_path):
+    import json as _json
+
+    from app.services import nite_ready_biodegradability as n
+    from app.services import oasis_soil_dt50 as o
+
+    ethanol = "CCO"
+    oasis_fixture = tmp_path / "oasis.json"
+    oasis_fixture.write_text(_json.dumps({
+        "version": "1.0", "source": "oasis_soil_dt50",
+        "records": {ethanol: [{"cas_number": "64-17-5", "names": "ethanol", "dt50_mean_days": 4.0, "dt50_min_days": None, "dt50_max_days": None, "qualifier": 0, "record_id": "1"}]},
+    }), encoding="utf-8")
+    nite_fixture = tmp_path / "nite.json"
+    nite_fixture.write_text(_json.dumps({
+        "version": "1.0", "source": "nite_ready_biodegradability",
+        "records": {ethanol: [{"cas_number": "64-17-5", "names": "ethanol", "biodeg_percent": 90.0, "biodeg_percent_min": None,
+                                "biodeg_percent_max": None, "duration_days": 28.0, "test_guideline": "OECD Guideline 301 C",
+                                "endpoint_type": "Ready Biodegradability", "year": "1990", "record_id": "1",
+                                "readily_biodegradable": n.classify_ready_biodegradability(90.0, "OECD Guideline 301 C")}]},
+    }), encoding="utf-8")
+    monkeypatch.setattr(o, "DATA_PATH", oasis_fixture)
+    monkeypatch.setattr(o, "_cache", None)
+    monkeypatch.setattr(n, "DATA_PATH", nite_fixture)
+    monkeypatch.setattr(n, "_cache", None)
+
+    with TestClient(app) as client:
+        result = client.post("/api/evidence-sources/search", json={
+            "chemical_name": "Ethanol", "cas_number": "64-17-5",
+            "source_keys": ["oasis_soil_dt50", "nite_ready_biodegradability"],
+            "smiles": ethanol,
+        })
+    assert result.status_code == 200
+    body = result.json()
+    keyed = {row["source_key"]: row for row in body["source_results"]}
+    assert keyed["oasis_soil_dt50"]["status"] == "ok"
+    assert keyed["nite_ready_biodegradability"]["status"] == "ok"
+    assert len(body["candidates"]) == 2
+
+
+def test_search_route_without_smiles_returns_smiles_required_not_a_500():
+    with TestClient(app) as client:
+        result = client.post("/api/evidence-sources/search", json={
+            "chemical_name": "Ethanol", "source_keys": ["oasis_soil_dt50", "nite_ready_biodegradability"],
+        })
+    assert result.status_code == 200
+    keyed = {row["source_key"]: row for row in result.json()["source_results"]}
+    assert keyed["oasis_soil_dt50"]["status"] == "smiles_required"
+    assert keyed["nite_ready_biodegradability"]["status"] == "smiles_required"

@@ -117,6 +117,7 @@ class EvidenceSourceSearchCreate(BaseModel):
     limit_per_source: int = Field(default=20, ge=1, le=50)
     include_open_access_full_text: bool = True
     molecular_weight_g_mol: Optional[float] = Field(default=None, gt=0, le=100000)
+    smiles: Optional[str] = Field(default=None, max_length=2000)
 
 
 class EvidenceCandidateImportCreate(BaseModel):

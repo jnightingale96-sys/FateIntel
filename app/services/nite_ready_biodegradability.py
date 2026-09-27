@@ -200,7 +200,8 @@ def to_evidence_candidate(result: dict[str, Any], *, chemical_name: str, cas_num
         original_source=CITATION, rights_status="third_party_data_licence_unconfirmed", import_allowed=True,
         needs_professional_review=True, extraction_status="structured_database_field",
         snippet=(f"{result['biodeg_percent_mean']:.3g}% of theoretical oxygen demand across {result['n']} record(s)"
-                 + (f" over {duration:g} d" if duration is not None else "")),
+                 + (f" over {duration:g} d" if duration is not None else "")
+                 + f" -- readily biodegradable: {record['readily_biodegradable']['classification']}"),
         notes=("A ready-biodegradability screening percentage (microbial mineralization via O2 consumption), not a soil or water DT50. "
                f"Readily biodegradable: {record['readily_biodegradable']['classification']} -- {record['readily_biodegradable']['basis']}"),
     ).to_dict()
@@ -223,3 +224,26 @@ def get_lookup(smiles: str, chemical_name: str | None = None, cas_number: str | 
     if include_evidence_candidate and result.get("found"):
         result["evidence_candidate"] = to_evidence_candidate(result, chemical_name=chemical_name or "unnamed", cas_number=cas_number)
     return result
+
+
+def search_nite_ready_biodegradability(
+    chemical_name: str, *, cas_number: str | None = None, smiles: str | None = None,
+    limit: int = 20, configuration: Settings = settings,
+) -> dict[str, Any]:
+    """Evidence Data Hub adapter: {source_key, status, candidates, warnings}, matching every other connector's shape.
+
+    Unlike PubChem/CompTox, this source matches by EXACT structure, not name/CAS resolution -- a caller with no
+    SMILES to hand (or one for a different chemical than ``chemical_name``) gets ``smiles_required``, never a guess.
+    """
+
+    if not smiles:
+        return {
+            "source_key": PROVIDER_KEY, "status": "smiles_required", "candidates": [],
+            "warnings": ["NITE mineralization matches by exact structure. Search it only for the confirmed chemical whose SMILES is known."],
+        }
+    result = lookup_by_smiles(smiles, configuration=configuration)
+    if not result.get("found"):
+        status = "no_match" if result.get("available") else "unavailable"
+        return {"source_key": PROVIDER_KEY, "status": status, "candidates": [], "warnings": [result["reason"]] if result.get("reason") else []}
+    candidate = to_evidence_candidate(result, chemical_name=chemical_name, cas_number=cas_number)
+    return {"source_key": PROVIDER_KEY, "status": "ok", "candidates": [candidate][:limit], "warnings": []}

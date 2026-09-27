@@ -141,3 +141,38 @@ def test_real_data_file_has_an_inchikey_index_matching_the_smiles_index():
     inchikey = Chem.MolToInchiKey(Chem.MolFromSmiles(canonical_smiles))
     by_key = n.lookup_by_inchikey(inchikey)
     assert by_key["found"] is True and by_key["biodeg_percent_mean"] == pytest.approx(n.lookup_by_smiles(canonical_smiles)["biodeg_percent_mean"])
+
+
+# --------------------------------------------------------------- search_nite_ready_biodegradability (Evidence Hub) ---
+
+def test_search_requires_smiles_since_matching_is_by_exact_structure():
+    result = n.search_nite_ready_biodegradability("Ethanol")
+    assert result == {
+        "source_key": "nite_ready_biodegradability", "status": "smiles_required", "candidates": [],
+        "warnings": ["NITE mineralization matches by exact structure. Search it only for the confirmed chemical whose SMILES is known."],
+    }
+
+
+def test_search_reports_no_match_without_inventing_a_value(monkeypatch, fixture_path):
+    monkeypatch.setattr(n, "DATA_PATH", fixture_path)
+    monkeypatch.setattr(n, "_cache", None)
+    result = n.search_nite_ready_biodegradability("Phenol", smiles=PHENOL, configuration=LOCAL)
+    assert result["source_key"] == "nite_ready_biodegradability" and result["status"] == "no_match" and result["candidates"] == []
+
+
+def test_search_returns_one_evidence_candidate_carrying_the_pass_fail_classification(monkeypatch, fixture_path):
+    monkeypatch.setattr(n, "DATA_PATH", fixture_path)
+    monkeypatch.setattr(n, "_cache", None)
+    result = n.search_nite_ready_biodegradability("Ethanol", cas_number="64-17-5", smiles=ETHANOL, configuration=LOCAL)
+    assert result["source_key"] == "nite_ready_biodegradability" and result["status"] == "ok"
+    assert len(result["candidates"]) == 1
+    candidate = result["candidates"][0]
+    assert candidate["property_code"] == "FATE.BIODEGRADATION" and candidate["value"] == pytest.approx(85.0)
+    assert "readily biodegradable: pass" in candidate["snippet"]
+
+
+def test_search_is_closed_outside_local_test_until_licence_confirmed(monkeypatch, fixture_path):
+    monkeypatch.setattr(n, "DATA_PATH", fixture_path)
+    monkeypatch.setattr(n, "_cache", None)
+    closed = n.search_nite_ready_biodegradability("Ethanol", smiles=ETHANOL, configuration=STAGING)
+    assert closed["status"] == "unavailable" and closed["candidates"] == []
