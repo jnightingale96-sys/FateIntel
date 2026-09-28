@@ -183,6 +183,47 @@ def test_us_pesticide_scenario_does_not_get_eu_birds_and_mammals_screen():
     assert "ENVIROCHEM_EU_BIRDS_MAMMALS_SCREEN" not in keys
 
 
+def test_eu_industrial_scenario_also_gets_birds_and_mammals_screen():
+    # 2026-09-27: confirmed by reading ECHA R.16 Section R.16.6.7 directly -- the fish/earthworm
+    # secondary-poisoning formulas are the GENERAL REACH method (not pesticide-specific), and this
+    # module's own EFSA(2023)-sourced default BMF bands exactly match R.16 Table R.16-3. So an
+    # industrial_organic substance with a water/soil exposure pathway is entitled to the same screen.
+    plan = build_assessment_plan({
+        "jurisdiction": "EU",
+        "contaminant_group": "industrial_organic",
+        "scenario": "municipal_wastewater",
+        "tier": 2,
+    })
+    keys = {x["key"] for x in plan["models"]}
+    assert "ENVIROCHEM_EU_BIRDS_MAMMALS_SCREEN" in keys
+    # The spray-residue-specific dietary TER inputs (application rate, crop) must not be demanded --
+    # only the fish/earthworm secondary-poisoning inputs apply to an industrial chemical.
+    assert not any("application rate" in item for item in plan["required_inputs"])
+
+
+def test_us_industrial_scenario_does_not_get_eu_birds_and_mammals_screen():
+    plan = build_assessment_plan({
+        "jurisdiction": "US",
+        "contaminant_group": "industrial_organic",
+        "scenario": "municipal_wastewater",
+        "tier": 2,
+    })
+    keys = {x["key"] for x in plan["models"]}
+    assert "ENVIROCHEM_EU_BIRDS_MAMMALS_SCREEN" not in keys
+
+
+def test_norway_industrial_scenario_does_not_get_eu_birds_and_mammals_screen():
+    # Same unresearched-applicability exclusion as the pesticide branch.
+    plan = build_assessment_plan({
+        "jurisdiction": "NO",
+        "contaminant_group": "industrial_organic",
+        "scenario": "municipal_wastewater",
+        "tier": 2,
+    })
+    keys = {x["key"] for x in plan["models"]}
+    assert "ENVIROCHEM_EU_BIRDS_MAMMALS_SCREEN" not in keys
+
+
 def test_eu_pesticide_bee_attractive_scenario_gets_bee_screen():
     plan = build_assessment_plan({
         "jurisdiction": "EU",

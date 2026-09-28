@@ -65,6 +65,18 @@ describes "the introduction of benthic invertebrate-eating species" as one of EF
 2009 guidance — this looks like a genuinely new addition specific to the 2023 text, not something carried over
 from the older REACH-era guidance. No primary source for its formula was found this session.
 
+**2026-09-27/28 re-confirmation: read the full R.16.6.7 "Predators (secondary poisoning)" section directly**
+(RIVM-hosted mirror of the same guidance, echa.europa.eu itself Azure-WAF-blocked). Section R.16.6.7 covers
+exactly two food chains — fish-eating and worm-eating — and its own text names a benthic-relevant example of what
+it does NOT cover: "Safe levels for fish-eating animals do not exclude risks for other birds or mammals feeding
+on other aquatic organisms (e.g. mussels and worms)." This upgrades the finding above from "no formula found" to
+"the primary source itself says this pathway isn't its own worked example" — a citable absence, not an unsearched
+one. Still not implemented, for the same reason: no formula exists anywhere primary-sourced to build it from.
+Separately, this same re-read confirmed the fish/earthworm formulas already implemented here ARE R.16's general
+REACH method (not pesticide-specific) — Table R.16-3's default BMF1 bands match this module's own EFSA(2023)
+`_FISH_EBMF_BANDS` table exactly — so `ENVIROCHEM_EU_BIRDS_MAMMALS_SCREEN` is now also offered for
+`industrial_organic` scenarios (`app/services/registry.py`), not only pesticide ones.
+
 **Not wired to an API endpoint or UI screen — matching existing precedent, not an oversight.** Neither
 `eu_birds_mammals.py`'s existing (pre-this-session) fish pathway nor `equilibrium_partitioning.py`'s soil/sediment
 PNEC functions (built in an earlier session, explicitly named as closing "the highest-leverage gap") are wired to

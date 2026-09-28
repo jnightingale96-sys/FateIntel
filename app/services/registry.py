@@ -720,7 +720,9 @@ MODELS: list[dict[str, Any]] = [
     {
         "key": "ENVIROCHEM_EU_BIRDS_MAMMALS_SCREEN",
         "name": "EnviroChem EU birds & mammals Tier 1 TER screen",
-        "domain": "EU plant-protection-product dietary and fish-eating secondary-poisoning risk to birds and mammals",
+        "domain": "Dietary (pesticide) and fish/earthworm-eating secondary-poisoning risk to birds and mammals -- the "
+                  "latter confirmed 2026-09-27 as ECHA R.16's own general REACH method (Section R.16.6.7), so it "
+                  "also applies to industrial_organic substances, not only pesticides",
         # "AU" was added after confirming, directly from APVMA's own Risk
         # Assessment Manual Environment (Appendix A, terrestrial
         # vertebrates), that Australia's pesticide birds/mammals assessment
@@ -731,7 +733,12 @@ MODELS: list[dict[str, Any]] = [
         # chemistry-is-universal reasoning used for the fully
         # jurisdiction-agnostic native screens elsewhere in this registry.
         "regions": ["EU", "UK", "CH", "AU"],
-        "groups": ["pesticide"],
+        # "industrial_organic" added 2026-09-27: the acute/reproductive dietary TER outputs remain
+        # pesticide-only (they model spray-residue-on-food-item exposure, which has no industrial-chemical
+        # equivalent), but the fish/earthworm secondary-poisoning outputs are ECHA R.16's own general REACH
+        # method (see the "domain" note above) -- offered to industrial_organic via that subset only, gated
+        # in the selection logic below, not by this "groups" list alone.
+        "groups": ["pesticide", "industrial_organic"],
         "implementation": "native_research_screen",
         "status": "working_partial_screen",
         "tiers": [1, 2],
@@ -1900,12 +1907,19 @@ def build_assessment_plan(data: dict[str, Any]) -> dict[str, Any]:
             # Acute/reproductive dietary TER and fish-eating AND
             # earthworm-eating secondary-poisoning pathways are implemented --
             # see eu_birds_mammals.py's own module docstring for the exact
-            # boundary (no Annex B Generic Model Species tables, no
-            # benthic-invertebrate secondary poisoning yet -- no primary
-            # source for that pathway's formula was found). Excluded for "NO"
-            # (Norway): EFSA birds/mammals methodology applicability to
-            # Norway's own pesticide regime was not researched this session,
-            # unlike AU's confirmed EFSA-2009 alignment (au_apvma.py).
+            # boundary (no Annex B Generic Model Species tables). Benthic-
+            # invertebrate secondary poisoning is CONFIRMED absent from ECHA
+            # R.16 itself (read directly, 2026-09-27, Section R.16.6.7 "Predators
+            # (secondary poisoning)"): the guidance covers only the fish-eating
+            # and worm-eating food chains, and explicitly names mussels as an
+            # example of a pathway its own methodology does NOT cover ("Safe
+            # levels for fish-eating animals do not exclude risks for other
+            # birds or mammals feeding on other aquatic organisms (e.g. mussels
+            # and worms)") -- not an unsearched gap, a confirmed absence in the
+            # primary source itself. Excluded for "NO" (Norway): EFSA birds/
+            # mammals methodology applicability to Norway's own pesticide
+            # regime was not researched this session, unlike AU's confirmed
+            # EFSA-2009 alignment (au_apvma.py).
             selected.append("ENVIROCHEM_EU_BIRDS_MAMMALS_SCREEN")
             required += ["reviewer-supplied FIR/BW/RUD/application rate per food item", "avian and mammalian toxicity endpoints (LD50, relevant reproductive endpoint)"]
             # EU equivalent of the US BEEREX gating below: honey-bee Tier 1
@@ -1919,6 +1933,24 @@ def build_assessment_plan(data: dict[str, Any]) -> dict[str, Any]:
             if bool(data.get("bee_attractive")):
                 selected.append("ENVIROCHEM_EU_BEES_SCREEN")
                 required += ["contact and oral/larval/HPG bee toxicity endpoints", "spray direction (downwards vs. sideward/upwards)", "crop bee-attractiveness basis"]
+
+        # 2026-09-27: ENVIROCHEM_EU_BIRDS_MAMMALS_SCREEN's fish/earthworm secondary-poisoning functions
+        # (app/services/eu_birds_mammals.py) were cross-checked directly against ECHA R.16 Section R.16.6.7
+        # ("Predators (secondary poisoning)") -- the GENERAL REACH method for any organic substance, not
+        # pesticide-specific. Confirmed identical: R.16 Table R.16-3's default BMF1 bands by log Kow (<4.5->1,
+        # 4.5-<5->2, 5-8->10, >8-9->3, >9->1) exactly match this module's own EFSA(2023)-sourced
+        # _FISH_EBMF_BANDS table, and R.16 equation R.16-72 for earthworm matches earthworm_secondary_poisoning_ter's
+        # own docstring citation to the same equation. So the same screen is offered here for industrial_organic
+        # substances with a water or soil exposure pathway modelled -- not a new derivation, the confirmed-general
+        # REACH method the existing implementation already happens to match. Excluded for "NO" for the same
+        # unresearched-applicability reason as the pesticide branch above; not extended to pharmaceuticals, whose
+        # own EMA guidance was not checked for the same R.16.6.7 alignment this session.
+        if group == "industrial_organic" and scenario in {
+            "municipal_wastewater", "industrial_effluent", "surface_water_discharge",
+            "biosolids_to_soil", "soil_incorporation", "wastewater_irrigation",
+        } and jurisdiction != "NO" and "ENVIROCHEM_EU_BIRDS_MAMMALS_SCREEN" not in selected:
+            selected.append("ENVIROCHEM_EU_BIRDS_MAMMALS_SCREEN")
+            required += ["reviewer-supplied FIR/BW/RUD per food item", "avian and mammalian toxicity endpoints (LD50, relevant reproductive endpoint)"]
 
     if jurisdiction == "AU" and group == "pesticide" and scenario in {"agricultural_spray", "soil_incorporation"}:
         # APVMA's own guidance confirms its terrestrial-vertebrates TER
