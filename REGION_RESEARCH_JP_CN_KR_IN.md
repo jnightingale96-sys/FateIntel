@@ -69,6 +69,23 @@ Restrictions lift once established safety standards are met.
 
 **Currency**: JPY.
 
+**2026-09-27 follow-up (the ecological-risk PNEC step, not the screening matrix above): CALCULABLE.** Fetched
+and read (as real PDFs, not summaries) two of MoE's own "Profiles of the Initial Environmental Risk Assessment
+of Chemicals" worked examples -- Carbamazepine (CAS 298-46-4, Vol. 21, <https://www.env.go.jp/content/000212115.pdf>)
+and 1,1,1,2-Tetrafluoroethane (CAS 811-97-2, Vol. 4, <https://www.env.go.jp/content/900450513.pdf>) -- a genuine
+primary-document upgrade over the 2012 NITE conference slide deck the JP_CSCL_PARTIAL finding above was sourced
+to. These confirm the actual assessment-factor tiers MoE applies once a substance reaches risk assessment: 100
+for acute (L)EC50 data spanning several species (Carbamazepine: alga/crustacean/fish/hydra), 10 for chronic
+NOEC data spanning several trophic levels (Carbamazepine: alga/crustacean/fish). Implemented in
+`app/services/japan_cscl.py` (`derive_pnec_japan_cscl`), wired to `POST /api/pnec/japan-cscl`. Deliberately
+NOT extended beyond these two confirmed tiers (no single-species tier, unlike the EU TGD's AF-1000 convention
+this app implements elsewhere -- no Japanese primary example was found showing that case). MoE's own final risk
+judgment is a genuine four-way qualitative call (Carbamazepine was flagged for further monitoring despite a
+PEC/PNEC ratio under 0.02, because of a separate river-monitoring survey) -- not automated here; the reviewer
+gets the PNEC and makes the call, like every other PNEC module in this app. The Hazard-Class x Exposure-Class
+*screening* stage that decides which substances even reach this PNEC step remains uncalculated, unchanged from
+the finding above.
+
 ## China
 
 **Industrial/new chemicals**: "China REACH" -- the Measures for the Environmental (Administration/Management)
@@ -229,16 +246,24 @@ not primary-verified. <https://link.springer.com/article/10.1007/s43441-026-0103
 
 ## What is deliberately NOT built from this research
 
-- Still no CALCULABLE quantitative PEC/PNEC or assessment-factor method for any of the four countries, unlike
-  AICIS (AU) or ECCC's Okonski method (CA) -- FateIntel cannot run any of these four countries' industrial
-  methods. A 2026-09-22 follow-up did upgrade Japan's and China's industrial branches from "agency named only" to
-  "real method structure confirmed, current numeric thresholds not verified" (`JP_CSCL_PARTIAL`,
-  `CN_MEE_PARTIAL`) after fetching a NITE technical presentation and confirming China's named 2019 MEE/NHC
-  guideline. A further, dedicated search for Korea's and India's industrial quantitative methods found nothing
-  India- or Korea-specific (both searches turned up generic international risk-assessment conventions or
-  unrelated disciplines, e.g. accident/spillage QRA for India's MSIHC) -- those two remain "agency named only."
-  Every pesticide pathway across all four remains fully unmapped too, except Japan's named-but-uncalculated PEC
-  criterion.
+- As of 2026-09-22, no CALCULABLE quantitative PEC/PNEC or assessment-factor method existed for any of the four
+  countries, unlike AICIS (AU) or ECCC's Okonski method (CA). A 2026-09-22 follow-up upgraded Japan's and China's
+  industrial branches from "agency named only" to "real method structure confirmed, current numeric thresholds
+  not verified" (`JP_CSCL_PARTIAL`, `CN_MEE_PARTIAL`) after fetching a NITE technical presentation and confirming
+  China's named 2019 MEE/NHC guideline. A further, dedicated search for Korea's and India's industrial
+  quantitative methods found nothing India- or Korea-specific (both searches turned up generic international
+  risk-assessment conventions or unrelated disciplines, e.g. accident/spillage QRA for India's MSIHC) -- those
+  two remain "agency named only." **2026-09-27 update: Japan's ecological-risk PNEC step (not the screening
+  matrix that decides which substances reach it) is now genuinely calculable** -- see the Japan section above,
+  `app/services/japan_cscl.py`. China, Korea and India's industrial methods remain uncalculated. Every pesticide
+  pathway across all four remains fully unmapped too, except Japan's named-but-uncalculated PEC criterion.
+- **2026-09-27: all five countries in this document plus Brazil (see `REGION_RESEARCH_BR_MX_SG_TW_ZA.md`) were
+  added to the "regions" list of every chemistry/mechanism-defined native model** (SimpleTreat, SimpleBox, EPI
+  Suite, BioTransformer, enviPath, native ENVIROCHEM_* multimedia/soil/wastewater-irrigation/biosolids/plant-
+  uptake/EnviroDesign screens) -- these models don't depend on jurisdiction, only chemical behaviour, matching
+  the AU/CA/NZ precedent. Before this fix, selecting Japan/China/Korea/India/Brazil as the project region routed
+  to zero native models even though the jurisdiction itself had long been selectable in the UI -- a real
+  functional gap, not just a documentation one. `tests/test_jurisdiction_separation.py` updated accordingly.
 - No EXTERNAL_ROUTES entries for human/ecological/groundwater/surface-water receptors for any of the four --
   only the identified soil/land contamination law is encoded as a named route (`contaminated_land`-style, one
   route rather than per-receptor, since none of the four sources broke their site-level regime down by receptor

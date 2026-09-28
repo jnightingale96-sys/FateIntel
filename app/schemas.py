@@ -208,6 +208,13 @@ class EarthwormSecondaryPoisoningTerCreate(BaseModel):
     gut_loading_fraction: float = Field(default=0.1, gt=0, lt=1, allow_inf_nan=False)
 
 
+class JapanCsclPnecCreate(BaseModel):
+    """Japan CSCL PNEC via the two assessment-factor tiers confirmed from real MoE worked examples (app/services/japan_cscl.py)."""
+
+    lowest_toxicity_value_ug_per_l: float = Field(gt=0, allow_inf_nan=False)
+    data_type: Literal["acute_multi_species", "chronic_multi_species"]
+
+
 class ReachReviewBundleCreate(BaseModel):
     project_id: int = Field(gt=0)
     chemical_id: int = Field(gt=0)

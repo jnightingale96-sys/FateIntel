@@ -167,10 +167,13 @@ def test_japan_pesticide_route_names_its_own_pec_criterion():
 # ---------- Japan/China industrial methods, upgraded from "agency only" in the 2026-09-22 follow-up ----------
 def test_japan_industrial_route_names_the_confirmed_cscl_structure_but_stays_partial():
     route = stage(resolve_workflow("JP", "industrial_organic"), USE_RELEASE, "route")
-    assert route["status"] == "partial"  # real structure confirmed, but no calculable current method is offered
-    for term in ("Hazard Class", "Exposure Class", "DNEL/PNEC", "priority matrix"):
+    assert route["status"] == "partial"  # screening matrix still not calculable, even though the PNEC step now is
+    for term in ("Hazard Class", "Exposure Class", "PNEC", "priority matrix"):
         assert term in route["detail"], term
     assert "2022" in route["detail"]  # honestly flags that a later revision exists and was not read
+    # 2026-09-27: the ecological-risk PNEC step itself became calculable (app/services/japan_cscl.py), confirmed
+    # from two real MoE worked examples rather than the 2012 slide deck the screening matrix is still sourced to.
+    assert "japan_cscl" in route["detail"]
 
 
 def test_china_industrial_route_names_the_confirmed_2019_guideline_but_stays_partial():

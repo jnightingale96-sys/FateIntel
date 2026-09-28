@@ -55,6 +55,7 @@ from .schemas import (
     ReachPnecPreviewCreate, ReachReviewBundleCreate,
     EquilibriumPartitioningPnecCreate, PbtPmtClassificationCreate,
     FishSecondaryPoisoningTerCreate, EarthwormSecondaryPoisoningTerCreate,
+    JapanCsclPnecCreate,
     USIndustrialExposureRunCreate, USExposureCompletenessCreate,
     DegradationKineticsAssessmentCreate,
     MSFeatureReviewUpdate,
@@ -152,6 +153,7 @@ from .services.equilibrium_partitioning import (
 )
 from .services.pbt_pmt_classifier import classify_pbt_and_vpvb, classify_pmt_and_vpvm
 from .services.eu_birds_mammals import fish_secondary_poisoning_ter, earthworm_secondary_poisoning_ter
+from .services.japan_cscl import derive_pnec_japan_cscl
 
 BASE_DIR = Path(__file__).resolve().parent
 logger = configure_logging(settings.log_level, settings.log_format)
@@ -1027,6 +1029,14 @@ def fish_secondary_poisoning(payload: FishSecondaryPoisoningTerCreate):
 def earthworm_secondary_poisoning(payload: EarthwormSecondaryPoisoningTerCreate):
     try:
         return earthworm_secondary_poisoning_ter(**payload.model_dump())
+    except ValueError as exc:
+        raise HTTPException(422, str(exc)) from exc
+
+
+@app.post("/api/pnec/japan-cscl")
+def derive_japan_cscl_pnec(payload: JapanCsclPnecCreate):
+    try:
+        return asdict(derive_pnec_japan_cscl(**payload.model_dump()))
     except ValueError as exc:
         raise HTTPException(422, str(exc)) from exc
 

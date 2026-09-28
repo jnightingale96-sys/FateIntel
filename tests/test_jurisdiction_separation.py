@@ -226,23 +226,25 @@ def test_model_workflows_endpoint_accepts_every_region_its_own_models_are_regist
     from app.main import app
     with TestClient(app) as client:
         chemical = next(row for row in client.get("/api/chemicals").json() if row["preferred_name"] == "Carbamazepine")
-        for jurisdiction in ("EU", "UK", "CH", "US", "AU", "CA", "NZ"):
+        for jurisdiction in ("EU", "UK", "CH", "US", "AU", "CA", "NZ", "JP", "CN", "KR", "IN", "BR"):
             project = client.post("/api/projects", json={"name": f"model-workflow region QA {uuid4().hex[:8]}", "jurisdiction": jurisdiction}).json()
             response = client.post("/api/model-workflows", json={
                 "project_id": project["id"], "chemical_id": chemical["id"], "model_key": "SIMPLETREAT",
                 "jurisdiction": jurisdiction, "tier": 1, "scenario_name": "region QA", "input_data": {},
             })
-            # SIMPLETREAT lists all seven of these in its own "regions" -- a real registration match, not just a
-            # schema pass-through -- so every one of them must reach 200, never a Pydantic literal-validation 422.
+            # SIMPLETREAT lists all twelve of these in its own "regions" (JP/CN/KR/IN/BR added 2026-09-27 -- a
+            # chemistry/mechanism-defined native model applies regardless of jurisdiction, matching the AU/CA/NZ
+            # precedent) -- a real registration match, not just a schema pass-through -- so every one of them must
+            # reach 200, never a Pydantic literal-validation 422.
             assert response.status_code == 200, (jurisdiction, response.json())
         # A region SIMPLETREAT does NOT list still gets refused, but for the honest business reason (not
         # registered for that region), never because the jurisdiction value itself was rejected by the schema.
-        project = client.post("/api/projects", json={"name": f"model-workflow region QA {uuid4().hex[:8]}", "jurisdiction": "JP"}).json()
+        project = client.post("/api/projects", json={"name": f"model-workflow region QA {uuid4().hex[:8]}", "jurisdiction": "MX"}).json()
         response = client.post("/api/model-workflows", json={
             "project_id": project["id"], "chemical_id": chemical["id"], "model_key": "SIMPLETREAT",
-            "jurisdiction": "JP", "tier": 1, "scenario_name": "region QA", "input_data": {},
+            "jurisdiction": "MX", "tier": 1, "scenario_name": "region QA", "input_data": {},
         })
-        assert response.status_code == 422 and "not registered for JP" in response.json()["detail"]
+        assert response.status_code == 422 and "not registered for MX" in response.json()["detail"]
 
 
 def test_orchestration_endpoints_accept_every_region():

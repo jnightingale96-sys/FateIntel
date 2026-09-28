@@ -144,3 +144,24 @@ def test_earthworm_secondary_poisoning_route_rejects_a_non_positive_koc(client):
         "relevant_endpoint_mg_kg_bw_day": 10, "food_intake_rate_g_day": 20, "body_weight_g": 20,
     })
     assert result.status_code == 422
+
+
+# ------------------------------------------------------------------------------------------------ Japan CSCL PNEC
+
+def test_japan_cscl_route_matches_the_real_carbamazepine_worked_example(client):
+    result = client.post("/api/pnec/japan-cscl", json={"lowest_toxicity_value_ug_per_l": 25, "data_type": "chronic_multi_species"})
+    assert result.status_code == 200
+    body = result.json()
+    assert body["assessment_factor"] == 10
+    assert body["pnec_ug_per_l"] == pytest.approx(2.5)
+    assert "env.go.jp" in body["guidance_reference"]
+
+
+def test_japan_cscl_route_rejects_an_unconfirmed_data_type(client):
+    result = client.post("/api/pnec/japan-cscl", json={"lowest_toxicity_value_ug_per_l": 25, "data_type": "single_species"})
+    assert result.status_code == 422
+
+
+def test_japan_cscl_route_rejects_a_non_positive_value(client):
+    result = client.post("/api/pnec/japan-cscl", json={"lowest_toxicity_value_ug_per_l": 0, "data_type": "acute_multi_species"})
+    assert result.status_code == 422

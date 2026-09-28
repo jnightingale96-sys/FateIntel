@@ -490,7 +490,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "SIMPLETREAT",
         "name": "SimpleTreat",
         "domain": "municipal wastewater treatment",
-        "regions": ["EU", "UK", "CH", "US", "AU", "CA", "NZ"],
+        "regions": ["EU", "UK", "CH", "US", "AU", "CA", "NZ", "JP", "CN", "KR", "IN", "BR"],
         "groups": CONTAMINANT_GROUPS,
         "implementation": "native_and_adapter",
         "status": "working_preset",
@@ -501,7 +501,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "ACTIVITY_SIMPLETREAT",
         "name": "Activity SimpleTreat",
         "domain": "ionisable chemicals in wastewater treatment",
-        "regions": ["EU", "UK", "CH", "US", "AU", "CA", "NZ"],
+        "regions": ["EU", "UK", "CH", "US", "AU", "CA", "NZ", "JP", "CN", "KR", "IN", "BR"],
         "groups": CONTAMINANT_GROUPS,
         "implementation": "native",
         "status": "working_verified_preset",
@@ -512,7 +512,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "SIMPLEBOX",
         "name": "SimpleBox 4.0",
         "domain": "regional, continental and global multimedia environmental fate",
-        "regions": ["EU", "UK", "CH", "US", "AU", "CA", "NZ"],
+        "regions": ["EU", "UK", "CH", "US", "AU", "CA", "NZ", "JP", "CN", "KR", "IN", "BR"],
         "groups": DISCRETE_ORGANIC_GROUPS,
         "implementation": "managed_adapter",
         "status": "official_adapter_contract",
@@ -523,7 +523,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "ENVIROCHEM_MULTIMEDIA_FATE_SCREEN",
         "name": "EnviroChem multimedia fate screen",
         "domain": "transparent steady-state air-water-soil-sediment mass balance",
-        "regions": ["EU", "UK", "CH", "US", "AU", "CA", "NZ"],
+        "regions": ["EU", "UK", "CH", "US", "AU", "CA", "NZ", "JP", "CN", "KR", "IN", "BR"],
         "groups": DISCRETE_ORGANIC_GROUPS,
         "implementation": "native_research_screen",
         "status": "working_native_screen",
@@ -534,7 +534,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "EPI_SUITE",
         "name": "EPA EPI Suite 4.11",
         "domain": "property, degradation, bioaccumulation and environmental-transport estimation",
-        "regions": ["US", "EU", "UK", "CH", "AU", "CA", "NZ"],
+        "regions": ["US", "EU", "UK", "CH", "AU", "CA", "NZ", "JP", "CN", "KR", "IN", "BR"],
         "groups": DISCRETE_ORGANIC_GROUPS,
         "implementation": "managed_adapter",
         "status": "installable_adapter_contract",
@@ -578,7 +578,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "ENVIROCHEM_TOXSWA_PROCESS_SCREEN",
         "name": "EnviroChem water–sediment process screen",
         "domain": "surface water and sediment",
-        "regions": ["EU", "UK", "US", "CH", "AU", "CA", "NZ"],
+        "regions": ["EU", "UK", "US", "CH", "AU", "CA", "NZ", "JP", "CN", "KR", "IN", "BR"],
         "groups": CONTAMINANT_GROUPS,
         "implementation": "native_research_screen",
         "status": "alpha",
@@ -611,7 +611,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "ENVIROCHEM_CATCHMENT_RIVER_NETWORK",
         "name": "EnviroChem catchment river-network screen",
         "domain": "branched river routing of WWTP and industrial point-source loads",
-        "regions": ["EU", "UK", "CH", "US", "AU", "CA", "NZ"],
+        "regions": ["EU", "UK", "CH", "US", "AU", "CA", "NZ", "JP", "CN", "KR", "IN", "BR"],
         "groups": DISCRETE_ORGANIC_GROUPS,
         "implementation": "native_research_screen",
         "status": "working_native_screen",
@@ -821,7 +821,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "ENVIROCHEM_DUAL_WASTEWATER_IRRIGATION",
         "name": "EnviroChem EU–US wastewater irrigation comparison",
         "domain": "treated-wastewater irrigation, soil accumulation and cross-framework model routing",
-        "regions": ["EU", "UK", "US", "CH", "AU", "CA", "NZ"],
+        "regions": ["EU", "UK", "US", "CH", "AU", "CA", "NZ", "JP", "CN", "KR", "IN", "BR"],
         "groups": CONTAMINANT_GROUPS,
         "implementation": "native_and_adapter",
         "status": "working_native_screen",
@@ -832,7 +832,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "ENVIROCHEM_SOIL_SCREEN",
         "name": "EnviroChem soil accumulation screen",
         "domain": "soil mixing, repeat use and accumulation",
-        "regions": ["EU", "UK", "US", "CH", "AU", "CA", "NZ"],
+        "regions": ["EU", "UK", "US", "CH", "AU", "CA", "NZ", "JP", "CN", "KR", "IN", "BR"],
         "groups": CONTAMINANT_GROUPS,
         "implementation": "native",
         "status": "partial",
@@ -844,7 +844,7 @@ MODELS: list[dict[str, Any]] = [
     "key": "ENVIROCHEM_BIOSOLIDS_LAND_APPLICATION",
     "name": "EnviroChem biosolids land application",
     "domain": "WWTP sludge transfer, land loading and repeated soil accumulation",
-    "regions": ["EU", "UK", "US", "CH", "AU", "CA", "NZ"],
+    "regions": ["EU", "UK", "US", "CH", "AU", "CA", "NZ", "JP", "CN", "KR", "IN", "BR"],
     "groups": CONTAMINANT_GROUPS,
     "implementation": "native",
     "status": "working_native_screen",
@@ -866,7 +866,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "ENVIROCHEM_PLANT_UPTAKE",
         "name": "EnviroChem plant uptake",
         "domain": "root uptake and crop residues",
-        "regions": ["EU", "UK", "US", "CH", "AU", "CA", "NZ"],
+        "regions": ["EU", "UK", "US", "CH", "AU", "CA", "NZ", "JP", "CN", "KR", "IN", "BR"],
         "groups": ["human_pharmaceutical", "veterinary_pharmaceutical", "pesticide", "emerging_contaminant", "industrial_organic"],
         "implementation": "native",
         "status": "working_screen",
@@ -877,7 +877,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "ENVIRODESIGN_BIOWIN34_ATTRIBUTION",
         "name": "EnviroDesign structural biodegradation attribution",
         "domain": "explainable structure-to-biodegradation screening",
-        "regions": ["EU", "UK", "US", "CH", "AU", "CA", "NZ"],
+        "regions": ["EU", "UK", "US", "CH", "AU", "CA", "NZ", "JP", "CN", "KR", "IN", "BR"],
         "groups": CONTAMINANT_GROUPS,
         "implementation": "native",
         "status": "working_research_screen",
@@ -888,7 +888,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "ENVIRODESIGN_PATHWAY_RETENTION",
         "name": "EnviroDesign transformation-pathway retention",
         "domain": "parent-product motif retention with matrix and provenance",
-        "regions": ["EU", "UK", "US", "CH", "AU", "CA", "NZ"],
+        "regions": ["EU", "UK", "US", "CH", "AU", "CA", "NZ", "JP", "CN", "KR", "IN", "BR"],
         "groups": CONTAMINANT_GROUPS,
         "implementation": "native_manual_import",
         "status": "working_manual_import",
@@ -899,7 +899,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "BIOTRANSFORMER_ENVMICRO",
         "name": "BioTransformer environmental microbial pathway prediction",
         "domain": "predicted soil/water microbial transformation products and reaction network",
-        "regions": ["EU", "UK", "US", "CH", "AU", "CA", "NZ"],
+        "regions": ["EU", "UK", "US", "CH", "AU", "CA", "NZ", "JP", "CN", "KR", "IN", "BR"],
         "groups": CONTAMINANT_GROUPS,
         "implementation": "remote_api_adapter",
         "status": "development_evaluation_licence_gated",
@@ -910,7 +910,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "ENVIPATH_ENVMICRO",
         "name": "enviPath curated-pathway search and rule-based pathway prediction",
         "domain": "curated real-world and predicted microbial transformation products and reaction network",
-        "regions": ["EU", "UK", "US", "CH", "AU", "CA", "NZ"],
+        "regions": ["EU", "UK", "US", "CH", "AU", "CA", "NZ", "JP", "CN", "KR", "IN", "BR"],
         "groups": CONTAMINANT_GROUPS,
         "implementation": "remote_api_adapter",
         "status": "development_evaluation_licence_gated",
@@ -921,7 +921,7 @@ MODELS: list[dict[str, Any]] = [
         "key": "ENVIRODESIGN_CANDIDATE_COMPARISON",
         "name": "EnviroDesign candidate comparison",
         "domain": "counterfactual safer-by-design comparison",
-        "regions": ["EU", "UK", "US", "CH", "AU", "CA", "NZ"],
+        "regions": ["EU", "UK", "US", "CH", "AU", "CA", "NZ", "JP", "CN", "KR", "IN", "BR"],
         "groups": CONTAMINANT_GROUPS,
         "implementation": "native",
         "status": "working_user_supplied_candidates",
@@ -1278,15 +1278,27 @@ def _regulatory_programme(jurisdiction: str, group: str, scenario: str) -> dict[
         # determining how much hazard/exposure data is required. This is real structure, not a calculable method:
         # the exact 2012 numeric class boundaries may have been superseded by a 2022 CSCL PAC screening/risk-
         # assessment revision (found in search results but not read), so nothing here is asserted as current.
+        # 2026-09-27 follow-up: the *screening* stage above (Hazard Class x Exposure Class) is still not
+        # calculable, but the actual PNEC assessment-factor step it feeds into now is -- confirmed from two real
+        # MoE "Profiles of the Initial Environmental Risk Assessment of Chemicals" worked examples (Carbamazepine,
+        # CAS 298-46-4; 1,1,1,2-Tetrafluoroethane, CAS 811-97-2), not a manual or a slide deck: 100 for acute
+        # (L)EC50 data spanning several species, 10 for chronic NOEC data spanning several trophic levels --
+        # app/services/japan_cscl.py. MoE's own final risk judgment is a genuine four-way qualitative call (not a
+        # mechanical PEC/PNEC>1 trigger -- the Carbamazepine example was flagged for further monitoring despite a
+        # PEC/PNEC ratio under 0.02, because of a separate river survey), so this only derives the PNEC and leaves
+        # the judgment to the reviewer, like every other PNEC module in this app.
         return {
             "key": "JP_CSCL_PARTIAL",
-            "name": "Japan CSCL pathway (structure confirmed, current numeric criteria not verified)",
+            "name": "Japan CSCL pathway (screening structure confirmed; PNEC assessment factor now calculable)",
             "scope": "The Chemical Substances Control Law (METI/MHLW/MoE, government-run, not industry-run) screens "
                      "existing substances via a Hazard Class x Exposure Class priority matrix (exposure class set "
                      "by total national emissions, tiered by production/import volume); substances prioritised "
-                     "'High' undergo Risk Assessment comparing a modelled PEC against DNEL/PNEC. Confirmed via a "
-                     "2012 NITE technical presentation; current (post-2022-revision) numeric thresholds were not "
-                     "verified, so no calculation is offered (EXTERNAL MODEL REQUIRED).",
+                     "'High' undergo Risk Assessment comparing a modelled PEC against a PNEC. The screening matrix "
+                     "itself is still not calculable (2012 NITE presentation; a 2022 revision exists, unread). The "
+                     "PNEC step now is: two assessment-factor tiers (100 acute-multi-species, 10 chronic-multi-"
+                     "species) confirmed from two real MoE worked examples -- app.services.japan_cscl."
+                     "derive_pnec_japan_cscl(). Other data configurations (single-species, mixed, QSAR-only) remain "
+                     "unconfirmed (EXTERNAL MODEL REQUIRED for the screening stage and for PEC).",
         }
 
     if jurisdiction == "CN":
