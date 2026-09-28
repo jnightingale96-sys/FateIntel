@@ -522,3 +522,46 @@ def test_metal_is_still_kept_out_of_organic_only_models():
     keys = [x["key"] for x in plan["models"]]
     assert "ENVIROCHEM_MULTIMEDIA_FATE_SCREEN" not in keys
     assert "ENVIROCHEM_CATCHMENT_RIVER_NETWORK" not in keys
+
+
+def test_us_bee_attractive_pesticide_gets_both_the_official_beerex_placeholder_and_the_native_screen():
+    # ENVIROCHEM_BEEREX_SCREEN (2026-09-28) is a genuine native re-implementation of Bee-REX's own Tier 1
+    # equations, offered alongside the official-tool placeholder (BEEREX), not instead of it.
+    plan = build_assessment_plan({
+        "jurisdiction": "US", "contaminant_group": "pesticide", "scenario": "agricultural_spray", "tier": 2,
+        "use_site_category": "outdoor_terrestrial", "bee_attractive": True,
+    })
+    keys = {x["key"] for x in plan["models"]}
+    assert {"BEEREX", "ENVIROCHEM_BEEREX_SCREEN"}.issubset(keys)
+
+
+def test_us_non_bee_attractive_pesticide_does_not_get_either_beerex_model():
+    plan = build_assessment_plan({
+        "jurisdiction": "US", "contaminant_group": "pesticide", "scenario": "agricultural_spray", "tier": 2,
+        "use_site_category": "outdoor_terrestrial", "bee_attractive": False,
+    })
+    keys = {x["key"] for x in plan["models"]}
+    assert not keys.intersection({"BEEREX", "ENVIROCHEM_BEEREX_SCREEN"})
+
+
+def test_ca_bee_attractive_pesticide_gets_the_native_beerex_screen():
+    # PMRA's confirmed bee exception (CA_PMRA_PARTIAL) comes from the same tri-agency guidance this screen
+    # implements -- Canada gets the native screen even though it has no official-tool placeholder of its own.
+    plan = build_assessment_plan({
+        "jurisdiction": "CA", "contaminant_group": "pesticide", "scenario": "agricultural_spray", "tier": 2,
+        "bee_attractive": True,
+    })
+    keys = {x["key"] for x in plan["models"]}
+    assert "ENVIROCHEM_BEEREX_SCREEN" in keys
+    assert "BEEREX" not in keys  # the official EPA-tool placeholder is US-only
+
+
+def test_eu_bee_attractive_pesticide_does_not_get_the_tri_agency_beerex_screen():
+    # EU uses its own EFSA-sourced bee screen (ENVIROCHEM_EU_BEES_SCREEN) instead.
+    plan = build_assessment_plan({
+        "jurisdiction": "EU", "contaminant_group": "pesticide", "scenario": "agricultural_spray", "tier": 2,
+        "bee_attractive": True,
+    })
+    keys = {x["key"] for x in plan["models"]}
+    assert "ENVIROCHEM_BEEREX_SCREEN" not in keys
+    assert "ENVIROCHEM_EU_BEES_SCREEN" in keys

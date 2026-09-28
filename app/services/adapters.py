@@ -390,6 +390,25 @@ ADAPTER_CONTRACTS: dict[str, dict[str, Any]] = {
         "accepted_output_formats": ["json"],
         "redistribution_note": "Transparent native research screen implementing the EFSA (2013) Journal 11(7):3295 bee guidance's own Section 3.1.2 Tier 1 spray-screening formulas. It is not an official EFSA calculator tool. Spray applications to honey bees only -- granular/seed-treatment routes and bumble bee/solitary bee assessments are not implemented. A 2023 revision of this guidance exists with a different contact-exposure formulation and updated trigger values that were not confirmed this session and are not what this screen implements -- see eu_bees.py's own module docstring.",
     },
+    "ENVIROCHEM_BEEREX_SCREEN": {
+        "execution_mode": "native_research_screen",
+        "required_inputs": [
+            "application_rate_kg_ha", "application_method", "life_stage",
+            "contact_or_oral_toxicity_endpoint_ug_bee", "log_kow", "koc_l_per_kg",
+        ],
+        "expected_outputs": [
+            "foliar_spray_contact_rq", "foliar_spray_dietary_rq", "seed_treatment_dietary_rq", "soil_treatment_dietary_rq",
+        ],
+        "workflow_steps": [
+            "confirm the application method (foliar spray, seed treatment or soil treatment) so the correct Tier 1 exposure equation applies",
+            "compute the dietary and, for foliar spray, contact dose using the guidance's own upper-bound residue/contact factors and adult/larval consumption rates",
+            "for soil treatment, confirm log Kow is within the modified-Briggs model's own calibration domain (< 5) before a dose is offered",
+            "compute the risk quotient against the reviewer-supplied toxicity endpoint and compare to the tri-agency LOC (0.4 acute / 1.0 chronic)",
+            "scientist reviews the endpoint selection and any higher-tier refinement",
+        ],
+        "accepted_output_formats": ["json"],
+        "redistribution_note": "Transparent native research screen implementing USEPA/PMRA/CADPR's own Tier 1 'Bee REX' exposure equations (Guidance for Assessing Pesticide Risks to Bees, 19 June 2014, Appendix 3), read directly. It is not the official EPA Bee-REX spreadsheet tool (that placeholder is the separate BEEREX registry entry). Tree trunk applications are not implemented -- the guidance itself gives no standard equation for them.",
+    },
     "ENVIROCHEM_US_INDUSTRIAL_EXPOSURE_SCREEN": {
         "execution_mode": "native_research_screen",
         "required_inputs": [

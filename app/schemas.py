@@ -215,6 +215,35 @@ class JapanCsclPnecCreate(BaseModel):
     data_type: Literal["acute_multi_species", "chronic_multi_species"]
 
 
+class BeeRexFoliarContactCreate(BaseModel):
+    """Tri-agency Bee-REX Tier 1 foliar-spray contact RQ (USEPA/PMRA/CADPR, app/services/beerex.py)."""
+
+    application_rate_kg_ha: float = Field(gt=0, allow_inf_nan=False)
+    contact_ld50_ug_per_bee: float = Field(gt=0, allow_inf_nan=False)
+
+
+class BeeRexFoliarDietaryCreate(BaseModel):
+    application_rate_kg_ha: float = Field(gt=0, allow_inf_nan=False)
+    life_stage: Literal["adult", "larval"]
+    toxicity_endpoint_ug_per_bee: float = Field(gt=0, allow_inf_nan=False)
+    chronic: bool = False
+
+
+class BeeRexSeedTreatmentCreate(BaseModel):
+    life_stage: Literal["adult", "larval"]
+    toxicity_endpoint_ug_per_bee: float = Field(gt=0, allow_inf_nan=False)
+    chronic: bool = False
+
+
+class BeeRexSoilTreatmentCreate(BaseModel):
+    application_rate_kg_ha: float = Field(gt=0, allow_inf_nan=False)
+    log_kow: float = Field(allow_inf_nan=False)
+    koc_l_per_kg: float = Field(gt=0, allow_inf_nan=False)
+    life_stage: Literal["adult", "larval"]
+    toxicity_endpoint_ug_per_bee: float = Field(gt=0, allow_inf_nan=False)
+    chronic: bool = False
+
+
 class ReachReviewBundleCreate(BaseModel):
     project_id: int = Field(gt=0)
     chemical_id: int = Field(gt=0)

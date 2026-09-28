@@ -718,6 +718,23 @@ MODELS: list[dict[str, Any]] = [
         "outputs": ["contact_risk_quotient", "oral_risk_quotient"],
     },
     {
+        "key": "ENVIROCHEM_BEEREX_SCREEN",
+        "name": "EnviroChem Bee-REX Tier 1 exposure screen",
+        # 2026-09-28: a genuine native re-implementation of Bee-REX's own Tier 1 exposure equations (not a
+        # placeholder for the official EPA tool, which is BEEREX above) -- read directly from the same
+        # tri-agency guidance PMRA co-authored with US EPA and California DPR (see the CA_PMRA_PARTIAL note
+        # in _regulatory_programme() and app/services/beerex.py's own module docstring for the primary-source
+        # citation). Covers foliar-spray (contact + dietary), seed-treatment and soil-treatment pathways; tree
+        # trunk applications are NOT covered, since the guidance itself gives no standard equation for them.
+        "domain": "Tri-agency (USEPA/PMRA/CADPR) Bee-REX Tier 1 exposure and risk-quotient screen for honey bees",
+        "regions": ["US", "CA"],
+        "groups": ["pesticide"],
+        "implementation": "native_research_screen",
+        "status": "working_partial_screen",
+        "tiers": [1, 2],
+        "outputs": ["foliar_spray_contact_rq", "foliar_spray_dietary_rq", "seed_treatment_dietary_rq", "soil_treatment_dietary_rq"],
+    },
+    {
         "key": "ENVIROCHEM_EU_BIRDS_MAMMALS_SCREEN",
         "name": "EnviroChem EU birds & mammals Tier 1 TER screen",
         "domain": "Dietary (pesticide) and fish/earthworm-eating secondary-poisoning risk to birds and mammals -- the "
@@ -1079,11 +1096,16 @@ def _regulatory_programme(jurisdiction: str, group: str, scenario: str) -> dict[
         # pmra_pesticides.py's own docstring. APVMA-style spray-drift,
         # runoff, soil-organism and non-target-plant methodology is not
         # covered here either.
+        # 2026-09-28: the bee EXPOSURE side (not just the LOC risk-characterisation) is now genuinely
+        # calculable -- read the same tri-agency guidance's own Appendix 3 "Bee REX" directly (not a
+        # secondary description) and implemented its Tier 1 foliar-spray, seed-treatment and soil-treatment
+        # exposure equations in app/services/beerex.py, usable for this PMRA pathway and the US EPA one alike
+        # (the guidance is genuinely tri-agency, not PMRA deferring to EPA numbers).
         if group == "pesticide" or scenario == "agricultural_spray":
             return {
                 "key": "CA_PMRA_PARTIAL",
                 "name": "Canadian PMRA pesticide pathway (partially mapped)",
-                "scope": "PMRA, not ECCC, regulates pesticides in Canada. Confirmed and implemented: the general RQ vs. LOC=1 framework and the confirmed bee exception (LOC 0.4 acute / 1.0 chronic, tri-agency PMRA/EPA/CDPR guidance). Not yet researched: spray drift, runoff, soil organisms, non-target plants, and any other receptor-specific LOC exceptions beyond bees -- treat those as an explicit coverage gap",
+                "scope": "PMRA, not ECCC, regulates pesticides in Canada. Confirmed and implemented: the general RQ vs. LOC=1 framework, the confirmed bee exception (LOC 0.4 acute / 1.0 chronic, tri-agency PMRA/EPA/CDPR guidance), and now the bee EXPOSURE side too (app.services.beerex, Tier 1 foliar/seed/soil dose equations from the same tri-agency guidance). Not yet researched: spray drift, runoff, soil organisms, non-target plants, and any other receptor-specific LOC exceptions beyond bees -- treat those as an explicit coverage gap",
             }
         if group in {"human_pharmaceutical", "veterinary_pharmaceutical"}:
             # PARTIALLY mapped (2026-09-18): confirmed live that, as of this
@@ -2043,7 +2065,19 @@ def build_assessment_plan(data: dict[str, Any]) -> dict[str, Any]:
                     required += ["application method, boom height and droplet size", "buffer distance and adjacent waterbody geometry"]
                 if bee_attractive:
                     selected.append("BEEREX")
-                    required += ["contact and oral bee toxicity endpoints", "crop bee-attractiveness basis"]
+                    # ENVIROCHEM_BEEREX_SCREEN is this app's own native, calculable re-implementation of the
+                    # same Tier 1 method BEEREX above is a placeholder for (2026-09-28, app/services/beerex.py)
+                    # -- both are offered: BEEREX names the official EPA tool, ENVIROCHEM_BEEREX_SCREEN is
+                    # runnable now.
+                    selected.append("ENVIROCHEM_BEEREX_SCREEN")
+                    required += ["contact and oral bee toxicity endpoints", "crop bee-attractiveness basis", "application method (foliar spray, seed treatment or soil treatment)"]
+
+    if jurisdiction == "CA" and group == "pesticide" and scenario == "agricultural_spray" and bool(data.get("bee_attractive")):
+        # 2026-09-28: PMRA's confirmed bee exception (LOC 0.4/1.0, CA_PMRA_PARTIAL in _regulatory_programme())
+        # comes from the SAME tri-agency guidance ENVIROCHEM_BEEREX_SCREEN implements, so the exposure side is
+        # offered here too, unlike the still-unresearched TERRPLANT/TREX/AGDRIFT-equivalent PMRA pathways.
+        selected.append("ENVIROCHEM_BEEREX_SCREEN")
+        required += ["contact and oral bee toxicity endpoints", "crop bee-attractiveness basis", "application method (foliar spray, seed treatment or soil treatment)"]
 
     if jurisdiction == "US" and group == "industrial_organic" and scenario in {"industrial_effluent", "laboratory_use"} and tier == 1:
         selected.append("ENVIROCHEM_US_INDUSTRIAL_EXPOSURE_SCREEN")

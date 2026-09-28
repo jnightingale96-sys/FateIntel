@@ -165,3 +165,55 @@ def test_japan_cscl_route_rejects_an_unconfirmed_data_type(client):
 def test_japan_cscl_route_rejects_a_non_positive_value(client):
     result = client.post("/api/pnec/japan-cscl", json={"lowest_toxicity_value_ug_per_l": 0, "data_type": "acute_multi_species"})
     assert result.status_code == 422
+
+
+# --------------------------------------------------------------------------------------------- Bee-REX Tier 1 (US/PMRA)
+
+def test_bee_rex_foliar_contact_route_matches_the_module(client):
+    result = client.post("/api/bee-rex/foliar-spray/contact", json={"application_rate_kg_ha": 1, "contact_ld50_ug_per_bee": 0.1})
+    assert result.status_code == 200
+    body = result.json()
+    assert body["exposure_estimate"] == pytest.approx(2.4)
+    assert body["risk_quotient"] == pytest.approx(24)
+    assert body["exceeds_loc"] is True
+
+
+def test_bee_rex_foliar_dietary_route_uses_the_correct_life_stage_consumption(client):
+    result = client.post("/api/bee-rex/foliar-spray/dietary", json={
+        "application_rate_kg_ha": 1, "life_stage": "larval", "toxicity_endpoint_ug_per_bee": 12.152, "chronic": True,
+    })
+    assert result.status_code == 200
+    body = result.json()
+    assert body["exposure_estimate"] == pytest.approx(12.152)
+    assert body["risk_quotient"] == pytest.approx(1.0)
+    assert body["loc"] == pytest.approx(1.0)
+
+
+def test_bee_rex_seed_treatment_route_is_independent_of_application_rate(client):
+    result = client.post("/api/bee-rex/seed-treatment/dietary", json={
+        "life_stage": "adult", "toxicity_endpoint_ug_per_bee": 0.292, "chronic": False,
+    })
+    assert result.status_code == 200
+    assert result.json()["risk_quotient"] == pytest.approx(1.0)
+
+
+def test_bee_rex_soil_treatment_route_refuses_outside_the_briggs_domain(client):
+    result = client.post("/api/bee-rex/soil-treatment/dietary", json={
+        "application_rate_kg_ha": 1, "log_kow": 6, "koc_l_per_kg": 100, "life_stage": "adult",
+        "toxicity_endpoint_ug_per_bee": 1, "chronic": False,
+    })
+    assert result.status_code == 422
+
+
+def test_bee_rex_soil_treatment_route_within_domain_succeeds(client):
+    result = client.post("/api/bee-rex/soil-treatment/dietary", json={
+        "application_rate_kg_ha": 1, "log_kow": 2, "koc_l_per_kg": 100, "life_stage": "adult",
+        "toxicity_endpoint_ug_per_bee": 1, "chronic": False,
+    })
+    assert result.status_code == 200
+    assert result.json()["exposure_estimate"] > 0
+
+
+def test_bee_rex_route_rejects_a_non_positive_application_rate(client):
+    result = client.post("/api/bee-rex/foliar-spray/contact", json={"application_rate_kg_ha": 0, "contact_ld50_ug_per_bee": 0.1})
+    assert result.status_code == 422
