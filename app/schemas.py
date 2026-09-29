@@ -244,6 +244,29 @@ class BeeRexSoilTreatmentCreate(BaseModel):
     chronic: bool = False
 
 
+class QuickScreenRiskCreate(BaseModel):
+    """Screen any chemical's aquatic risk from real ECOTOX data + a caller-supplied release quantity
+    (app/services/quick_screen.py). Unreviewed -- see that module's own docstring for what that means."""
+
+    query: str = Field(min_length=1, max_length=500)
+    query_mode: Literal["cas", "smiles", "iupac"] = "cas"
+    scenario: Literal["generic_wwtp", "ema_phase_i_pharma"] = "generic_wwtp"
+    release_kg_year: Optional[float] = Field(default=None, gt=0)
+    maximum_daily_dose_mg: Optional[float] = Field(default=None, gt=0)
+    market_penetration_fraction: float = Field(default=0.01, gt=0, le=1)
+    population: int = Field(default=10_000, ge=1)
+    wastewater_l_person_day: float = Field(default=200, gt=0)
+    dilution_factor: float = Field(default=10, ge=1)
+
+    @model_validator(mode="after")
+    def validate_scenario_inputs(self):
+        if self.scenario == "generic_wwtp" and self.release_kg_year is None:
+            raise ValueError("release_kg_year is required for the generic_wwtp scenario")
+        if self.scenario == "ema_phase_i_pharma" and self.maximum_daily_dose_mg is None:
+            raise ValueError("maximum_daily_dose_mg is required for the ema_phase_i_pharma scenario")
+        return self
+
+
 class ReachReviewBundleCreate(BaseModel):
     project_id: int = Field(gt=0)
     chemical_id: int = Field(gt=0)

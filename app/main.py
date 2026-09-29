@@ -57,6 +57,7 @@ from .schemas import (
     FishSecondaryPoisoningTerCreate, EarthwormSecondaryPoisoningTerCreate,
     JapanCsclPnecCreate,
     BeeRexFoliarContactCreate, BeeRexFoliarDietaryCreate, BeeRexSeedTreatmentCreate, BeeRexSoilTreatmentCreate,
+    QuickScreenRiskCreate,
     USIndustrialExposureRunCreate, USExposureCompletenessCreate,
     DegradationKineticsAssessmentCreate,
     MSFeatureReviewUpdate,
@@ -158,6 +159,7 @@ from .services.japan_cscl import derive_pnec_japan_cscl
 from .services.beerex import (
     foliar_spray_contact_rq, foliar_spray_dietary_rq, seed_treatment_dietary_rq, soil_treatment_dietary_rq,
 )
+from .services.quick_screen import screen_chemical_risk, QuickScreenInputError
 
 BASE_DIR = Path(__file__).resolve().parent
 logger = configure_logging(settings.log_level, settings.log_format)
@@ -521,6 +523,43 @@ def resolve_identity(payload: IdentityResolveCreate, db: Session = Depends(get_d
             details={"source": "pubchem", "failure_type": exc.__class__.__name__},
         ) from exc
     return {"candidate": candidate, "requires_confirmation": True}
+
+
+@app.post("/api/quick-screen/risk")
+def quick_screen_risk(payload: QuickScreenRiskCreate, db: Session = Depends(get_db)):
+    """Screen any chemical's aquatic risk in one call: resolves identity exactly like /api/identities/resolve
+    (local record first, then PubChem), then runs app.services.quick_screen.screen_chemical_risk. Always
+    returns 200 with `screening_estimate: true` -- this is a fast triage signal, never a reviewed assessment;
+    see quick_screen.py's own module docstring for the full discipline this deliberately trades away."""
+
+    chemicals = list(db.scalars(select(Chemical).order_by(Chemical.id)).all())
+    local = next((row for row in chemicals if identity_matches_query(row, payload.query)), None)
+    if local is not None:
+        identity = {"preferred_name": local.preferred_name, "cas_number": local.cas_number, "smiles": local.smiles}
+    else:
+        try:
+            candidate = resolve_pubchem_identity(payload.query, payload.query_mode)
+        except ValueError as exc:
+            raise ChemicalIdentityError(str(exc), details={"query_mode": payload.query_mode}) from exc
+        except (httpx.HTTPError, KeyError, TypeError) as exc:
+            raise ExternalDataSourceError(
+                "PubChem identity resolution is temporarily unavailable",
+                details={"source": "pubchem", "failure_type": exc.__class__.__name__},
+            ) from exc
+        identity = {"preferred_name": candidate["preferred_name"], "cas_number": candidate.get("cas_number"), "smiles": candidate.get("smiles")}
+
+    try:
+        result = screen_chemical_risk(
+            chemical_name=identity["preferred_name"], cas_number=identity["cas_number"], smiles=identity["smiles"],
+            release_kg_year=payload.release_kg_year, scenario=payload.scenario,
+            maximum_daily_dose_mg=payload.maximum_daily_dose_mg,
+            market_penetration_fraction=payload.market_penetration_fraction,
+            population=payload.population, wastewater_l_person_day=payload.wastewater_l_person_day,
+            dilution_factor=payload.dilution_factor,
+        )
+    except (QuickScreenInputError, ValueError) as exc:
+        raise HTTPException(422, str(exc)) from exc
+    return {"identity": identity, **result}
 
 
 @app.post("/api/chemicals/from-resolved-identity", status_code=201)
