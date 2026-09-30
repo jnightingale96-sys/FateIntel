@@ -4,9 +4,10 @@ const fmt = (value, digits = 3) => {
   if (value === null || value === undefined || Number.isNaN(Number(value))) return "—";
   const n = Number(value);
   if (n === 0) return "0";
-  if (Math.abs(n) >= 1000) return n.toLocaleString(undefined,{maximumFractionDigits:digits});
+  const sigDigits = Math.max(1, Math.min(21, digits)); // maximumSignificantDigits/maximumFractionDigits must be 1-21
+  if (Math.abs(n) >= 1000) return n.toLocaleString(undefined,{maximumFractionDigits:sigDigits});
   if (Math.abs(n) < 0.001) return n.toExponential(2);
-  return n.toLocaleString(undefined,{maximumSignificantDigits:digits});
+  return n.toLocaleString(undefined,{maximumSignificantDigits:sigDigits});
 };
 
 const state = {
@@ -4152,6 +4153,24 @@ function renderQuickScreenResult(result) {
   } else {
     $("qs-hazard").innerHTML = `<p>${escapeHtml(hazard.data_gap || "No real ecotoxicity data found for this chemical in US EPA ECOTOX.")}</p>`;
   }
+
+  const sedimentSoil = hazard.sediment_soil || {};
+  if (sedimentSoil.data_gap) {
+    $("qs-sediment-soil").innerHTML = `<p>${escapeHtml(sedimentSoil.data_gap)}</p>`;
+  } else if (sedimentSoil.pnec_soil_mg_per_kg != null) {
+    $("qs-sediment-soil").innerHTML = `
+      <p><strong>Sediment: ${fmt(sedimentSoil.pnec_sediment_dry_mg_per_kg, 4)} mg/kg dry</strong> &middot; <strong>Soil: ${fmt(sedimentSoil.pnec_soil_mg_per_kg, 4)} mg/kg</strong></p>
+      <p class="identification-source">Koc used: ${fmt(sedimentSoil.koc_l_per_kg_used, 3)} L/kg (median of ${sedimentSoil.koc_candidates_found} candidate${sedimentSoil.koc_candidates_found === 1 ? "" : "s"}${sedimentSoil.koc_range_l_per_kg ? `, range ${fmt(sedimentSoil.koc_range_l_per_kg[0], 3)}–${fmt(sedimentSoil.koc_range_l_per_kg[1], 3)}` : ""})</p>
+      <p class="identification-source">${escapeHtml(sedimentSoil.source || "")}</p>
+    `;
+  } else {
+    $("qs-sediment-soil").innerHTML = `<p>Not derived.</p>`;
+  }
+
+  const flagsList = result.flags || [];
+  $("qs-flags").innerHTML = flagsList.length
+    ? flagsList.map(flag => `<p class="identification-source">${escapeHtml(flag.message || flag.pathway)}</p>`).join("")
+    : `<p>No flagged pathways for this chemical.</p>`;
 
   const exposure = result.exposure || {};
   $("qs-exposure").innerHTML = `

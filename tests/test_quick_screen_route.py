@@ -19,12 +19,14 @@ def client():
         yield c
 
 
-def _fake_candidates(*, chemical_name, cas_number, source_keys, limit_per_source):
-    assert source_keys == ["epa_ecotox"]
-    return {"candidates": [
-        {"property_code": "ECOTOX.AQUATIC.NOEC", "value": 25, "unit": "ug/L",
-         "snippet": "NOEC = 25 ug/L | species: Ceriodaphnia dubia | effect: X", "source_record_id": "1"},
-    ]}
+def _fake_candidates(*, chemical_name, cas_number, source_keys, limit_per_source, endpoint_codes=None):
+    if source_keys == ["epa_ecotox"]:
+        return {"candidates": [
+            {"property_code": "ECOTOX.AQUATIC.NOEC", "value": 25, "unit": "ug/L",
+             "snippet": "NOEC = 25 ug/L | species: Ceriodaphnia dubia | effect: X", "source_record_id": "1"},
+        ]}
+    assert source_keys == ["pubchem", "europe_pmc"]
+    return {"candidates": []}
 
 
 def test_quick_screen_route_resolves_via_pubchem_when_not_a_local_record(client, monkeypatch):

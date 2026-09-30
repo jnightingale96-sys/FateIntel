@@ -91,6 +91,17 @@ def test_non_positive_or_unparseable_values_are_skipped_not_invented():
     assert result.candidates_used == 1
 
 
+def test_candidates_with_no_extractable_value_are_skipped_not_crashed_on():
+    # Real ECOTOX records without a parseable numeric value (qualitative/non-detect results) exist in the
+    # wild (found live against a real chemical this session) -- must be skipped, never raise.
+    candidates = [
+        {"property_code": "ECOTOX.AQUATIC.NOEC", "value": None, "unit": "ug/L", "snippet": "species: X"},
+        _candidate("ECOTOX.AQUATIC.NOEC", 42, "ug/L", "Daphnia magna", "1"),
+    ]
+    result = qs.derive_screening_pnec(candidates)
+    assert result.critical_value_ug_l == Decimal("42")
+
+
 def test_irrelevant_property_codes_are_ignored():
     candidates = [{"property_code": "PHYS.LOGKOW", "value": 3, "unit": "dimensionless", "snippet": ""}]
     result = qs.derive_screening_pnec(candidates)
@@ -110,13 +121,15 @@ def test_screen_chemical_risk_ema_mode_requires_dose(monkeypatch):
 
 
 def test_screen_chemical_risk_end_to_end_generic_wwtp(monkeypatch):
-    def fake_search_sources(*, chemical_name, cas_number, source_keys, limit_per_source):
-        assert source_keys == ["epa_ecotox"]
-        return {"candidates": [
-            _candidate("ECOTOX.AQUATIC.NOEC", 100, "ug/L", "Daphnia magna", "1"),
-            _candidate("ECOTOX.AQUATIC.NOEC", 50, "ug/L", "Oncorhynchus mykiss", "2"),
-            _candidate("ECOTOX.AQUATIC.NOEC", 200, "ug/L", "Selenastrum capricornutum", "3"),
-        ]}
+    def fake_search_sources(*, chemical_name, cas_number, source_keys, limit_per_source, endpoint_codes=None):
+        if source_keys == ["epa_ecotox"]:
+            return {"candidates": [
+                _candidate("ECOTOX.AQUATIC.NOEC", 100, "ug/L", "Daphnia magna", "1"),
+                _candidate("ECOTOX.AQUATIC.NOEC", 50, "ug/L", "Oncorhynchus mykiss", "2"),
+                _candidate("ECOTOX.AQUATIC.NOEC", 200, "ug/L", "Selenastrum capricornutum", "3"),
+            ]}
+        assert source_keys == ["pubchem", "europe_pmc"]
+        return {"candidates": []}
     monkeypatch.setattr(qs, "search_sources", fake_search_sources)
 
     result = qs.screen_chemical_risk(
@@ -133,8 +146,10 @@ def test_screen_chemical_risk_end_to_end_generic_wwtp(monkeypatch):
 
 
 def test_screen_chemical_risk_ema_mode_end_to_end(monkeypatch):
-    def fake_search_sources(*, chemical_name, cas_number, source_keys, limit_per_source):
-        return {"candidates": [_candidate("ECOTOX.AQUATIC.NOEC", 25, "ug/L", "Ceriodaphnia dubia", "1")]}
+    def fake_search_sources(*, chemical_name, cas_number, source_keys, limit_per_source, endpoint_codes=None):
+        if source_keys == ["epa_ecotox"]:
+            return {"candidates": [_candidate("ECOTOX.AQUATIC.NOEC", 25, "ug/L", "Ceriodaphnia dubia", "1")]}
+        return {"candidates": []}
     monkeypatch.setattr(qs, "search_sources", fake_search_sources)
 
     result = qs.screen_chemical_risk(
@@ -149,7 +164,7 @@ def test_screen_chemical_risk_ema_mode_end_to_end(monkeypatch):
 
 
 def test_screen_chemical_risk_reports_data_gap_without_crashing(monkeypatch):
-    def fake_search_sources(*, chemical_name, cas_number, source_keys, limit_per_source):
+    def fake_search_sources(*, chemical_name, cas_number, source_keys, limit_per_source, endpoint_codes=None):
         return {"candidates": []}
     monkeypatch.setattr(qs, "search_sources", fake_search_sources)
 
@@ -161,3 +176,81 @@ def test_screen_chemical_risk_reports_data_gap_without_crashing(monkeypatch):
     assert result["hazard"]["data_gap"] is not None
     assert result["risk"]["risk_quotient"] is None
     assert result["risk"]["risk_band"] == "cannot_be_characterised"
+    assert result["hazard"]["sediment_soil"]["data_gap"] is not None
+    assert result["flags"] == []
+
+
+# ------------------------------------------------------------------------------------- sediment/soil + flags
+
+def _phys_candidate(property_code, value, unit):
+    return {"property_code": property_code, "value": value, "unit": unit, "snippet": ""}
+
+
+def test_derive_screening_sediment_soil_pnec_reports_data_gap_with_no_water_pnec():
+    result = qs.derive_screening_sediment_soil_pnec(None, [])
+    assert result.pnec_soil_mg_per_kg is None
+    assert "aquatic PNEC" in result.data_gap
+
+
+def test_derive_screening_sediment_soil_pnec_reports_data_gap_with_no_koc():
+    result = qs.derive_screening_sediment_soil_pnec(Decimal("2.5"), [])
+    assert result.pnec_soil_mg_per_kg is None
+    assert "Koc" in result.data_gap
+
+
+def test_derive_screening_sediment_soil_pnec_converts_a_real_koc():
+    candidates = [_phys_candidate("SORPTION.KOC", 1000, "L/kg"), _phys_candidate("SORPTION.KOC", 1200, "L/kg")]
+    result = qs.derive_screening_sediment_soil_pnec(Decimal("2.5"), candidates)
+    assert result.data_gap is None
+    assert result.koc_candidates_found == 2
+    assert result.koc_l_per_kg_used == Decimal("1100")  # median of 1000, 1200
+    assert result.pnec_soil_mg_per_kg is not None
+    assert result.pnec_sediment_dry_mg_per_kg is not None
+
+
+def test_derive_screening_sediment_soil_pnec_ignores_unrecognised_units():
+    candidates = [_phys_candidate("SORPTION.KOC", 5, "furlongs/fortnight")]
+    result = qs.derive_screening_sediment_soil_pnec(Decimal("2.5"), candidates)
+    assert result.koc_candidates_found == 0
+    assert result.data_gap is not None
+
+
+def test_secondary_poisoning_flag_absent_below_trigger():
+    candidates = [_phys_candidate("PHYS.LOGKOW", 2.5, "dimensionless")]
+    assert qs._secondary_poisoning_flag(candidates) is None
+
+
+def test_secondary_poisoning_flag_absent_with_no_logkow_data():
+    assert qs._secondary_poisoning_flag([]) is None
+
+
+def test_secondary_poisoning_flag_present_at_or_above_trigger():
+    candidates = [_phys_candidate("PHYS.LOGKOW", 4.51, "dimensionless")]
+    flag = qs._secondary_poisoning_flag(candidates)
+    assert flag is not None
+    assert flag["pathway"] == "secondary_poisoning"
+    assert flag["log_kow_used"] == pytest.approx(4.51)
+    assert "/api/secondary-poisoning/fish" in flag["message"]
+
+
+def test_screen_chemical_risk_surfaces_sediment_soil_and_flag_end_to_end(monkeypatch):
+    def fake_search_sources(*, chemical_name, cas_number, source_keys, limit_per_source, endpoint_codes=None):
+        if source_keys == ["epa_ecotox"]:
+            return {"candidates": [_candidate("ECOTOX.AQUATIC.NOEC", 25, "ug/L", "Ceriodaphnia dubia", "1")]}
+        return {"candidates": [
+            _phys_candidate("SORPTION.KOC", 2000, "L/kg"),
+            _phys_candidate("PHYS.LOGKOW", 4.51, "dimensionless"),
+        ]}
+    monkeypatch.setattr(qs, "search_sources", fake_search_sources)
+
+    result = qs.screen_chemical_risk(
+        chemical_name="Diclofenac", cas_number="15307-86-5", smiles=None,
+        release_kg_year=100, scenario="generic_wwtp",
+    )
+    sediment_soil = result["hazard"]["sediment_soil"]
+    assert sediment_soil["data_gap"] is None
+    assert sediment_soil["koc_l_per_kg_used"] == pytest.approx(2000)
+    assert sediment_soil["pnec_soil_mg_per_kg"] > 0
+    assert sediment_soil["pnec_sediment_dry_mg_per_kg"] > 0
+    assert len(result["flags"]) == 1
+    assert result["flags"][0]["pathway"] == "secondary_poisoning"
