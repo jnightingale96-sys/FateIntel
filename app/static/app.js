@@ -4088,8 +4088,88 @@ function setupPharmaInfluent() {
 }
 
 
+function setupQuickScreen() {
+  const scenarioSelect = $("qs-scenario");
+  const updateScenarioUI = () => {
+    const isEma = scenarioSelect.value === "ema_phase_i_pharma";
+    $("qs-release-wrap").classList.toggle("hidden", isEma);
+    $("qs-dose-wrap").classList.toggle("hidden", !isEma);
+  };
+  scenarioSelect?.addEventListener("change", updateScenarioUI);
+  updateScenarioUI();
+  $("qs-run")?.addEventListener("click", runQuickScreen);
+}
+
+async function runQuickScreen() {
+  const button = $("qs-run");
+  const status = $("quick-screen-status");
+  const query = $("qs-query").value.trim();
+  const scenario = $("qs-scenario").value;
+  if (!query) { toast("Enter a CAS number, SMILES or name to screen.", 5000); return; }
+  const payload = {
+    query, query_mode: $("qs-query-mode").value, scenario,
+  };
+  if (scenario === "generic_wwtp") {
+    const release = Number($("qs-release").value);
+    if (!Number.isFinite(release) || release <= 0) { toast("Enter a positive annual release (kg/year).", 5000); return; }
+    payload.release_kg_year = release;
+  } else {
+    const dose = Number($("qs-dose").value);
+    if (!Number.isFinite(dose) || dose <= 0) { toast("Enter a positive maximum daily dose (mg).", 5000); return; }
+    payload.maximum_daily_dose_mg = dose;
+  }
+  if (button) button.disabled = true;
+  if (status) { status.className = "design-status running"; status.innerHTML = "<strong>Screening…</strong><small>Querying US EPA ECOTOX and running the exposure engine.</small>"; }
+  try {
+    const result = await api("/api/quick-screen/risk", {
+      method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(payload),
+    });
+    renderQuickScreenResult(result);
+    if (status) { status.className = "design-status"; status.innerHTML = "<strong>Screening estimate — not reviewed.</strong><small>A fast triage signal, not a substitute for a reviewed FateIntel assessment.</small>"; }
+  } catch (error) {
+    console.error(error);
+    if (status) { status.className = "design-status error"; status.innerHTML = `<strong>Screen failed.</strong><small>${escapeHtml(error.message)}</small>`; }
+  } finally {
+    if (button) button.disabled = false;
+  }
+}
+
+function renderQuickScreenResult(result) {
+  const identity = result.identity || {};
+  $("qs-identity").innerHTML = `
+    <p><strong>${escapeHtml(identity.preferred_name || "Unknown")}</strong></p>
+    <p class="identification-source">CAS ${escapeHtml(identity.cas_number || "—")}${identity.smiles ? ` · ${escapeHtml(identity.smiles)}` : ""}</p>
+  `;
+
+  const hazard = result.hazard || {};
+  if (hazard.pnec_ug_l != null) {
+    $("qs-hazard").innerHTML = `
+      <p><strong>PNEC: ${fmt(hazard.pnec_ug_l, 4)} &micro;g/L</strong></p>
+      <p class="identification-source">${escapeHtml(hazard.basis || "")}</p>
+      <p class="identification-source">Critical value ${hazard.critical_value_ug_l != null ? fmt(hazard.critical_value_ug_l, 4) + " µg/L" : "—"} (${escapeHtml(hazard.critical_endpoint || "—")}) &divide; AF ${hazard.assessment_factor != null ? fmt(hazard.assessment_factor, 0) : "—"}</p>
+      <p class="identification-source">${(hazard.species_considered || []).length} species considered, ${hazard.candidates_found ?? 0} candidate values used.</p>
+    `;
+  } else {
+    $("qs-hazard").innerHTML = `<p>${escapeHtml(hazard.data_gap || "No real ecotoxicity data found for this chemical in US EPA ECOTOX.")}</p>`;
+  }
+
+  const exposure = result.exposure || {};
+  $("qs-exposure").innerHTML = `
+    <p><strong>PEC<sub>SW</sub>: ${exposure.pec_surface_water_ug_l != null ? fmt(exposure.pec_surface_water_ug_l, 4) + " µg/L" : "—"}</strong></p>
+    <p class="identification-source">Scenario: ${escapeHtml(exposure.scenario || "—")}</p>
+  `;
+
+  const risk = result.risk || {};
+  const bandLabel = {cannot_be_characterised: "Cannot be characterised", risk_not_excluded: "Risk not excluded", low: "Low"}[risk.risk_band] || risk.risk_band || "—";
+  $("qs-risk").innerHTML = `
+    <p><strong>RQ: ${risk.risk_quotient != null ? fmt(risk.risk_quotient, 3) : "—"}</strong> &middot; ${escapeHtml(bandLabel)}</p>
+    <p class="identification-source">${escapeHtml(risk.note || "")}</p>
+    <p class="identification-source"><strong>Screening estimate — not reviewed.</strong> A fast triage signal, never a substitute for a reviewed FateIntel assessment.</p>
+  `;
+}
+
 async function init() {
-  setupFlowCards(); setupIdentity(); setupEvidenceHub(); setupScenarioCards(); setupPharmaInfluent(); setupModelSystem(); setupUSExposure(); setupRegulatoryProgramme(); setupTiers(); setupNavigation(); setupDrawers(); setupCopilot(); setupEnviroDesign(); setupToxswa(); setupPearl(); setupIdentification(); setupDegradationKinetics(); await Promise.all([loadVeterinaryProfiles(), loadOecdPharmaRegistry()]);
+  setupFlowCards(); setupIdentity(); setupEvidenceHub(); setupScenarioCards(); setupPharmaInfluent(); setupModelSystem(); setupUSExposure(); setupRegulatoryProgramme(); setupTiers(); setupNavigation(); setupDrawers(); setupCopilot(); setupEnviroDesign(); setupToxswa(); setupPearl(); setupIdentification(); setupDegradationKinetics(); setupQuickScreen(); await Promise.all([loadVeterinaryProfiles(), loadOecdPharmaRegistry()]);
   $("run-assessment").addEventListener("click",runAssessment);
   $("retry-assessment")?.addEventListener("click",runAssessment);
   $("continue-toxswa")?.addEventListener("click",()=>{syncToxswaFromScreening(); $("toxswa-surface-water")?.scrollIntoView({behavior:"smooth",block:"start"});});

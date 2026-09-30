@@ -30,7 +30,7 @@
 
 
 
-<button class="nav-item" data-scroll="welcome"><span class="nav-icon">⌂</span><span>Overview</span></button><button class="nav-item active" data-scroll="assessment-flow"><span class="nav-icon">▣</span><span>Assessments</span></button><button class="nav-item" data-scroll="evidence-data-hub"><span class="nav-icon">▤</span><span>Evidence data</span></button><button class="nav-item" data-scroll="regulatory-pathway"><span class="nav-icon">◎</span><span>Frameworks</span></button><a class="nav-item" href="/static/expert.html#evidence"><span class="nav-icon">✓</span><span>Evidence review</span></a><a class="nav-item" href="/static/expert.html#models"><span class="nav-icon">⌘</span><span>Models</span></a><button class="nav-item" data-scroll="results"><span class="nav-icon">▥</span><span>Reports</span></button><button class="nav-item hidden" data-water-sediment-nav="1" data-scroll="toxswa-surface-water"><span class="nav-icon">≈</span><span id="toxswa-nav-label">Water–sediment</span></button><button class="nav-item" data-eu-only="1" data-scroll="pearl-groundwater"><span class="nav-icon">⇣</span><span>FOCUS PEARL</span></button><button class="nav-item" data-scroll="envirodesign"><span class="nav-icon">✦</span><span>EnviroDesign</span></button><button class="nav-item" data-scroll="analytical-identification"><span class="nav-icon">⚗</span><span>Identification</span></button><button class="nav-item" data-scroll="contaminated-land"><span class="nav-icon">⛰</span><span>Contaminated land</span></button><button class="nav-item" data-scroll="degradation-kinetics"><span class="nav-icon">↘</span><span>Applied Environmental Fate</span></button><button class="nav-item" data-scroll="tp-soil-fate"><span class="nav-icon">⇄</span><span>Soil transformation products</span></button><a class="nav-item" href="/static/expert.html"><span class="nav-icon">⚙</span><span>Expert workspace</span></a></nav>
+<button class="nav-item" data-scroll="welcome"><span class="nav-icon">⌂</span><span>Overview</span></button><button class="nav-item active" data-scroll="assessment-flow"><span class="nav-icon">▣</span><span>Assessments</span></button><button class="nav-item" data-scroll="evidence-data-hub"><span class="nav-icon">▤</span><span>Evidence data</span></button><button class="nav-item" data-scroll="regulatory-pathway"><span class="nav-icon">◎</span><span>Frameworks</span></button><a class="nav-item" href="/static/expert.html#evidence"><span class="nav-icon">✓</span><span>Evidence review</span></a><a class="nav-item" href="/static/expert.html#models"><span class="nav-icon">⌘</span><span>Models</span></a><button class="nav-item" data-scroll="results"><span class="nav-icon">▥</span><span>Reports</span></button><button class="nav-item hidden" data-water-sediment-nav="1" data-scroll="toxswa-surface-water"><span class="nav-icon">≈</span><span id="toxswa-nav-label">Water–sediment</span></button><button class="nav-item" data-eu-only="1" data-scroll="pearl-groundwater"><span class="nav-icon">⇣</span><span>FOCUS PEARL</span></button><button class="nav-item" data-scroll="envirodesign"><span class="nav-icon">✦</span><span>EnviroDesign</span></button><button class="nav-item" data-scroll="analytical-identification"><span class="nav-icon">⚗</span><span>Identification</span></button><button class="nav-item" data-scroll="contaminated-land"><span class="nav-icon">⛰</span><span>Contaminated land</span></button><button class="nav-item" data-scroll="degradation-kinetics"><span class="nav-icon">↘</span><span>Applied Environmental Fate</span></button><button class="nav-item" data-scroll="tp-soil-fate"><span class="nav-icon">⇄</span><span>Soil transformation products</span></button><button class="nav-item" data-scroll="quick-screen"><span class="nav-icon">⚡</span><span>Quick screen</span></button><a class="nav-item" href="/static/expert.html"><span class="nav-icon">⚙</span><span>Expert workspace</span></a></nav>
 <div aria-hidden="true" class="sidebar-art">
 <div class="moon"></div>
 <div class="hill hill-a"></div><div class="hill hill-b"></div>
@@ -1241,6 +1241,52 @@
 <section class="design-panel">
 <div class="mini-heading"><span>Assumptions and limits</span><small>Read before using a number</small></div>
 <div class="design-list" id="tp-notes"><p>No calculation yet.</p></div>
+</section>
+</div>
+</section>
+<section class="envirodesign-shell" id="quick-screen">
+<div class="envirodesign-heading">
+<div>
+<span class="design-badge">QUICK SCREEN · any chemical · screening estimate</span>
+<h2>What&rsquo;s the aquatic risk of any chemical, right now?</h2>
+<p>Give a CAS number, SMILES or name and a release quantity. This looks up real ecotoxicity data (US EPA ECOTOX Knowledgebase) and runs the same exposure engine used elsewhere in FateIntel &mdash; no project or prior review required. Every result is stamped <strong>screening estimate, not reviewed</strong>: a fast triage signal for a chemical with no FateIntel history yet, never a substitute for a reviewed assessment.</p>
+</div>
+</div>
+<div class="design-status" id="quick-screen-status"><strong>Enter a chemical and a release quantity to screen it.</strong><small>Identity resolves against FateIntel&rsquo;s own records first, then PubChem.</small></div>
+<div class="envirodesign-grid">
+<section class="design-control-card">
+<div class="mini-heading"><span>Chemical &amp; scenario</span><small>no project needed</small></div>
+<label><span>Chemical (CAS, SMILES or name)</span><input id="qs-query" placeholder="e.g. 15687-27-1" autocomplete="off"/></label>
+<label><span>Query type</span><select id="qs-query-mode">
+<option value="cas" selected>CAS number</option>
+<option value="smiles">SMILES</option>
+<option value="iupac">Name</option>
+</select></label>
+<label><span>Exposure scenario</span><select id="qs-scenario">
+<option value="generic_wwtp" selected>Generic release to WWTP (any chemical)</option>
+<option value="ema_phase_i_pharma">EMA Phase I pharmaceutical screen</option>
+</select></label>
+<label id="qs-release-wrap"><span>Annual release (kg/year)</span><input id="qs-release" type="number" min="0" step="any" placeholder="e.g. 1000"/></label>
+<label id="qs-dose-wrap" class="hidden"><span>Maximum daily dose (mg)</span><input id="qs-dose" type="number" min="0" step="any" placeholder="e.g. 2400"/></label>
+<button class="primary-button" id="qs-run" type="button"><span>↯</span> Screen this chemical</button>
+</section>
+<section class="design-panel">
+<div class="mini-heading"><span>Identity resolved</span><small>local record, then PubChem</small></div>
+<div class="design-list" id="qs-identity"><p>No chemical screened yet.</p></div>
+</section>
+</div>
+<div class="design-insight-grid">
+<section class="design-panel">
+<div class="mini-heading"><span>Hazard &mdash; screening PNEC</span><small>US EPA ECOTOX Knowledgebase, live</small></div>
+<div class="design-list" id="qs-hazard"><p>No screen run yet.</p></div>
+</section>
+<section class="design-panel">
+<div class="mini-heading"><span>Exposure &mdash; screening PEC</span><small>Same exposure engine as reviewed assessments</small></div>
+<div class="design-list" id="qs-exposure"><p>No screen run yet.</p></div>
+</section>
+<section class="design-panel">
+<div class="mini-heading"><span>Risk quotient</span><small>Screening estimate, not reviewed</small></div>
+<div class="design-list" id="qs-risk"><p>No screen run yet.</p></div>
 </section>
 </div>
 </section>
