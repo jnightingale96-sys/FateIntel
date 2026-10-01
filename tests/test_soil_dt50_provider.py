@@ -85,6 +85,18 @@ def test_gate_matches_the_enviPath_restriction_shape(environment, confirmed, exp
     assert commercial_gate(config)[0] is expected
 
 
+def test_commercial_license_gate_strict_closes_the_local_test_exemption():
+    # A build run by/shown to someone outside the project should not get the local/test "academic evaluation"
+    # exemption just because envirochem_environment happens to be local.
+    open_config = Settings(_env_file=None, envirochem_environment="local", soil_dt50_commercial_license_confirmed=False)
+    assert commercial_gate(open_config)[0] is True
+    strict_config = Settings(_env_file=None, envirochem_environment="local", soil_dt50_commercial_license_confirmed=False, commercial_license_gate_strict=True)
+    assert commercial_gate(strict_config)[0] is False
+    # An actually-confirmed licence still works even in strict mode.
+    strict_confirmed = Settings(_env_file=None, envirochem_environment="local", soil_dt50_commercial_license_confirmed=True, commercial_license_gate_strict=True)
+    assert commercial_gate(strict_confirmed)[0] is True
+
+
 def test_capabilities_state_what_the_model_is_not():
     caps = capabilities(Settings(_env_file=None, envirochem_environment="production"))
     assert caps["enabled"] is False and "training_data_licence" in caps["licence_status"]

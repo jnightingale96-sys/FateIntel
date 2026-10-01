@@ -26,7 +26,7 @@ def commercial_gate(configuration: Settings = settings) -> tuple[bool, str]:
     enviPath adapter -- it runs in local/test evaluation and is closed elsewhere until an operator confirms a licence."""
     if configuration.soil_dt50_commercial_license_confirmed:
         return True, "commercial_licence_confirmed_by_operator"
-    if configuration.envirochem_environment in {"local", "test"}:
+    if configuration.envirochem_environment in {"local", "test"} and not configuration.commercial_license_gate_strict:
         return True, "academic_or_development_evaluation_only"
     return False, "eawag_soil_training_data_licence_required_for_staging_or_production"
 

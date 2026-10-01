@@ -127,6 +127,17 @@ class Settings(BaseModel):
     # "Biodegradation NITE" (METI Japan) measured mineralization/ready-biodegradability lookup -- see nite_ready_biodegradability.py.
     nite_ready_biodegradability_commercial_license_confirmed: bool = False
 
+    # Every commercial-licence gate above (enviPath, BioTransformer, soil_dt50/PEPPER, OASIS soil DT50, NITE
+    # ready biodegradability) opens itself for envirochem_environment in {"local", "test"} under an
+    # "academic_or_development_evaluation_only" exemption -- correct for the developer's own local testing,
+    # but wrong for a build that will actually be run by, or demonstrated live to, someone outside the
+    # project (a prospective buyer, a pilot user). Setting this to true removes that local/test exemption
+    # everywhere, so every one of those five gates behaves exactly as it does in staging/production: closed
+    # unless its own *_commercial_license_confirmed flag is explicitly true. Defaults false so normal local
+    # development is unaffected; set COMMERCIAL_LICENSE_GATE_STRICT=true only for a build someone outside the
+    # project will actually run.
+    commercial_license_gate_strict: bool = False
+
     # OPERA (NIEHS/NICEATM QSAR suite) command-line build, used as the structure-only fallback for log P, pKa,
     # biodegradation half-life and log Koc. Unavailable until OPERA_EXE_PATH points at OPERA.exe; the bundled MATLAB
     # Runtime is put on PATH for the child process only (default <exe folder>/../R2024b).

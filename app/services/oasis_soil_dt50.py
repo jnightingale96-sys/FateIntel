@@ -43,7 +43,7 @@ def commercial_gate(configuration: Settings = settings) -> tuple[bool, str]:
 
     if getattr(configuration, "oasis_soil_dt50_commercial_license_confirmed", False):
         return True, "commercial_licence_confirmed_by_operator"
-    if configuration.envirochem_environment in {"local", "test"}:
+    if configuration.envirochem_environment in {"local", "test"} and not getattr(configuration, "commercial_license_gate_strict", False):
         return True, "academic_or_development_evaluation_only"
     return False, "oasis_soil_dt50_training_data_licence_required_for_staging_or_production"
 

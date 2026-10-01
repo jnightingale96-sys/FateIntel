@@ -67,7 +67,7 @@ def _utc_now() -> str:
 def _commercial_gate(configuration: Settings) -> tuple[bool, str]:
     if configuration.envipath_commercial_license_confirmed:
         return True, "commercial_licence_confirmed_by_operator"
-    if configuration.envirochem_environment in {"local", "test"}:
+    if configuration.envirochem_environment in {"local", "test"} and not configuration.commercial_license_gate_strict:
         return True, "academic_or_development_evaluation_only"
     return False, "commercial_licence_required_for_staging_or_production"
 
