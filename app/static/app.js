@@ -4137,9 +4137,12 @@ async function runQuickScreen() {
 
 function renderQuickScreenResult(result) {
   const identity = result.identity || {};
+  const unconfirmedBadge = identity.identity_confirmed === false
+    ? `<p class="identification-source"><strong>Identity not confirmed by PubChem</strong> — screened by CAS number only. ${escapeHtml(identity.note || "")}</p>` : "";
   $("qs-identity").innerHTML = `
     <p><strong>${escapeHtml(identity.preferred_name || "Unknown")}</strong></p>
     <p class="identification-source">CAS ${escapeHtml(identity.cas_number || "—")}${identity.smiles ? ` · ${escapeHtml(identity.smiles)}` : ""}</p>
+    ${unconfirmedBadge}
   `;
 
   const hazard = result.hazard || {};

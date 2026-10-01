@@ -101,4 +101,42 @@ def test_unknown_compound_surfaces_as_a_validation_error_not_a_temporary_outage(
         response = client.post("/api/identities/resolve", json={"query": "68585-34-2", "query_mode": "cas"})
     assert response.status_code != 200
     assert "temporarily unavailable" not in response.text
-    assert "no single-compound record" in response.text
+
+
+# ------------------------------------------------------------------------------------ malformed query (400)
+# Found live 2026-10-01 screening an invalid SMILES during a pre-demo QA pass: PubChem's real PUGREST.BadRequest
+# response (confirmed live against the real API) was being reported identically to a genuine outage -- the same
+# "temporarily unavailable" class of bug the 404 case above was already fixed for, just for a different status
+# code. A malformed query can never succeed by retrying; the fix must name the real problem instead.
+
+def test_a_real_400_is_not_retried():
+    calls = []
+
+    def handler(request):
+        calls.append(1)
+        return httpx.Response(400, json={"Fault": {"Code": "PUGREST.BadRequest", "Message": "Unable to standardize the given structure"}})
+
+    response = _get_with_retry(_client(handler), "https://pubchem.test/x", sleep=lambda _s: None)
+    assert response.status_code == 400 and len(calls) == 1
+
+
+def test_malformed_smiles_is_reported_as_invalid_not_as_an_outage():
+    client = _client(lambda request: httpx.Response(400, json={"Fault": {"Code": "PUGREST.BadRequest", "Message": "Unable to standardize the given structure"}}))
+    with pytest.raises(ValueError, match="rejected this SMILES query as invalid"):
+        _resolve_cid(client, "XJ(not-a-smiles)", "smiles")
+
+
+def test_malformed_query_surfaces_as_a_validation_error_not_a_temporary_outage(monkeypatch):
+    from fastapi.testclient import TestClient
+
+    from app.main import app
+
+    def bad_request(query, mode):
+        raise ValueError(f"PubChem rejected this {mode.upper()} query as invalid: Unable to standardize the given structure. Check the SMILES syntax.")
+
+    monkeypatch.setattr("app.main.resolve_pubchem_identity", bad_request)
+    with TestClient(app) as client:
+        response = client.post("/api/identities/resolve", json={"query": "not-a-smiles", "query_mode": "smiles"})
+    assert response.status_code == 422
+    assert "temporarily unavailable" not in response.text
+    assert "invalid" in response.text

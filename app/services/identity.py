@@ -194,6 +194,17 @@ def _resolve_cid(client: httpx.Client, query: str, query_mode: str) -> int:
         # (e.g. CAS 68585-34-2, 39341-15-6) have no single structure record; calling that "temporarily unavailable"
         # would tell the user to retry something that can never succeed.
         raise ValueError("PubChem has no single-compound record for this identifier (mixtures, UVCB substances and trade names have no unique structure)")
+    if response.status_code == 400:
+        # PubChem's own "PUGREST.BadRequest" -- the query itself is malformed (an invalid SMILES string is the
+        # common case), not a service outage. Surfacing this as "temporarily unavailable" told the user to
+        # retry something that can never succeed; this is the same discipline as the 404 case above. PubChem's
+        # own fault message is specific and worth keeping (e.g. "Unable to standardize the given structure").
+        try:
+            fault_message = response.json().get("Fault", {}).get("Message")
+        except (ValueError, json.JSONDecodeError):
+            fault_message = None
+        hint = {"smiles": "Check the SMILES syntax.", "cas": "Check the CAS number format.", "iupac": "Check the spelling or try a CAS number instead."}.get(query_mode, "")
+        raise ValueError(f"PubChem rejected this {query_mode.upper()} query as invalid" + (f": {fault_message}" if fault_message else ".") + f" {hint}".rstrip())
     response.raise_for_status()
     rows = response.json().get("IdentifierList", {}).get("CID", [])
     if not rows:

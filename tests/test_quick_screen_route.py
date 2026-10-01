@@ -64,6 +64,41 @@ def test_quick_screen_route_surfaces_unknown_compound_as_validation_error(client
     assert result.status_code in {400, 404, 422}
 
 
+def test_quick_screen_route_falls_back_to_cas_only_screen_when_pubchem_cant_resolve_a_structure(client, monkeypatch):
+    # Real finding, 2026-10-01: a real UVCB/mixture CAS number (confirmed live: 68585-34-2) that PubChem
+    # rejects outright still has real data in US EPA ECOTOX, which is CAS-indexed independently of PubChem.
+    # Refusing the whole screen because PubChem alone couldn't confirm one structure would throw away real,
+    # usable hazard data -- the opposite of "screen any chemical."
+    def no_pubchem_match(query, query_mode):
+        raise ValueError("PubChem has no single-compound record for this identifier (mixtures, UVCB substances and trade names have no unique structure)")
+
+    monkeypatch.setattr("app.main.resolve_pubchem_identity", no_pubchem_match)
+    monkeypatch.setattr(qs, "search_sources", _fake_candidates)
+
+    result = client.post("/api/quick-screen/risk", json={
+        "query": "68585-34-2", "query_mode": "cas", "scenario": "generic_wwtp", "release_kg_year": 100,
+    })
+    assert result.status_code == 200
+    body = result.json()
+    assert body["identity"]["cas_number"] == "68585-34-2"
+    assert body["identity"]["identity_confirmed"] is False
+    assert "PubChem could not resolve" in body["identity"]["note"]
+    assert body["hazard"]["pnec_ug_l"] is not None  # the fake epa_ecotox candidates still feed through
+
+
+def test_quick_screen_route_still_rejects_a_non_cas_shaped_unresolvable_query(client, monkeypatch):
+    # The CAS-only fallback only applies to a CAS-shaped query -- a name or SMILES PubChem can't resolve has
+    # no real-data fallback (ECOTOX's local import has no name-only lookup), so it must still 422, not guess.
+    def no_pubchem_match(query, query_mode):
+        raise ValueError("PubChem has no single-compound record for this identifier")
+
+    monkeypatch.setattr("app.main.resolve_pubchem_identity", no_pubchem_match)
+    result = client.post("/api/quick-screen/risk", json={
+        "query": "Totally Made Up Compound Name", "query_mode": "iupac", "scenario": "generic_wwtp", "release_kg_year": 100,
+    })
+    assert result.status_code == 422
+
+
 def test_quick_screen_route_reports_data_gap_without_crashing(client, monkeypatch):
     monkeypatch.setattr(qs, "search_sources", lambda **kw: {"candidates": []})
     monkeypatch.setattr(

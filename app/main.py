@@ -525,28 +525,50 @@ def resolve_identity(payload: IdentityResolveCreate, db: Session = Depends(get_d
     return {"candidate": candidate, "requires_confirmation": True}
 
 
+_CAS_FORMAT_RE = re.compile(r"^\d{2,7}-\d{2}-\d$")
+
+
 @app.post("/api/quick-screen/risk")
 def quick_screen_risk(payload: QuickScreenRiskCreate, db: Session = Depends(get_db)):
     """Screen any chemical's aquatic risk in one call: resolves identity exactly like /api/identities/resolve
     (local record first, then PubChem), then runs app.services.quick_screen.screen_chemical_risk. Always
     returns 200 with `screening_estimate: true` -- this is a fast triage signal, never a reviewed assessment;
-    see quick_screen.py's own module docstring for the full discipline this deliberately trades away."""
+    see quick_screen.py's own module docstring for the full discipline this deliberately trades away.
+
+    Real-chemical fallback (added 2026-10-01): PubChem only resolves single-structure compounds, so a real
+    UVCB/mixture/complex-substance CAS number (confirmed example: 68585-34-2) is rejected by PubChem outright
+    -- but US EPA ECOTOX is indexed by CAS number independently of PubChem and can have real data for exactly
+    that kind of substance (confirmed: 8 real candidates for 68585-34-2). Rejecting the whole screen because
+    PubChem alone couldn't confirm a single structure would throw away real, usable hazard data. So: when the
+    query is CAS-shaped and PubChem fails, this falls back to screening by the bare CAS number with identity
+    explicitly marked unconfirmed, rather than refusing outright. A name/SMILES query that PubChem can't
+    resolve still 422s -- ECOTOX's local import has no name-only lookup (see ecotox_local.py), so there is no
+    real data path left to fall back to, and guessing a name would be exactly the invented-chemistry this app
+    never does.
+    """
 
     chemicals = list(db.scalars(select(Chemical).order_by(Chemical.id)).all())
     local = next((row for row in chemicals if identity_matches_query(row, payload.query)), None)
+    identity_confirmed = True
     if local is not None:
         identity = {"preferred_name": local.preferred_name, "cas_number": local.cas_number, "smiles": local.smiles}
     else:
         try:
             candidate = resolve_pubchem_identity(payload.query, payload.query_mode)
+            identity = {"preferred_name": candidate["preferred_name"], "cas_number": candidate.get("cas_number"), "smiles": candidate.get("smiles")}
         except ValueError as exc:
-            raise ChemicalIdentityError(str(exc), details={"query_mode": payload.query_mode}) from exc
+            if payload.query_mode == "cas" and _CAS_FORMAT_RE.match(payload.query.strip()):
+                # A real CAS number PubChem can't resolve to one structure (UVCB/mixture/complex substance) --
+                # fall back to a CAS-only screen rather than refusing outright. See the route docstring.
+                identity = {"preferred_name": payload.query.strip(), "cas_number": payload.query.strip(), "smiles": None}
+                identity_confirmed = False
+            else:
+                raise ChemicalIdentityError(str(exc), details={"query_mode": payload.query_mode}) from exc
         except (httpx.HTTPError, KeyError, TypeError) as exc:
             raise ExternalDataSourceError(
                 "PubChem identity resolution is temporarily unavailable",
                 details={"source": "pubchem", "failure_type": exc.__class__.__name__},
             ) from exc
-        identity = {"preferred_name": candidate["preferred_name"], "cas_number": candidate.get("cas_number"), "smiles": candidate.get("smiles")}
 
     try:
         result = screen_chemical_risk(
@@ -559,6 +581,15 @@ def quick_screen_risk(payload: QuickScreenRiskCreate, db: Session = Depends(get_
         )
     except (QuickScreenInputError, ValueError) as exc:
         raise HTTPException(422, str(exc)) from exc
+    identity["identity_confirmed"] = identity_confirmed
+    if not identity_confirmed:
+        identity["note"] = (
+            "PubChem could not resolve this CAS number to a single confirmed structure (common for UVCB "
+            "substances, mixtures and complex substances). Screened by CAS number against US EPA ECOTOX "
+            "directly -- hazard results below may still be real and usable, but the name shown is the raw "
+            "query, not a confirmed substance name, and structure-dependent results (sediment/soil PNEC, the "
+            "secondary-poisoning flag) are unlikely to find anything without a resolvable name."
+        )
     return {"identity": identity, **result}
 
 
