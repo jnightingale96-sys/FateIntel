@@ -3901,8 +3901,17 @@ async def coshh_draft(
 
 
 @app.get("/api/projects")
-def list_projects(db: Session = Depends(get_db)):
-    rows = list(db.scalars(select(Project).order_by(Project.created_at.desc())).all())
+def list_projects(q: str | None = None, limit: int | None = None, db: Session = Depends(get_db)):
+    """``q`` and ``limit`` are both optional and additive -- omitting them returns every project, exactly the
+    existing behaviour relied on elsewhere (the project switcher, the example-loader's state.projects lookup).
+    Added for the new "Saved assessments" view, which needs to search rather than load every project (2,300+
+    accumulated test-fixture rows as of 2026-10-01, not yet cleaned -- see scripts/cleanup_db.py)."""
+    stmt = select(Project).order_by(Project.created_at.desc())
+    if q and q.strip():
+        stmt = stmt.where(Project.name.ilike(f"%{q.strip()}%"))
+    if limit is not None:
+        stmt = stmt.limit(max(1, min(limit, 200)))
+    rows = list(db.scalars(stmt).all())
     return [{
         "id": x.id, "name": x.name, "jurisdiction": x.jurisdiction,
         "purpose": x.purpose, "status": x.status,

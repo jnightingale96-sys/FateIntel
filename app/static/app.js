@@ -1692,10 +1692,58 @@ function selectTier(tier) {
   if (routesThroughRegulatoryProgramme()) loadRegulatoryProgrammePanel();
 }
 
+function showWorkspaceTab(name) {
+  $$(".workspace-tab").forEach(btn => btn.classList.toggle("active", btn.dataset.workspaceTab === name));
+  $("tab-panel-assessment")?.classList.toggle("hidden", name !== "assessment");
+  $("tab-panel-saved")?.classList.toggle("hidden", name !== "saved");
+}
+
+function setupWorkspaceTabs() {
+  $$(".workspace-tab").forEach(button => button.addEventListener("click", () => showWorkspaceTab(button.dataset.workspaceTab)));
+}
+
+async function runSavedAssessmentsSearch() {
+  const q = $("saved-search-input").value.trim();
+  const results = $("saved-assessments-results");
+  if (!q) { results.innerHTML = "<p>Search above to find a saved assessment.</p>"; return; }
+  results.innerHTML = "<p>Searching…</p>";
+  try {
+    const rows = await api(`/api/projects?${new URLSearchParams({ q, limit: "50" })}`);
+    if (!rows.length) { results.innerHTML = `<p>No saved assessment matches “${escapeHtml(q)}”.</p>`; return; }
+    results.innerHTML = rows.map(row => `
+      <button class="saved-result" data-saved-project-id="${row.id}" type="button">
+        <span style="text-align:left"><strong>${escapeHtml(row.name)}</strong><small>${escapeHtml(row.jurisdiction || "Unspecified jurisdiction")} · ${escapeHtml(row.purpose || "")}</small></span>
+        <span>${new Date(row.created_at).toLocaleDateString()}</span>
+      </button>`).join("");
+    $$("#saved-assessments-results [data-saved-project-id]").forEach(button => button.addEventListener("click", async () => {
+      try {
+        await selectProject(Number(button.dataset.savedProjectId));
+        showWorkspaceTab("assessment");
+        $("step-identity")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      } catch (error) {
+        console.error(error);
+        toast(`Could not open that project: ${error.message}. It may contain more than one chemical — open it from a link with an explicit chemical id.`, 7000);
+      }
+    }));
+  } catch (error) {
+    console.error(error);
+    results.innerHTML = `<p>Search failed: ${escapeHtml(error.message)}</p>`;
+  }
+}
+
+function setupSavedAssessmentsSearch() {
+  if (!$("saved-search-run")) return;
+  $("saved-search-run").addEventListener("click", runSavedAssessmentsSearch);
+  $("saved-search-input").addEventListener("keydown", (event) => { if (event.key === "Enter") runSavedAssessmentsSearch(); });
+}
+
 function setupNavigation() {
   $$("[data-scroll]").forEach((button) => button.addEventListener("click", () => {
+    showWorkspaceTab("assessment");
     const node = $(button.dataset.scroll); if (node) node.scrollIntoView({behavior:"smooth",block:"start"});
   }));
+  setupWorkspaceTabs();
+  setupSavedAssessmentsSearch();
   setupExampleMenu();
   $("refine-assessment").addEventListener("click", () => $("step-use").scrollIntoView({behavior:"smooth",block:"start"}));
   $("copilot-launch").addEventListener("click", () => $("assistant-panel").scrollIntoView({behavior:"smooth",block:"start"}));

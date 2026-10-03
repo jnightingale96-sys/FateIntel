@@ -64,7 +64,11 @@
 <span class="avatar mini">JN</span>
 </div>
 </header>
-<main>
+<nav aria-label="Workspace sections" class="workspace-tabs">
+<button class="workspace-tab active" data-workspace-tab="assessment" type="button">Assessment</button>
+<button class="workspace-tab" data-workspace-tab="saved" type="button">Saved assessments</button>
+</nav>
+<main id="tab-panel-assessment">
 <section class="welcome-strip" id="welcome">
 <div>
 <h2>Start with exposure. Refine only where the evidence takes you.</h2>
@@ -1301,6 +1305,19 @@
 </div>
 </section>
 </main>
+<div class="tab-panel hidden" id="tab-panel-saved">
+<div class="saved-assessments-shell">
+<div class="section-heading">
+<h2>Saved assessments</h2>
+<p>Search your saved projects by name. Looking for a starting point instead? Use <strong>Load example</strong> on the Assessment tab.</p>
+</div>
+<div class="saved-search-row">
+<input id="saved-search-input" placeholder="Search by project name…" type="search"/>
+<button class="ghost-button" id="saved-search-run" type="button">Search</button>
+</div>
+<div class="design-list" id="saved-assessments-results"><p>Search above to find a saved assessment.</p></div>
+</div>
+</div>
 </div>
 </div>
 <div class="drawer-backdrop hidden" id="drawer-backdrop"></div>
