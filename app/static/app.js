@@ -1696,21 +1696,7 @@ function setupNavigation() {
   $$("[data-scroll]").forEach((button) => button.addEventListener("click", () => {
     const node = $(button.dataset.scroll); if (node) node.scrollIntoView({behavior:"smooth",block:"start"});
   }));
-  $("load-demo").addEventListener("click", async () => {
-    await loadCarbamazepineDemo();
-    $("identity-input").value = "298-46-4";
-    $("envirodesign-smiles").value = "NC(=O)N1c2ccccc2C=Cc2ccccc21";
-    $("amount-value").value = "10"; $("amount-unit").value = "kg/year";
-    $("population").value = "100000"; $("water-per-person").value = "200";
-    $("parent-fraction").value = "0.51"; $("dilution").value = "10";
-    if($("pharma-emission-mode")) $("pharma-emission-mode").value="entered_use"; if($("wwtp-flow-override")) $("wwtp-flow-override").value="";
-    state.use = "pharmaceutical"; state.release = "wastewater"; $("veterinary-workflow")?.classList.add("hidden"); selectTier(2);
-    $$("#use-cards .scenario-card").forEach(x=>x.classList.toggle("active",x.dataset.use==="pharmaceutical"));
-    $$("#release-cards .scenario-card").forEach(x=>x.classList.toggle("active",x.dataset.release==="wastewater"));
-    updateCompartments(); updateModels(); updateSummaries(); updatePharmaInfluentUI(); refreshRegulatoryPathway(); refreshGuidedReadiness(); runEnviroDesign(false);
-    $("step-identity").scrollIntoView({behavior:"smooth",block:"start"});
-    toast("Carbamazepine example restored.");
-  });
+  setupExampleMenu();
   $("refine-assessment").addEventListener("click", () => $("step-use").scrollIntoView({behavior:"smooth",block:"start"}));
   $("copilot-launch").addEventListener("click", () => $("assistant-panel").scrollIntoView({behavior:"smooth",block:"start"}));
   $("project-pill")?.addEventListener("click", () => {
@@ -1724,6 +1710,67 @@ function setupNavigation() {
       $("project-menu")?.classList.add("hidden");
       $("project-pill")?.setAttribute("aria-expanded", "false");
     }
+    if (!event.target.closest(".example-switcher")) {
+      $("example-menu")?.classList.add("hidden");
+      $("example-pill")?.setAttribute("aria-expanded", "false");
+    }
+  });
+}
+
+// Curated "Load example" entries: the real gold-standard validation cases (full multi-scenario runs, each
+// checked against an independent primary source -- see the validation-cases artifact) plus one quick-start
+// chemical per top-level group (identity confirmed via the real resolve/confirm flow, not a full validation --
+// labelled as such so the two are never confused). Project IDs are real, created live in this app; this list
+// is presentation-layer curation only, not stored in the database (Project has no "group"/"kind" column).
+const EXAMPLE_PROJECTS = [
+  { id: 2326, chemicalId: 1, name: "Carbamazepine", group: "Human pharmaceutical", kind: "validated", note: "3 scenarios, matches Japan MoE's own PNEC exactly" },
+  { id: 2327, chemicalId: 2, name: "Diclofenac", group: "Human pharmaceutical", kind: "validated", note: "checked against SCHEER's EU EQS opinion" },
+  { id: 2329, chemicalId: 1394, name: "Ibuprofen", group: "Human pharmaceutical", kind: "validated", note: "checked against real WWTP-removal + field data" },
+  { id: 2332, chemicalId: 1397, name: "Bisphenol A", group: "Industrial, detergent & consumer", kind: "quickstart" },
+  { id: 2333, chemicalId: 1396, name: "Atrazine", group: "Pesticides & biocides", kind: "quickstart" },
+  { id: 2334, chemicalId: 1395, name: "PFOS", group: "PFAS", kind: "quickstart" },
+  { id: 2335, chemicalId: 1398, name: "Copper", group: "Metals & metalloids", kind: "quickstart" },
+  { id: 2336, chemicalId: 1399, name: "PCB-153", group: "Legacy persistent organics", kind: "quickstart" },
+  { id: 2337, chemicalId: 1400, name: "Benzene", group: "Petroleum hydrocarbons & solvents", kind: "quickstart" },
+];
+
+function renderExampleMenu() {
+  const menu = $("example-menu");
+  if (!menu) return;
+  const validated = EXAMPLE_PROJECTS.filter(e => e.kind === "validated");
+  const quickstart = EXAMPLE_PROJECTS.filter(e => e.kind === "quickstart");
+  const item = (e) => `<button data-example-id="${e.id}" data-example-chemical="${e.chemicalId}" role="menuitem" type="button">
+    <strong>${escapeHtml(e.name)}</strong><small>${escapeHtml(e.group)}${e.note ? ` — ${escapeHtml(e.note)}` : ""}</small>
+  </button>`;
+  menu.innerHTML = `
+    <div class="menu-group-label">Validated gold-standard cases</div>
+    ${validated.map(item).join("")}
+    <div class="menu-group-label">Quick start — one chemical per group</div>
+    ${quickstart.map(item).join("")}
+    <div class="menu-group-label">Polymers, mixtures and radionuclides have no single-substance identity to screen this way yet.</div>
+  `;
+  $$("#example-menu [data-example-id]").forEach(button => button.addEventListener("click", async () => {
+    menu.classList.add("hidden");
+    $("example-pill")?.setAttribute("aria-expanded", "false");
+    try {
+      await selectProject(Number(button.dataset.exampleId), Number(button.dataset.exampleChemical));
+      $("step-identity")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      toast(`${button.querySelector("strong").textContent} example loaded.`);
+    } catch (error) {
+      console.error(error);
+      toast(`Could not load that example: ${error.message}`, 6000);
+    }
+  }));
+}
+
+function setupExampleMenu() {
+  if (!$("example-pill")) return;
+  renderExampleMenu();
+  $("example-pill").addEventListener("click", () => {
+    const menu = $("example-menu");
+    const opening = menu.classList.contains("hidden");
+    menu.classList.toggle("hidden", !opening);
+    $("example-pill").setAttribute("aria-expanded", opening ? "true" : "false");
   });
 }
 
